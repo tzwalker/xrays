@@ -1,0 +1,13 @@
+import fabio                         #this is the important line for opening
+edf files
+import numpy as np
+import scipy.ndimage as sndi
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import os
+
+edfData=fabio.open('path_to_file/filename.edf')            #opens edf file
+ourData=edfData.data               #stores the interesting data as a matrix,
+here you could also say np.array(edfData.data)
+plt.imshow(ourData)
+plt.show()
