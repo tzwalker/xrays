@@ -199,3 +199,5 @@ def mapShapeEle(dataframe_as_array, scan_list):
 CdTe_ratio(imported_scan_dfs)
 mapShapeEle(imported_scan_dfs, scan_list)
 
+#unoriginal superficial the issue
+
