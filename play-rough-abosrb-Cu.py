@@ -82,7 +82,7 @@ plt.xlabel('Depth (um)', fontsize = 16)
 plt.ylabel('I/Io', fontsize = 16)
 
 ax.tick_params(axis = 'both', labelsize = 14) 
-#plt.ylim([0, 0.0155])
+plt.ylim([0, 1.0])
 
 plt.grid()
 

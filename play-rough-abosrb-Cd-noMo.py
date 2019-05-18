@@ -35,21 +35,21 @@ SNO2 =  {'Element':['Sn','O'],      'MolFrac':[1,2],    'Thick':0.00006,    'LDe
 #for CdTe layer
 
 #percent incoming beam transmitted to CdTe layer
-#iio_Mo = np.exp(- MO['capXsect'] * MO['LDensity'] * MO['Thick'] / beam_geometry)
+iio_Mo = np.exp(- MO['capXsect'] * MO['LDensity'] * MO['Thick'] / beam_geometry)
 iio_ZnTe = np.exp(- ZNTE['capXsect'] * ZNTE['LDensity'] * ZNTE['Thick'] / beam_geometry)
 
-iio_in = iio_ZnTe
+iio_in = iio_Mo * iio_ZnTe
 
 #percent outgoing Cd_L transmitted by external layers
 Cd_L = get_Ele_XRF_Energy('Cd', beam_energy)
 
-#mu_Mo_Cd_L = xl.CS_Total_CP('Mo', Cd_L)         
+mu_Mo_Cd_L = xl.CS_Total_CP('Mo', Cd_L)         
 mu_ZnTe_Cd_L = xl.CS_Total_CP('ZnTe', Cd_L)     
 
-#cd_1 = np.exp(- mu_Mo_Cd_L * MO['LDensity'] * MO['Thick'] / detect_geometry)        # moly is a really good Cd_L and Te_L absorber, iio ~0.0287
+cd_1 = np.exp(- mu_Mo_Cd_L * MO['LDensity'] * MO['Thick'] / detect_geometry)        # moly is a really good Cd_L and Te_L absorber, iio ~0.0287
 cd_2 = np.exp(- mu_ZnTe_Cd_L * ZNTE['LDensity'] * ZNTE['Thick'] / detect_geometry)
 
-iio_out = iio_in * cd_2                  
+iio_out = iio_in * cd_1 * cd_2                  
 
 #percent outgoing Cd_L transmitted by CdTe itself
 mu_CdTe_Cd_L = xl.CS_Total_CP('CdTe', Cd_L)
@@ -73,12 +73,12 @@ steps_in_um = steps / 1000
 fig, ax = plt.subplots()
 
 plt.plot(steps_in_um, iio_cd_cdte)
-plt.title('Cd_L Attn. - No Mo layer', fontsize = 18)
+plt.title('Cd_L Attn. - w/Mo and ZnTe', fontsize = 18)
 plt.xlabel('Depth (um)', fontsize = 16)
 plt.ylabel('I/Io', fontsize = 16)
 
 ax.tick_params(axis = 'both', labelsize = 14) 
-#plt.ylim([0, 0.0155])
+plt.ylim([0, 0.050])
 
 plt.grid()
 
