@@ -1,8 +1,32 @@
-#this file is for testing
 import xraylib as xl
 import numpy as np
 
-
+#returns the energy of fluorescent photon of a given element due to the beam energy
+#if-statements checks whether the element will absorb; is absorption edge higher than beam_energy?
+    #if yes, no absorption, fluorescent photon energy is set to the next highest energy of the next shell
+        # ex) Cd_L = 3.1338 keV , Cd_K_edge = 26.7, Cd_L_edge = 4.018
+        #       
+    #if no, absorption, fluorescent photon energy remains at the highest energy of the current shell
+    
+    ##functions of interest!
+    #element_XRF_energy = xl.LineEnergy(xl.SymbolToAtomicNumber("element"), xl.XRF line you want)
+    #Layer_cataching_ele_XRF = xl.CS_Total_CP("layer", element_XRF_energy)
+def get_Ele_XRF_Energy(ele, energy):
+    Z = xl.SymbolToAtomicNumber(ele)
+        
+    #will it abosrb? if so, it will fluoresce
+    F = xl.LineEnergy(Z, xl.KA1_LINE)
+    if xl.EdgeEnergy(Z, xl.K_SHELL) > energy:
+            F = xl.LineEnergy(Z, xl.LA1_LINE)
+            if xl.EdgeEnergy(Z, xl.L1_SHELL) > energy:
+                    F = xl.LineEnergy(Z, xl.LB1_LINE)
+                    if xl.EdgeEnergy(Z, xl.L2_SHELL) > energy:
+                            F = xl.LineEnergy(Z, xl.LB1_LINE)
+                            if xl.EdgeEnergy(Z, xl.L3_SHELL) > energy:
+                                    F = xl.LineEnergy(Z, xl.LG1_LINE)
+                                    if xl.EdgeEnergy(Z, xl.M1_SHELL) > energy:
+                                            F = xl.LineEnergy(Z, xl.MA1_LINE) 
+    return F
 beam_energy = 8.99                                                  #beamtime keV
 beam_theta = 90                                                     #angle of the beam relative to the surface of the sample
 beam_geometry = np.sin(beam_theta*np.pi/180)                        #convert to radians
@@ -57,35 +81,6 @@ def IncidentBeamAttenuation(stack_list):
 IncidentBeamAttenuation(STACK)
 
 
-#returns the energy of fluorescent photon of a given element due to the beam energy
-#if-statements checks whether the element will absorb; is absorption edge higher than beam_energy?
-    #if yes, no absorption, fluorescent photon energy is set to the next highest energy of the next shell
-        # ex) Cd_L = 3.1338 keV , Cd_K_edge = 26.7, Cd_L_edge = 4.018
-        #       
-    #if no, absorption, fluorescent photon energy remains at the highest energy of the current shell
-    
-    ##functions of interest!
-    #element_XRF_energy = xl.LineEnergy(xl.SymbolToAtomicNumber("element"), xl.XRF line you want)
-    #Layer_cataching_ele_XRF = xl.CS_Total_CP("layer", element_XRF_energy)
-def get_Ele_XRF_Energy(ele, energy):
-    Z = xl.SymbolToAtomicNumber(ele)
-        
-    #will it abosrb? if so, it will fluoresce
-    F = xl.LineEnergy(Z, xl.KA1_LINE)
-    if xl.EdgeEnergy(Z, xl.K_SHELL) > energy:
-            F = xl.LineEnergy(Z, xl.LA1_LINE)
-            if xl.EdgeEnergy(Z, xl.L1_SHELL) > energy:
-                    F = xl.LineEnergy(Z, xl.LB1_LINE)
-                    if xl.EdgeEnergy(Z, xl.L2_SHELL) > energy:
-                            F = xl.LineEnergy(Z, xl.LB1_LINE)
-                            if xl.EdgeEnergy(Z, xl.L3_SHELL) > energy:
-                                    F = xl.LineEnergy(Z, xl.LG1_LINE)
-                                    if xl.EdgeEnergy(Z, xl.M1_SHELL) > energy:
-                                            F = xl.LineEnergy(Z, xl.MA1_LINE) 
-    return F
-
-
-
 #outgoing fluorescence of external layers
 def get_capXsect_of_layer_on_ele_line(layer, layer_element_list):
     for ele in layer_element_list:
@@ -100,36 +95,39 @@ for layer_num, layer in enumerate(STACK):
         
         layer_ele_line_muS.append(mu_layer_ele_line)
         print(prev_layer["Name"], layer_ele_line_muS)
-# =============================================================================
-#         coefficients.append(coefficient)
-#     product_of_previous_layer_cofficients = np.prod(coefficients)
-#     total_external_XRF_attn = layer["Bo"] * product_of_previous_layer_cofficients
-#     key = "tot_external_XRF_attn"
-#     layer.setdefault(key, coefficient)
-# =============================================================================
 
-#outgoing fluorescence capture of internal layers (gives mu_CdTe_CdL in: cap_cross_section_of_one_sublayer_out_CdL = -p_CdTe * mu_CdTe_CdL * dt / rad_det;)
-# =============================================================================
-# for layer in STACK:
-#     getSublayers(layer)                                                                         #generate number of 1nm sublayers for each layer; stored in dictionary for access convenience
-#     layer_coefficients = []
-#     for ele in layer["Element"]:
-#         element_XRF_line = get_Ele_XRF_Energy(ele, beam_energy)
-#         layer_capture_of_ele_XRF = xl.CS_Total_CP(layer["Name"], element_XRF_line)
-#         #Beer_Lamb_external_layer_coefficient = np.exp(-  layer_capture_of_ele_XRF * layer["LDensity"] * layer["Thick"] / detect_gemoetry)
-#         print(layer["Name"], ele, layer_capture_of_ele_XRF)
-#         #layer_coefficients.append(Beer_Lamb_external_layer_coefficient)
-#     #key = "ext_BL_coeff"
-#     #layer.setdefault(key, layer_coefficients)
-# =============================================================================
-        
+#for CdTe layer
 
+#percent incoming beam transmitted to CdTe layer
+iio_Mo = np.exp(- MO['capXsect'] * MO['LDensity'] * MO['Thick'] / beam_geometry)
+iio_ZnTe = np.exp(- ZNTE['capXsect'] * ZNTE['LDensity'] * ZNTE['Thick'] / beam_geometry)
 
-# =============================================================================
-#     path_in = np.zeros(layer['numSublayers'])
-#     path_out = np.zeros(layer['numSublayers'])
-#     for sublayer in range(sublayers):
-#         path_in[sublayer] = -layer['LDensity'] * layer['capXsect'] * dt / beam_geometry
-#         path_out[sublayer] = -layer['LDensity'] * layer['capXsect'] * dt / detect_gemoetry        
-#     #print(path_in, path_out)
-# ==================================================
+iio_in = iio_Mo * iio_ZnTe
+
+#percent outgoing Cd_L transmitted by external layers
+Cd_L = get_Ele_XRF_Energy('Cd', beam_energy)
+
+mu_Mo_Cd_L = xl.CS_Total_CP('Mo', Cd_L)         #1800 vs. 1872 (matlab)
+mu_ZnTe_Cd_L = xl.CS_Total_CP('ZnTe', Cd_L)     #653 vs. 680 (matlab)
+
+cd_1 = np.exp(- mu_Mo_Cd_L * MO['LDensity'] * MO['Thick'] / detect_geometry)        # moly is a really good Cd_L and Te_L absorber, iio ~0.0287
+cd_2 = np.exp(- mu_ZnTe_Cd_L * ZNTE['LDensity'] * ZNTE['Thick'] / detect_geometry)
+
+iio_out = iio_in * cd_1 * cd_2                  #0.0151 vs. 0.0163 (matlab)
+
+#percent outgoing Cd_L transmitted by CdTe itself
+mu_CdTe_Cd_L = xl.CS_Total_CP('CdTe', Cd_L)
+steps = np.linspace(0, 12000, 12001)
+dt = 1*10**-7
+
+iio_cd_cdte = np.zeros(len(steps))
+
+cap_cross_section_of_one_sublayer_in = - CDTE['capXsect'] * CDTE['LDensity'] * dt / beam_geometry
+cap_cross_section_of_one_sublayer_out_CdL = - mu_CdTe_Cd_L * CDTE['LDensity'] * dt / detect_geometry
+
+for index, step in enumerate(steps):
+    beam_in = cap_cross_section_of_one_sublayer_in * index;
+    beam_out = cap_cross_section_of_one_sublayer_out_CdL * index
+    iio_cd_cdte[index] = iio_out * np.exp(beam_in + beam_out)
+    
+iio_cdL = np.mean(iio_cd_cdte) #0.00117 vs. 0.0021 (matlab)

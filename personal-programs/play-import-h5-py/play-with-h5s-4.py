@@ -1,8 +1,10 @@
 import h5py as h5
+import matplotlib.pyplot as plt
 
-path = '/home/kineticcross/Desktop/XRF-dev/play-import-h5-py'
 
-scans = ['343', '264', '422', '385']
+path = r'C:\Users\Trumann\Desktop\XRF-dev\personal-programs\play-import-h5-py'
+
+scans = ['264', '422', '385']
 
 def import_h5s(scans):
     imported_h5s = []
@@ -15,54 +17,68 @@ def import_h5s(scans):
 
 files = import_h5s(scans)
 
-#this line will isolate the Na channel in the h5 and convert it to a string that's identifiable
-#channel_names = files[0]['/MAPS/channel_names'][0].decode()
-
-def get_desired_channel_index(channel_names, e):
-    s=0
-    for index, channel in enumerate(channel_names):
-        if e == channel.decode():
-            s = index
+#this function performs a strign comparison within the pertinent H5 group and extracts the index of interest
+def get_desired_channel_index(H5_channel_names_as_strings, e):
+    s=0                                                                             #initialize index search
+    for index, channel_string in enumerate(H5_channel_names_as_strings):            #search channel_names for element string
+        if e == channel_string.decode():                                            #compare element string to decoded channel_name string
+            s = index                                                               #get appropriate index
     return s
 
 #ChOIs = channels_of_interest
 ChOIs = ['Cd_L', 'Te_L', 'Cu']
 
-#this function makes a list that  the index of desired channels within the H5 channel
-def get_channel_of_interest_index_for_each_scan(files, ChOIs):
-    list_of_indices = []                                            #initialize list containing dictionaries for each file/scan
+#this function makes a master list containing the index of the channel of interest within each respective scan
+#the master list is a list of lists, where each internal list represents a scan
+#each internal list contains the indices of the channels of interest for that specific scan, which may not be the same between scans
+#the extraction of channel indices is required because this is how one navigates the H5 data structures
+def get_ChOIs_for_all_scans(files, ChOIs):
+    list_of_indices = []                                            #initialize master list
     
     for scan_index, file in enumerate(files):
-        channel_names = file['/MAPS/channel_names']
-        decoded_ele_string_indices = []
+        channel_names = file['/MAPS/channel_names']                 #navigate to the structure conatining the channel names as element strings, e.g. 'Cd_L'
+        decoded_ele_string_indices = []                             #initialize internal list
         
         for ele in ChOIs:
-            s = get_desired_channel_index(channel_names, ele)
-            decoded_ele_string_indices.append(s)
+            s = get_desired_channel_index(channel_names, ele)       #perform string comparison between 'channels of interest' and 'channel names', and extract index of interest
+            decoded_ele_string_indices.append(s)                    #build internal list
 
-        list_of_indices.append(decoded_ele_string_indices)
+        list_of_indices.append(decoded_ele_string_indices)          #add internal list (i.e. a scan) to master list
         
     return list_of_indices
     
 
-master_ele_index_list = get_channel_of_interest_index_for_each_scan(files, ChOIs)
+master_index_list = get_ChOIs_for_all_scans(files, ChOIs)
 
+#this function uses the element indices from the master_index_list to extract the 2D fitted data arrays from the H5 file
+#it also build a master list that contains the 2D numpy arrays of interest, rather than just the indices
 def extract_maps(H5s, list_of_lists):
-    maps = []
+    maps = []                                                       #initialize master list
     for H5, channel_indices in zip(H5s, list_of_lists):
-        scan_maps = []
-        XRF_fits = H5['/MAPS/XRF_fits']
+        scan_maps = []                                              #initialize internal (single scan) list
+        XRF_fits = H5['/MAPS/XRF_fits']                             #navigate to structure containing all fitted XRF data
         for element_index in channel_indices:
-            map_of_interest = XRF_fits[element_index,:,:]
-            scan_maps.append(map_of_interest)
-        maps.append(scan_maps)
+            map_of_interest = XRF_fits[element_index,:,:]           #use element index to extract map of interest
+            scan_maps.append(map_of_interest)                       #build internal list
+        maps.append(scan_maps)                                      #add internal list (i.e. a scan) to master list
     return maps
 
-master_map_list = extract_maps(files, master_ele_index_list)
+master_map_list = extract_maps(files, master_index_list)
 
-#two simple lines to plot the figures! y axis is inverted and not calibrated, but its a quick start :) 
-#a = master_map_list[2][2]
-#plt.imshow(a)
-#having trouble showing only one channel inside the master map list (i.e. grabbing one index inside another index...)
+#still debugging plotting function; see finished code in XRF-dev at home...
+# =============================================================================
+# for scan in master_map_list:
+#     fig = plt.figure()
+#     for channel in scan:
+#         plt.imshow(channel)
+#     cu_channel = scan[1]
+#     plt.imshow(cu_channel, origin = 'lower')
+# # =============================================================================
+# #     for index, channel in enumerate(scan):
+# #         Cu_channel = channel
+# #         plt.imshow(channel, origin = 'lower')
+# # =============================================================================
+# 
+# =============================================================================
 
 

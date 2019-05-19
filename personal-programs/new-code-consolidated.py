@@ -83,7 +83,7 @@ def calc_XCE(smaller_dfs, scans):
         df.rename(columns = {'eh_pairs': 'XCE'}, inplace = True)    #rename to XCE column
     return
 
-#functions for plotting!
+#PLOTTING
 def mapConvertAxes(dataframes, scans):
     for df, scan in zip(dataframes, scans):
         height_factor = scan['height'] / scan['y_points']                       #converts to (um/line) for y-direction
