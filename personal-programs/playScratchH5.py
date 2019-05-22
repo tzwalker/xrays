@@ -1,6 +1,6 @@
 import h5py as h5
 import matplotlib.pyplot as plt
-
+from playAbsorb import get_Ele_XRF_Energy
 
 path = r'C:\Users\Trumann\Desktop\XRF-dev\personal-programs\play-import-h5-py'
 
@@ -28,10 +28,9 @@ def get_desired_channel_index(H5_channel_names_as_strings, e):
 #ChOIs = channels_of_interest
 ChOIs = ['Cd_L', 'Te_L', 'Cu']
 
-#this function makes a master list containing the index of the channel of interest within each respective scan
-#the master list is a list of lists, where each internal list represents a scan
-#each internal list contains the indices of the channels of interest for that specific scan, which may not be the same between scans
-#the extraction of channel indices is required because this is how one navigates the H5 data structures
+#returns list of lists
+#each internal list represents a scan, and contains the indices of the channels of interest
+#channel indices are required to navigate the H5 data structures
 def get_ChOIs_for_all_scans(files, ChOIs):
     list_of_indices = []                                            #initialize master list
     
@@ -65,20 +64,4 @@ def extract_maps(H5s, list_of_lists):
 
 master_map_list = extract_maps(files, master_index_list)
 
-#still debugging plotting function; see finished code in XRF-dev at home...
-# =============================================================================
-# for scan in master_map_list:
-#     fig = plt.figure()
-#     for channel in scan:
-#         plt.imshow(channel)
-#     cu_channel = scan[1]
-#     plt.imshow(cu_channel, origin = 'lower')
-# # =============================================================================
-# #     for index, channel in enumerate(scan):
-# #         Cu_channel = channel
-# #         plt.imshow(channel, origin = 'lower')
-# # =============================================================================
-# 
-# =============================================================================
-
-
+stack_info = play_abosrb.get_stack_info(STACK, layer_density)
