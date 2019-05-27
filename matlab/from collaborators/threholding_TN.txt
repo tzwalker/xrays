@@ -1,0 +1,9 @@
+vals = find( xrf.(scan1).(element).('arr') > 1.5);
+
+xrf.(scan1).(element).('arr')(vals)=0;
+
+dim = length(xrf.(scan1).(element).('map'));
+
+dataset = reshape(xrf.(scan1).(element).('arr'),[dim, dim]);
+
+figure;
