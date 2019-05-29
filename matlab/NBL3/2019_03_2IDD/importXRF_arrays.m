@@ -5,9 +5,6 @@ function [output] = importXRF_arrays(file)
 %these zzeros must be neglected and should not be imported for purposes
 %of performing relevant statistical analyses
 
-%if scan_type == 'flycan'
-    
-
 A = importdata(file);
 
 for i = 1:size(A.colheaders, 2)
@@ -16,6 +13,8 @@ for i = 1:size(A.colheaders, 2)
 end
 %WORK = data.(scanheader);
 WORK.headers = A.colheaders;
+
+
 
 %Put the data back into the structure
 output   = WORK;

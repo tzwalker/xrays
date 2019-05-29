@@ -24,7 +24,7 @@ Cu_gradient = {NBL32_Cu_grad, NBL33_Cu_grad, TS58A_Cu_grad};
 
 samplename = {'NBL3_2', 'NBL3_3', 'TS58A'};         %Corresponding names of samples for each scan
 XRF_scans = {'422', '266', '385'};                            
-XRF_scanType = {'flyscan', 'flyscan', 'flyscan'};
+scan_type = {'flyscan', 'flyscan', 'flyscan'};
 %NOTE: scan numbers in 'XRF_scans' are the heading for the home structure of all (XRF,XBIC, XBIV) scans      
 %electrical scans generally have a short dwell time, and therefore less XRF
 %signal; therefore the XRF scan numbers will be used to generate the
@@ -57,6 +57,13 @@ scanheader = ['scan' XRF_scans{1, N}];                      %NOTE: this is the l
 XRFscan = XRF_scans{1, N};
 xrffile  = [path 'combined_ASCII_2idd_0' XRFscan '.h5.csv'];
 WORK = importXRF_arrays(xrffile);
+
+%%% create statistic (non-zero flyscan) data structure
+tf = strcmp(A.colheaders{i}, ' ds_ic');
+if tf == 1
+    WORK.STAT = make_statistic_data(WORK); %make a function that gerts trid of the zeros in the last two columns of the shaped matrix
+end
+
 
 %%% Import XBIV scan
 % XBIVscan = XBIV_scans{1, N};
