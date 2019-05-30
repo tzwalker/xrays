@@ -27,7 +27,7 @@ for l = 1:length(thickness(1,:))
     
     for k = 1:length(thick)
         depth = 0:dt:thick(k);
-        %define different graing profiles with same average composition
+        %define different grading profiles with same average composition
         grad_flat = ones(length(depth),1)*0.3;
          grad_up = 0:1/(length(depth)-1):1;
          grad_down = 1-grad_up;
