@@ -1,7 +1,7 @@
 import xraylib as xl
 import numpy as np
 import matplotlib.pyplot as plt
-
+# returns highest energy photon fluoresced at the given beam energy
 def get_Ele_XRF_Energy(ele, energy):
     Z = xl.SymbolToAtomicNumber(ele)
     #will it abosrb? if so, it will fluoresce
@@ -18,7 +18,6 @@ def get_Ele_XRF_Energy(ele, energy):
                                             F = xl.LineEnergy(Z, xl.MA1_LINE) 
     return F
 
-
 # returns numpy (fl64) array; essentially the simulated profile for the element 'ele' above
 def iio_vs_depth(ele, t, dt):
     # percent incoming beam transmitted to CdTe layer
@@ -30,26 +29,23 @@ def iio_vs_depth(ele, t, dt):
     ele_line = get_Ele_XRF_Energy(ele, beam_energy)
     mu_Mo_ele_line = xl.CS_Total_CP('Mo', ele_line)         #1800 vs. 1872 (matlab)
     mu_ZnTe_Cd_ele_line = xl.CS_Total_CP('ZnTe', ele_line)     #653 vs. 680 (matlab)
-    
     c_1 = np.exp(- mu_Mo_ele_line * MO['LDensity'] * MO['Thick'] / detect_geometry)        # moly is a really good Cd_L and Te_L absorber, iio ~0.0287
     c_2 = np.exp(- mu_ZnTe_Cd_ele_line * ZNTE['LDensity'] * ZNTE['Thick'] / detect_geometry)
     iio_out = iio_in * c_1 * c_2                  #0.0151 vs. 0.0163 (matlab)
     
     # percent outgoing Cd_L transmitted by CdTe itself
     mu_CdTe_ele = xl.CS_Total_CP('CdTe', ele_line)
-    
     iio_ele_cdte = np.zeros(len(t))
-    
     cap_cross_section_of_one_sublayer_in = - CDTE['capXsect'] * CDTE['LDensity'] * dt / beam_geometry
     cap_cross_section_of_one_sublayer_out_ele = - mu_CdTe_ele * CDTE['LDensity'] * dt / detect_geometry
-    
     for index, step in enumerate(t):
         beam_in = cap_cross_section_of_one_sublayer_in * step;
         beam_out = cap_cross_section_of_one_sublayer_out_ele * step
         iio_ele_cdte[index] = iio_out * np.exp(beam_in + beam_out)
-        
     #iio_ele = np.mean(iio_ele_cdte) #0.00117 vs. 0.0021 (matlab)
     return iio_ele_cdte
+
+## define settings and stack parameters ##
 
 beam_energy = 12.7 #keV
 beam_theta = 75                                                     #angle of the beam relative to the surface of the sample
@@ -67,38 +63,54 @@ CDS =   {'Thick':0.000008,   'LDensity': 4.82, 'Name': 'CdS',    'capXsect': xl.
 SNO2 =  {'Thick':0.00006,    'LDensity': 6.85, 'Name': 'SnO2',   'capXsect': xl.CS_Total_CP('SnO2', beam_energy)}
 
 
-# enter element for which you wish to see I/Io
+# enter element for which you wish to see I/Io (will work on generatign plots for many elements at once)
 ele = 'Cu'
 
-# the term 'uniform absorber' 
-no_rough = np.linspace(0, 6000, 6001)             #(nm) arbitrary absorber depth of 12um;
+# specify arbitrary depth of absorber
+no_rough = np.linspace(0, 6000, 6001)               #(nm) arbitrary absorber depth of 12um;
 dt = 1*10**-7                                       # 1nm = 1E-7cm
+no_rough_iio = iio_vs_depth(ele, no_rough, dt)      #calc reference profile
 
-## 10 % roughness ##
-roughness = 0.1
+# specfiy range of roughneses
+roughnesses = np.linspace(0.1, 0.9, 9)
 
-rough_up = no_rough * (1+roughness)
-rough_down = no_rough * (1-roughness)
+def gen_upd_and_downs(r):
+    rough_ups = []
+    rough_downs = []
+    for roughness in roughnesses:
+        rough_up = no_rough * (1+roughness)
+        rough_down = no_rough * (1-roughness)
+        rough_ups.append(rough_up)
+        rough_downs.append(rough_down)
+    return rough_ups, rough_downs
 
+rough_ups, rough_downs = gen_upd_and_downs(roughnesses)
 
-rough_list = [rough_up, no_rough, rough_down]
+def gen_up_down_iios(rough_ups, rough_downs):
+    ele_rough_iios_up = []
+    for roughness in rough_ups:
+        ele_rough_iio_up = iio_vs_depth(ele, roughness, dt)
+        ele_rough_iios_up.append(ele_rough_iio_up)
+    
+    ele_rough_iios_down = []
+    for roughness in rough_downs:
+        ele_rough_iio_down = iio_vs_depth(ele, roughness, dt)
+        ele_rough_iios_down.append(ele_rough_iio_down)
+    return ele_rough_iios_up, ele_rough_iios_down
 
-rough_in_um_list = []
-for rough in rough_list:
-    rough_in_um = rough / 1000
-    rough_in_um_list.append(rough_in_um)
+ele_rough_iios_up, ele_rough_iios_down = gen_up_down_iios(rough_ups, rough_downs)
 
-
-ele_rough_iios = []
-for rough, rough_in_um in zip(rough_list, rough_in_um_list):
-    ele_rough_iio = iio_vs_depth(ele, rough, dt)
-    ele_rough_iios.append(ele_rough_iio)
+no_rough_in_um = no_rough / 1000 #for proper x-axis units while plotting
 
 # plot settings #
-fig = plt.figure()
-plt.plot(no_rough, ele_rough_iios[0], '--')
-plt.plot(no_rough, ele_rough_iios[1])
-plt.plot(no_rough, ele_rough_iios[2], '--')
+fig, ax = plt.subplots()
+plt.plot(no_rough_in_um, no_rough_iio, 'k')
+#plt.plot(no_rough_in_um, ele_rough_iios_down[0], linestyle = '-.', color = 'r')
+
+for rough_down, rough_up in zip(ele_rough_iios_down, ele_rough_iios_up):
+    plt.plot(no_rough_in_um, rough_down, linestyle = '-.', color = 'r')
+    plt.plot(no_rough_in_um, rough_up, linestyle = '--', color = 'r')
+
 #plt.title(ele + ' Attenuation', fontsize = 18)
 plt.xlabel('Depth (um)', fontsize = 16)
 plt.ylabel('I/Io' + ' (' + ele + ')', fontsize = 16)
@@ -110,3 +122,13 @@ plt.grid()
 
 plt.show()
 
+
+# from older code
+#rough_list = [rough_downs, rough_ups]
+
+# =============================================================================
+# rough_in_um_list = []
+# for rough in rough_list:
+#     rough_in_um = rough / 1000
+#     rough_in_um_list.append(rough_in_um)
+# =============================================================================
