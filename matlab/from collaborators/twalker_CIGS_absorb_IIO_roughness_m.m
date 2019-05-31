@@ -11,7 +11,7 @@ thickness = 0.1:0.2:5;
 %thickness = 2;
 rough = 0.1;
 
-t = thickness.*1E-4; %um to cm
+t = thickness.*1E-4; %um to cm, array for each thickness step
 t_up = t.*(1+rough);
 t_down = t.*(1-rough);
 dt = 0.000001; %50nm thick layers
@@ -27,17 +27,8 @@ for l = 1:length(thickness(1,:))
     
     for k = 1:length(thick)
         depth = 0:dt:thick(k);
-        %define different grading profiles with same average composition
-        grad_flat = ones(length(depth),1)*0.3;
-         grad_up = 0:1/(length(depth)-1):1;
-         grad_down = 1-grad_up;
-         mid = round(length(depth)/2);
-         V = 0:1/(mid-1):1;
-         gradV(1:mid) = 1-V; gradV(mid:length(depth)) = V;
-         gradN = 1-gradV;
-        
-        grad = grad_flat;
-        
+ 
+ %%% deleted grading profile constrcution %%%
         M = thick(k)/dt;
         M = round(M); %rounds to nearest integer for total number of layers
         
@@ -52,7 +43,7 @@ for l = 1:length(thickness(1,:))
         
          %plots grading and Beam I/Io vs depth
          figure
-         plotyy(depth./(sin(beamtheta*pi/180)),b4,depth./(sin(beamtheta*pi/180)),sam_grad)
+         plot(depth./(sin(beamtheta*pi/180)),b5)
         
          %Copper
          i_io_cu = zeros(M,1);
