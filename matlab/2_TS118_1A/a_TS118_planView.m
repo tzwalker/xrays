@@ -3,11 +3,11 @@ clc
 close all
 
 %File Directory
-path  = 'C:\Users\Trumann\Desktop\2019_03_2IDD_NBL3\output\';
+path  = 'C:\Users\Trumann\Desktop\2018_11_26IDC_XBIC_decay\';
 
-beamenergy = {12.7 12.7 12.7};                          %incident energy for each scan
-beamtheta = {75 75 75};                                 %beam measurement geometry
-detectortheta = {15 15 15};                             %sample measurement geometry
+beamenergy = 10.4;                          %incident energy for each scan
+beamtheta = 90;                                 %beam measurement geometry
+detectortheta = 15;                             %sample measurement geometry
 beamconversion = {200000 200000 200000};                %beam scalar conversion (cts/V)
 flux = {6.00E8 6.00E8 6.00E8};                          %(ph/s)  see PIN diode Excel calc
 
@@ -15,12 +15,6 @@ absorber_thickness = {8.515E-4, 7.744E-4, 5.319E-4};  %cm, to be entered into Cd
 Cu_thickness = {2.5E-7, 10E-7, 2.5E-7};      %cm, estimate for preliminary works
 
 %IN PROGRESS: following polynomials fitted form third-party SIMS data using OriginPro
-NBL31_Cu_grad = @(x) 18.360 -4.409*x +25.488*x.^2 -35.406*x.^3 +22.28*x.^4 -7.637*x.^5 +1.533*x.^6 -0.179*x.^7 +0.0114*x.^8 -(3.010E-4)*x.^9;      %atoms/cm^3, x in um
-NBL32_Cu_grad = @(x) 17.870 -2.674*x +16.920*x.^2 -18.764*x.^3 +9.213*x.^4 -2.474*x.^5 +0.389*x.^6 -0.359*x.^7 +0.0018*x.^8 -(3.772E-5)*x.^9;     %atoms/cm^3, x in um
-NBL33_Cu_grad = @(x) 19.251 -5.325*x +22.107*x.^2 -23.715*x.^3 +11.765*x.^4 -3.231*x.^5 +0.522*x.^6 -0.0497*x.^7 +0.00258*x.^8 -(5.619E-5)*x.^9;     %atoms/cm^3, x in um
-TS58A_Cu_grad = @(x) 19.929 -9.325*x +37.204*x.^2 -45.885*x.^3 +27.219*x.^4 -9.067*x.^5 +1.784*x.^6 -0.206*x.^7 + 0.0128*x.^8 -(3.324E-4)*x.^9;    %atoms/cm^3, x in um
-
-Cu_gradient = {NBL32_Cu_grad, NBL33_Cu_grad, TS58A_Cu_grad};
 
 samplename = {'NBL3_2', 'NBL3_3', 'TS58A'};         %Corresponding names of samples for each scan
 XRF_scans = {'422', '266', '385'};                            

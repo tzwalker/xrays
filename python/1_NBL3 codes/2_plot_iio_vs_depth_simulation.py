@@ -45,12 +45,34 @@ def iio_vs_depth(ele, t, dt):
     #iio_ele = np.mean(iio_ele_cdte) #0.00117 vs. 0.0021 (matlab)
     return iio_ele_cdte
 
+def gen_upd_and_downs(r):
+    rough_ups = []
+    rough_downs = []
+    for roughness in roughnesses:
+        rough_up = no_rough * (1+roughness)
+        rough_down = no_rough * (1-roughness)
+        rough_ups.append(rough_up)
+        rough_downs.append(rough_down)
+    return rough_ups, rough_downs
+
+def gen_up_down_iios(rough_ups, rough_downs):
+    ele_rough_iios_up = []
+    for roughness in rough_ups:
+        ele_rough_iio_up = iio_vs_depth(ele, roughness, dt)
+        ele_rough_iios_up.append(ele_rough_iio_up)
+    
+    ele_rough_iios_down = []
+    for roughness in rough_downs:
+        ele_rough_iio_down = iio_vs_depth(ele, roughness, dt)
+        ele_rough_iios_down.append(ele_rough_iio_down)
+    return ele_rough_iios_up, ele_rough_iios_down
+
 ## define settings and stack parameters ##
 
 beam_energy = 12.7 #keV
-beam_theta = 75                                                     #angle of the beam relative to the surface of the sample
+beam_theta = 75                                                     #angle of the beam relative to sample normal
 beam_geometry = np.sin(beam_theta*np.pi/180)                        #convert to radians
-detect_theta = 15                                                   #angle of the detector relative to the beam
+detect_theta = 15                                                   #angle of the detector sample normal
 detect_geometry = np.sin(detect_theta*np.pi/180)                    #convert to radians
 
 MO =    {'Thick':0.00005,    'LDensity': 10.2, 'Name': 'Mo',     'capXsect': xl.CS_Total_CP('Mo', beam_energy)}
@@ -71,55 +93,38 @@ no_rough = np.linspace(0, 6000, 6001)               #(nm) arbitrary absorber dep
 dt = 1*10**-7                                       # 1nm = 1E-7cm
 no_rough_iio = iio_vs_depth(ele, no_rough, dt)      #calc reference profile
 
-# specfiy range of roughneses
-roughnesses = np.linspace(0.1, 0.9, 9)
-
-def gen_upd_and_downs(r):
-    rough_ups = []
-    rough_downs = []
-    for roughness in roughnesses:
-        rough_up = no_rough * (1+roughness)
-        rough_down = no_rough * (1-roughness)
-        rough_ups.append(rough_up)
-        rough_downs.append(rough_down)
-    return rough_ups, rough_downs
+# specfiy roughness parameters
+roughnesses = np.linspace(0.1, 0.9, 3)
 
 rough_ups, rough_downs = gen_upd_and_downs(roughnesses)
-
-def gen_up_down_iios(rough_ups, rough_downs):
-    ele_rough_iios_up = []
-    for roughness in rough_ups:
-        ele_rough_iio_up = iio_vs_depth(ele, roughness, dt)
-        ele_rough_iios_up.append(ele_rough_iio_up)
-    
-    ele_rough_iios_down = []
-    for roughness in rough_downs:
-        ele_rough_iio_down = iio_vs_depth(ele, roughness, dt)
-        ele_rough_iios_down.append(ele_rough_iio_down)
-    return ele_rough_iios_up, ele_rough_iios_down
-
 ele_rough_iios_up, ele_rough_iios_down = gen_up_down_iios(rough_ups, rough_downs)
-
 no_rough_in_um = no_rough / 1000 #for proper x-axis units while plotting
 
-# plot settings #
+# labels for legend are automatically genrated
+label_nums = roughnesses * 100
+label_list = []
+for num in label_nums:
+    b = int(num)
+    c = str(b)
+    d = '+/- ' + c + '%'
+    label_list.append(d)
+
+# note these list lengths must be greater than or equal to the steps in 'roughnesses'
+color_list = ['r', 'b', 'g', 'c', 'm', 'r', 'b', 'g', 'c']
+line_list = ['--', '--','--','--', '--', '-.', '-.', '-.', '-.']
+# plot
 fig, ax = plt.subplots()
 plt.plot(no_rough_in_um, no_rough_iio, 'k')
-#plt.plot(no_rough_in_um, ele_rough_iios_down[0], linestyle = '-.', color = 'r')
-
-for rough_down, rough_up in zip(ele_rough_iios_down, ele_rough_iios_up):
-    plt.plot(no_rough_in_um, rough_down, linestyle = '-.', color = 'r')
-    plt.plot(no_rough_in_um, rough_up, linestyle = '--', color = 'r')
-
-#plt.title(ele + ' Attenuation', fontsize = 18)
+for rough_down, rough_up, l, c, lab in zip(ele_rough_iios_down, ele_rough_iios_up, line_list, color_list, label_list):
+    plt.plot(no_rough_in_um, rough_down, linestyle = l, color = c, label = lab)
+    plt.plot(no_rough_in_um, rough_up, linestyle = l, color = c)
+# axis settings
 plt.xlabel('Depth (um)', fontsize = 16)
 plt.ylabel('I/Io' + ' (' + ele + ')', fontsize = 16)
-
 ax.tick_params(axis = 'both', labelsize = 14) 
 plt.ylim([0, 1.0])
-
 plt.grid()
-
+ax.legend()
 plt.show()
 
 
