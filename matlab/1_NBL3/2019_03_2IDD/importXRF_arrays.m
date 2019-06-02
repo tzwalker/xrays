@@ -7,15 +7,35 @@ function [output] = importXRF_arrays(file)
 
 A = importdata(file);
 
+data = A.data;   %isolate full csv matrix
+
+logic_array = data > 0;  %find cells with values greater than zero (ture = 1, false = 0)
+mark_zeros = ~logic_array; %invert logic zeros to logic ones)
+count_zeros_in_row = sum(mark_zeros, 2); %sum logic ones across rows of csv array
+
+%the sum of logic ones is dependent on the number of detector channels
+%selected when performing an export from MAPS;
+%by finding the difference between consecutive summed logic rows, one can easily
+%identify the index where the last two rows of a fly scan begin (and
+%therefore where to cut off the data) semi-regardless of the number of detector
+%channels selected
+cut_off_array = diff(count_zeros_in_row); %find difference between consecutive summed values
+%if the difference between the number of zeros in one row is more than
+%twenty, that indicates the beginning of the two dead lines of a flyscan
+%(for the most part)
+cut_off_index = find(cut_off_array > 20); 
+
+WORK.stat_data = data([1:cut_off_index], :);
+
 for i = 1:size(A.colheaders, 2)
     A.colheaders{i} = genvarname(A.colheaders{i});
     eval(['WORK.  ' A.colheaders{i}  '.raw = A.data(:,i);'])
 end
 %WORK = data.(scanheader);
-WORK.headers = A.colheaders;
-
+%WORK.headers = A.colheaders;
 
 
 %Put the data back into the structure
 output   = WORK;
 end
+

@@ -52,18 +52,10 @@ XBIV_lock_in = {10000, 1000, 1000};
 for N = 1:length(XRF_scans)
 scanheader = ['scan' XRF_scans{1, N}];                      %NOTE: this is the line that gereneates the header name within the home 'xrf' structure, using the fluorescence scans because they have more usable data
 
-
 %%% Import XRF scan
 XRFscan = XRF_scans{1, N};
 xrffile  = [path 'combined_ASCII_2idd_0' XRFscan '.h5.csv'];
 WORK = importXRF_arrays(xrffile);
-
-%%% create statistic (non-zero flyscan) data structure
-tf = strcmp(A.colheaders{i}, ' ds_ic');
-if tf == 1
-    WORK.STAT = make_statistic_data(WORK); %make a function that gerts trid of the zeros in the last two columns of the shaped matrix
-end
-
 
 %%% Import XBIV scan
 % XBIVscan = XBIV_scans{1, N};
@@ -79,8 +71,6 @@ end
 % WORK.XBIC.raw = import_electrical_array(xbic_file);
 % XBIC_scale_factor1 = (XBIC_stanford{N} * 1E-9)  /  (beamconversion{N} * XBIC_lock_in{N});
 % WORK.XBIC_scale_solo.arr = WORK.XBIC.raw * XBIC_scale_factor1;
-
-
 
 %%% Absorb Correction and Application
 [iio_mo, iio_zn, iio_cd, iio_te, iio_sn, iio_cu] = CdTe_Se_Edge_Absorb(beamenergy{N}, beamtheta{N}, detectortheta{N}, absorber_thickness{N}, Cu_gradient{N}, Cu_thickness{N});              
