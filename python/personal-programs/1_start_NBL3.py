@@ -5,28 +5,10 @@ import seaborn as sns
 import xraylib as xl
 
 import sys
-sys.path.append('/home/kineticcross/Desktop/xrays/python/personal-programs/twalker_defs')
+sys.path.append(r'C:\Users\Trumann\Desktop\XRF-dev\python\personal-programs\twalker_defs')
 
 import import_MAPS_ASCII
-
-def generate_scalar_factor(scan_list):
-    beamconversion_factor = 100000
-    for scan in scan_list:
-        correction = ((scan['stanford']*(1*10**-9)) / (beamconversion_factor * scan['lockin']))     #calculate scale factor for chosen scan
-        key = 'scale factor'                                                                        #define key for scan dictionary
-        scan.setdefault(key, correction)                                                            #add key and correction factor to scan
-        #print(correction)
-    return
-
-def collect_XBIC(list_of_smaller_dfs):
-    eh_per_coulomb = 1/(1.60217634*10**-19)                                  #most recent accepted value for electrons per coulomb
-    for df, scan in zip(list_of_smaller_dfs, scan_list):
-        df["ds_ic"] = df["ds_ic"].astype(float)                             #reformat column for floating arithmetic operations
-        scaled_dsic = df.loc[:,'ds_ic'] * scan['scale factor']              #apply amplifaction settings  (converts counts to amps)
-        collected_dsic = scaled_dsic * eh_per_coulomb                       #convert amps to e-h pairs
-        df['ds_ic'] = collected_dsic
-        df.rename(columns = {'ds_ic': 'eh_pairs'}, inplace = True)                        
-    return 
+import XBIC_ehPairs
 
 def interpolate_diode_calibration(scans):
     lower_ASU_PIN_energy = 8.08                                         #keV
@@ -93,7 +75,7 @@ def plotXCE(scans, shaped_dataframes):
         plt.tick_params(axis="both", labelsize = 15)
     return ax
 
-path_to_ASCIIs = r'C:\Users\Trumann\Desktop\ASCII\refit_NBL3_noZnL'
+path_to_ASCIIs = r'C:\Users\Trumann\Desktop\2017_12_2018_07_NBL3_bacth_refit\output'
 
 #enter energy in keV, stanford amplifcations in nanoamps, width/height in um, and elements of interest (EOI)
 scan1 = {"sector": 2, 'Scan #': 439, 'Name': 'TS58A', 'width': 15, 'height': 15, 'x_points': 150, 'y_points': 150, 'beam_energy': 8.99, 'stanford': 200, 'lockin': 20, 'PIN beam_on': 225100, 'PIN beam_off': 624, 'PIN stanford': 500, "absorber_Eg": 1.45, 'E_abs': 4359, "EOI": ['Sn_L', 'S', 'Cd_L', 'Te_L', 'Cu', 'Cl', 'Mo_L']} 
@@ -105,15 +87,17 @@ scan4 = {"sector": 2, 'Scan #': 550, 'Name': 'NBL3-2', 'width': 15, 'height': 15
 scan_list = [scan1, scan2, scan3, scan4]
 
 imported_scans_dfs = import_MAPS_ASCII.shrinkASCII(scan_list, path_to_ASCIIs)
-generate_scalar_factor(scan_list)
-#collect_XBIC(imported_scans_dfs)
+XBIC_ehPairs.generate_scalar_factor(scan_list)
+XBIC_ehPairs.collect_XBIC(imported_scans_dfs, scan_list)
 #interpolate_diode_calibration(scan_list)
 #get_flux(scan_list)
 #calc_XCE(imported_scans_dfs, scan_list)
 
-mapConvertAxes(imported_scans_dfs, scan_list)
-list_of_shaped_XCE_dfs = mapShape(imported_scans_dfs)
-plotXCE(scan_list, list_of_shaped_XCE_dfs)
+# =============================================================================
+# mapConvertAxes(imported_scans_dfs, scan_list)
+# list_of_shaped_XCE_dfs = mapShape(imported_scans_dfs)
+# plotXCE(scan_list, list_of_shaped_XCE_dfs)
+# =============================================================================
 
 
 #########################################################################################################################################################################
