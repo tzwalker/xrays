@@ -1,6 +1,8 @@
 # a comment - this is ignored
 # no .a files
 *.h5
+
+# code below is example syntax for other types of git file tracking operations
 ## but do track lib.a, even though you're ignoring .a files above
 #!lib.a
 ## only ignore the root TODO file, not subdir/TODO
