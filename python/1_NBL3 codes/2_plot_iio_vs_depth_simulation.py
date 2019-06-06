@@ -70,9 +70,9 @@ def gen_up_down_iios(rough_ups, rough_downs):
 ## define settings and stack parameters ##
 
 beam_energy = 12.7 #keV
-beam_theta = 75                                                     #angle of the beam relative to sample normal
+beam_theta = 90                                                     #angle of the beam relative to sample normal
 beam_geometry = np.sin(beam_theta*np.pi/180)                        #convert to radians
-detect_theta = 15                                                   #angle of the detector sample normal
+detect_theta = 47                                                   #angle of the detector sample normal
 detect_geometry = np.sin(detect_theta*np.pi/180)                    #convert to radians
 
 MO =    {'Thick':0.00005,    'LDensity': 10.2, 'Name': 'Mo',     'capXsect': xl.CS_Total_CP('Mo', beam_energy)}
@@ -89,12 +89,12 @@ SNO2 =  {'Thick':0.00006,    'LDensity': 6.85, 'Name': 'SnO2',   'capXsect': xl.
 ele = 'Cu'
 
 # specify arbitrary depth of absorber
-no_rough = np.linspace(0, 6000, 6001)               #(nm) arbitrary absorber depth of 12um;
+no_rough = np.linspace(0, 12000, 12001)               #(nm) arbitrary absorber depth of 12um;
 dt = 1*10**-7                                       # 1nm = 1E-7cm
 no_rough_iio = iio_vs_depth(ele, no_rough, dt)      #calc reference profile
 
 # specfiy roughness parameters
-roughnesses = np.linspace(0.1, 0.9, 3)
+roughnesses = np.linspace(0.05, 0.2, 3)
 
 rough_ups, rough_downs = gen_upd_and_downs(roughnesses)
 ele_rough_iios_up, ele_rough_iios_down = gen_up_down_iios(rough_ups, rough_downs)
@@ -114,7 +114,7 @@ color_list = ['r', 'b', 'g', 'c', 'm', 'r', 'b', 'g', 'c']
 line_list = ['--', '--','--','--', '--', '-.', '-.', '-.', '-.']
 # plot
 fig, ax = plt.subplots()
-plt.plot(no_rough_in_um, no_rough_iio, 'k')
+plt.plot(no_rough_in_um, no_rough_iio, 'k', label = 'None')
 for rough_down, rough_up, l, c, lab in zip(ele_rough_iios_down, ele_rough_iios_up, line_list, color_list, label_list):
     plt.plot(no_rough_in_um, rough_down, linestyle = l, color = c, label = lab)
     plt.plot(no_rough_in_um, rough_up, linestyle = l, color = c)
@@ -125,6 +125,7 @@ ax.tick_params(axis = 'both', labelsize = 14)
 plt.ylim([0, 1.0])
 plt.grid()
 ax.legend()
+plt.legend(prop={'size': 14})
 plt.show()
 
 
