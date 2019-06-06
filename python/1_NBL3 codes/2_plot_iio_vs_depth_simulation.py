@@ -114,13 +114,13 @@ color_list = ['r', 'b', 'g', 'c', 'm', 'r', 'b', 'g', 'c']
 line_list = ['--', '--','--','--', '--', '-.', '-.', '-.', '-.']
 # plot
 fig, ax = plt.subplots()
-plt.plot(no_rough_in_um, no_rough_iio, 'k', label = 'None')
+plt.plot(no_rough_in_um, no_rough_iio, 'k', label = 'No Roughness')
 for rough_down, rough_up, l, c, lab in zip(ele_rough_iios_down, ele_rough_iios_up, line_list, color_list, label_list):
     plt.plot(no_rough_in_um, rough_down, linestyle = l, color = c, label = lab)
     plt.plot(no_rough_in_um, rough_up, linestyle = l, color = c)
 # axis settings
-plt.xlabel('Depth (um)', fontsize = 16)
-plt.ylabel('I/Io' + ' (' + ele + ')', fontsize = 16)
+plt.xlabel('CdTe Thickness (um)', fontsize = 16)
+plt.ylabel('Detected ' + ele + ' Signal', fontsize = 16)
 ax.tick_params(axis = 'both', labelsize = 14) 
 plt.ylim([0, 1.0])
 plt.grid()

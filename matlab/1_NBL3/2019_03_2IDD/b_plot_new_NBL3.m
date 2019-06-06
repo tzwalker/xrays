@@ -22,19 +22,21 @@ for i = 1:length(scans)
         colormap jet
         axis square
         
-        pltname = sprintf('%s, %s', samplename{i}, plotname{j});
-        title(pltname, 'fontsize', 15);
+        pltname = sprintf('%s, %s', sample_names{i}, plotname{j});
+        title(pltname, 'fontsize', 18);
         
         %ax.TickLabelInterpreter = 'latex';
         ax = gca;
-        ax.FontSize = 12;
-        xlabel('X position (\mum)', 'fontsize', 12);
-        ylabel('Y position (\mum)', 'fontsize', 12);
+        ax.FontSize = 15;
+        xlabel('X position (\mum)', 'fontsize', 15);
+        xlim([0 max(max(x))])
+        ylabel('Y position (\mum)', 'fontsize', 15);
+        ylim([0 max(max(y))])
         
         z = colorbar;
         %z.FontSize = 18;
         %z.TickLabelInterpreter = 'latex';
-        leg_names = {"A", "\mug/cm^{2}"};
+        leg_names = {"\mug/cm^{2}"};
         leg_label = leg_names{j};
         ylabel(z, leg_label, 'fontsize', 12);
         
