@@ -86,7 +86,7 @@ SNO2 =  {'Thick':0.00006,    'LDensity': 6.85, 'Name': 'SnO2',   'capXsect': xl.
 
 
 # enter element for which you wish to see I/Io (will work on generatign plots for many elements at once)
-ele = 'Cd'
+ele = 'Cu'
 
 # specify arbitrary depth of absorber
 no_rough = np.linspace(0, 12000, 12001)               #(nm) arbitrary absorber depth of 12um;
@@ -114,15 +114,13 @@ color_list = ['r', 'b', 'g', 'c', 'm', 'r', 'b', 'g', 'c']
 line_list = ['--', '--','--','--', '--', '-.', '-.', '-.', '-.']
 # plot
 fig, ax = plt.subplots()
-plt.plot(no_rough_in_um, no_rough_iio, 'k', label = ele + ' signal')
-# =============================================================================
-# for rough_down, rough_up, l, c, lab in zip(ele_rough_iios_down, ele_rough_iios_up, line_list, color_list, label_list):
-#     plt.plot(no_rough_in_um, rough_down, linestyle = l, color = c, label = lab)
-#     plt.plot(no_rough_in_um, rough_up, linestyle = l, color = c)
-# =============================================================================
+plt.plot(no_rough_in_um, no_rough_iio, 'k', label = 'No roughness')
+for rough_down, rough_up, l, c, lab in zip(ele_rough_iios_down, ele_rough_iios_up, line_list, color_list, label_list):
+    plt.plot(no_rough_in_um, rough_down, linestyle = l, color = c, label = lab)
+    plt.plot(no_rough_in_um, rough_up, linestyle = l, color = c)
 # axis settings
 plt.xlabel('CdTe Thickness (um)', fontsize = 16)
-plt.ylabel('Detected ' + ele + ' Signal', fontsize = 16)
+plt.ylabel('% ' + ele + ' Signal', fontsize = 16)
 ax.tick_params(axis = 'both', labelsize = 14) 
 plt.ylim([0, 1.0])
 plt.grid()
