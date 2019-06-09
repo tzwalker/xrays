@@ -29,4 +29,7 @@ def collect_XBIC(small_dfs, scan_list):
             df['ds_ic'] = collected_dsic
             df.rename(columns = {'ds_ic': 'eh_pairs'}, inplace = True)                        
     return 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9247b3b1843680ec8af41a41bca327822ad5165c
