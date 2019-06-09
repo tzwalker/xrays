@@ -56,3 +56,7 @@ flydest =       r'C:\Users\Trumann\Desktop\test_dest_folder\flyXRF'
 sector_2_import(scans)
 #sector_26_import(scans)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> def_partition
