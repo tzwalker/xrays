@@ -1,5 +1,4 @@
 import xraylib as xl
-import numpy as np
 
 #returns a list of dictionaries
 #each dictionary contains information on the layer to be used in the absorption correction
