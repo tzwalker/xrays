@@ -1,6 +1,6 @@
 import h5py as h5
 import matplotlib.pyplot as plt
-from playAbsorb import get_Ele_XRF_Energy
+import playAbsorb
 
 path = r'C:\Users\Trumann\Desktop\XRF-dev\personal-programs\play-import-h5-py'
 
@@ -64,4 +64,16 @@ def extract_maps(H5s, list_of_lists):
 
 master_map_list = extract_maps(files, master_index_list)
 
-stack_info = play_abosrb.get_stack_info(STACK, layer_density)
+### beam settings ###
+beam_energy = 8.99                                                  #keV
+beam_theta = 90                                                     #angle between beam and sample normal
+detect_theta = 47                                                   #angle between detector and sample normal
+beam_geometry = np.sin(beam_theta*np.pi/180)                        #convert to radians
+detect_gemoetry = np.sin(detect_theta*np.pi/180)                    #convert to radians
+
+### stack structure (UPTREAM LAYER FIRST, DOWNSTREAM LAYER LAST) ###
+STACK = ['Mo', 'ZnTe', 'CdTe', 'CdS', 'SnO2']
+layer_density = [10.2, 6.34, 5.85, 4.82, 6.85]
+layer_thick = []
+
+stack_info = play_abosrb.get_stack_info(STACK, layer_density, beam_energy)

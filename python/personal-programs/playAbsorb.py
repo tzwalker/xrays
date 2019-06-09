@@ -1,21 +1,9 @@
 import xraylib as xl
 import numpy as np
 
-### beam settings ###
-beam_energy = 8.99                                                  #keV
-beam_theta = 90                                                     #angle between beam and sample normal
-detect_theta = 47                                                   #angle between detector and sample normal
-beam_geometry = np.sin(beam_theta*np.pi/180)                        #convert to radians
-detect_gemoetry = np.sin(detect_theta*np.pi/180)                    #convert to radians
-
-### stack structure (UPTREAM LAYER FIRST, DOWNSTREAM LAYER LAST) ###
-STACK = ['Mo', 'ZnTe', 'CdTe', 'CdS', 'SnO2']
-layer_density = [10.2, 6.34, 5.85, 4.82, 6.85]
-layer_thick = []
-
 #returns a list of dictionaries
 #each dictionary contains information on the layer to be used in the absorption correction
-def get_stack_info(STACK, layer_density):
+def get_stack_info(STACK, layer_density, E):
     STACK_dicts = []
     for layer, dens in zip(STACK, layer_density):
         layer_dict = dict()
@@ -24,7 +12,7 @@ def get_stack_info(STACK, layer_density):
         key = 'rho'
         layer_dict.setdefault(key, dens)
         key = 'cap-x-sect'
-        capture = xl.CS_Total_CP(layer, beam_energy)
+        capture = xl.CS_Total_CP(layer, E)
         layer_dict.setdefault(key, capture)
         
         layer_info = xl.CompoundParser(layer)
