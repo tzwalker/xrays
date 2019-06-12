@@ -181,4 +181,13 @@ def integrateStackDepth(imported_shaped_dict):
 integrateStackDepth(imported_shaped_dict)
 
 
-# this is a test change on branch 'hotfix'
+# this is a change to resolve resolution conflicts:
+# first had a change from hotfix that was successful
+# then switched back to ex_53 and made one commit
+# switched to master and attempted merge
+# but there was a merge conflict with this file
+# use 'git status' to identify file
+# open file and delete headers from git
+# save file, then stage for commit with 'git add'
+# NOTE: staging a file marks the merge conflict as resolved
+# NOTE: merge conflicts create backup files; to avoid 'git config --global mergetool.keepBackup false'
