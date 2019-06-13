@@ -6,20 +6,18 @@ scans = {'scan550', 'scan491', 'scan439'};                                      
 samplename = {'NBL3-2', 'NBL3-3', 'TS58A'};
 
 %inner loop
-desired_channels = {'XBIC_scale', 'Cd_L'};                      %for reference within structure, used in surface function
-plotname = {'XBIC', 'Cd'};                                   %for plot titles, labels, etc 
-ext = {'arr', 'arr_corr'};
-
-%file_name = {'XBIC'};
+desired_channels = {'Cu', 'Cd_L'};                      %for reference within structure, used in surface function
+plotname = {'Cu', 'Cd'};                                   %for plot titles, labels, etc 
+ext = {'raw', 'raw'};
 
 for i = 1:length(scans)
     figure(i)
     for j = 1:length(desired_channels)
         
         subplot(1, 2, j);
-        channel = xrf.(scans{i}).(desired_channels{j}).(ext{j});
+        channel = xrf.(scans{i}).stats.(desired_channels{j}).(ext{j});
         
-        [x, y, channel_map] = map_array(xrf.(scans{i}).yPosition.raw, channel, xrf.(scans{i}).yPixelNo.raw, xrf.(scans{i}).xPixelNo.raw);
+        [x, y, channel_map] = map_array(xrf.(scans{i}).stats.yPosition.raw, channel, xrf.(scans{i}).stats.yPixelNo.raw, xrf.(scans{i}).stats.xPixelNo.raw);
         surface(x, y, channel_map, 'LineStyle', 'none')
         colormap jet
         axis square
@@ -44,10 +42,11 @@ for i = 1:length(scans)
         
         [upper_cbar_bound, lower_cbar_bound] = get_colorbar_scale(channel, 2); %NOTE: number is the number of standard deviations to include
         caxis([lower_cbar_bound upper_cbar_bound])
-        filename = sprintf("%s, XBIC and Cd old.jpg", samplename{i});
-        plotpath = fullfile('C:\Users\Trumann\Desktop\Plot Directory\NBL3\20190602 NREL update\', filename); %Specificy path in quotes
-        saveas(gcf,  plotpath)
+%         filename = sprintf("%s, XBIC and Cd old.jpg", samplename{i});
+%         plotpath = fullfile('C:\Users\Trumann\Desktop\Plot Directory\NBL3\20190602 NREL update\', filename); %Specificy path in quotes
+%         saveas(gcf,  plotpath)
     end
-    close all
+    %close all
 end
+
 

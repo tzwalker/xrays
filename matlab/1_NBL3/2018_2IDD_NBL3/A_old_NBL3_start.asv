@@ -45,16 +45,12 @@ ele_MW = [122.411 127.6 63.546]; %Cl:35.453
 L_corr = 0.6;                                                                           %L_line quantification correction
 for i = 1:length(WORK.L_ele_IIO)
     WORK.(ele_L_lines{i}).arr_corr = WORK.(ele_L_lines{i}).raw/ (WORK.L_ele_IIO(i)) * L_corr; %data in ug/cm2 corrected for attenuation
-    WORK.(ele_L_lines{i}).arr_mol = WORK.(ele_L_lines{i}).arr_corr/ ele_MW(i) * 1E-6;
-    STAT.(ele_L_lines{i}).arr_corr =  STAT.(ele_L_lines{i}).raw/ (WORK.L_ele_IIO(i)) * L_corr; %enter corrected values into STAT structure as well
-    STAT.(ele_L_lines{i}).arr_mol = WORK.(ele_L_lines{i}).arr_corr/ ele_MW(i) * 1E-6;
+    WORK.(ele_L_lines{i}).arr_mol = WORK.(ele_L_lines{i}).arr_corr/ ele_MW(i) * 1E-6;         %data in mol/cm2 corrected for attenuation
 end
 
 for i = 1:length(WORK.K_ele_IIO)
     WORK.(ele_K_lines{i}).arr_corr = WORK.(ele_K_lines{i}).raw/ (WORK.K_ele_IIO(i)); %data in ug/cm2 corrected for attenuation
-    WORK.(ele_K_lines{i}).arr_mol = WORK.(ele_K_lines{i}).arr_corr/ ele_MW(i) * 1E-6;
-    STAT.(ele_K_lines{i}).arr_corr = STAT.(ele_K_lines{i}).raw/ (WORK.K_ele_IIO(i)); %data in mol/cm2 corrected for attenuation
-    STAT.(ele_K_lines{i}).arr_mol = STAT.(ele_K_lines{i}).arr_corr/ ele_MW(i) * 1E-6;
+    WORK.(ele_K_lines{i}).arr_mol = WORK.(ele_K_lines{i}).arr_corr/ ele_MW(i) * 1E-6;         %data in mol/cm2 corrected for attenuation
 end
 
 %%% Ratio Data: CdTe
