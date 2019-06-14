@@ -73,6 +73,31 @@ def is_ele_in_layer(stack_list, ele_nums):
         es.append(matched_elements)
     return es
 
+for layer_index, layer in enumerate(STACK):
+    before_layers = get_previous_layers(layer_index, STACK) # need help with this function; returns list of layer dictionaries coming before 'layer'
+    
+def get_previous_layers(i, S):
+    count = 0 
+    before_list = []
+    while i > count:
+        before_dict = S[count]
+        before_list.append(before_dict)
+        count = count + 1
+    return before_list
+
+    
+for layer_index, layer in enumerate(STACK):
+    before_layers = get_previous_layers(layer_index, layer) # need help with this function; returns list of layer dictionaries coming before 'layer'
+    
+    iio_ins = []
+    iio_outs = []
+    for before_layer in before_layers:
+        iio_in, iio_out = calc_external_layer_iios(before_layer)
+        iio_ins.append(iio_in)
+        iio_outs.append(iio_out)
+    ext_iio = np.prod(iio_ins) * np.prod(iio_outs)
+    
+
 
 # =============================================================================
 # #percent incoming beam transmitted to CdTe layer
