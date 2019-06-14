@@ -13,9 +13,9 @@ detectortheta = {47 47 47 47};                          %sample measurement geom
 absorber_thickness = {8.515E-4, 7.744E-4, 5.845E-4};          %(cm) average thickness derived from SIMS
 Cu_constant_thickness = {2.5E-7 10E-7, 2.5E-7};
 
-stanford = {200, 200, 50000};                  %(nA/V) stanford setting (convert to nA/V) for each scan
-beamconversion = {100000 100000 200000};     %(cts/V) beam scalar conversion
-lock_in = {20, 20, 100};                        %(V/V) lock in amplification for each scan (V/V)
+stanford = {50000, 200, 200};                  %(nA/V) stanford setting (convert to nA/V) for each scan
+beamconversion = {2E5 1E5 1E5};     %(cts/V) beam scalar conversion
+lock_in = {100, 20, 20};                        %(V/V) lock in amplification for each scan (V/V)
 
 flux = {3.37E9 3.37E9 1.57E9};               %(ph/s)  see PIN diode Excel calc
 E_abs = {4368 3571 4581};                      %(eV) from Beer-Lambert of whole absorber
@@ -67,7 +67,7 @@ WORK.CdToTe_ratio.arr_corr = WORK.Cd_L.arr_corr ./ (WORK.Te_L.arr_corr);
 %convert from counts to amps
 XBIC_scale_factor = ((stanford{N} * 1E-9)  /  (beamconversion{N} * lock_in{N}));   %generate scan electrical scale factor
 WORK.XBIC_scale.arr = WORK.ds_ic.raw * XBIC_scale_factor;                   %amperes
-STAT.XBIC_scale.arr = WORK.XBIC_scale.arr;
+STAT.XBIC_scale.arr = STAT.ds_ic.raw * XBIC_scale_factor;
 
 % %convert from amps to e-h pairs collected
 % eh_per_coulomb = (1/(1.6E-19));
