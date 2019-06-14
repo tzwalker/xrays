@@ -1,34 +1,7 @@
 import xraylib as xl
 import numpy as np
 
-#returns a list of dictionaries
-#each dictionary contains information on the layer to be used in the absorption correction
-def get_stack_info(STACK, layer_density, E):
-    STACK_dicts = []
-    for layer, dens in zip(STACK, layer_density):
-        layer_dict = dict()
-        key = 'Name'
-        layer_dict.setdefault(key, layer)
-        key = 'rho'
-        layer_dict.setdefault(key, dens)
-        key = 'cap-x-sect'
-        capture = xl.CS_Total_CP(layer, E)
-        layer_dict.setdefault(key, capture)
-        
-        layer_info = xl.CompoundParser(layer)
-        #example for SnO2
-        #layer_info = {'nElements': 2, 
-                        #'nAtomsAll': 3.0, 
-                        #'Elements': [8, 50], 
-                        #'massFractions': [0.21235649346340169, 0.7876435065365983], 
-                        #'nAtoms': [2.0, 1.0], 
-                        #'molarMass': 150.69}
-        layer_dict.update(layer_info)
-        
-        STACK_dicts.append(layer_dict)
-    return STACK_dicts
-
-#returns the highest energy XRF photon of an element due to the beam energy
+# returns the highest energy XRF photon of an element due to the beam energy
 def get_Ele_XRF_Energy(Z, energy):
     F = xl.LineEnergy(Z, xl.KA1_LINE)
     if xl.EdgeEnergy(Z, xl.K_SHELL) > energy:
@@ -73,31 +46,40 @@ def is_ele_in_layer(stack_list, ele_nums):
         es.append(matched_elements)
     return es
 
-for layer_index, layer in enumerate(STACK):
-    before_layers = get_previous_layers(layer_index, STACK) # need help with this function; returns list of layer dictionaries coming before 'layer'
-    
-def get_previous_layers(i, S):
-    count = 0 
-    before_list = []
-    while i > count:
-        before_dict = S[count]
-        before_list.append(before_dict)
-        count = count + 1
-    return before_list
-
-    
-for layer_index, layer in enumerate(STACK):
-    before_layers = get_previous_layers(layer_index, layer) # need help with this function; returns list of layer dictionaries coming before 'layer'
-    
-    iio_ins = []
-    iio_outs = []
-    for before_layer in before_layers:
-        iio_in, iio_out = calc_external_layer_iios(before_layer)
-        iio_ins.append(iio_in)
-        iio_outs.append(iio_out)
-    ext_iio = np.prod(iio_ins) * np.prod(iio_outs)
-    
-
+# =============================================================================
+# ### defs below triple hashtags are coupled ###
+# 
+# def get_previous_layers(i, S):
+#     count = 0 
+#     before_list = []
+#     while i > count:
+#         before_dict = S[count]
+#         before_list.append(before_dict)
+#         count = count + 1
+#     return before_list
+# 
+# def calc_external_layer_iios(layer):
+#     iio_in_layer = np.exp(- layer['cap-x-sect'] * layer['rho'] * layer['thick']) #need to include thicknesses of layers in stack_info
+#     
+#     ele_string = # how to input elements of interest here?
+#     ele_XRF = get_Ele_XRF_Energy(ele_string, beam_energy)
+#     iio_out_layer = np.exp( - 
+#     
+#     
+#     return iio_in, iio_out
+# 
+# for layer_index, layer in enumerate(stack_info):
+#     before_layers = get_previous_layers(layer_index, stack_info)
+#     iio_ins = []
+#     iio_outs = []
+#     for before_layer in before_layers:
+#         iio_in, iio_out = calc_external_layer_iios(before_layer)
+#         iio_ins.append(iio_in)
+#         iio_outs.append(iio_out)
+#     ext_iio = np.prod(iio_ins) * np.prod(iio_outs)
+# 
+# ### defs above triple hashtags are coupled ###
+# =============================================================================
 
 # =============================================================================
 # #percent incoming beam transmitted to CdTe layer

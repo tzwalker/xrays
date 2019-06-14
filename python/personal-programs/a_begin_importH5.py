@@ -11,12 +11,12 @@ scan_path = '/home/kineticcross/Desktop/xrays/python/personal-programs'
 
 scans = ['264', '422', '385']
 
-files = import_maps_H5.import_h5s(scans, scan_path)
+#files = import_maps_H5.import_h5s(scans, scan_path)
 
 #ChOIs = channels_of_interest
 ChOIs = ['Cd_L', 'Te_L', 'Cu']
 
-master_index_list = import_maps_H5.get_ChOIs_for_all_scans(files, ChOIs)
+#master_index_list = import_maps_H5.get_ChOIs_for_all_scans(files, ChOIs)
 
 #this function uses the element indices from the master_index_list to extract the 2D fitted data arrays from the H5 file
 #it also build a master list that contains the 2D numpy arrays of interest, rather than just the indices
@@ -31,9 +31,10 @@ def extract_maps(H5s, list_of_lists):
         maps.append(scan_maps)                                      #add internal list (i.e. a scan) to master list
     return maps
 
-master_map_list = extract_maps(files, master_index_list)
+#master_map_list = extract_maps(files, master_index_list)
 
 import numpy as np
+import stk_info
 
 ### beam settings ###
 beam_energy = 8.99                                                  #keV
@@ -45,11 +46,17 @@ STACK = ['Mo', 'ZnTe', 'CdTe', 'CdS', 'SnO2']
 layer_density = [10.2, 6.34, 5.85, 4.82, 6.85]
 #layer_thick = []
 
-stack_info = a_begin_absorb.get_stack_info(STACK, layer_density, beam_energy)
+stack_info = stk_info.get_stack_info(STACK, layer_density, beam_energy)
 
-Zs = a_begin_absorb.channel_to_atomic_num(ChOIs)
 
-matched_eles = a_begin_absorb.is_ele_in_layer(stack_info, Zs)
+
+    
+
+    
+
+#Zs = a_begin_absorb.channel_to_atomic_num(ChOIs)
+
+#matched_eles = a_begin_absorb.is_ele_in_layer(stack_info, Zs)
 
 
 
