@@ -10,13 +10,31 @@ import a_begin_absorb
 scan_path = '/home/kineticcross/Desktop/xrays/python/personal-programs'
 
 scans = ['264', '422', '385']
+energy = [8.99, 8.99, 8.99]         #keV
+
+### stack structure (UPTREAM LAYER FIRST, DOWNSTREAM LAYER LAST) ###
+STACK = ['Mo', 'ZnTe', 'CdTe', 'CdS', 'SnO2']
+layer_density = [10.2, 6.34, 5.85, 4.82, 6.85]
+
+### enter thickness in centimeter of each layer for the sample in each scan ###
+# number of items in each of these lists needs to equal number of scans.samples being studied
+thk_Mok = [500E-7, 500E-7, 500E-7]
+thk_ZnTe = [375E-7, 375E-7, 375E-7]
+thk_CdTe = [4E-4, 5E-4, 6E-4]          
+thk_CdS = [80E-7, 80E-7, 80E-7]
+thk_Sno2 = [100E-7, 100E-7, 100E-7]
+
 
 #files = import_maps_H5.import_h5s(scans, scan_path)
+
+
 
 #ChOIs = channels_of_interest
 ChOIs = ['Cd_L', 'Te_L', 'Cu']
 
 #master_index_list = import_maps_H5.get_ChOIs_for_all_scans(files, ChOIs)
+
+
 
 #this function uses the element indices from the master_index_list to extract the 2D fitted data arrays from the H5 file
 #it also build a master list that contains the 2D numpy arrays of interest, rather than just the indices
@@ -37,21 +55,14 @@ import numpy as np
 import stk_info
 
 ### beam settings ###
-beam_energy = 8.99                                                  #keV
 beam_theta = np.sin(90*np.pi/180)                                                     #angle between beam and sample normal
 detect_theta = np.sin(47*np.pi/180)                                                   #angle between detector and sample normal
 
-### stack structure (UPTREAM LAYER FIRST, DOWNSTREAM LAYER LAST) ###
-STACK = ['Mo', 'ZnTe', 'CdTe', 'CdS', 'SnO2']
-layer_density = [10.2, 6.34, 5.85, 4.82, 6.85]
-#layer_thick = []
+stack_for_each_sample_list = []
 
-stack_info = stk_info.get_stack_info(STACK, layer_density, beam_energy)
-
-
-
-    
-
+for scan, en, tm, tz, tcd, #tc, ts in zip(scans, energy, thk_Mok, thk_ZnTe, thk_CdTe, thk_CdS, thk_Sno2):
+    stack_info = stk_info.get_stack#_info(STACK, layer_density, energy)    
+    stack_for_each_sample_list.append(stack_info)
     
 
 #Zs = a_begin_absorb.channel_to_atomic_num(ChOIs)
