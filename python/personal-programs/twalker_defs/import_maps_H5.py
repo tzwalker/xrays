@@ -37,3 +37,17 @@ def get_ChOIs_for_all_scans(files, ChOIs):
         list_of_indices.append(decoded_ele_string_indices)          #add internal list (i.e. a scan) to master list
         
     return list_of_indices
+
+
+# this function uses the element indices from the master_index_list to extract the 2D fitted data arrays from the H5 file
+# it also build a master list that contains the 2D numpy arrays of interest, rather than just the indices
+def extract_maps(H5s, list_of_lists):
+    maps = []                                                       #initialize master list
+    for H5, channel_indices in zip(H5s, list_of_lists):
+        scan_maps = []                                              #initialize internal (single scan) list
+        XRF_fits = H5['/MAPS/XRF_fits']                             #navigate to structure containing all fitted XRF data
+        for element_index in channel_indices:
+            map_of_interest = XRF_fits[element_index,:,:]           #use element index to extract map of interest
+            scan_maps.append(map_of_interest)                       #build internal list
+        maps.append(scan_maps)                                      #add internal list (i.e. a scan) to master list
+    return maps
