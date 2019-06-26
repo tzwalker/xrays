@@ -33,7 +33,7 @@ lay_densities = [ [10.2, 6.34, 5.85, 4.82, 6.85],
 ### enter thickness in centimeter of each layer for the sample in each scan ###
 # number of items in each of these lists needs to equal number of scans.samples being studied
 lay_thicks = [ [500E-7, 375E-7, 4E-4, 80E-7, 100E-7], 
-              [500E-7, 375E-7,  5E-4, 80E-7, 100E-7], 
+              [500E-7,  5E-4, 80E-7, 100E-7], 
               [500E-7, 375E-7,  6E-4, 80E-7, 100E-7] ]
 
 #files = import_maps_H5.import_h5s(scans, scan_path)
@@ -61,7 +61,7 @@ import stk_info
 beam_theta = np.sin(90*np.pi/180)                                                     #angle between beam and sample normal
 detect_theta = np.sin(47*np.pi/180)                                                   #angle between detector and sample normal
 
-what_will_this_be = stk_info.get_stack_info(STACKS, lay_densities, lay_thicks, energy)
+list_of_list_of_layer_dicts = stk_info.get_stack_info(STACKS, lay_densities, lay_thicks, energy)
 
 
 

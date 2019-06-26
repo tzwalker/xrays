@@ -33,12 +33,3 @@ def get_stack_info(STACKS, dens, T, E):
         
         stack_whole_info.append(stack_layer_infos)
     return stack_whole_info
-
-
-#ahhh!!! if i want to make a code that can adjust for different thicknesses of CdTe
-    #i all of a sudden have lists of two different length here...
-    
-# first i was making a list of dicts where each dict was a layer
-
-# now i want a list containing lists for a scan that contain the 
-    #stack_info for that scan
