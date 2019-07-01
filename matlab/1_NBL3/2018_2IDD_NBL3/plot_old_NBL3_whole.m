@@ -2,19 +2,22 @@
 close all
 clc
 %outer loop
-scans = {'scan550', 'scan491', 'scan439'};                                      %change to scans you've run
+scans = {'scan551', 'scan475', 'scan440'};                                      %change to scans you've run
 samplename = {'NBL3-2', 'NBL3-3', 'TS58A'};
 
 %inner loop
-desired_channels = {'ds_ic', 'XBIC_scale'};                      %for reference within structure, used in surface function
-plotname = {'ds_ ic', 'XBIC'};                                   %for plot titles, labels, etc 
-ext = {'raw', 'arr'};
+desired_channels = {'Cd_L'};%, 'Cd_L', 'Cu'};                      %for reference within structure, used in surface function
+plotname = {'Cd'};%, 'Cd', 'Cu'};                                   %for plot titles, labels, etc 
+ext = {'arr_corr'};%, 'arr_corr', 'arr_corr'};
+
+label_size = 18;
+tick_size = 15;
 
 for i = 1:length(scans)
-    figure(i)
+    
     for j = 1:length(desired_channels)
-        
-        subplot(1, 2, j);
+        figure(j)
+        %subplot(1, 3, j, opt{1,1,1});
         channel = xrf.(scans{i}).whole.(desired_channels{j}).(ext{j});
         
         rawYpos = xrf.(scans{i}).whole.yPosition.raw;
@@ -26,33 +29,26 @@ for i = 1:length(scans)
         colormap jet
         axis square
         
-        pltname = sprintf('%s, %s', samplename{i}, plotname{j});
-        title(pltname, 'fontsize', 15);
+        pltname = sprintf('%s', plotname{j});
+        title(pltname, 'fontsize', 21);
+        
         ax = gca;
-        ax.FontSize = 12;
-        %ax.TickLabelInterpreter = 'latex';
-        %set(ax, 'TickLabelInterpreter', 'latex')
-        
-        xlabel('X position (\mum)', 'fontsize', 12);
-        ylabel('Y position (\mum)', 'fontsize', 12);
-        
+        ax.FontSize = tick_size;
+        xlabel('X position (\mum)', 'fontsize', label_size);
+        ylabel('Y position (\mum)', 'fontsize', label_size);
         
         z = colorbar;
-        %z.FontSize = 12;
-        %z.TickLabelInterpreter = 'latex';
-        leg_names = {"cts", "A"};
+        z.FontSize = tick_size;
+        leg_names = {"A", "\mug/cm^{2}", "\mug/cm^{2}"};
         leg_label = leg_names{j};
-        ylabel(z, leg_label, 'fontsize', 12);
+        ylabel(z, leg_label);%, 'fontsize', 18);
         
         [upper_cbar_bound, lower_cbar_bound] = get_colorbar_scale(channel, 2); %NOTE: number is the number of standard deviations to include
         caxis([lower_cbar_bound upper_cbar_bound])
-
+        filename = sprintf("%s, %s Cd NBL3-3.jpg", samplename{i}, plotname{j});
+        plotpath = fullfile('C:\Users\Trumann\Desktop\Plot Directory\NBL3\20190613_new plots for old scans\', filename); %Specificy path in quotes
+        saveas(gcf,  plotpath)
     end
-    filename = sprintf("%s, ds_ic and XBIC.jpg", samplename{i});
-    plotpath = fullfile('C:\Users\Trumann\Desktop\Plot Directory\NBL3\20190613_new plots for old scans\', filename); %Specificy path in quotes
-    saveas(gcf,  plotpath)
+    close all
     
 end
-
-
-close all

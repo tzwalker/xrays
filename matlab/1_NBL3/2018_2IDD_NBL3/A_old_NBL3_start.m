@@ -4,21 +4,25 @@ close all
 
 %File Directory
 path  = 'C:\Users\Trumann\Desktop\2017_12_2018_07_NBL3_bacth_refit\output\';
-scanlist = {'550', '491', '439'};                   %sector 26 scans must be a 3 digit number
-samplename = {'NBL3_2' 'NBL3_3' 'TS58A'};      %Corresponding names of samples for each scan
-beamenergy = {8.99 8.99 8.99 8.99};                     %incident energy for each scan
-beamtheta = {90 90 90 90};                              %beam measurement geometry
-detectortheta = {47 47 47 47};                          %sample measurement geometry
+scanlist = {'550','475', '439', '551', '472', '440'};                   %sector 26 scans must be a 3 digit number
+samplename = {'NBL3_2' 'NBL3_3' 'TS58A','NBL3_2' 'NBL3_3' 'TS58A'};      %Corresponding names of samples for each scan
+beamenergy = {8.99 8.99 8.99 8.99 8.99 8.99 8.99 8.99};                     %incident energy for each scan
+beamtheta = {90 90 90 90 90 90 90 90};                              %beam measurement geometry
+detectortheta = {47 47 47 47 47 47 47 47};                          %sample measurement geometry
 
-absorber_thickness = {8.515E-4, 7.744E-4, 5.845E-4};          %(cm) average thickness derived from SIMS
-Cu_constant_thickness = {2.5E-7 10E-7, 2.5E-7};
+absorber_thickness = {8.515E-4, 7.744E-4, 5.845E-4, 8.515E-4, 7.744E-4, 5.845E-4};          %(cm) average thickness derived from SIMS
+Cu_constant_thickness = {2.5E-7 10E-7, 2.5E-7, 2.5E-7 10E-7, 2.5E-7};
 
+beamconversion = {2E5 1E5 1E5 2E5 1E5 1E5};     %(cts/V) beam scalar conversion
+
+XBIC = {1,1,1, 0,0,0}; %activate or deactivate depending on whether the scan was XBIC or XBIV
 stanford = {50000, 200, 200};                  %(nA/V) stanford setting (convert to nA/V) for each scan
-beamconversion = {2E5 1E5 1E5};     %(cts/V) beam scalar conversion
 lock_in = {100, 20, 20};                        %(V/V) lock in amplification for each scan (V/V)
-
 flux = {3.37E9 3.37E9 1.57E9};               %(ph/s)  see PIN diode Excel calc
 E_abs = {4368 3571 4581};                      %(eV) from Beer-Lambert of whole absorber
+
+lock_in_V = {1, 1, 1, 1E4, 1E5, 1E5};
+
 
 %%%%%%%%% START FOR LOOP THROUGH ALL SCANS HERE  %%%%%%%%
 for N = 1:length(scanlist)
@@ -63,11 +67,20 @@ WORK.Te_ratio.arr_corr = WORK.Te_L.arr_corr ./ (WORK.Cd_L.arr_corr + WORK.Te_L.a
 
 WORK.CdToTe_ratio.arr_corr = WORK.Cd_L.arr_corr ./ (WORK.Te_L.arr_corr);
 
-%%% XCE Calculation
-%convert from counts to amps
-XBIC_scale_factor = ((stanford{N} * 1E-9)  /  (beamconversion{N} * lock_in{N}));   %generate scan electrical scale factor
-WORK.XBIC_scale.arr = WORK.ds_ic.raw * XBIC_scale_factor;                   %amperes
-STAT.XBIC_scale.arr = STAT.ds_ic.raw * XBIC_scale_factor;
+
+if XBIC{N} == 1
+    %%% XCE Calculation
+    %convert from counts to amps
+    XBIC_scale_factor = ((stanford{N} * 1E-9)  /  (beamconversion{N} * lock_in{N}));   %generate scan electrical scale factor
+    WORK.XBIC_scale.arr = WORK.ds_ic.raw * XBIC_scale_factor;                   %amperes
+    STAT.XBIC_scale.arr = STAT.ds_ic.raw * XBIC_scale_factor;
+else
+    XBIV_scale_factor = 1 / (beamconversion{N} * lock_in_V{N});
+    WORK.XBIV_scale.arr = WORK.ds_ic.raw * XBIV_scale_factor;
+    STAT.XBIV_scale.arr = STAT.ds_ic.raw * XBIV_scale_factor;
+end
+
+
 
 % %convert from amps to e-h pairs collected
 % eh_per_coulomb = (1/(1.6E-19));
