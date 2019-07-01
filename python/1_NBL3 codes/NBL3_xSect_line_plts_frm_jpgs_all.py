@@ -60,8 +60,9 @@ def rotate_and_integrate_cross_section(samples):
             #by default the integration returns a sum of the pixels in a column that corresponds to an intensity 
             #the intensity is determined by rgb2gray() when converting to greyscale
             #the greyscale intensity will be converted to XRF intensity estimated from the ch_max of the cross-section image 
+            #the below lines are only necessary when manually reading values from colorscale of the jpg image
             y_max = max(column_sum)                                                         #gets the maximum intensity from the integration of the rotated image
-            channel_calib_factor = ch_max / y_max                                           #get scaling factor that will convert greyscale intenistyto XRF intensity
+            channel_calib_factor = ch_max / y_max                                           #get scaling factor that will convert greyscale intenisty to XRF intensity
             scaled_column_sum = column_sum * channel_calib_factor                           #convert 
             
             
@@ -77,6 +78,7 @@ master_list = rotate_and_integrate_cross_section(samples)
 def plot_save_combined_channels(samples, master_list):
     exes = []
     for sample, set_of_lines in zip(samples, master_list):
+        #introduce x-axis calibration; convert pixel index to microns
         x = sample['depth']
         x_res = sample['depth_pixels']
         x_calib = np.linspace(0, x, x_res)

@@ -5,7 +5,7 @@ import seaborn as sns
 import matplotlib.ticker as tkr
 
 #IMPORT AND SHIRNK DATAFRAME: imports and shrinks ASCII according to what elements are specified and the sector the scan was taken
-def shrinkASCII(path, large_ASCII_files):
+def shrinkASCII(path, large_ASCII_files, elect_scaler):
     smaller_dfs = []
     for scan in large_ASCII_files:
         if scan["sector"] == 2:
@@ -14,7 +14,7 @@ def shrinkASCII(path, large_ASCII_files):
             file_name = r'\combined_ASCII_26idbSOFT_0{n}.h5.csv'.format(n = scan['Scan #'])
         csvIn = pd.read_csv(path + file_name, skiprows = 1)
         noColNameSpaces(csvIn)                                                                      #removes whitspaces from column headers, for easy access
-        shrink1 = csvIn[['x pixel no', 'y pixel no', 'ds_ic']]                                      #isolates x,y,and electrical columns
+        shrink1 = csvIn[['x pixel no', 'y pixel no', elect_scaler]]                                      #isolates x,y,and electrical columns
         shrink2 = csvIn[scan["EOI"]]                                                                #isolates element of interest columns
         shrink = pd.concat([shrink1, shrink2], axis=1, sort=False)                                  #combines these columns into one matrix while maintaining indices
         smaller_dfs.append(shrink)                                                                  #add smaller matrices to list so they may be iterated over...
@@ -67,6 +67,15 @@ def mapConvertAxes(dataframes, scans):
         #print(width_factor, scan["Name"])
         #print(height_factor, scan["Name"])        
     return
+
+
+
+def pivot_then_rotate(dfs_as_arrys):
+    #extract a map as a shaped array, then apply skimage.io rotate, then integrate using functions from NBL3 code
+    
+    return
+
+
 
 def make_plots(dataframe_as_array, scan_list, ele_plt_list, ele_plt_lab, plt_t):
     for df, scan in zip(dataframe_as_array, scan_list):
@@ -132,12 +141,12 @@ def make_plots(dataframe_as_array, scan_list, ele_plt_list, ele_plt_lab, plt_t):
 #FOR summed concntration of species as a function of depth
 #want to create sum of concentrations for a given "stack depth (x)" and plot vs. x
 # converts array of csv into nxm matrix 
-def MapsAsMatrices(scan_list, dataframe_as_array):
+def MapsAsMatrices(scan_list, dataframe_as_array, el):
     plotList = []                                                         #initializes list to contain the shaped channels of interest
     for scan, df in zip(scan_list, dataframe_as_array):
         df1 = df.pivot(index = 'y pixel no', columns = 'x pixel no', values = 'XBIC')   #shapes the XBIC channel
         plotList.append(df1)                                                        
-        for ele in element_plot_list:
+        for ele in el:
             df2 = df.pivot(index = 'y pixel no', columns = 'x pixel no', values = ele)  #shapes the element channels
             plotList.append(df2)
     return plotList
@@ -153,6 +162,58 @@ def integrateStackDepth(imported_shaped_dict):
 
     return
 
-def pivot_then_rotate():
-    #extract a map as a shaped array, then apply skimage.io rotate, then integrate using functions from NBL3 code
-    return
+### below was used as testing for generating rotated lineplots
+    ## need a better way handle removal of noise in FS2_2 (imported_scan_dfs[1])
+    ## right now i've set an arbitrary threshold at 7e-12 based on looking in the df;
+    ## tried using means and std of columns etc. of shaped and rotated dfs
+    ## to defin the threshold value, but without luck    
+    
+# =============================================================================
+# import numpy as np
+# import seaborn as sns
+# import matplotlib.pyplot as plt
+# from scipy.ndimage.interpolation import rotate
+# 
+# test_df = imported_scan_dfs[1]
+# 
+# shaped_df = test_df.pivot(index = 'y pixel no', columns = 'x pixel no', values = 'XBIC')
+# 
+# a = np.array(shaped_df.values)
+# df1 = np.where(a < 7e-12, 0, a)
+# 
+# rot_df = rotate(df1, 25)
+# #fig_obj = sns.heatmap(rot_df, square =True)
+# #fig_obj.invert_yaxis()
+# column_sum = rot_df.sum(axis=0)
+# fig = plt.figure()
+# plt.plot(column_sum)
+# 
+# 
+# test_df = imported_scan_dfs[0]
+# 
+# shaped_df = test_df.pivot(index = 'y pixel no', columns = 'x pixel no', values = 'XBIC')
+# 
+# # =============================================================================
+# # a = np.array(shaped_df.values)
+# # df1 = np.where(a < 7e-12, 0, a)
+# # =============================================================================
+# fig = plt.figure()
+# #rot_df = rotate(df1, 0)
+# #fig_obj = sns.heatmap(rot_df, square =True)
+# #fig_obj.invert_yaxis()
+# column_sum = shaped_df.sum(axis=0)
+# 
+# plt.plot(column_sum)
+# 
+# # =============================================================================
+# # plt.plot(column_sum)
+# # 
+# # fig = plt.figure() #figsize = scan["figure_size"], dpi = 250
+# # 
+# # fig_obj = sns.heatmap(shaped_df, square =True)
+# # 
+# #         
+# # #PLOT SETTINGS
+# # #fig_obj.invert_yaxis()                     
+# # =============================================================================
+# =============================================================================

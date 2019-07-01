@@ -1,4 +1,4 @@
-import all_FS_defs as FSdefs
+import plot_FS_xSect_defs as FSdefs
 
 path_to_ASCIIs = r'C:\Users\Trumann\Desktop\ASCII\FS\2019_03_2IDD_FS'
 
@@ -8,6 +8,8 @@ scan2 = {"sector": 2, 'Scan #': 551, 'Name': 'FS2_1', 'width': 10, 'height': 20,
 scan3 = {"sector": 2, 'Scan #': 661, 'Name': 'FS2_2', 'width': 15, 'height': 20, 'x_points': 150, 'y_points': 200, 'x_ticks': 50, 'y_ticks': 25, 'beam_energy': 12.7, 'stanford': 100, 'lockin': 2000, 'PIN beam_on': 225100, 'PIN beam_off': 624, 'PIN stanford': 500, "absorber_Eg": 1.45, 'E_abs': 4787, "EOI": ['Cd_L', 'Te_L', 'Cu', 'Zn', 'As', 'Se', 'Sn_L'], 'figure_size': (5, 4)}
 scan4 = {"sector": 26, 'Scan #': 100, 'Name': 'FS2_2', 'width': 4, 'height': 4, 'x_points': 100, 'y_points': 100, 'x_ticks': 25,   'y_ticks': 25, 'beam_energy': 10.4, 'stanford': 200, 'lockin': 200, 'PIN beam_on': 105400, 'PIN beam_off': 510, 'PIN stanford': 500, "absorber_Eg": 1.45, 'E_abs': 5907, "EOI": ['Cd_L', 'Te_L', 'Cu', 'Zn', 'Sn_L']}
 
+electrical_scaler_channel = 'ds_ic'
+         
 #what do you want to plot? note the number of plots made is limited by the smallest list here!
 element_plot_list =     ['Cd_L', 'Se', 'As']#, 'Cd_L', 'Cd_CdTe', 'Zn', 'As', 'Se', 'Sn_L'] #, 'Cu', 'Zn', 'As', 'Se', 'Sn_L']
 plot_titles =           ['Cd', 'Se', 'As' ,'Cd/Cd+Te', 'Zn', 'As', 'Se', 'Sn']
@@ -15,7 +17,7 @@ element_plot_labels =   ['ug/cm2', 'ug/cm2', 'ug/cm2','ug/cm2', 'ug/cm2', 'ug/cm
         
 scan_list = [scan2, scan3]#, scan3, scan4]
 
-imported_scan_dfs = FSdefs.shrinkASCII(path_to_ASCIIs, scan_list)  #returns list containing dataframes of each scan
+imported_scan_dfs = FSdefs.shrinkASCII(path_to_ASCIIs, scan_list, electrical_scaler_channel)  #returns list containing dataframes of each scan
 FSdefs.generate_scalar_factor(scan_list)           #generates the scalar factor for each scan and adds it to the scan in scan_list dictionary
 FSdefs.collect_XBIC(imported_scan_dfs, scan_list)             #converts from ds_ic to amperes for each scan (replaces ds_ic column)
 
@@ -25,7 +27,8 @@ FSdefs.mapConvertAxes(imported_scan_dfs, scan_list)
 FSdefs.make_plots(imported_scan_dfs, scan_list, element_plot_list, element_plot_labels, plot_titles)
 
 
-#imported_shaped_dict = MapsAsMatrices(scan_list, imported_scan_dfs)
+#imported_shaped_dict = MapsAsMatrices(scan_list, imported_scan_dfs, element_plot_list)
 
 #integrateStackDepth(imported_shaped_dict)
 
+#FSdefs.pivot_then_rotate(imported_scan_dfs)
