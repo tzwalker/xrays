@@ -37,7 +37,7 @@ def sector_26_import(scans):
     return
 
 ## enter scans and corresponding (y) points of the scan
-scans_in = list(range(321,334)) #+ list(range(337,346))
+scans_in = list(range(328,334)) + list(range(337,346)) #start from scan 328 and go until 334
 scans = []
 for s in scans_in:
     s = str(s)
