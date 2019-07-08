@@ -37,26 +37,30 @@ def sector_26_import(scans):
     return
 
 ## enter scans and corresponding (y) points of the scan
-scans = ['082', '083']
-points = [200, 200, 101, 101, 101, 101, 101, 101, 101, 101, 101, 121]
+scans_in = list(range(321,334)) #+ list(range(337,346))
+scans = []
+for s in scans_in:
+    s = str(s)
+    scans.append(s)
+    
+points = []
+for scan in scans:
+    p = 201
+    points.append(p)
 
 
 ## enter directories; source --> server directory, dest --> local directory
-MDAsource =     r'\\en4093310.ecee.dhcp.asu.edu\BertoniLab\Lab\Synchrotron Data\2019_03_2IDD\mda'
-MDAdest =       r'C:\Users\Trumann\Desktop\test_dest_folder\mda'
+MDAsource =     r'\\en4093310.ecee.dhcp.asu.edu\BertoniLab\Lab\Synchrotron Data\2019_06_2IDD\mda'
+MDAdest =       r'C:\Users\Trumann\Desktop\2019_06_2IDD_stage\mda'
 
-H5source =      r'\\en4093310.ecee.dhcp.asu.edu\BertoniLab\Lab\Synchrotron Data\2019_03_2IDD\img.dat'
-H5dest =        r'C:\Users\Trumann\Desktop\test_dest_folder\img.dat'
+H5source =      r'\\en4093310.ecee.dhcp.asu.edu\BertoniLab\Lab\Synchrotron Data\2019_06_2IDD\img.dat'
+H5dest =        r'C:\Users\Trumann\Desktop\2019_06_2IDD_stage\img.dat'
 
-flysource =     r'\\en4093310.ecee.dhcp.asu.edu\BertoniLab\Lab\Synchrotron Data\2019_03_2IDD\flyXRF'
-flydest =       r'C:\Users\Trumann\Desktop\test_dest_folder\flyXRF'
+flysource =     r'\\en4093310.ecee.dhcp.asu.edu\BertoniLab\Lab\Synchrotron Data\2019_06_2IDD\flyXRF'
+flydest =       r'C:\Users\Trumann\Desktop\2019_06_2IDD_stage\flyXRF'
 
 
 ## comment/uncomment function for correct Sector code for Sector which you did not visit
 sector_2_import(scans)
 #sector_26_import(scans)
 
-<<<<<<< HEAD
-=======
-
->>>>>>> def_partition
