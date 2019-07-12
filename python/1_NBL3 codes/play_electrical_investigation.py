@@ -6,7 +6,7 @@ get_defs = 'work'
 ### paths for custom defintion files and scans ### change according to the operating system environment
 if get_defs == 'work':
     custom_def_path = r'C:\Users\Trumann\Desktop\xrays\python\personal-programs\twalker_defs'
-    scan_path = r'C:\Users\Trumann\Desktop\2019_03_2IDD_NBL3\img.dat'
+    scan_path = r'C:\Users\Trumann\Desktop\work_data\NBL3\H5 data'
 else:
     custom_def_path = '/home/kineticcross/Desktop/xrays/python/personal-programs/twalker_defs' 
     scan_path = '/home/kineticcross/Desktop/data'
@@ -43,43 +43,70 @@ def get_scan_scalers(samps):
         s.setdefault(key, V_scale)
     return
 
-NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [416, 417, 418], 'XBIV_scans': [419,420,421], 
-          'beam_conv': [2E5,2E5,2E5], 'c_stanford': [5E4,5E4,5E4], 'c_lockin':[500,500,500], 'v_lockin': [1E3,1E3,1E3]}
-NBL3_3 = {'Name': 'NBL3-3', 'XBIC_scans': [258, 259, 260], 'XBIV_scans': [261,262,263], 
-          'beam_conv': [2E5, 2E5, 2E5], 'c_stanford': [5E3,5E3,5E3], 'c_lockin':[500,500,500], 'v_lockin': [1E4,1E4,1E4]}
-TS58A = {'Name': 'TS58A', 'XBIC_scans': [378, 379, 380], 'XBIV_scans': [382,383,384], 
-         'beam_conv': [2E5, 2E5, 2E5], 'c_stanford': [50,50,50], 'c_lockin':[1E4,1E4,1E4], 'v_lockin': [1E4,1E4,1E4]}
+NBL3_2 = {'Name': 'NBL3-2', 'areas':['1','2','3'], 'XBIC_scans': [416, 417, 418], 'XBIV_scans': [419,420,421], 
+          'beam_conv': [2E5,2E5,2E5], 'c_stanford': [5000,5000,5000], 'c_lockin':[500,500,500], 'v_lockin': [1E3,1E3,1E3]}
+NBL3_3 = {'Name': 'NBL3-3', 'areas':['1','2','3'], 'XBIC_scans': [258, 259, 260], 'XBIV_scans': [261,262,263], 
+          'beam_conv': [2E5, 2E5, 2E5], 'c_stanford': [5000,5000,5000], 'c_lockin':[500,500,500], 'v_lockin': [1E4,1E4,1E4]}
+TS58A = {'Name': 'TS58A', 'areas':['1','2','3'], 'XBIC_scans': [378, 379, 380], 'XBIV_scans': [382,383,384], 
+         'beam_conv': [2E5, 2E5, 2E5], 'c_stanford': [50,50,50], 'c_lockin':[10000,10000,10000], 'v_lockin': [1000,1000,1000]}
 
-samples = [NBL3_2, NBL3_3, TS58A]
+samples = [TS58A]#, NBL3_3, TS58A]
 
 get_add_h5s(samples)
 
 get_scan_scalers(samples)
 
+def get_and_add_DSIC_channels(samps):
+    for s in samps:
+        IC_h5s = s['XBIC_h5s']
+        ds_ic0 = [h5['/MAPS/scalers'][2] for h5 in IC_h5s]
+        key = 'XBIC_ct_maps'
+        s.setdefault(key, ds_ic0)
+        
+        IV_h5s = s['XBIV_h5s']
+        ds_ic1 = [h5['/MAPS/scalers'][2] for h5 in IV_h5s]
+        key = 'XBIV_ct_maps'
+        s.setdefault(key, ds_ic1)
+    return
 
-# =============================================================================
-# joint_plots = []
-# for i_file, v_file in zip(XBIC_h5s, XBIV_h5s):
-#     XBIC_map = i_file['/MAPS/scalers'][2]
-#     XBIV_map = v_file['/MAPS/scalers'][2]
-#     XBIC_arr = XBIC_map.ravel()
-#     XBIV_arr = XBIV_map.ravel()
-#     g = sns.jointplot(XBIC_arr, XBIV_arr, kind="reg", color="#5d5d60", scatter_kws={'s':2}, joint_kws={'line_kws':{'color':'red'}})
-#     #plt.hexbin(XBIC_map, XBIV_map)
-#     #plt.show()
-# 
-# 
-# 
-# XBIV_2D = XBIV_h5s[0]['/MAPS/scalers'][2]
-# XBIC_2D = XBIC_h5s[0]['/MAPS/scalers'][2]
-# 
-# XBIV_1D = XBIV_2D.ravel()
-# XBIC_1D = XBIC_2D.ravel()
-# 
-# g = sns.jointplot(XBIC_1D, XBIV_1D, kind="reg", color="#5d5d60", scatter_kws={'s':2}, joint_kws={'line_kws':{'color':'red'}})
-# #sns.regplot(XBIC_1D, XBIV_1D, ax=g.ax_joint, scatter=False)
-# #sns.despine(right = True)
-# =============================================================================
+get_and_add_DSIC_channels(samples)
+
+def cts_to_amps(samps):
+    for s in samps: 
+        XBIC_scaled = [ds_ic * scale for ds_ic, scale in zip(s['XBIC_ct_maps'], s['c_scaler'])]  
+        XBIV_scaled = [ds_ic * scale for ds_ic, scale in zip(s['XBIV_ct_maps'], s['v_scaler'])]
+        c_key = 'XBIC_maps'
+        v_key = 'XBIV_maps'
+        s.setdefault(c_key, XBIC_scaled)
+        s.setdefault(v_key, XBIV_scaled)
+    return
+
+cts_to_amps(samples)
+
+for s in samples:
+    XBIC_maps = s['XBIC_maps']
+    XBIV_maps = s['XBIV_maps']
+    for i, v, a in zip(XBIC_maps, XBIV_maps, s['areas']):
+        fig1 = plt.figure()
+        XBIC_arr = i.ravel()
+        XBIV_arr = v.ravel()
+        g = sns.jointplot(XBIC_arr, XBIV_arr, kind="reg", color="#5d5d60", scatter_kws={'s':2}, joint_kws={'line_kws':{'color':'red'}})
+        plt.title(s['Name'] + ' ' + 'joint plot' + a)
+        
+        fig2 = plt.figure()
+        h = sns.heatmap(i, square = True)
+        h.invert_yaxis()
+        plt.title(s['Name'] + ' ' + 'Amp Area ' + a)
+        
+        fig3 = plt.figure()
+        j = sns.heatmap(v, square = True)
+        j.invert_yaxis()
+        plt.title(s['Name'] + ' ' + 'Volt Area ' + a)
+        #plt.show()
+
+#g = sns.jointplot(XBIC_1D, XBIV_1D, kind="reg", color="#5d5d60", scatter_kws={'s':2}, joint_kws={'line_kws':{'color':'red'}})
+#sns.regplot(XBIC_1D, XBIV_1D, ax=g.ax_joint, scatter=False)
+#sns.despine(right = True)
 
 
 # In [12]: XBIV_h5s[0]['/MAPS/scaler_names'][2] #syntx for access to the files...
