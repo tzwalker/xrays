@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 """
+created: Mon Jul 15 16:53:32 2019
+author: Trumann
+"""
+
+# -*- coding: utf-8 -*-
+"""
 created: Mon Jul 15 15:43:12 2019
 author: Trumann
 """

@@ -41,28 +41,30 @@ eiDefs.cts_to_amps(samples)
 # note after these commands run, the above dictionaries will be much larger than shown, and will contain the electrical maps of interest
     # use 'sample.keys()' to view all the dictionary keys and access the groups of interest
 
-for s in samples:
-    XBIC_maps = s['XBIC_maps']
-    XBIV_maps = s['XBIV_maps']
-    for i, v, a in zip(XBIC_maps, XBIV_maps, s['areas']):
 # =============================================================================
-#         fig1 = plt.figure()
-#         XBIC_arr = i.ravel()
-#         XBIV_arr = v.ravel()
-#         g = sns.jointplot(XBIC_arr, XBIV_arr, kind="reg", color="#5d5d60", scatter_kws={'s':2}, joint_kws={'line_kws':{'color':'red'}})
-#         plt.title(s['Name'] + ' ' + 'joint plot' + a)
+# for s in samples:
+#     XBIC_maps = s['XBIC_maps']
+#     XBIV_maps = s['XBIV_maps']
+#     for i, v, a in zip(XBIC_maps, XBIV_maps, s['areas']):
+# # =============================================================================
+# #         fig1 = plt.figure()
+# #         XBIC_arr = i.ravel()
+# #         XBIV_arr = v.ravel()
+# #         g = sns.jointplot(XBIC_arr, XBIV_arr, kind="reg", color="#5d5d60", scatter_kws={'s':2}, joint_kws={'line_kws':{'color':'red'}})
+# #         plt.title(s['Name'] + ' ' + 'joint plot' + a)
+# # =============================================================================
+#         
+#         fig2 = plt.figure()
+#         h = sns.heatmap(i, square = True)
+#         h.invert_yaxis()
+#         plt.title(s['Name'] + ' ' + 'Amp Area ' + a)
+#         
+#         fig3 = plt.figure()
+#         j = sns.heatmap(v, square = True)
+#         j.invert_yaxis()
+#         plt.title(s['Name'] + ' ' + 'Volt Area ' + a)
+#         #plt.show()
 # =============================================================================
-        
-        fig2 = plt.figure()
-        h = sns.heatmap(i, square = True)
-        h.invert_yaxis()
-        plt.title(s['Name'] + ' ' + 'Amp Area ' + a)
-        
-        fig3 = plt.figure()
-        j = sns.heatmap(v, square = True)
-        j.invert_yaxis()
-        plt.title(s['Name'] + ' ' + 'Volt Area ' + a)
-        #plt.show()
 
 #g = sns.jointplot(XBIC_1D, XBIV_1D, kind="reg", color="#5d5d60", scatter_kws={'s':2}, joint_kws={'line_kws':{'color':'red'}})
 #sns.regplot(XBIC_1D, XBIV_1D, ax=g.ax_joint, scatter=False)
