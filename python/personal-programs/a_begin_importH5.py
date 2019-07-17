@@ -36,6 +36,7 @@ lay_thicks = [ [500E-7, 375E-7, 4E-4, 80E-7, 100E-7],
 
 ### call these to import raw data ###
 #files = import_maps_H5.import_h5s(scans, scan_path)
+#master_index_list = import_maps_H5.get_ChOIs_for_all_scans(files, ChOIs)
 #master_map_list = import_maps_H5.extract_maps(files, master_index_list)
 
 import numpy as np
@@ -54,7 +55,7 @@ import play_absorb
 
 #print(play_absorb.test_fxn(ChOIs, list_of_list_of_layer_dicts))
 
-#master_index_list = import_maps_H5.get_ChOIs_for_all_scans(files, ChOIs)
+
 
 #Zs = a_begin_absorb.channel_to_atomic_num(ChOIs)
 
