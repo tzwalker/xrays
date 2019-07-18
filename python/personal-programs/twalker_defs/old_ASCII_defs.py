@@ -1,8 +1,15 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 
+
+#supplement to "shrinkASCII()": MAPS exports ASCIIs with column header whitespace, this removes that whitespace
+def noColNameSpaces(pd_csv_df):
+    old_colnames = pd_csv_df.columns.values
+    new_colnames = []
+    for name in old_colnames:
+        new_colnames.append(name.strip())
+    pd_csv_df.rename(columns = {i:j for i,j in zip(old_colnames,new_colnames)}, inplace=True)
+    return pd_csv_df
 
 #IMPORT AND SHIRNK DATAFRAME: imports and shrinks ASCII according to what elements are specified and the sector the scan was taken
 def shrinkASCII(large_ASCII_files):
@@ -20,15 +27,44 @@ def shrinkASCII(large_ASCII_files):
         smaller_dfs.append(shrink)                                                                  #add smaller matrices to list so they may be iterated over...
     return smaller_dfs
 
-#supplement to "shrinkASCII()": MAPS exports ASCIIs with column header whitespace, this removes that whitespace
-def noColNameSpaces(pd_csv_df):
-    old_colnames = pd_csv_df.columns.values
-    new_colnames = []
-    for name in old_colnames:
-        new_colnames.append(name.strip())
-    pd_csv_df.rename(columns = {i:j for i,j in zip(old_colnames,new_colnames)}, inplace=True)
-    return pd_csv_df
+### plotting in ASCII format ###
+def mapConvertAxes(dataframes, scans):
+    for df, scan in zip(dataframes, scans):
+        height_factor = scan['height'] / scan['y_points']                       #converts to (um/line) for y-direction
+        width_factor = scan['width'] / scan['x_points']                         #converts to (um/line) for x-direction
+        df['y pixel no']  = df['y pixel no'] * height_factor                    #OVERWRITE Y PIXEL COLUMN: ypixel-no/line *(um/line) = um (y)
+        df['x pixel no']  = df['x pixel no'] * width_factor                     #OVERWRITE X PIXEL COLUMN: xpixel-no/line *(um/line) = um (x)
+    return
 
+def mapShape(dataframe_list):
+    plotList = []
+    for df in dataframe_list:
+        df = df.pivot(index = 'y pixel no', columns = 'x pixel no', values = 'XCE') #shape XCE column into map accroding to converted x and y column indices
+        plotList.append(df)                                                         #store shaped dfs in list
+    return plotList
+
+### (older) for ASCIIs ###
+def collect_XBIC(small_dfs, scan_list):
+    eh_per_coulomb = 1/(1.60217634*10**-19)                                  #most recent accepted value for electrons per coulomb
+    XBIC_switch = int(input('Type 0 for XBIC, 1 for ehPairs: '))
+    
+    if XBIC_switch == 0:
+        for df, scan in zip(small_dfs, scan_list):
+            df["ds_ic"] = df["ds_ic"].astype(float)                             #reformat column for floating arithmetic operations
+            scaled_dsic = df.loc[:,'ds_ic'] * scan['scale factor']              #apply amplifaction settings  (converts counts to amps)
+            df['ds_ic'] = scaled_dsic
+            df.rename(columns = {'ds_ic': 'XBIC'}, inplace = True)  
+        
+        
+    if XBIC_switch == 1:
+        for df, scan in zip(small_dfs, scan_list):
+            df["ds_ic"] = df["ds_ic"].astype(float)                             #reformat column for floating arithmetic operations
+            scaled_dsic = df.loc[:,'ds_ic'] * scan['scale factor']              #apply amplifaction settings  (converts counts to amps)
+            collected_dsic = scaled_dsic * eh_per_coulomb                       #convert amps to e-h pairs
+            df['ds_ic'] = collected_dsic
+            df.rename(columns = {'ds_ic': 'eh_pairs'}, inplace = True)                        
+    return 
+    
 #CALCULATE XBIC
 def generate_scalar_factor(scan_list):
     beamconversion_factor = 100000
@@ -83,22 +119,6 @@ def calc_XCE(smaller_dfs, scans):
         df.rename(columns = {'eh_pairs': 'XCE'}, inplace = True)    #rename to XCE column
     return
 
-#PLOTTING
-def mapConvertAxes(dataframes, scans):
-    for df, scan in zip(dataframes, scans):
-        height_factor = scan['height'] / scan['y_points']                       #converts to (um/line) for y-direction
-        width_factor = scan['width'] / scan['x_points']                         #converts to (um/line) for x-direction
-        df['y pixel no']  = df['y pixel no'] * height_factor                    #OVERWRITE Y PIXEL COLUMN: ypixel-no/line *(um/line) = um (y)
-        df['x pixel no']  = df['x pixel no'] * width_factor                     #OVERWRITE X PIXEL COLUMN: xpixel-no/line *(um/line) = um (x)
-    return
-
-def mapShape(dataframe_list):
-    plotList = []
-    for df in dataframe_list:
-        df = df.pivot(index = 'y pixel no', columns = 'x pixel no', values = 'XCE') #shape XCE column into map accroding to converted x and y column indices
-        plotList.append(df)                                                         #store shaped dfs in list
-    return plotList
-
 def plotXCE(scans, shaped_dataframes):
     for scan, df in zip(scans, shaped_dataframes):
         plt.figure()                                                            #initialize plotting object
@@ -113,33 +133,6 @@ def plotXCE(scans, shaped_dataframes):
         plt.tick_params(axis="both", labelsize = 15)
     return ax
 
-
-
-path_to_ASCIIs = r'C:\Users\Trumann\Desktop\ASCII\refit_NBL3_noZnL'
-
-#enter energy in keV, stanford amplifcations in nanoamps, width/height in um, and elements of interest (EOI)
-scan1 = {"sector": 2, 'Scan #': 439, 'Name': 'TS58A', 'width': 15, 'height': 15, 'x_points': 150, 'y_points': 150, 'beam_energy': 8.99, 'stanford': 200, 'lockin': 20, 'PIN beam_on': 225100, 'PIN beam_off': 624, 'PIN stanford': 500, "absorber_Eg": 1.45, 'E_abs': 4359, "EOI": ['Sn_L', 'S', 'Cd_L', 'Te_L', 'Cu', 'Cl', 'Mo_L']} 
-scan2 = {"sector": 2, 'Scan #': 475, 'Name': 'NBL3-3', 'width': 15, 'height': 15, 'x_points': 150, 'y_points': 150, 'beam_energy': 8.99, 'stanford': 200, 'lockin': 20, 'PIN beam_on': 225100, 'PIN beam_off': 624, 'PIN stanford': 500, "absorber_Eg": 1.45, 'E_abs': 5680,  "EOI": ['Sn_L', 'S', 'Cd_L', 'Te_L', 'Cu', 'Cl', 'Mo_L']}
-scan3 = {"sector": 2, 'Scan #': 519, 'Name': 'NBL3-1', 'width': 15, 'height': 15, 'x_points': 150, 'y_points': 150, 'beam_energy': 8.99, 'stanford': 200, 'lockin': 20, 'PIN beam_on': 225100, 'PIN beam_off': 624, 'PIN stanford': 500, "absorber_Eg": 1.45, 'E_abs': 4787, "EOI": ['Sn_L', 'S', 'Cd_L', 'Te_L', 'Cu', 'Cl', 'Mo_L']}
-scan4 = {"sector": 2, 'Scan #': 550, 'Name': 'NBL3-2', 'width': 15, 'height': 15, 'x_points': 150, 'y_points': 150, 'beam_energy': 8.99, 'stanford': 50000, 'lockin': 100, 'PIN beam_on': 105400, 'PIN beam_off': 510, 'PIN stanford': 500, "absorber_Eg": 1.45, 'E_abs': 5907, "EOI": ['Sn_L', 'S', 'Cd_L', 'Te_L', 'Cu', 'Cl', 'Mo_L']}
-
-           
-scan_list = [scan1, scan2, scan3, scan4]
-
-#imported_scans_dfs = shrinkASCII(scan_list)
-#generate_scalar_factor(scan_list)
-#collect_XBIC(imported_scans_dfs)
-#interpolate_diode_calibration(scan_list)
-#get_flux(scan_list)
-#calc_XCE(imported_scans_dfs, scan_list)
-
-#mapConvertAxes(imported_scans_dfs, scan_list)
-#list_of_shaped_XCE_dfs = mapShape(imported_scans_dfs)
-#plotXCE(scan_list, list_of_shaped_XCE_dfs)
-
-
-#########################################################################################################################################################################
-###BEGING FLUORESCENCE CALC
 import xraylib as xl
 
 beam_energy = 8.99                                                  #beamtime keV
@@ -217,46 +210,4 @@ def get_capXsect_of_layer_on_ele_line(layer, layer_element_list):
     for ele in layer_element_list:
         ext_layer_capXsect_on_ele_line = xl.CS_Total_CP(layer["Name"], get_Ele_XRF_Energy(ele, beam_energy))
     return ext_layer_capXsect_on_ele_line
-
-for layer_num, layer in enumerate(STACK):
-    prev_layers = STACK[:layer_num]                             #return list containing dictionaries of previous layers
-    layer_ele_line_muS = []
-    for prev_layer in prev_layers:
-        mu_layer_ele_line = get_capXsect_of_layer_on_ele_line(prev_layer, layer["Element"])
-        
-        layer_ele_line_muS.append(mu_layer_ele_line)
-        print(prev_layer["Name"], layer_ele_line_muS)
-# =============================================================================
-#         coefficients.append(coefficient)
-#     product_of_previous_layer_cofficients = np.prod(coefficients)
-#     total_external_XRF_attn = layer["Bo"] * product_of_previous_layer_cofficients
-#     key = "tot_external_XRF_attn"
-#     layer.setdefault(key, coefficient)
-# =============================================================================
-
-#outgoing fluorescence capture of internal layers (gives mu_CdTe_CdL in: cap_cross_section_of_one_sublayer_out_CdL = -p_CdTe * mu_CdTe_CdL * dt / rad_det;)
-# =============================================================================
-# for layer in STACK:
-#     getSublayers(layer)                                                                         #generate number of 1nm sublayers for each layer; stored in dictionary for access convenience
-#     layer_coefficients = []
-#     for ele in layer["Element"]:
-#         element_XRF_line = get_Ele_XRF_Energy(ele, beam_energy)
-#         layer_capture_of_ele_XRF = xl.CS_Total_CP(layer["Name"], element_XRF_line)
-#         #Beer_Lamb_external_layer_coefficient = np.exp(-  layer_capture_of_ele_XRF * layer["LDensity"] * layer["Thick"] / detect_gemoetry)
-#         print(layer["Name"], ele, layer_capture_of_ele_XRF)
-#         #layer_coefficients.append(Beer_Lamb_external_layer_coefficient)
-#     #key = "ext_BL_coeff"
-#     #layer.setdefault(key, layer_coefficients)
-# =============================================================================
-        
-
-
-# =============================================================================
-#     path_in = np.zeros(layer['numSublayers'])
-#     path_out = np.zeros(layer['numSublayers'])
-#     for sublayer in range(sublayers):
-#         path_in[sublayer] = -layer['LDensity'] * layer['capXsect'] * dt / beam_geometry
-#         path_out[sublayer] = -layer['LDensity'] * layer['capXsect'] * dt / detect_gemoetry        
-#     #print(path_in, path_out)
-# =============================================================================
 

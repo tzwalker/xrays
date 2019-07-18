@@ -4,13 +4,7 @@ created: Mon Jul 15 16:53:32 2019
 author: Trumann
 """
 
-# -*- coding: utf-8 -*-
-"""
-created: Mon Jul 15 15:43:12 2019
-author: Trumann
-"""
-
-import import_maps_H5
+import rummage_thru_H5
 
 def str_list(L):
     ### transform integers in scan list to strings; prep for use in filename strings ###
@@ -23,8 +17,8 @@ def get_add_h5s(samps, pth):
         s['XBIC_scans'] = str_list(s['XBIC_scans'])
         s['XBIV_scans'] = str_list(s['XBIV_scans'])
         ### import h5 files ###
-        XBIC_h5s = import_maps_H5.import_h5s(s['XBIC_scans'], pth)
-        XBIV_h5s = import_maps_H5.import_h5s(s['XBIV_scans'], pth)
+        XBIC_h5s = rummage_thru_H5.import_h5s(s['XBIC_scans'], pth)
+        XBIV_h5s = rummage_thru_H5.import_h5s(s['XBIV_scans'], pth)
         key = 'XBIC_h5s'
         s.setdefault(key, XBIC_h5s)
         key = 'XBIV_h5s'
@@ -61,7 +55,7 @@ def get_and_add_DSIC_channels(samps):
         s.setdefault(key, ds_ic1)
     return
 
-def cts_to_amps(samps):
+def cts_to_elect(samps):
     for s in samps: 
         XBIC_scaled = [ds_ic * scale for ds_ic, scale in zip(s['XBIC_ct_maps'], s['c_scaler'])]  
         XBIV_scaled = [ds_ic * scale for ds_ic, scale in zip(s['XBIV_ct_maps'], s['v_scaler'])]
@@ -70,3 +64,4 @@ def cts_to_amps(samps):
         s.setdefault(c_key, XBIC_scaled)
         s.setdefault(v_key, XBIV_scaled)
     return
+

@@ -10,7 +10,7 @@ else:
 sys.path.append(custom_def_path)
 
 ### paths for files and scans ###
-import import_maps_H5
+import rummage_thru_H5
 if get_defs == 'work':
     scan_path = r'C:\Users\Trumann\Desktop\2019_03_2IDD_NBL3\img.dat'
 else:
@@ -35,9 +35,9 @@ lay_thicks = [ [500E-7, 375E-7, 4E-4, 80E-7, 100E-7],
               [500E-7, 375E-7, 6E-4, 80E-7, 100E-7] ]
 
 ### call these to import raw data ###
-#files = import_maps_H5.import_h5s(scans, scan_path)
-#master_index_list = import_maps_H5.get_ChOIs_for_all_scans(files, ChOIs)
-#master_map_list = import_maps_H5.extract_maps(files, master_index_list)
+#files = rummage_thru_H5.import_h5s(scans, scan_path)
+#master_index_list = rummage_thru_H5.get_ChOIs_for_all_scans(files, ChOIs)
+#master_map_list = rummage_thru_H5.extract_maps(files, master_index_list)
 
 import numpy as np
 import stk_info

@@ -51,3 +51,19 @@ def extract_maps(H5s, list_of_lists):
             scan_maps.append(map_of_interest)                       #build internal list
         maps.append(scan_maps)                                      #add internal list (i.e. a scan) to master list
     return maps
+
+
+def get_ChOIs_for_all_scans2(files, ChOIs):
+    list_of_indices = []                                            #initialize master list
+    
+    for scan_index, file in enumerate(files):
+        channel_names = file['/MAPS/channel_names']                 #navigate to the structure conatining the channel names as element strings, e.g. 'Cd_L'
+        decoded_ele_string_indices = []                             #initialize internal list
+        
+        for ele in ChOIs:
+            s = get_desired_channel_index(channel_names, ele)       #perform string comparison between 'channels of interest' and 'channel names', and extract index of interest
+            decoded_ele_string_indices.append(s)                    #build internal list
+
+        list_of_indices.append(decoded_ele_string_indices)          #add internal list (i.e. a scan) to master list
+        
+    return list_of_indices

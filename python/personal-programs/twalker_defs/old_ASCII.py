@@ -8,72 +8,12 @@ import sys
 sys.path.append(r'C:\Users\Trumann\Desktop\XRF-dev\python\personal-programs\twalker_defs')
 
 import import_MAPS_ASCII
-import XBIC_ehPairs
+## import XBIC_ehPairs --> defs from this module included in "defs_electrical_investigation.py"
+  # change the references inside this file to point to that instead
+  # e.g.
+   #import defs_electrical_investigation as eiDefs (replace "XBIC_ehPairs")
 
-def interpolate_diode_calibration(scans):
-    lower_ASU_PIN_energy = 8.08                                         #keV
-    upper_ASU_PIN_energy = 12.8                                         #keV
-    flux_at_8keV = 3071                                                 #ph/(s*pA) ; from 2018_07 beam run (8.08keV)
-    flux_at_12keV = 2728                                                #ph/(s*pA) ; from 2018_07 beam run (12.8keV)
-    for scan in scans:
-        flux_of_interest = flux_at_8keV + (scan['beam_energy'] - lower_ASU_PIN_energy) * ((flux_at_12keV - flux_at_8keV)/(upper_ASU_PIN_energy-lower_ASU_PIN_energy)) #interpolate at the energy the scan was taken
-        rounded_calib = round(flux_of_interest, 1)                      #keep an integer
-        key = 'ph/(s*pA)'                                               #store calibration in sample dictionary for easy retrieval
-        scan.setdefault(key, rounded_calib)                             #assign key:value pair
-    return 
-
-def get_flux(scans):
-    for scan in scans:
-        if scan["sector"] == 2:
-            beamconversion = 100000                                             #sector 2 beam conversion factor
-        else:
-            beamconversion = 5000                                               #UNKNOWN beamconversion for sector 26
-        PIN_current = ((scan['PIN beam_on'] - scan['PIN beam_off'])  /  beamconversion) * (scan["PIN stanford"] *10**-9)        #converts counts to current from beam
-        flux = PIN_current * scan['ph/(s*pA)'] * (1*10**12)                     #converts to flux of beam
-        rounded_flux = round(flux)                                              #round to nearest whole photon
-        key = 'flux'                                                            #store fluxx in sample dictionary for easy retrieval
-        scan.setdefault(key, rounded_flux)                                      #assign key:value pair
-    return
-
-def calc_XCE(smaller_dfs, scans):
-    alpha = 3
-    for df, scan in zip(smaller_dfs, scans):
-        C = scan["E_abs"] / (scan['absorber_Eg'] * alpha)           #calculate correction factor, function of energy absorbed, bandgap, and energy conversion, ideally, get_thickness_factor(energy, absorber_compound, absorber_thickness, abosrber_density) would go here
-        XCE = df['eh_pairs'] / (C * scan['flux']) * 100             #calculate collection efficiency
-        df['eh_pairs'] = XCE                                        #replace df column for ease of use
-        df.rename(columns = {'eh_pairs': 'XCE'}, inplace = True)    #rename to XCE column
-    return
-
-#functions for plotting!
-def mapConvertAxes(dataframes, scans):
-    for df, scan in zip(dataframes, scans):
-        height_factor = scan['height'] / scan['y_points']                       #converts to (um/line) for y-direction
-        width_factor = scan['width'] / scan['x_points']                         #converts to (um/line) for x-direction
-        df['y pixel no']  = df['y pixel no'] * height_factor                    #ypixel-no/line *(um/line) = um (y)
-        df['x pixel no']  = df['x pixel no'] * width_factor                     #xpixel-no/line *(um/line) = um (x)
-    return
-
-def mapShape(dataframe_list):
-    plotList = []
-    for df in dataframe_list:
-        df = df.pivot(index = 'y pixel no', columns = 'x pixel no', values = 'XCE') #shape XCE column into map accroding to converted x and y column indices
-        plotList.append(df)                                                         #store shaped dfs in list
-    return plotList
-
-def plotXCE(scans, shaped_dataframes):
-    for scan, df in zip(scans, shaped_dataframes):
-        df[df == 0] = np.nan                                                    #convert all zeros to NaN for scale convenience
-        plt.figure()                                                            #initialize plotting object
-        plt.title(scan['Name'], fontsize = 20)                                  #settings
-        ax = sns.heatmap(df, xticklabels = 50, yticklabels = 50, annot= None, square = True, cbar_kws={'label': '%'})   #plot heatmap using seaborn
-        ax.figure.axes[-1].yaxis.label.set_size(20)                             #settings
-        ax.invert_yaxis()
-        plt.xlabel('X (um)', fontsize = 18)
-        plt.xticks(rotation = 0)
-        plt.ylabel('Y (um)', fontsize = 18)
-        plt.yticks(rotation = 0)
-        plt.tick_params(axis="both", labelsize = 15)
-    return ax
+# calcXCE, plotXCE moved to "old_ASCII_defs.py"
 
 path_to_ASCIIs = r'C:\Users\Trumann\Desktop\2017_12_2018_07_NBL3_bacth_refit\output'
 
