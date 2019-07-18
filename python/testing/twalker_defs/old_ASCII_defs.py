@@ -27,6 +27,18 @@ def shrinkASCII(large_ASCII_files):
         smaller_dfs.append(shrink)                                                                  #add smaller matrices to list so they may be iterated over...
     return smaller_dfs
 
+# to "FS_bias.py"
+def import_line_ASCIIS(scans):
+    line_scans = []
+    usecols = list(range(7))                                            #line plots exported only with ds_ic channel
+    for scan in scans:
+        s = str(scan)
+        filename = r'\line2idd_0'+s+'.h5.csv'
+        df = pd.read_csv(path_to_ASCIIs + filename, usecols=usecols)
+        noColNameSpaces(df)
+        line_scans.append(df)
+    return line_scans
+
 ### plotting in ASCII format ###
 def mapConvertAxes(dataframes, scans):
     for df, scan in zip(dataframes, scans):

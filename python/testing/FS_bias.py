@@ -4,30 +4,16 @@ from astropy import modeling
 import matplotlib.pyplot as plt
 #from scipy.stats import norm
 
+#append sys path!
 path_to_ASCIIs = r'C:\Users\Trumann\Desktop\2019_03_2IDD_BIAS\output'
 
 scans = list(range(552,620,2))
 
-def noColNameSpaces(pd_csv_df):
-    old_colnames = pd_csv_df.columns.values
-    new_colnames = []
-    for name in old_colnames:
-        new_colnames.append(name.strip())
-    pd_csv_df.rename(columns = {i:j for i,j in zip(old_colnames,new_colnames)}, inplace=True)
-    return pd_csv_df
+#noColNameSpaces from "old_ASCII_defs.py"
 
-def importASCIIS(scans):
-    line_scans = []
-    usecols = list(range(7))                                            #line plots exported only with ds_ic channel
-    for scan in scans:
-        s = str(scan)
-        filename = r'\line2idd_0'+s+'.h5.csv'
-        df = pd.read_csv(path_to_ASCIIs + filename, usecols=usecols)
-        noColNameSpaces(df)
-        line_scans.append(df)
-    return line_scans
+#import_line_ASCIIS from "old_ASCII_defs.py"
 
-dfs = importASCIIS(scans)
+dfs = import_line_ASCIIS(scans)
 
 lockin = 2000
 stanford = 5000*10**-9

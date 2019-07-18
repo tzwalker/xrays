@@ -11,6 +11,7 @@ sys.path.append(custom_def_path)
 
 ### paths for files and scans ###
 import rummage_thru_H5
+
 if get_defs == 'work':
     scan_path = r'C:\Users\Trumann\Desktop\2019_03_2IDD_NBL3\img.dat'
 else:

@@ -2,77 +2,10 @@ import xraylib as xl
 import numpy as np
 
 
-        
-
-### old fxns to be used at some point hopefully ###
-
-# returns the highest energy XRF photon of an element due to the beam energy
-def get_Ele_XRF_Energy(Z, energy):
-    F = xl.LineEnergy(Z, xl.KA1_LINE)
-    if xl.EdgeEnergy(Z, xl.K_SHELL) > energy:
-            F = xl.LineEnergy(Z, xl.LA1_LINE)
-            if xl.EdgeEnergy(Z, xl.L1_SHELL) > energy:
-                    F = xl.LineEnergy(Z, xl.LB1_LINE)
-                    if xl.EdgeEnergy(Z, xl.L2_SHELL) > energy:
-                            F = xl.LineEnergy(Z, xl.LB1_LINE)
-                            if xl.EdgeEnergy(Z, xl.L3_SHELL) > energy:
-                                    F = xl.LineEnergy(Z, xl.LG1_LINE)
-                                    if xl.EdgeEnergy(Z, xl.M1_SHELL) > energy:
-                                            F = xl.LineEnergy(Z, xl.MA1_LINE) 
-        #if-statements checks whether the element will absorb
-        # ex) beam_energy = 12.7 keV
-                #Cd_KA_SHELL = 26.7 
-                #Cd_KA_SHELL !< 12.7 keV
-                #move to next absorption edge
-                #Cd_L1_SHELL = 4.018
-                #Cd_L1_SHELL < 12.7 keV
-                #XRF photon energy set to the highest energy transition of this shell
-                #Cd_LA1_LINE = 3.081 keV = energy captured by other layers (this value is close to that obtained via NIST lookup methods)
-    return F
-
-
-
-# check if element is in all layers by its atomic number
-def is_ele_in_layer(stack_list, ele_nums):
-    es = []
-    for layer_dict in stack_list:
-        layer_eles = layer_dict['Elements']
-        matched_elements = [e for e in layer_eles for Z in ele_nums if e == Z]
-        es.append(matched_elements)
-    return es
-
-### defs below triple hashtags are coupled ###
-
-def get_previous_layers(i, S):
-    count = 0 
-    before_list = []
-    while i > count:
-        before_dict = S[count]
-        before_list.append(before_dict)
-        count = count + 1
-    return before_list
-
-def calc_external_layer_iios(layer):
-    iio_in_layer = np.exp(- layer['cap-x-sect'] * layer['rho'] * layer['thick']) #need to include thicknesses of layers in stack_info
-    
-    #ele_string = # how to input elements of interest here?
-    ele_XRF = get_Ele_XRF_Energy(ele_string, beam_energy)
-    #iio_out_layer = np.exp( - 
-    return iio_in #,iio_out
-
-# =============================================================================
-# for layer_index, layer in enumerate(stack_info):
-#     before_layers = get_previous_layers(layer_index, stack_info)
-#     iio_ins = []
-#     iio_outs = []
-#     for before_layer in before_layers:
-#         iio_in, iio_out = calc_external_layer_iios(before_layer)
-#         iio_ins.append(iio_in)
-#         iio_outs.append(iio_out)
-#     ext_iio = np.prod(iio_ins) * np.prod(iio_outs)
-# =============================================================================
-
-### defs above triple hashtags are coupled ###
+# where i left off: want to check if element is in a given layer of interest
+    # then call functions required for calculating iio of that element in that layer
+    # relvant functions found in py file below
+        #import absorb_defs
 
 # =============================================================================
 # #percent incoming beam transmitted to CdTe layer
@@ -111,6 +44,8 @@ def calc_external_layer_iios(layer):
 # 
 # 
 # =============================================================================
+
+
 ### code comparable to matlab, only for and up to CdTe layer, will work on later ###
 # =============================================================================
 # #percent incoming beam transmitted to CdTe layer
