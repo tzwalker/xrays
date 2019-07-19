@@ -1,11 +1,10 @@
 import sys
-import matplotlib.pyplot as plt
-import seaborn as sns
+
 
 get_defs = 'work'
 ### paths for custom defintion files and scans ### change according to the operating system environment
 if get_defs == 'work':
-    custom_def_path = r'C:\Users\Trumann\Desktop\xrays\python\personal-programs\twalker_defs'
+    custom_def_path = r'C:\Users\Trumann\Desktop\xrays\python\testing\twalker_defs'
     scan_path = r'C:\Users\Trumann\Desktop\work_data\NBL3\H5 data'
 else:
     custom_def_path = '/home/kineticcross/Desktop/xrays/python/personal-programs/twalker_defs' 
@@ -40,12 +39,19 @@ eiDefs.get_scan_scalers(samples)
 eiDefs.get_and_add_DSIC_channels(samples)
 eiDefs.cts_to_elect(samples)
 
+elements = ['Cu']
+# see defs_Cu_clustering.py to use as a test command line to shell
+# left off in def: find_ele_in_h5s() in rummage_thru_H5.py
+    # see comment in that defintion
 
-#list_of_Cu_indices_in_each_scan = rumH.get_ChOIs_for_all_scans2()
+# GOAL: find element channels of interest in all scans
+
+### old notes ###
 
 # note after these commands run, the above dictionaries will be much larger than shown, and will contain the electrical maps of interest
     # use 'sample.keys()' to view all the dictionary keys and access the groups of interest
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 # =============================================================================
 # h5_filename = r'C:\Users\Trumann\Desktop\2017_12_2018_07_NBL3_bacth_refit\img.dat\2idd_0440.h5'
 # 

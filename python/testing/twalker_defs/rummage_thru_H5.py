@@ -38,6 +38,26 @@ def get_ChOIs_for_all_scans(files, ChOIs):
         
     return list_of_indices
 
+def find_ele_in_h5s(sample_dicts, ChOIs):
+    for samp in sample_dicts:
+        c_files = samp['XBIC_h5s']
+        v_files = samp['XBIV_h5s']
+        # make def that operates on the list of H5 files above; some combo of:
+        # get_ChOIs_for_all_scans() + get_desired_channel_index()
+    list_of_indices = []                                            #initialize master list
+    
+    for file in enumerate(files):
+        channel_names = file['/MAPS/channel_names']                 #navigate to the structure conatining the channel names as element strings, e.g. 'Cd_L'
+        decoded_ele_string_indices = []                             #initialize internal list
+        
+        for ele in ChOIs:
+            s = get_desired_channel_index(channel_names, ele)       #perform string comparison between 'channels of interest' and 'channel names', and extract index of interest
+            decoded_ele_string_indices.append(s)                    #build internal list
+
+        list_of_indices.append(decoded_ele_string_indices)          #add internal list (i.e. a scan) to master list
+        
+    return list_of_indices
+
 
 # this function uses the element indices from the master_index_list to extract the 2D fitted data arrays from the H5 file
 # it also build a master list that contains the 2D numpy arrays of interest, rather than just the indices
@@ -53,17 +73,3 @@ def extract_maps(H5s, list_of_lists):
     return maps
 
 
-def get_ChOIs_for_all_scans2(files, ChOIs):
-    list_of_indices = []                                            #initialize master list
-    
-    for scan_index, file in enumerate(files):
-        channel_names = file['/MAPS/channel_names']                 #navigate to the structure conatining the channel names as element strings, e.g. 'Cd_L'
-        decoded_ele_string_indices = []                             #initialize internal list
-        
-        for ele in ChOIs:
-            s = get_desired_channel_index(channel_names, ele)       #perform string comparison between 'channels of interest' and 'channel names', and extract index of interest
-            decoded_ele_string_indices.append(s)                    #build internal list
-
-        list_of_indices.append(decoded_ele_string_indices)          #add internal list (i.e. a scan) to master list
-        
-    return list_of_indices
