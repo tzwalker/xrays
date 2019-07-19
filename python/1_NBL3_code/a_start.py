@@ -1,13 +1,12 @@
 import sys
 
-
-get_defs = 'work'
+get_defs = 'wor'
 ### paths for custom defintion files and scans ### change according to the operating system environment
 if get_defs == 'work':
     custom_def_path = r'C:\Users\Trumann\Desktop\xrays\python\testing\twalker_defs'
     scan_path = r'C:\Users\Trumann\Desktop\work_data\NBL3\H5 data'
 else:
-    custom_def_path = '/home/kineticcross/Desktop/xrays/python/personal-programs/twalker_defs' 
+    custom_def_path = '/home/kineticcross/Desktop/xrays/python/testing/twalker_defs' 
     scan_path = '/home/kineticcross/Desktop/data'
 
 sys.path.append(custom_def_path)
@@ -40,9 +39,11 @@ eiDefs.get_and_add_DSIC_channels(samples)
 eiDefs.cts_to_elect(samples)
 
 elements = ['Cu']
-# see defs_Cu_clustering.py to use as a test command line to shell
+# changing defs_Cu_clustering.py --> psuedo.py for use as a test file when variables are loaded
 # left off in def: find_ele_in_h5s() in rummage_thru_H5.py
-    # see comment in that defintion
+    # see comments in that defintion, notably, put element indices where...?
+    # don't forget to test the newer defs find_ele_in_h5s() and get_elem_indices()
+        # didn't get the chance because h5 386 and 387 on home laptop were overwritten (didn't include 'r' in h5 import call)
 
 # GOAL: find element channels of interest in all scans
 
