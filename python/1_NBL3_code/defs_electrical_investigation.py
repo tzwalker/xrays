@@ -3,11 +3,19 @@
 created: Mon Jul 15 16:53:32 2019
 author: Trumann
 """
+import h5py
 
-import rummage_thru_H5
+def import_h5s(s, p):
+    imported_h5s = []
+    for scan in s:
+        # add if statement to check between sectors
+        filename = '/2idd_0' + scan + '.h5'
+        f = h5py.File(p + filename, 'r') # this needs to be an 'r'!!! otherwise the h5s will be overwritten...
+        imported_h5s.append(f)
+    return imported_h5s
 
+### transform integers in scan list to strings; prep for use in filename strings ###
 def str_list(L):
-    ### transform integers in scan list to strings; prep for use in filename strings ###
     L = [str(v) for v in L]
     return L
 
@@ -17,8 +25,9 @@ def get_add_h5s(samps, pth):
         s['XBIC_scans'] = str_list(s['XBIC_scans'])
         s['XBIV_scans'] = str_list(s['XBIV_scans'])
         ### import h5 files ###
-        XBIC_h5s = rummage_thru_H5.import_h5s(s['XBIC_scans'], pth)
-        XBIV_h5s = rummage_thru_H5.import_h5s(s['XBIV_scans'], pth)
+        XBIC_h5s = import_h5s(s['XBIC_scans'], pth)
+        XBIV_h5s = import_h5s(s['XBIV_scans'], pth)
+        ### add files to sample dicitonaries ###
         key = 'XBIC_h5s'
         s.setdefault(key, XBIC_h5s)
         key = 'XBIV_h5s'
@@ -42,15 +51,15 @@ def get_scan_scalers(samps):
     # to get the list of available scalers, load H5, and write a for loop
     # to print out the values under the scaler_names group
     # e.g. file['/MAPS/''scaler_names'], where 'file' is a loaded H5
-def get_and_add_DSIC_channels(samps):
+def get_add_elect_channel(samps, scaler_ch):
     for s in samps:
         IC_h5s = s['XBIC_h5s']
-        ds_ic0 = [h5['/MAPS/scalers'][2] for h5 in IC_h5s]  #grab xbic channels
+        ds_ic0 = [h5['/MAPS/scalers'][scaler_ch] for h5 in IC_h5s]  #grab xbic channels
         key = 'XBIC_ct_maps'
         s.setdefault(key, ds_ic0)
         
         IV_h5s = s['XBIV_h5s']
-        ds_ic1 = [h5['/MAPS/scalers'][2] for h5 in IV_h5s] #grab xbiv channels
+        ds_ic1 = [h5['/MAPS/scalers'][scaler_ch] for h5 in IV_h5s] #grab xbiv channels
         key = 'XBIV_ct_maps'
         s.setdefault(key, ds_ic1)
     return

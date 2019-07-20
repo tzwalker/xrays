@@ -1,38 +1,34 @@
-import h5py
-
-def import_h5s(s, p):
-    imported_h5s = []
-    for scan in s:
-        # add if statement to check between sectors
-        filename = '/2idd_0' + scan + '.h5'
-        f = h5py.File(p + filename, 'r') # this needs to be an 'r'!!! otherwise the h5s will be overwritten...
-        imported_h5s.append(f)
-    return imported_h5s
-
 def get_elem_indices(w, chan):
     chan = [x.decode('utf-8') for x in chan]
     index_list = [i for i,ele in enumerate(chan) for e in w if e == ele]
     return index_list
 
 def find_ele_in_h5s(sample_dicts, ChOIs):
-    list_of_list = []
+    sample_dict = dict()
     for samp in sample_dicts:
-        samp_list = []
-        for file in samp['XBIC_h5s']:
-            ch_names = file['/MAPS/channel_names']
-            c_indices = get_elem_indices(ChOIs, ch_names)
-            samp_list.append(c_indices)
-        # what to do with the element indices...?
-            # do i store these outside of the sample dictionary...
-            # or would they be more useful somehwere else...?
-            # they would definitely be more accessible if they are not in the sample dictionary...
-            # if i make list_of_lists as done below, i can call extract_maps()...
-        for file in samp['XBIV_h5s']:
-            ch_names = file['/MAPS/channel_names']
-            v_indices = get_elem_indices(ChOIs, ch_names)
-            samp_list.append(v_indices)
-        list_of_list.append(samp_list)
-    return list_of_list
+        scan_dict = dict()
+        for scan, file in zip(samp['XBIC_scans'], samp['XBIC_h5s']):
+            c_indices = get_elem_indices(ChOIs, file['/MAPS/channel_names'])
+            c_key = str(scan)
+            scan_dict.setdefault(c_key, c_indices)
+        for scan, file in zip(samp['XBIV_scans'], samp['XBIV_h5s']):
+            v_indices = get_elem_indices(ChOIs, file['/MAPS/channel_names'])
+            v_key = str(scan)
+            scan_dict.setdefault(v_key, v_indices)
+        key = samp['Name']
+        sample_dict.setdefault(key, scan_dict)
+
+            
+# =============================================================================
+#         c_indices = [get_elem_indices(ChOIs, file['/MAPS/channel_names']) for file in samp['XBIC_h5s']]
+#         v_indices = [get_elem_indices(ChOIs, file['/MAPS/channel_names']) for file in samp['XBIV_h5s']]
+#         
+#         sample_dict.setdefault(c_indices)
+#         key = samp['Name']
+#         
+#         sample_dict.setdefault(key, scan_dict)
+# =============================================================================
+    return sample_dict
 
 ### older defs; borrow ideas from here ###
 
