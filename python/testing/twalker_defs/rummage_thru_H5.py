@@ -15,10 +15,13 @@ def get_elem_indices(w, chan):
     return index_list
 
 def find_ele_in_h5s(sample_dicts, ChOIs):
+    list_of_list = []
     for samp in sample_dicts:
+        samp_list = []
         for file in samp['XBIC_h5s']:
             ch_names = file['/MAPS/channel_names']
             c_indices = get_elem_indices(ChOIs, ch_names)
+            samp_list.append(c_indices)
         # what to do with the element indices...?
             # do i store these outside of the sample dictionary...
             # or would they be more useful somehwere else...?
@@ -26,17 +29,10 @@ def find_ele_in_h5s(sample_dicts, ChOIs):
             # if i make list_of_lists as done below, i can call extract_maps()...
         for file in samp['XBIV_h5s']:
             ch_names = file['/MAPS/channel_names']
-            v_indices = get_elem_indices(ChOIs, ch_names)    
-    
-    list_of_indices = []                                            #initialize master list
-    for file in enumerate(files):
-        channel_names = file['/MAPS/channel_names']                 #navigate to the structure conatining the channel names as element strings, e.g. 'Cd_L'
-        decoded_ele_string_indices = []                             #initialize internal list
-        for ele in ChOIs:
-            s = get_desired_channel_index(channel_names, ele)       #perform string comparison between 'channels of interest' and 'channel names', and extract index of interest
-            decoded_ele_string_indices.append(s)                    #build internal list
-        list_of_indices.append(decoded_ele_string_indices)          #add internal list (i.e. a scan) to master list 
-    return list_of_indices
+            v_indices = get_elem_indices(ChOIs, ch_names)
+            samp_list.append(v_indices)
+        list_of_list.append(samp_list)
+    return list_of_list
 
 ### older defs; borrow ideas from here ###
 

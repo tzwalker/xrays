@@ -24,7 +24,7 @@ NBL3_3 = {'Name': 'NBL3-3', 'areas':['1','2','3'], 'XBIC_scans': [264, 265, 266,
           'c_stanford': [5000,5000,5000, 200], 
           'c_lockin':[500,500,500, 20], 
           'v_lockin': [1E4,1E4,1E4, 100000]}
-TS58A = {'Name': 'TS58A', 'areas':['1','2','3'], 'XBIC_scans': [385, 386, 387, 439], 'XBIV_scans': [382,383,384, 440], 
+TS58A = {'Name': 'TS58A', 'areas':['1','2','3'], 'XBIC_scans': [385, 439], 'XBIV_scans': [382,383,384, 440], 
          'beam_conv': [2E5, 2E5, 2E5, 1E5], 
          'c_stanford': [5000,5000,5000, 200], 
          'c_lockin':[10000,10000,10000, 20], 
@@ -38,14 +38,16 @@ eiDefs.get_scan_scalers(samples)
 eiDefs.get_and_add_DSIC_channels(samples)
 eiDefs.cts_to_elect(samples)
 
-elements = ['Cu']
+elements = ['Cu', 'Cd_L']
 # changing defs_Cu_clustering.py --> psuedo.py for use as a test file when variables are loaded
-# left off in def: find_ele_in_h5s() in rummage_thru_H5.py
-    # see comments in that defintion, notably, put element indices where...?
-    # don't forget to test the newer defs find_ele_in_h5s() and get_elem_indices()
-        # didn't get the chance because h5 386 and 387 on home laptop were overwritten (didn't include 'r' in h5 import call)
+# left off in def: find_ele_in_h5s() in tzwalker_defs/rummage_thru_H5.py
+    # right now, function works, and results in the comments seen on line 48-49
+    # defs find_ele_in_h5s() and get_elem_indices() work well for one sample
+        # still not sure in that's how i want to store the indices...
 
-# GOAL: find element channels of interest in all scans
+# makes list of len = 6 (number of scans in TS58A dict), 
+# where each element of list is a list containing the indices of the elements of interest for that scan!
+found_eles_in_each_scan = rumH.find_ele_in_h5s(samples, elements) 
 
 ### old notes ###
 
