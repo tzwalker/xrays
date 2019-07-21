@@ -6,28 +6,18 @@ def get_elem_indices(w, chan):
 def find_ele_in_h5s(sample_dicts, ChOIs):
     sample_dict = dict()
     for samp in sample_dicts:
-        scan_dict = dict()
+        xbic_eles = dict()
         for scan, file in zip(samp['XBIC_scans'], samp['XBIC_h5s']):
             c_indices = get_elem_indices(ChOIs, file['/MAPS/channel_names'])
             c_key = str(scan)
-            scan_dict.setdefault(c_key, c_indices)
+            xbic_eles.setdefault(c_key, c_indices)
+        xbiv_eles = dict()
         for scan, file in zip(samp['XBIV_scans'], samp['XBIV_h5s']):
             v_indices = get_elem_indices(ChOIs, file['/MAPS/channel_names'])
             v_key = str(scan)
-            scan_dict.setdefault(v_key, v_indices)
+            xbiv_eles.setdefault(v_key, v_indices)
         key = samp['Name']
-        sample_dict.setdefault(key, scan_dict)
-
-            
-# =============================================================================
-#         c_indices = [get_elem_indices(ChOIs, file['/MAPS/channel_names']) for file in samp['XBIC_h5s']]
-#         v_indices = [get_elem_indices(ChOIs, file['/MAPS/channel_names']) for file in samp['XBIV_h5s']]
-#         
-#         sample_dict.setdefault(c_indices)
-#         key = samp['Name']
-#         
-#         sample_dict.setdefault(key, scan_dict)
-# =============================================================================
+        sample_dict.setdefault(key, [xbic_eles, xbiv_eles])
     return sample_dict
 
 ### older defs; borrow ideas from here ###
@@ -67,3 +57,15 @@ def get_ChOIs_for_all_scans(files, ChOIs):
             decoded_ele_string_indices.append(s)                    #build internal list
         list_of_indices.append(decoded_ele_string_indices)          #add internal list (i.e. a scan) to master list
     return list_of_indices
+
+            
+# =============================================================================
+    # intiallyt for find_ele_in_h5s()
+#         c_indices = [get_elem_indices(ChOIs, file['/MAPS/channel_names']) for file in samp['XBIC_h5s']]
+#         v_indices = [get_elem_indices(ChOIs, file['/MAPS/channel_names']) for file in samp['XBIV_h5s']]
+#         
+#         sample_dict.setdefault(c_indices)
+#         key = samp['Name']
+#         
+#         sample_dict.setdefault(key, scan_dict)
+# =============================================================================

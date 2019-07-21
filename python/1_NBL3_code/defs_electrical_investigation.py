@@ -44,13 +44,7 @@ def get_scan_scalers(samps):
         s.setdefault(key, V_scale)
     return
 
-# note the scaler index in this function 
-# must match the scaler index where the XBIC signal of interest is stored 
-# in the H5 structure (usually ds_ic, which is index 2)
-    # us_ic is index 1
-    # to get the list of available scalers, load H5, and write a for loop
-    # to print out the values under the scaler_names group
-    # e.g. file['/MAPS/''scaler_names'], where 'file' is a loaded H5
+# added scaler_channel input to be defined by user
 def get_add_elect_channel(samps, scaler_ch):
     for s in samps:
         IC_h5s = s['XBIC_h5s']

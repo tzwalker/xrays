@@ -30,25 +30,36 @@ TS58A = {'Name': 'TS58A', 'areas':['1','2','3'], 'XBIC_scans': [385,386,387, 439
 
 samples = [NBL3_2, NBL3_3]#], TS58A]
 
-### these functions import the H5s, build the dictionaries above, and converts XBIC cts to amps
+# import the H5s, build the dictionaries above, and scale the electrical signal accordingly
 eiDefs.get_add_h5s(samples, scan_path)
 eiDefs.get_scan_scalers(samples)
-# in get_add_elect_channel(): 
-# enter 1 if XBIC/V collected through us_ic
-# enter 2 if XBIC/V collected through ds_ic
+# in get_add_elect_channel() below: 
+    # enter 1 if XBIC/V collected through us_ic
+    # enter 2 if XBIC/V collected through ds_ic
+# otherwise: see README.txt
 eiDefs.get_add_elect_channel(samples, 2)  
 eiDefs.cts_to_elect(samples)
 
 elements = ['Cu', 'Cd_L']
-# changing defs_Cu_clustering.py --> psuedo.py for use as a test file when variables are loaded
-# left off in def: find_ele_in_h5s() in tzwalker_defs/rummage_thru_H5.py
-    # right now, function works, and results in the comments seen on line 48-49
-    # defs find_ele_in_h5s() and get_elem_indices() work well for one sample
-        # still not sure in that's how i want to store the indices...
 
-# makes list of len = 6 (number of scans in TS58A dict), 
-# where each element of list is a list containing the indices of the elements of interest for that scan!
-found_eles_in_each_scan = rumH.find_ele_in_h5s(samples, elements)
+# makes top-level dict: keys --> sample name, values --> two lists, one for xbic and one for xbiv
+    # list for either xbic or xbiv -->  contains two dictionaries, one for xbic scans, another for xbiv scans
+        # bottom-level dictionary: keys --> scan number, values --> list of ele_indices for that scan
+# not so sure maintaining split structures (between xbic and xbiv) is necessary, see comments below
+ele_indices = rumH.find_ele_in_h5s(samples, elements)
+
+
+# left off in tzwalker_defs/rummage_thru_H5.py and defs_electrical_investigation.py:
+    # if i do keep split structure, leave all functions alone and move unto absorption correction
+    # if i do not keep split structure:
+        # modify eiDefs.cts_to_elect() to combine XBIC and XBIV maps into one key:value location in master sample dict
+        # modify rumH.find_ele_inh5s() back to combining all the scan ele_indices into one list
+# maintaining separation pro: plotting XBIC vs. XBIV may be easier...
+# maintaining separation con: ele_indices are buried in a complicated structure 
+    # that i'll need to work with when applying absorption correction code...
+# DO I NEED TO SEPARATE XBIC AND XBIV...? could i use if statements in defs_electrical_investigation.py???
+    
+
 
 ### old notes ###
 
