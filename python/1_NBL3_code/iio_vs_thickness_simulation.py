@@ -18,7 +18,7 @@ def get_Ele_XRF_Energy(ele, energy):
                                             F = xl.LineEnergy(Z, xl.MA1_LINE) 
     return F
 
-# returns numpy (fl64) array; essentially the simulated profile for the element 'ele' above
+# values being compared in comments are for Cd_L
 def iio_vs_depth(ele, t, dt):
     # percent incoming beam transmitted to CdTe layer
     iio_Mo = np.exp(- MO['capXsect'] * MO['LDensity'] * MO['Thick'] / beam_geometry)
@@ -27,11 +27,11 @@ def iio_vs_depth(ele, t, dt):
     
     # percent outgoing Cd_L transmitted by external layers
     ele_line = get_Ele_XRF_Energy(ele, beam_energy)
-    mu_Mo_ele_line = xl.CS_Total_CP('Mo', ele_line)         #1800 vs. 1872 (matlab)
-    mu_ZnTe_Cd_ele_line = xl.CS_Total_CP('ZnTe', ele_line)     #653 vs. 680 (matlab)
+    mu_Mo_ele_line = xl.CS_Total_CP('Mo', ele_line)             #1800 vs. 1872 (matlab)
+    mu_ZnTe_Cd_ele_line = xl.CS_Total_CP('ZnTe', ele_line)      #653 vs. 680 (matlab)
     c_1 = np.exp(- mu_Mo_ele_line * MO['LDensity'] * MO['Thick'] / detect_geometry)        # moly is a really good Cd_L and Te_L absorber, iio ~0.0287
     c_2 = np.exp(- mu_ZnTe_Cd_ele_line * ZNTE['LDensity'] * ZNTE['Thick'] / detect_geometry)
-    iio_out = iio_in * c_1 * c_2                  #0.0151 vs. 0.0163 (matlab)
+    iio_out = iio_in * c_1 * c_2                                #0.0151 vs. 0.0163 (matlab)
     
     # percent outgoing Cd_L transmitted by CdTe itself
     mu_CdTe_ele = xl.CS_Total_CP('CdTe', ele_line)
@@ -68,62 +68,73 @@ def gen_up_down_iios(rough_ups, rough_downs):
     return ele_rough_iios_up, ele_rough_iios_down
 
 ## define settings and stack parameters ##
-
-beam_energy = 12.7 #keV
+beam_energy = 8.99 #keV
 beam_theta = 90                                                     #angle of the beam relative to sample normal
 beam_geometry = np.sin(beam_theta*np.pi/180)                        #convert to radians
 detect_theta = 47                                                   #angle of the detector sample normal
 detect_geometry = np.sin(detect_theta*np.pi/180)                    #convert to radians
-
+# enter thickness of layer in cm
+# only upstream layers are of interest
 MO =    {'Thick':0.00005,    'LDensity': 10.2, 'Name': 'Mo',     'capXsect': xl.CS_Total_CP('Mo', beam_energy)}
 ZNTE =  {'Thick':0.0000375,  'LDensity': 6.34, 'Name': 'ZnTe',   'capXsect': xl.CS_Total_CP('ZnTe', beam_energy)}
-# CU 'layer' is shown here, but is not used in this program
-CU =    {'Thick':0.000001,   'LDensity': 8.96, 'Name': 'Cu',     'capXsect': xl.CS_Total_CP('Cu', beam_energy)}
-# CDTE thickness is defined here, but is not used in this program
-CDTE =  {'Thick':0.0005,    'LDensity': 5.85, 'Name': 'CdTe',   'capXsect': xl.CS_Total_CP('CdTe', beam_energy)} 
-CDS =   {'Thick':0.000008,   'LDensity': 4.82, 'Name': 'CdS',    'capXsect': xl.CS_Total_CP('CdS', beam_energy)}
-SNO2 =  {'Thick':0.00006,    'LDensity': 6.85, 'Name': 'SnO2',   'capXsect': xl.CS_Total_CP('SnO2', beam_energy)}
-
 
 # enter element for which you wish to see I/Io (will work on generatign plots for many elements at once)
-ele = 'Cu'
+ele = 'Cd'
 
 # specify arbitrary depth of absorber
 no_rough = np.linspace(0, 12000, 12001)               #(nm) arbitrary absorber depth of 12um;
 dt = 1*10**-7                                       # 1nm = 1E-7cm
 no_rough_iio = iio_vs_depth(ele, no_rough, dt)      #calc reference profile
 
-# specfiy roughness parameters
-roughnesses = np.linspace(0.05, 0.2, 3)
+# =============================================================================
+# # specfiy roughness parameters
+# roughnesses = np.linspace(0.05, 0.2, 3)
+# rough_ups, rough_downs = gen_upd_and_downs(roughnesses)
+# ele_rough_iios_up, ele_rough_iios_down = gen_up_down_iios(rough_ups, rough_downs)
+# no_rough_in_um = no_rough / 1000 #for proper x-axis units while plotting
+# =============================================================================
 
-rough_ups, rough_downs = gen_upd_and_downs(roughnesses)
-ele_rough_iios_up, ele_rough_iios_down = gen_up_down_iios(rough_ups, rough_downs)
-no_rough_in_um = no_rough / 1000 #for proper x-axis units while plotting
+# iio vs. depth() is essentially the same as the calculation seen in absorb_matlib_v_xraylib
+# only dependency iio_vs_depth() has on CdTe thickness is seen in the "no_rough" variable
+    # an arbitrarily large 12um thickness was chosen to calculate iio through the entirety of a thick cdte layer
+    # slicing iio to thickness found from SIMS (slide 60 in "NBL3 consolidated notes.ppt"), then averaging will
+    # yield mean iio correction factor for Cu in all samples
+    # enter these factors somewhere into a_start.py, and apply them to Cu maps
 
-# labels for legend are automatically genrated
-label_nums = roughnesses * 100
-label_list = []
-for num in label_nums:
-    b = int(num)
-    c = str(b)
-    d = '+/- ' + c + '%'
-    label_list.append(d)
+samp_cdte_thicknesses = [8516, 7745, 5320]
+samp_iios = []
+for s in samp_cdte_thicknesses:
+    mean_iio = np.mean(no_rough_iio[0:s])
+    samp_iios.append(mean_iio)
 
-# note these list lengths must be greater than or equal to the steps in 'roughnesses'
-color_list = ['r', 'b', 'g', 'c', 'm', 'r', 'b', 'g', 'c']
-line_list = ['--', '--','--','--', '--', '-.', '-.', '-.', '-.']
-# plot
-fig, ax = plt.subplots()
-plt.plot(no_rough_in_um, no_rough_iio, 'k', label = 'No roughness')
-for rough_down, rough_up, l, c, lab in zip(ele_rough_iios_down, ele_rough_iios_up, line_list, color_list, label_list):
-    plt.plot(no_rough_in_um, rough_down, linestyle = l, color = c, label = lab)
-    plt.plot(no_rough_in_um, rough_up, linestyle = l, color = c)
-# axis settings
-plt.xlabel('CdTe Thickness (um)', fontsize = 16)
-plt.ylabel('% ' + ele + ' Signal', fontsize = 16)
-ax.tick_params(axis = 'both', labelsize = 14) 
-plt.ylim([0, 1.0])
-plt.grid()
-ax.legend()
-plt.legend(prop={'size': 14})
-plt.show()
+### plotting iio vs. CdTe thickness ###
+# =============================================================================
+# 
+# # labels for legend are automatically genrated
+# label_nums = roughnesses * 100
+# label_list = []
+# for num in label_nums:
+#     b = int(num)
+#     c = str(b)
+#     d = '+/- ' + c + '%'
+#     label_list.append(d)
+# 
+# # note these list lengths must be greater than or equal to the steps in 'roughnesses'
+# color_list = ['r', 'b', 'g', 'c', 'm', 'r', 'b', 'g', 'c']
+# line_list = ['--', '--','--','--', '--', '-.', '-.', '-.', '-.']
+# # plot
+# fig, ax = plt.subplots()
+# plt.plot(no_rough_in_um, no_rough_iio, 'k', label = 'No roughness')
+# for rough_down, rough_up, l, c, lab in zip(ele_rough_iios_down, ele_rough_iios_up, line_list, color_list, label_list):
+#     plt.plot(no_rough_in_um, rough_down, linestyle = l, color = c, label = lab)
+#     plt.plot(no_rough_in_um, rough_up, linestyle = l, color = c)
+# # axis settings
+# plt.xlabel('CdTe Thickness (um)', fontsize = 16)
+# plt.ylabel('% ' + ele + ' Signal', fontsize = 16)
+# ax.tick_params(axis = 'both', labelsize = 14) 
+# plt.ylim([0, 1.0])
+# plt.grid()
+# ax.legend()
+# plt.legend(prop={'size': 14})
+# plt.show()
+# =============================================================================

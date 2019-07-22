@@ -42,11 +42,16 @@ eiDefs.cts_to_elect(samples)
 
 elements = ['Cu', 'Cd_L']
 
-# makes top-level dict: keys --> sample name, values --> two lists, one for xbic and one for xbiv
-    # list for either xbic or xbiv -->  contains two dictionaries, one for xbic scans, another for xbiv scans
-        # bottom-level dictionary: keys --> scan number, values --> list of ele_indices for that scan
-# not so sure maintaining split structures (between xbic and xbiv) is necessary, see comments below
-ele_indices = rumH.find_ele_in_h5s(samples, elements)
+# adds key value pairs into sample dictionaries
+    # example: 'XBIC_eles': [[17,25], [14, 24]]
+        # 17 and 14 are the index positions of the Cu_K map in two different scans
+        # 25 and 24 are the index positions of the Cd_L map in two different scans
+        # this needs to be done to circumvent the differences in the data structures that could result from 
+            # not fitting all scans using the same config file or processing scans from different beamtimes
+rumH.find_ele_in_h5s(samples, elements)
+# adds element maps corresponding to eithe xbic or xbic into dictionary
+rumH.extract_ele_maps(samples)
+#print(NBL3_2.keys())
 
 
 # left off in tzwalker_defs/rummage_thru_H5.py and defs_electrical_investigation.py:
