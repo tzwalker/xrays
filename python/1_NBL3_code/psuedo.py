@@ -1,3 +1,5 @@
+### debugging h5 import, accessing maps of interest, and correcting maps of interest ###
+
 # =============================================================================
 # ### finding elements in h5
 # wanted =        ['cu', 'cd', 'te']
@@ -99,3 +101,25 @@
 # maintaining separation con: ele_indices are buried in a complicated structure 
     # that i'll need to work with when applying absorption correction code...
 # DO I NEED TO SEPARATE XBIC AND XBIV...? could i use if statements in defs_electrical_investigation.py???
+
+## list structure comments for apply_ele_iios() in rummage_thru_H5.py##
+# c = [[(ele/iio) for iio,ele in zip(samp['2017_12_ele_iios'],ele_set)] for ele_set in samp['XBIC_ele_maps'][0:3]]
+    # this produces list structure: [ [-,-], [-,-], [-,-] ] , len = 3
+    
+# c2 = [[(ele/iio) for iio,ele in zip(samp['2019_03_ele_iios'], samp['XBIC_ele_maps'][3])]]
+    # this produces list structure: [ [-,-] ] , len = 1
+    # can add to [ [-,-], [-,-], [-,-] ] to make [ [-,-], [-,-], [-,-], [-,-] ]
+    # len = 4
+    
+# c3 = [[(ele/iio) for iio,ele in zip(samp['2019_03_ele_iios'],ele_set)] for ele_set in samp['XBIC_ele_maps'][3]]
+    # this produces list structure: [-,-] , len = 2 as samp['XBIC_ele_maps'][3] is only a single item
+    # if added to [ [-,-], [-,-], [-,-] ] resulting structure would be [ [-,-], [-,-], [-,-], -,- ] , len = 5
+
+# never use c3; if more than one scan from a separate beamtime is to be processed,
+    # change c2 into the form of c, and be sure to slice list according to corresponding positions in sample dict
+
+
+### ============================================ ###
+    
+
+

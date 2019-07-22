@@ -1,13 +1,9 @@
-import sys
 get_defs = 'work'
 ### paths for custom defintion files and scans ### change according to the operating system environment
 if get_defs == 'work':
-    custom_def_path = r'C:\Users\Trumann\Desktop\xrays\python\testing\twalker_defs'
     scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
 else:
-    custom_def_path = '/home/kineticcross/Desktop/xrays/python/testing/twalker_defs' 
     scan_path = '/home/kineticcross/Desktop/data'
-sys.path.append(custom_def_path)
 
 import h5_in_elect_scale as eiDefs
 import rummage_thru_H5 as rumH
@@ -43,7 +39,8 @@ eiDefs.get_scan_scalers(samples)
     # enter 1 if XBIC/V collected through us_ic
     # enter 2 if XBIC/V collected through ds_ic
 # otherwise: see README.txt
-eiDefs.get_add_elect_channel(samples, 2)  
+eiDefs.get_add_elect_channel(samples, 2)   
+# note: check Michael's code to review normalization procedure implented there
 eiDefs.cts_to_elect(samples)
 
 elements = ['Cu', 'Cd_L']
@@ -54,8 +51,10 @@ elements = ['Cu', 'Cd_L']
         # this needs to be done as differences in the data structures could exist from 
             # not fitting all scans using the same config file or processing scans from different beamtimes
 rumH.find_ele_in_h5s(samples, elements)
-# adds element maps to sample dictionaries
-rumH.extract_ele_maps(samples)
+# adds element maps to sample dictionaries, 
+    # normalized to desired scaler and fitted data
+        # use roi 
+rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi')
 
 # now apply XRF correction
 # ele_iios in dicts above calculated using iio_vs_depth_simulation.py
