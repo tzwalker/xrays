@@ -9,24 +9,30 @@ else:
     scan_path = '/home/kineticcross/Desktop/data'
 sys.path.append(custom_def_path)
 
-import defs_electrical_investigation as eiDefs
+import h5_in_elect_scale as eiDefs
 import rummage_thru_H5 as rumH
 
-NBL3_2 = {'Name': 'NBL3-2', 'areas':['1','2','3'], 'XBIC_scans': [422,423,424, 550], 'XBIV_scans': [419,420,421, 551], 
+NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550], 'XBIV_scans': [419,420,421, 551], 
           'beam_conv': [2E5,2E5,2E5, 2E5], 
           'c_stanford': [5000,5000,5000, 50000], 
           'c_lockin':[500,500,500, 100], 
-          'v_lockin': [1E3,1E3,1E3, 10000]}
-NBL3_3 = {'Name': 'NBL3-3', 'areas':['1','2','3'], 'XBIC_scans': [264,265,266, 475], 'XBIV_scans': [261,262,263, 472], 
+          'v_lockin': [1E3,1E3,1E3, 10000],
+          '2017_12_ele_iios': [0.275, 0.0446, 0.0550],
+          '2019_03_ele_iios': [0.104, 0.00131, 0.00418]}
+NBL3_3 = {'Name': 'NBL3-3', 'XBIC_scans': [264,265,266, 475], 'XBIV_scans': [261,262,263, 472], 
           'beam_conv': [2E5, 2E5, 2E5, 1E5], 
           'c_stanford': [5000,5000,5000, 200], 
           'c_lockin':[500,500,500, 20], 
-          'v_lockin': [1E4,1E4,1E4, 100000]}
-TS58A = {'Name': 'TS58A', 'areas':['1','2','3'], 'XBIC_scans': [385,386,387, 439], 'XBIV_scans': [382,383,384, 440], 
+          'v_lockin': [1E4,1E4,1E4, 100000],
+          '2017_12_ele_iios': [0.296, 0.0488, 0.0604],
+          '2019_03_ele_iios': [0.114, 0.00144, 0.00459]}
+TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439], 'XBIV_scans': [382,383,384, 440], 
          'beam_conv': [2E5, 2E5, 2E5, 1E5], 
          'c_stanford': [5000,5000,5000, 200], 
          'c_lockin':[10000,10000,10000, 20], 
-         'v_lockin': [1000,1000,1000, 100000]}
+         'v_lockin': [1000,1000,1000, 100000],
+         '2017_12_ele_iios': [0.381, 0.0682, 0.0867],
+         '2019_03_ele_iios': [0.162, 0.00209, 0.00669]}
 
 samples = [NBL3_2, NBL3_3]#], TS58A]
 
@@ -41,47 +47,22 @@ eiDefs.get_add_elect_channel(samples, 2)
 eiDefs.cts_to_elect(samples)
 
 elements = ['Cu', 'Cd_L']
-
 # adds key value pairs into sample dictionaries
     # example: 'XBIC_eles': [[17,25], [14, 24]]
         # 17 and 14 are the index positions of the Cu_K map in two different scans
         # 25 and 24 are the index positions of the Cd_L map in two different scans
-        # this needs to be done to circumvent the differences in the data structures that could result from 
+        # this needs to be done as differences in the data structures could exist from 
             # not fitting all scans using the same config file or processing scans from different beamtimes
 rumH.find_ele_in_h5s(samples, elements)
-# adds element maps corresponding to eithe xbic or xbic into dictionary
+# adds element maps to sample dictionaries
 rumH.extract_ele_maps(samples)
-#print(NBL3_2.keys())
+
+# now apply XRF correction
+# ele_iios in dicts above calculated using iio_vs_depth_simulation.py
+    # Cu, Cd_L, and Te_L iios of CdTe layer found by typing in each element
+    # and taking the average of the resulting iio vs. depth array
+    # attenuation by upstream Mo and ZnTe accounted
+rumH.apply_ele_iios(samples)
+# checked first couple values in arrays by hand, looks good :)
 
 
-# left off in tzwalker_defs/rummage_thru_H5.py and defs_electrical_investigation.py:
-    # if i do keep split structure, leave all functions alone and move unto absorption correction
-    # if i do not keep split structure:
-        # modify eiDefs.cts_to_elect() to combine XBIC and XBIV maps into one key:value location in master sample dict
-        # modify rumH.find_ele_inh5s() back to combining all the scan ele_indices into one list
-# maintaining separation pro: plotting XBIC vs. XBIV may be easier...
-# maintaining separation con: ele_indices are buried in a complicated structure 
-    # that i'll need to work with when applying absorption correction code...
-# DO I NEED TO SEPARATE XBIC AND XBIV...? could i use if statements in defs_electrical_investigation.py???
-    
-
-
-### old notes ###
-
-# note after these commands run, the above dictionaries will be much larger than shown, and will contain the electrical maps of interest
-    # use 'sample.keys()' to view all the dictionary keys and access the groups of interest
-import matplotlib.pyplot as plt
-import seaborn as sns
-# =============================================================================
-# h5_filename = r'C:\Users\Trumann\Desktop\2017_12_2018_07_NBL3_bacth_refit\img.dat\2idd_0440.h5'
-# 
-# H5 = h5.File(h5_filename, 'r') #make sure this has 'r', otherwise py modulse will erae contents of file!
-# 
-# XBIC_name = H5['/MAPS/scaler_names'][2] #index of this identifier will be the same as the index of the desired map
-# XBIC_cts = H5['/MAPS/scalers'][2] #actual XBIC map
-# =============================================================================
-
-# =============================================================================
-# XBIC_scans = [416,417,418,  258,259,260,  378,379,380] #+ [550,549, 475,474, 439,438]
-# XBIV_scans = [419,420,421,  261,262,263,  382,383,384] #+ [551,555, 472,473, 440,441]
-# =============================================================================

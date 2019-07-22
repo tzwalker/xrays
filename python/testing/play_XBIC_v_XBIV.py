@@ -13,7 +13,7 @@ else:
 
 sys.path.append(custom_def_path)
 
-import electrical_investigation_defs as eiDefs
+import h5_in_elect_scale as eiDefs
 
 NBL3_2 = {'Name': 'NBL3-2', 'areas':['1','2','3'], 'XBIC_scans': [416, 417, 418], 'XBIV_scans': [419,420,421], 
           'beam_conv': [2E5,2E5,2E5], 
