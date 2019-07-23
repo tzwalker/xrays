@@ -53,7 +53,9 @@ elements = ['Cu', 'Cd_L']
 rumH.find_ele_in_h5s(samples, elements)
 # adds element maps to sample dictionaries, 
     # normalized to desired scaler and fitted data
-        # use roi 
+        # for 3rd argument:
+        # 'roi' --> default if fit works
+        # 'fit' --> use when MAPS creates problem with quantification
 rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi')
 
 # now apply XRF correction
