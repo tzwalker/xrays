@@ -39,8 +39,7 @@ eiDefs.get_scan_scalers(samples)
     # enter 1 if XBIC/V collected through us_ic
     # enter 2 if XBIC/V collected through ds_ic
 # otherwise: see README.txt
-eiDefs.get_add_elect_channel(samples, 2)   
-# note: check Michael's code to review normalization procedure implented there
+eiDefs.get_add_elect_channel(samples, 2)
 eiDefs.cts_to_elect(samples)
 
 elements = ['Cu', 'Cd_L']
