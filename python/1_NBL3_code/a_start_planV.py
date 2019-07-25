@@ -64,6 +64,8 @@ rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi')
     # and taking the average of the resulting iio vs. depth array
     # attenuation by upstream Mo and ZnTe accounted
 rumH.apply_ele_iios(samples)
-# checked first couple values in arrays by hand, looks good :)
+# normalization successful, units changed to ug/cm2
+
+
 
 

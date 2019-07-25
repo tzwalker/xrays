@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 
-
 #supplement to "shrinkASCII()": MAPS exports ASCIIs with column header whitespace, this removes that whitespace
 def noColNameSpaces(pd_csv_df):
     old_colnames = pd_csv_df.columns.values
@@ -79,7 +78,7 @@ def collect_XBIC(small_dfs, scan_list):
     
 #CALCULATE XBIC
 def generate_scalar_factor(scan_list):
-    beamconversion_factor = 100000
+    beamconversion_factor = 200000
     for scan in scan_list:
         correction = ((scan['stanford']*(1*10**-9)) / (beamconversion_factor * scan['lockin']))     #calculate scale factor for chosen scan
         key = 'scale factor'                                                                        #CREATE: define key for scan dictionary
