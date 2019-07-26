@@ -28,27 +28,6 @@ ax.invert_yaxis()
 plt.figure()
 ay = sns.heatmap(A, square = True)
 ay.invert_yaxis()
-# =============================================================================
-# #{i: np.where(k_means.labels_ == i)[0] for i in range(k_means.n_clusters)}
-# 
-# k_means_labels = k_means.labels_
-# k_means_cluster_centers = k_means.cluster_centers_
-# k_means_labels_unique = np.unique(k_means_labels)
-# 
-# ##############################################################################
-# # Plot result
-# 
-# colors = ['#4EACC5', '#FF9C34', '#4E9A06']
-# plt.figure()
-# #plt.hold(True)
-# for k, col in zip(range(3), colors):
-#     my_members = k_means_labels == k
-#     cluster_center = k_means_cluster_centers[k]
-#     plt.plot(X[my_members, 0], X[my_members, 1], 'w',
-#             markerfacecolor=col, marker='.')
-#     plt.plot(cluster_center[0], cluster_center[1], 'o', markerfacecolor=col,
-#             markeredgecolor='k', markersize=6)
-# plt.title('KMeans')    
-# 
-# plt.show()
-# =============================================================================
+
+dict_of_cu_map_cluster_indices = {i: np.where(model.labels_ == i)[0] for i in range(model.n_clusters)}
+
