@@ -7,6 +7,8 @@ else:
 
 import h5_in_elect_scale as eiDefs
 import rummage_thru_H5 as rumH
+import clustering
+
 
 NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550], 'XBIV_scans': [419,420,421, 551], 
           'beam_conv': [2E5,2E5,2E5, 2E5], 
@@ -30,7 +32,7 @@ TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439], 'XBIV_scans': [382,3
          '2017_12_ele_iios': [0.381, 0.0682, 0.0867],
          '2019_03_ele_iios': [0.162, 0.00209, 0.00669]}
 
-samples = [NBL3_2, NBL3_3]#], TS58A]
+samples = [NBL3_2, NBL3_3]#, TS58A]
 
 # import the H5s, build the dictionaries above, and scale the electrical signal accordingly
 eiDefs.get_add_h5s(samples, scan_path)
@@ -62,9 +64,17 @@ rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi')
     # Cu, Cd_L, and Te_L iios of CdTe layer found by typing in each element
     # and taking the average of the resulting iio vs. depth array
     # attenuation by upstream Mo and ZnTe accounted
+# ATTENTION: this function requires user input inside rummage_thru_h5.py
+    # specfically, the keys in the sample ditcionaries pointing to the iios for each beamtime need to be changed...
+    # alos, the list structure istelf is not robust
 rumH.apply_ele_iios(samples)
 # normalization successful, units changed to ug/cm2
 
+clustering.get_ele_mask(samples, 'Cd', elements)
 
+### left off in cluster.py
+    # review which arrays are being plotted against one another, just getting a straight line scatter...
+    # tried XBIC_of_cu_clust_zero vs. cu_cluster_0
+    # 
 
 

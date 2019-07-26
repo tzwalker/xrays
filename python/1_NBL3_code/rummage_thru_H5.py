@@ -37,32 +37,32 @@ def extract_norm_ele_maps(sample_dicts, fluxnorm, fitnorm):
             maps_of_eles_in_scan = [(h5['/MAPS/XRF_roi'][elementindex, :, :] / h5['/MAPS/scalers'][fluxnormindex, :, :] / h5[fitnormvalue_nav_str][fluxnormindex, 0, elementindex]) for elementindex in ch_inds]
             
             c_ele_maps.append(maps_of_eles_in_scan)
-        key = 'XBIC_ele_maps'
+        key = 'eXBIC'
         samp.setdefault(key, c_ele_maps)
                 
         v_ele_maps = []
         for h5, ch_inds in zip(samp['XBIV_h5s'], samp['XBIV_eles_i']):
             maps_of_eles_in_scan = [(h5['/MAPS/XRF_roi'][elementindex, :, :] / h5['/MAPS/scalers'][fluxnormindex, :, :] / h5[fitnormvalue_nav_str][fluxnormindex, 0, elementindex]) for elementindex in ch_inds]
             v_ele_maps.append(maps_of_eles_in_scan)
-        key = 'XBIV_ele_maps'
+        key = 'eXBIV'
         samp.setdefault(key, v_ele_maps)
     return 
 
 
 def apply_ele_iios(sample_dicts):
     for samp in sample_dicts:
-        c = [[(ele/iio) for iio,ele in zip(samp['2019_03_ele_iios'],ele_set)] for ele_set in samp['XBIC_ele_maps'][0:3]]
+        c = [[(ele/iio) for iio,ele in zip(samp['2019_03_ele_iios'],ele_set)] for ele_set in samp['eXBIC'][0:3]]
         # see list structure comments in psuedo.py to determine how and whether to change line 38
-        c2 = [[(ele/iio) for iio,ele in zip(samp['2017_12_ele_iios'], samp['XBIC_ele_maps'][3])]]
+        c2 = [[(ele/iio) for iio,ele in zip(samp['2017_12_ele_iios'], samp['eXBIC'][3])]]
         scans2 = c+c2
-        key = 'XBIC_ele_maps_corr'
+        key = 'eXBIC_corr'
         samp.setdefault(key, scans2)
         
-        v = [[(ele/iio) for iio,ele in zip(samp['2019_03_ele_iios'],ele_set)] for ele_set in samp['XBIV_ele_maps'][0:3]]
+        v = [[(ele/iio) for iio,ele in zip(samp['2019_03_ele_iios'],ele_set)] for ele_set in samp['eXBIV'][0:3]]
         # see list structure comments in psuedo.py to determine how and whether to change line 38
-        v2 = [[(ele/iio) for iio,ele in zip(samp['2017_12_ele_iios'], samp['XBIV_ele_maps'][3])]]
+        v2 = [[(ele/iio) for iio,ele in zip(samp['2017_12_ele_iios'], samp['eXBIV'][3])]]
         scans3 = v+v2
-        key = 'XBIV_ele_maps_corr'
+        key = 'eXBIV_corr'
         samp.setdefault(key, scans3)
 
     return
