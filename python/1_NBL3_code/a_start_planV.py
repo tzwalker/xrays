@@ -34,46 +34,25 @@ TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439], 'XBIV_scans': [382,3
 
 samples = [NBL3_2, NBL3_3]#, TS58A]
 
-# import the H5s, build the dictionaries above, and scale the electrical signal accordingly
 eiDefs.get_add_h5s(samples, scan_path)
 eiDefs.get_scan_scalers(samples)
-# in get_add_elect_channel() below: 
-    # enter 1 if XBIC/V collected through us_ic
-    # enter 2 if XBIC/V collected through ds_ic
-# otherwise: see README.txt
-eiDefs.get_add_elect_channel(samples, 2)
+eiDefs.get_add_elect_channel(samples, 2) # 1 for us_ic, 2 for ds_ic
 eiDefs.cts_to_elect(samples)
 
-elements = ['Cu', 'Cd_L']
-# adds key value pairs into sample dictionaries
-    # example: 'XBIC_eles': [[17,25], [14, 24]]
-        # 17 and 14 are the index positions of the Cu_K map in two different scans
-        # 25 and 24 are the index positions of the Cd_L map in two different scans
-        # this needs to be done as differences in the data structures could exist from 
-            # not fitting all scans using the same config file or processing scans from different beamtimes
+elements = ['Cu', 'Cd_L']       # USER input
 rumH.find_ele_in_h5s(samples, elements)
-# adds element maps to sample dictionaries, 
-    # normalized to desired scaler and fitted data
-        # for 3rd argument:
-        # 'roi' --> default if fit works
-        # 'fit' --> use when MAPS creates problem with quantification
-rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi')
+rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble w/MAPS fit
 
 # now apply XRF correction
-# ele_iios in dicts above calculated using iio_vs_depth_simulation.py
-    # Cu, Cd_L, and Te_L iios of CdTe layer found by typing in each element
-    # and taking the average of the resulting iio vs. depth array
-    # attenuation by upstream Mo and ZnTe accounted
-# ATTENTION: this function requires user input inside rummage_thru_h5.py
-    # specfically, the keys in the sample ditcionaries pointing to the iios for each beamtime need to be changed...
-    # alos, the list structure istelf is not robust
+# ATTENTION: see ReadME.txt for proper use of apply_ele_iios() below
 rumH.apply_ele_iios(samples)
-# normalization successful, units changed to ug/cm2
 
 number_of_clusters = 3
-# enter 'XBIV', 'XBIC', or e.g. 'Cu'
-    # the XRF line need not be included, but no error will raise if it is
-mask_channel = 'XBIC' 
+# enter 'XBIV', 'XBIC', or any element in 'elements'
+    # the XRF line need not be included, but if it is no error will rise
+mask_channel = 'Cu' 
 clustering.get_mask(samples, mask_channel, elements, number_of_clusters)
+
+
 
 

@@ -1,2 +1,75 @@
-Functions that add/build the sample dictionaries (syntax shown here follows "module.py/def"):
+Object lengths/sizes that should always match (in sample dictionaries):
+
+
+
+
+
+Functions that change/build the sample dictionaries (syntax shown here follows "module.py/def"):
 	
+	h5_in_elect_scale.py/get_add_h5s(sample_dicts, scan_path)
+		# import the H5s
+		# makes a list, adds h5s to that list, attaches the complete list to sample dictionary
+		
+	h5_in_elect_scale.py/scan_scalers(sample_dicts)
+		# scales the electrical channel in for either XBIC or XBIV 
+			# as long as the scans are in the appropriate list, they will have the relevant scalers applied to them
+			# 'c_' prefix denotes the XBIC lockin or stanford settings
+			# 'v_' prefix denotes the XBIV locking settings
+			# presently the beam V2F values for the scans can be seen in 'beam_conv' dict key
+	h5_in_elect_scale.py/get_add_elect_channel(sample_dicts, int)	
+		# enter 1 for int if XBIC/V collected through us_ic
+		# enter 2 for int if XBIC/V collected through ds_ic
+		# WARNING: only useful if all scans being processed had
+			# the electrical signal collected through the same ion_chamber channel.
+			# If scans are from different beamtimes, and a different ion_chamber scaler
+				# was used at each beamtime, this function will not be suitable.
+			# If this is the case it is recommended to use different processing 'start' files for the different scans
+				# until the get_add_elect_channel() can be modified to accomodate such differences 
+		
+
+	
+	rummage_thru_h5.py/find_ele_h5s(sample_dicts, element_list)
+	# adds key value pairs into sample dictionaries
+    # example: 'XBIC_eles': [[17,25], [14, 24]]
+        # 17 and 14 are the index positions of the Cu_K map in two different scans
+        # 25 and 24 are the index positions of the Cd_L map in two different scans
+        # this needs to be done as differences in the data structures could exist from 
+            # not fitting all scans using the same config file or processing scans from different beamtimes
+	
+	
+	rummage_thru_h5.py/extract_norm_ele_maps(sample_dicts, normalization_channel, 'roi')
+		# adds element maps to sample dictionaries, 
+			# normalized to desired scaler and fitted data
+				# for 3rd argument:
+				# 'roi' --> default if fit works
+				# 'fit' --> use when MAPS creates problem with quantification
+				
+	rummage_thru_h5.py/apply_ele_iios(sample_dicts) 
+		# this function requires user input inside rummage_thru_h5.py:
+			# the iio keys in the sample dictionaries must match those
+				# those inside apply_ele_iios() definition
+		# the list structure depends on whether one or more than 
+			# one scan is being processed for a given beamtime
+
+
+
+Home file info:
+
+	# ele_iios calculated using iio_vs_depth_simulation.py
+		# Cu, Cd_L, and Te_L iios of CdTe layer found by typing in each element,
+		# and taking the average of the resulting iio vs. depth array.
+		# attenuation by upstream Mo and ZnTe accounted
+	# should make a ReadMe for that file...
+	
+	
+Debugging notes:
+for clustering.get_mask(sample_dicts, mask_channel, element_list, number_of_clusters)
+# note: the label array of the clustered
+    # mask_channel only corresponds to the channel
+    # that was first processed; i.e. it does not 
+    # get overwritten when the mask_channel changes...
+    # debugging:
+        # the first index of scn_clst_arr.labels_ changes when mask_channel was changed
+        # the cluster algorithim does NOT cluster the same if the algorithim is run
+            # more than once on the same mask_channel
+                # --> increase the number of iterations?

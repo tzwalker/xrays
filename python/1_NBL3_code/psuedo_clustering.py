@@ -109,6 +109,7 @@ std_maps = []
 # =============================================================================
 
 import numpy as np
+import seaborn as sns
 map_shape = np.shape(NBL3_2['XBIC_maps'][0][:,:-2])
 np.shape(NBL3_2['c_kclust_arrs'][0])
 
