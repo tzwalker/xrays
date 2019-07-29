@@ -70,11 +70,10 @@ rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi')
 rumH.apply_ele_iios(samples)
 # normalization successful, units changed to ug/cm2
 
-clustering.get_ele_mask(samples, 'Cd', elements)
-
-### left off in cluster.py
-    # review which arrays are being plotted against one another, just getting a straight line scatter...
-    # tried XBIC_of_cu_clust_zero vs. cu_cluster_0
-    # 
+number_of_clusters = 3
+# enter 'XBIV', 'XBIC', or e.g. 'Cu'
+    # the XRF line need not be included, but no error will raise if it is
+mask_channel = 'XBIC' 
+clustering.get_mask(samples, mask_channel, elements, number_of_clusters)
 
 
