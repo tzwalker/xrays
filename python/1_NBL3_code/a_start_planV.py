@@ -5,9 +5,10 @@ if get_defs == 'work':
 else:
     scan_path = '/home/kineticcross/Desktop/data'
 
-import h5_in_elect_scale as eiDefs
-import rummage_thru_H5 as rumH
-import clustering
+import b_h5_in_elect_scale as eiDefs
+import c_rummage_thru_H5 as rumH
+import d_clustering
+import e_statistics as e_STAT
 
 
 NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550], 'XBIV_scans': [419,420,421, 551], 
@@ -36,10 +37,10 @@ samples = [NBL3_2, NBL3_3]#, TS58A]
 
 eiDefs.get_add_h5s(samples, scan_path)
 eiDefs.get_scan_scalers(samples)
-eiDefs.get_add_elect_channel(samples, 2) # 1 for us_ic, 2 for ds_ic
+eiDefs.get_add_elect_channel(samples, 2) # USER input: 1 --> us_ic, 2 --> ds_ic
 eiDefs.cts_to_elect(samples)
 
-elements = ['Cu', 'Cd_L']       # USER input
+elements = ['Cu', 'Cd_L']       # USER input: strings must include element lines
 rumH.find_ele_in_h5s(samples, elements)
 rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble w/MAPS fit
 
@@ -49,9 +50,12 @@ rumH.apply_ele_iios(samples)
 
 number_of_clusters = 3
 # enter 'XBIV', 'XBIC', or any element in 'elements'
-    # the XRF line need not be included, but if it is no error will rise
-mask_channel = 'Cu' 
-clustering.get_mask(samples, mask_channel, elements, number_of_clusters)
+mask_channel = 'Cu'  # XRF line need not be included, but if it is no error will rise
+d_clustering.get_mask(samples, mask_channel, elements, number_of_clusters)
+
+
+
+
 
 
 

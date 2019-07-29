@@ -1,3 +1,16 @@
+Home file info:
+	# WARNING: these programs are completely dependent on the dictionary keys 
+		# specified by the developer (that's me, Trumann)
+		# if you wish to change the dictionary keys, you will need to go within all definitions 
+			# and change them accordingly
+		# i hope to make roadmap of sorts for the key dependencies at some point so this can be done if desired, 
+			# but for now avoid changing the keys at all possible costs! it will result in complete program failure
+	# ele_iios calculated using iio_vs_depth_simulation.py
+		# Cu, Cd_L, and Te_L iios of CdTe layer found by typing in each element,
+		# and taking the average of the resulting iio vs. depth array.
+		# attenuation by upstream Mo and ZnTe accounted
+	# should make a ReadMe for that file...
+
 Object lengths/sizes that should always match (in sample dictionaries):
 
 
@@ -52,16 +65,7 @@ Functions that change/build the sample dictionaries (syntax shown here follows "
 			# one scan is being processed for a given beamtime
 
 
-
-Home file info:
-
-	# ele_iios calculated using iio_vs_depth_simulation.py
-		# Cu, Cd_L, and Te_L iios of CdTe layer found by typing in each element,
-		# and taking the average of the resulting iio vs. depth array.
-		# attenuation by upstream Mo and ZnTe accounted
-	# should make a ReadMe for that file...
-	
-	
+		
 Debugging notes:
 for clustering.get_mask(sample_dicts, mask_channel, element_list, number_of_clusters)
 # note: the label array of the clustered
