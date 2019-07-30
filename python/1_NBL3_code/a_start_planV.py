@@ -8,7 +8,7 @@ else:
 import b_h5_in_elect_scale as eiDefs
 import c_rummage_thru_H5 as rumH
 import d_clustering
-import e_statistics as e_STAT
+import e_statistics
 
 
 NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550], 'XBIV_scans': [419,420,421, 551], 
@@ -49,12 +49,12 @@ rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble
 rumH.apply_ele_iios(samples)
 
 number_of_clusters = 3
-# enter 'XBIV', 'XBIC', or any element in 'elements'
+# enter 'XBIV', 'XBIC', or any element in 'elements_in'
 mask_channel = 'Cu'  # XRF line need not be included, but if it is no error will rise
 d_clustering.get_mask(samples, mask_channel, elements_in, number_of_clusters)
 
-correlate_elements = ['Cd_L']
-e_STAT.apply_mask(samples, correlate_elements, elements_in)
+correlate_elements = ['Cd'] # USER input:  XRF line need not be included, but if it is no error will rise
+e_statistics.apply_mask(samples, correlate_elements, elements_in)
 
 
 

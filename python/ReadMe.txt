@@ -65,8 +65,12 @@ Functions that change/build the sample dictionaries (syntax shown here follows "
 			# one scan is being processed for a given beamtime
 
 
-		
-Debugging notes:
+	d_clustering.py/get_mask(sample_dicts, mask_channel, elements_in, number_of_clusters)
+		# this function does not discriminate between XBIC or XBIV as mask_channel, 
+			# respective masks will be generated for each set of XBIC and XBIV scan sets of a sample
+			# if you'd like to see exactly how the masks are generated, see defs in d_clustering.py
+	
+Obsolete debugging notes, for developer reference only:
 for clustering.get_mask(sample_dicts, mask_channel, element_list, number_of_clusters)
 # note: the label array of the clustered
     # mask_channel only corresponds to the channel

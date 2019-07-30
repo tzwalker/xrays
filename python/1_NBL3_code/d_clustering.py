@@ -32,12 +32,12 @@ def get_index_in_user_ele_list(s, E):
             ele_i = i                               # use index of matched ele in 'elements' list
     return ele_i
 
-def make_ele_mask_arrays(e_i, samps, N):
+def make_ele_mask_arrays(ele_i, samps, N):
     for samp in samps:
         # cluster ele in XBIC maps first
         c_clust_arrays = []
         for scan in samp['elXBIC_corr']:
-            ele_map = scan[e_i]                     # get element map for mask
+            ele_map = scan[ele_i]                   # get element map for mask
             stat_ele_map = ele_map[:,:-2]           # remove nans
             ele_arr = stat_ele_map.reshape(-1,1)    # array data for proper clustering
             model = KMeans(init='k-means++', n_clusters=N, n_init=10)
@@ -49,7 +49,7 @@ def make_ele_mask_arrays(e_i, samps, N):
         # cluster ele in XBIV maps
         v_clust_arrays = []
         for scan in samp['elXBIV_corr']:
-            ele_map = scan[e_i]                     # get element map for mask
+            ele_map = scan[ele_i]                   # get element map for mask
             stat_ele_map = ele_map[:,:-2]           # remove nans
             ele_arr = stat_ele_map.reshape(-1,1)    # array data for proper clustering
             model = KMeans(init='k-means++', n_clusters=N, n_init=10)
@@ -61,12 +61,12 @@ def make_ele_mask_arrays(e_i, samps, N):
     return 
 
 
-def get_mask(samples, channel, eles, N):
-    if channel == 'XBIC' or channel == 'XBIV':
+def get_mask(samples, mask, eles, N):
+    if mask == 'XBIC' or mask == 'XBIV':
         make_IV_mask_arrays(samples, N)
         print('this is the electrical  mask loop')
     else:
-        ele_i = get_index_in_user_ele_list(channel, eles)
+        ele_i = get_index_in_user_ele_list(mask, eles)
         make_ele_mask_arrays(ele_i, samples, N)
         print('this is the element mask loop')
     return
