@@ -40,8 +40,8 @@ eiDefs.get_scan_scalers(samples)
 eiDefs.get_add_elect_channel(samples, 2) # USER input: 1 --> us_ic, 2 --> ds_ic
 eiDefs.cts_to_elect(samples)
 
-elements = ['Cu', 'Cd_L']       # USER input: strings must include element lines
-rumH.find_ele_in_h5s(samples, elements)
+elements_in = ['Cu', 'Cd_L']       # USER input: strings must include element lines
+rumH.find_ele_in_h5s(samples, elements_in)
 rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble w/MAPS fit
 
 # now apply XRF correction
@@ -51,9 +51,10 @@ rumH.apply_ele_iios(samples)
 number_of_clusters = 3
 # enter 'XBIV', 'XBIC', or any element in 'elements'
 mask_channel = 'Cu'  # XRF line need not be included, but if it is no error will rise
-d_clustering.get_mask(samples, mask_channel, elements, number_of_clusters)
+d_clustering.get_mask(samples, mask_channel, elements_in, number_of_clusters)
 
-
+correlate_elements = ['Cd_L']
+e_STAT.apply_mask(samples, correlate_elements, elements_in)
 
 
 
