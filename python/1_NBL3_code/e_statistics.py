@@ -1,9 +1,6 @@
 import numpy as np
 import sklearn.preprocessing as skpp
 
-def ClusterIndicesNumpy(clustNum, labels_array): #numpy 
-    return np.where(labels_array == clustNum)[0] 
-
 def get_index_in_user_ele_list(s, E):               # copied from d_clustering.py
     for i, e in enumerate(E):                       
         if s == e[0:2]:                             # test first two characters of ele

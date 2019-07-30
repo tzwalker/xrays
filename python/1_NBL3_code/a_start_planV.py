@@ -67,5 +67,7 @@ e_statistics.standardize_channels(samples) # these should have same structure as
 # MAKE A FUNCTION THAT ADD DICT KEYS AND UPDATES THE DICT; 
     # to be used in each definiton that builds upon the sample dictionaries
 
+import z_plotting
 
+float_axis_list = z_plotting.plot_elect_maps(samples, 'XBIC')
 
