@@ -114,28 +114,18 @@
 
 ### NOTES: d_clustering.py ###
 
-# scan indices:
-    # 0-2 --> 2019_03
-    # 3 --> 2017_12
-# element indices:
-    # 0 --> Cu
-    # 1 --> Cd
-    # will add others if needed
 import numpy as np
 from sklearn.cluster import KMeans
-import sklearn.preprocessing as skpp
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-reshape_maps = []
 # make mask
 cu_map = NBL3_2['eXBIC_corr'][0][0] # practice map, [area 1 : 2019_03][Cu]
 stat_cu_map = cu_map[:,:-2] # eliminate nan
 cu_arr = stat_cu_map.reshape(-1, 1) # array data to cluster each entry individually
 model = KMeans(init='k-means++', n_clusters=3, n_init=10)
 model.fit(cu_arr) # cluster array
-dict_of_cu_map_cluster_indices = {str(i): np.where(Z == i)[0] for i in range(model.n_clusters)}
 
 Z = model.labels_
 A = Z.reshape(np.shape(stat_cu_map)) # for cluster map
@@ -143,41 +133,32 @@ A = Z.reshape(np.shape(stat_cu_map)) # for cluster map
 XBIC_map = NBL3_2['XBIC_maps'][0]
 stat_XBIC_map = XBIC_map[:,:-2] # eliminate nan columns
 XBIC_arr = stat_XBIC_map.reshape(-1, 1) # array data to identify indices matching with those in cluster labels
-
+# to find actual values of clusters in other maps
+dict_of_cu_map_cluster_indices = {str(i): np.where(Z == i)[0] for i in range(model.n_clusters)}
 XBIC_from_clusters_of_cu = []
 for index_list in dict_of_cu_map_cluster_indices.values():
     matched_values_in_XBIC = np.take(XBIC_arr, index_list)
     XBIC_from_clusters_of_cu.append(matched_values_in_XBIC)
 
-
-def ClusterIndicesNumpy(clustNum, labels_array): #numpy 
-    return np.where(labels_array == clustNum)[0]
-
 cu_clust_zero = cu_arr[ClusterIndicesNumpy(0,model.labels_)]
 cu_clust_one = cu_arr[ClusterIndicesNumpy(1,model.labels_)]
 cu_clust_two = cu_arr[ClusterIndicesNumpy(2,model.labels_)]
-
+# cluster scatters
 plt.figure()
 plt.scatter(cu_clust_zero, XBIC_from_clusters_of_cu[0]) 
 plt.ylim(0, 4E-8)
 plt.xlim(0)
-
-
 plt.scatter(cu_clust_one, XBIC_from_clusters_of_cu[1]) 
 plt.ylim(0, 4E-8)
 plt.xlim(0)
-
-
 plt.scatter(cu_clust_two, XBIC_from_clusters_of_cu[2]) 
 plt.ylim(0, 4E-8)
 plt.xlim(0)
-
 plt.figure()
 plt.scatter(cu_arr, XBIC_arr) 
 plt.ylim(0, 4E-8)
 plt.xlim(0)
-
-### heatmaps
+# heatmaps
 plt.figure()
 ax = sns.heatmap(cu_map, square = True)
 ax.invert_yaxis()
@@ -188,6 +169,7 @@ plt.figure()
 ay = sns.heatmap(XBIC_map, square = True)
 ay.invert_yaxis()
 
+### NOTES: e_statistics.py
 
 # for all three samples, compare the correlation of XBIC to Cd, Te, Zn, and Cu using:
 # with standaraizations
@@ -195,37 +177,79 @@ ay.invert_yaxis()
 # with gaussian applied to Cu
 # without gaussian applied to Cu
 
+## comments during development ##
+def get_index_in_user_ele_list(s, E):               # copied from d_clustering.py
+    for i, e in enumerate(E):                       
+        if s == e[0:2]:                             # test first two characters of ele
+            ele_i = i                               # use index of matched ele in 'elements' list
+    return ele_i
+
+def get_ele_maps(samp_dict, scan_i, corr_channels, user_channels):
+    ele_maps = []
+    for ch in corr_channels:
+        ele_i = get_index_in_user_ele_list(ch, user_channels) # this index should match the index of the given element in the list 'elements'
+        e_map = samp_dict['elXBIC_corr'][scan_i][ele_i][:,:-2] # remove nan columns to match shape of kclust_arrs
+        ele_maps.append(e_map)
+    return ele_maps
+
+def apply_mask(samps, channels_to_correlate, channels_inputed_by_user):
+    for samp in samps:
+        correlated_channels_in_ea_scan = []
+        for scan_i, (c_model, v_model) in enumerate(zip(samp['c_kclust_arrs'], samp['v_kclust_arrs'])):
+            stat_XBIC_map = samp['XBIC_maps'][scan_i][:,:-2] # assign matching elect map, remove nan columns
+            to_be_stat_maps = get_ele_maps(samp, scan_i, channels_to_correlate, channels_inputed_by_user)
+            # print(np.shape(stat_XBIC_map))
+            # print(np.shape(to_be_stat_maps[0])) # good, shapes of these arrays match eachother
+            # combine ele and elect lists
+            to_be_stat_maps.insert(0, stat_XBIC_map) # maintain XBIC map in correct index position (0)
+            # list comp for loop to reshape each array into one column
+            stat_arrs = [m.reshape(-1,1) for m in to_be_stat_maps] # these arrays are of appropriate len
+            # build clust dicts from model
+            C_dict_clust_indices_of_clust_ele = {str(clust_num): np.where(c_model.labels_ == clust_num)[0] for clust_num in range(c_model.n_clusters)}
+            # np.take application, (n clusters) * (n_correlate_ele + 1) = length of this list
+            other_map_clusters = [[np.take(other_map, index_list) for index_list in C_dict_clust_indices_of_clust_ele.values()] for other_map in stat_arrs]
+            # structure of above list follows [['XBIC for each cluster'], ['ele1 for each cluster'], ...]
+            correlated_channels_in_ea_scan.append(other_map_clusters)
+        key = 'C_kclust_masked' 
+        samp.setdefault(key, correlated_channels_in_ea_scan)        # make samp dict entry
+        samp['C_kclust_masked'] = correlated_channels_in_ea_scan    # update entry if needed
+    return other_map_clusters
+
+
+
 # use for standardization 
 # compare results of standardized and non-standardized bivariate comparisons
     # note, relative differences within dataset (i.e. the heatmap)
     # do not change after standardization; the quatities change so they may be compared across scales
 scaler = skpp.StandardScaler()
+reshape_maps = []
 std_maps = []
-# =============================================================================
-#     
-#     Z = scaler.fit_transform(Y)
-#     std_maps.append(Z)
-#     standardized_map = Z.reshape(np.shape(X))
-#     
-#     plt.figure()
-#     sns.heatmap(cu_map, square = True)
-#     plt.figure()
-#     sns.heatmap(standardized_map, square = True)
-#     
-# for r_m,z in zip(reshape_maps, std_maps):
-#     plt.figure()
-#     sns.distplot(r_m)
-#     sns.distplot(z)
-# =============================================================================
+    
+for r_m,z in zip(reshape_maps, std_maps):
+    plt.figure()
+    sns.distplot(r_m)
+    sns.distplot(z)
 
-# =============================================================================
-# import numpy as np
-# import seaborn as sns
-# map_shape = np.shape(NBL3_2['XBIC_maps'][0][:,:-2])
-# np.shape(NBL3_2['c_kclust_arrs'][0])
-# 
-# np.shape(NBL3_2['c_kclust_arrs'][0].labels_)
-# 
-# ex_clust_map = NBL3_2['c_kclust_arrs'][0].labels_.reshape(map_shape)
-# sns.heatmap(ex_clust_map, square = True).invert_yaxis()
-# =============================================================================
+# check standardization features
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import sklearn.preprocessing as skpp
+
+scaler = skpp.StandardScaler()
+cu_stat_map = NBL3_2['elXBIC_corr'][0][0][:,:-2] # practice map, [area 1 : 2019_03][Cu]
+stand_cu_stat_map = scaler.fit_transform(cu_stat_map)
+
+map_shape = np.shape(NBL3_2['XBIC_maps'][0][:,:-2])
+cu_stat_arr = cu_stat_map.reshape(-1,1)
+stand_cu_stat_map_from_arr = scaler.fit_transform(cu_stat_arr)
+stand_cu_stat_map_from_arr = stand_cu_stat_map_from_arr.reshape(map_shape)
+
+plt.figure()
+sns.heatmap(stand_cu_stat_map, square = True).invert_yaxis()
+plt.figure()
+sns.heatmap(stand_cu_stat_map_from_arr, square = True).invert_yaxis()
+
+
+#ex_clust_map = NBL3_2['c_kclust_arrs'][0].labels_.reshape(map_shape)
+#sns.heatmap(ex_clust_map, square = True).invert_yaxis()

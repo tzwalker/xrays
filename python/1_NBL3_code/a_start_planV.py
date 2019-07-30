@@ -49,15 +49,23 @@ rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble
 rumH.apply_ele_iios(samples)
 
 number_of_clusters = 3
-# enter 'XBIV', 'XBIC', or any element in 'elements_in'
+# USER input: enter 'XBIV', 'XBIC', or any element in 'elements_in'
 mask_channel = 'Cu'  # XRF line need not be included, but if it is no error will rise
 d_clustering.get_mask(samples, mask_channel, elements_in, number_of_clusters)
 
-correlate_elements = ['Cd'] # USER input:  XRF line need not be included, but if it is no error will rise
-e_statistics.apply_mask(samples, correlate_elements, elements_in)
+# USER input:  XRF line need not be included, but if it is no error will rise
+    # note masks are automatically applied to 'XBIC/V' channels
+    # do not include 'XBIC/V' in 'correlate_elements' list
+    # position eles in same manner as in ele_in, for use in stadardize_channels()
+        # should make this more flexible in the future, but for now this is will have to do
+correlate_elements = ['Cu', 'Cd'] 
+# calling the mask on the element used to make the mask 
+    # captures the actaul quantities within each cluster (output of kmeans model is just labels)
+e_statistics.apply_mask(samples, correlate_elements, elements_in) 
+e_statistics.standardize_channels(samples) # these should have same structure as NBL3_2['v_stat_arrs']
 
-
-
+# MAKE A FUNCTION THAT ADD DICT KEYS AND UPDATES THE DICT; 
+    # to be used in each definiton that builds upon the sample dictionaries
 
 
 

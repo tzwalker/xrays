@@ -69,6 +69,12 @@ Functions that change/build the sample dictionaries (syntax shown here follows "
 		# this function does not discriminate between XBIC or XBIV as mask_channel, 
 			# respective masks will be generated for each set of XBIC and XBIV scan sets of a sample
 			# if you'd like to see exactly how the masks are generated, see defs in d_clustering.py
+			
+	e_statistics.py
+	    # do i want ot perform standardization before or after clustering...?
+        # since clustering is performed using many samples of 'one feature', 
+        # scale between the samples within the feature are identical and 
+        # standardization before clustering is not necessary
 	
 Obsolete debugging notes, for developer reference only:
 for clustering.get_mask(sample_dicts, mask_channel, element_list, number_of_clusters)
