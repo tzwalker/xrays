@@ -1,4 +1,4 @@
-get_defs = 'work'
+get_defs = 'wor'
 ### paths for custom defintion files and scans ### change according to the operating system environment
 if get_defs == 'work':
     scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
@@ -69,5 +69,7 @@ e_statistics.standardize_channels(samples) # these should have same structure as
 
 import z_plotting
 
-float_axis_list = z_plotting.plot_elect_maps(samples, 'XBIC')
+z_plotting.plot_elect_maps(samples, 'XBIC')
+
+
 
