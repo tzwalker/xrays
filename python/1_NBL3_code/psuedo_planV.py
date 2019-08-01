@@ -302,22 +302,20 @@
 #       # and will plot either the bounds of the axes, or every whole number that exists in the linear space!
 # =============================================================================
 
-# i've been using kmeans incorrectly... my samples are captures by the spatial indices, however, my features for one sample are much more than one
 
-from sklearn.cluster import KMeans
-import numpy as np
-
-#NBL3_3['c_stat_arrs'][scan][channel]
-
-scan264_stats = NBL3_3['c_stat_arrs'][0]
-scan264_stats1 = NBL3_3['c_stat_arrs'][0][1]
-c = np.concatenate((scan264_stats, scan264_stats1), axis=1) # --> works
-
-arr = np.concatenate(scan264_stats, axis = 1) # --> works better, just make list then concatenate whole list!
+# =============================================================================
+# import numpy as np
+# 
+# #NBL3_3['c_stat_arrs'][scan][channel]
+# 
+# scan264_stats = NBL3_3['c_stat_arrs'][0]
+# scan264_stats1 = NBL3_3['c_stat_arrs'][0][1]
+# c = np.concatenate((scan264_stats, scan264_stats1), axis=1) # --> works
+# 
+# arr = np.concatenate(scan264_stats, axis = 1) # --> works better, just make list then concatenate whole list!
+# =============================================================================
     
+# i've been using kmeans incorrectly... 
+    # my samples are captures by the spatial indices, 
+    # however, my features for one sample are much more than one
 
-
-# =============================================================================
-# model = KMeans(init='k-means++', n_clusters=4, n_init=10)   # setup model
-# scn_clst_arr = model.fit(scan264_stats)                     # cluster
-# =============================================================================

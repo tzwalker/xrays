@@ -87,3 +87,7 @@ for clustering.get_mask(sample_dicts, mask_channel, element_list, number_of_clus
         # the cluster algorithim does NOT cluster the same if the algorithim is run
             # more than once on the same mask_channel
                 # --> increase the number of iterations?
+
+# setdefault() method does nothing if key already exists,
+# update dict with new values if mask_channel was changed
+    # or even if the clustering is run again

@@ -10,7 +10,6 @@ import c_rummage_thru_H5 as rumH
 import d_clustering
 import e_statistics
 
-
 NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550], 'XBIV_scans': [419,420,421, 551], 
           'beam_conv': [2E5,2E5,2E5, 2E5], 
           'c_stanford': [5000,5000,5000, 50000], 
@@ -48,24 +47,29 @@ rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble
 # ATTENTION: see ReadME.txt for proper use of apply_ele_iios() below
 rumH.apply_ele_iios(samples)
 
-number_of_clusters = 3
-# USER input: enter 'XBIV', 'XBIC', or any element in 'elements_in'
-mask_channel = 'Cu'  # XRF line need not be included, but if it is no error will rise
-d_clustering.get_mask(samples, mask_channel, elements_in, number_of_clusters)
+e_statistics.make_stat_arrays(samples)
+e_statistics.standardize_channels(samples)
 
-# USER input:  XRF line need not be included, but if it is no error will rise
-    # note masks are automatically applied to 'XBIC/V' channels
-    # do not include 'XBIC/V' in 'correlate_elements' list
-    # position eles in same manner as in ele_in, for use in stadardize_channels()
-        # should make this more flexible in the future, but for now this is will have to do
-correlate_elements = ['Cu', 'Cd'] 
-# calling the mask on the element used to make the mask 
-    # captures the actaul quantities within each cluster (output of kmeans model is just labels)
-e_statistics.apply_mask(samples, correlate_elements, elements_in) 
-#e_statistics.standardize_channels(samples) # these should have same structure as NBL3_2['v_stat_arrs'] # --> hold off on standardizing until 
+d_clustering.find_clusters(samples, 3)
 
-# MAKE A FUNCTION THAT ADD DICT KEYS AND UPDATES THE DICT; 
-    # to be used in each definiton that builds upon the sample dictionaries
+
+# =============================================================================
+# # USER input: enter 'XBIV', 'XBIC', or any element in 'elements_in'
+# number_of_clusters = 3
+# mask_channel = 'Cu'  # XRF line need not be included, but if it is no error will rise
+# d_clustering.get_mask(samples, mask_channel, elements_in, number_of_clusters)
+# # USER input:  XRF line need not be included, but if it is no error will rise
+#     # note masks are automatically applied to 'XBIC/V' channels
+#     # do not include 'XBIC/V' in 'correlate_elements' list
+#     # position eles in same manner as in ele_in, for use in stadardize_channels()
+#         # should make this more flexible in the future, but for now this is will have to do
+# correlate_elements = ['Cu', 'Cd'] 
+# # calling the mask on the element used to make the mask 
+#     # captures the actaul quantities within each cluster (output of kmeans model is just labels)
+# e_statistics.apply_mask(samples, correlate_elements, elements_in) 
+# e_statistics.standardize_channels(samples) # these should have same structure as NBL3_2['v_stat_arrs'] 
+# =============================================================================
+
 
 # =============================================================================
 # import z_plotting
