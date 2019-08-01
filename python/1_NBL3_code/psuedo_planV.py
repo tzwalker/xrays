@@ -256,32 +256,68 @@
 
 
 
+### NOTES: z_plotting.py, spacing axes
+# =============================================================================
+# practice_axis_list = list(practice_axis)
+# 
+# max(practice_axis_list)
+# Out[152]: 1484.7
+# 
+# min(practice_axis_list)
+# Out[153]: 1469.7
+# 
+# max(practice_axis_list) - min(practice_axis_list)
+# Out[154]: 15.0
+# 
+# np.linspace(0, max(practice_axis_list) - min(practice_axis_list),5)
+# Out[155]: array([ 0.  ,  3.75,  7.5 , 11.25, 15.  ])
+# 
+# np.linspace(0, max(practice_axis_list) - min(practice_axis_list), len(practice_axis_list))
+# Out[156]: 
+# array([ 0.  ,  0.15,  0.3 ,  0.45,  0.6 ,  0.75,  0.9 ,  1.05,  1.2 ,
+#         1.35,  1.5 ,  1.65,  1.8 ,  1.95,  2.1 ,  2.25,  2.4 ,  2.55,
+#         2.7 ,  2.85,  3.  ,  3.15,  3.3 ,  3.45,  3.6 ,  3.75,  3.9 ,
+#         4.05,  4.2 ,  4.35,  4.5 ,  4.65,  4.8 ,  4.95,  5.1 ,  5.25,
+#         5.4 ,  5.55,  5.7 ,  5.85,  6.  ,  6.15,  6.3 ,  6.45,  6.6 ,
+#         6.75,  6.9 ,  7.05,  7.2 ,  7.35,  7.5 ,  7.65,  7.8 ,  7.95,
+#         8.1 ,  8.25,  8.4 ,  8.55,  8.7 ,  8.85,  9.  ,  9.15,  9.3 ,
+#         9.45,  9.6 ,  9.75,  9.9 , 10.05, 10.2 , 10.35, 10.5 , 10.65,
+#        10.8 , 10.95, 11.1 , 11.25, 11.4 , 11.55, 11.7 , 11.85, 12.  ,
+#        12.15, 12.3 , 12.45, 12.6 , 12.75, 12.9 , 13.05, 13.2 , 13.35,
+#        13.5 , 13.65, 13.8 , 13.95, 14.1 , 14.25, 14.4 , 14.55, 14.7 ,
+#        14.85, 15.  ])
+#     
+# # how to figure out what the proper indeices to plot are...?
+# # the integer in xticklabels represents every 'n' index to be plotted
+#     # e.g. xtixklabels = 50 --> 0, 50, 150 all plotted
+#     # the list x_real has actual numbers that map to the indices... but how does that help me...   
+#     # could use mod?
+# # find where first whole number is in x_real!
+#   # get index of this number... 
+#   # when would whole number not exist...? 
+#       # when the width of the axis is not evenly split by the resolution
+#       # e.g. np.linspace(0,16,38)
+#   # HOWEVER: the first and last number, as they are int, are guaranteed
+#       # to be whole, therefore, the above approach will always find a whole number index
+#       # and will plot either the bounds of the axes, or every whole number that exists in the linear space!
+# =============================================================================
 
-practice_axis_list = list(practice_axis)
+# i've been using kmeans incorrectly... my samples are captures by the spatial indices, however, my features for one sample are much more than one
 
-max(practice_axis_list)
-Out[152]: 1484.7
+from sklearn.cluster import KMeans
+import numpy as np
 
-min(practice_axis_list)
-Out[153]: 1469.7
+#NBL3_3['c_stat_arrs'][scan][channel]
 
-max(practice_axis_list) - min(practice_axis_list)
-Out[154]: 15.0
+scan264_stats = NBL3_3['c_stat_arrs'][0]
+scan264_stats1 = NBL3_3['c_stat_arrs'][0][1]
+c = np.concatenate((scan264_stats, scan264_stats1), axis=1) # --> works
 
-np.linspace(0, max(practice_axis_list) - min(practice_axis_list),5)
-Out[155]: array([ 0.  ,  3.75,  7.5 , 11.25, 15.  ])
+arr = np.concatenate(scan264_stats, axis = 1) # --> works better, just make list then concatenate whole list!
+    
 
-np.linspace(0, max(practice_axis_list) - min(practice_axis_list), len(practice_axis_list))
-Out[156]: 
-array([ 0.  ,  0.15,  0.3 ,  0.45,  0.6 ,  0.75,  0.9 ,  1.05,  1.2 ,
-        1.35,  1.5 ,  1.65,  1.8 ,  1.95,  2.1 ,  2.25,  2.4 ,  2.55,
-        2.7 ,  2.85,  3.  ,  3.15,  3.3 ,  3.45,  3.6 ,  3.75,  3.9 ,
-        4.05,  4.2 ,  4.35,  4.5 ,  4.65,  4.8 ,  4.95,  5.1 ,  5.25,
-        5.4 ,  5.55,  5.7 ,  5.85,  6.  ,  6.15,  6.3 ,  6.45,  6.6 ,
-        6.75,  6.9 ,  7.05,  7.2 ,  7.35,  7.5 ,  7.65,  7.8 ,  7.95,
-        8.1 ,  8.25,  8.4 ,  8.55,  8.7 ,  8.85,  9.  ,  9.15,  9.3 ,
-        9.45,  9.6 ,  9.75,  9.9 , 10.05, 10.2 , 10.35, 10.5 , 10.65,
-       10.8 , 10.95, 11.1 , 11.25, 11.4 , 11.55, 11.7 , 11.85, 12.  ,
-       12.15, 12.3 , 12.45, 12.6 , 12.75, 12.9 , 13.05, 13.2 , 13.35,
-       13.5 , 13.65, 13.8 , 13.95, 14.1 , 14.25, 14.4 , 14.55, 14.7 ,
-       14.85, 15.  ])
+
+# =============================================================================
+# model = KMeans(init='k-means++', n_clusters=4, n_init=10)   # setup model
+# scn_clst_arr = model.fit(scan264_stats)                     # cluster
+# =============================================================================

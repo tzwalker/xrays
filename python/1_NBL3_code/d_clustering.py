@@ -71,6 +71,3 @@ def get_mask(samples, mask, eles, N):
         print('this is the element mask loop')
     return
 
-# setdefault() method does nothing if key already exists,
-# update dict with new values if mask_channel was changed
-    # or even if the clustering is run again

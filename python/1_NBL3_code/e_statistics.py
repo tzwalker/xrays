@@ -34,7 +34,7 @@ def apply_mask(samps, channels_to_correlate, channels_inputed_by_user):
         samp['C_kclust_masked'] = c_correlated_channels_in_ea_scan    # update entry if needed
         ky = 'c_stat_arrs'
         samp.setdefault(ky, c_stat_arrs)                     # store stat arrays
-        samp['c_stat_arrs_no_mask_ch'] = c_stat_arrs         # update entry if needed
+        samp['c_stat_arrs'] = c_stat_arrs         # update entry if needed
         # apply mask to channels in XBIV scans
         v_correlated_channels_in_ea_scan = []
         v_stat_arrs = []

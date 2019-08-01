@@ -1,4 +1,4 @@
-get_defs = 'wor'
+get_defs = 'work'
 ### paths for custom defintion files and scans ### change according to the operating system environment
 if get_defs == 'work':
     scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
@@ -33,7 +33,7 @@ TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439], 'XBIV_scans': [382,3
          '2017_12_ele_iios': [0.381, 0.0682, 0.0867],
          '2019_03_ele_iios': [0.162, 0.00209, 0.00669]}
 
-samples = [NBL3_2, NBL3_3]#, TS58A]
+samples = [NBL3_2, NBL3_3, TS58A]
 
 eiDefs.get_add_h5s(samples, scan_path)
 eiDefs.get_scan_scalers(samples)
@@ -62,14 +62,15 @@ correlate_elements = ['Cu', 'Cd']
 # calling the mask on the element used to make the mask 
     # captures the actaul quantities within each cluster (output of kmeans model is just labels)
 e_statistics.apply_mask(samples, correlate_elements, elements_in) 
-e_statistics.standardize_channels(samples) # these should have same structure as NBL3_2['v_stat_arrs']
+#e_statistics.standardize_channels(samples) # these should have same structure as NBL3_2['v_stat_arrs'] # --> hold off on standardizing until 
 
 # MAKE A FUNCTION THAT ADD DICT KEYS AND UPDATES THE DICT; 
     # to be used in each definiton that builds upon the sample dictionaries
 
-import z_plotting
-
-z_plotting.plot_elect_maps(samples, 'XBIC')
+# =============================================================================
+# import z_plotting
+# z_plotting.plot_elect_maps(samples, 'XBIC')
+# =============================================================================
 
 
 
