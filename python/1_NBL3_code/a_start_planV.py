@@ -51,9 +51,13 @@ rumH.apply_ele_iios(samples)
 e_statistics.make_stat_arrays(samples)
 e_statistics.standardize_channels(samples)
 
-cluster_channels = ['perf', 'Cu']
+# 'perf' is electrical: will be performed for both XBIC and XBIV if entered
+    # type 'all' to include all features, that is, the electrical channels and 
+# note REMEMBER to add dictionary key switch to the find_clusters() 
+    #that will cluster the data either with or without outliers
+cluster_channels = ['perf', 'Cu'] 
 cluster_number = 3
-d_clustering.find_clusters(samples, cluster_number, cluster_channels, elements_in)
+#d_clustering.find_clusters(samples, cluster_number, cluster_channels, elements_in)#OUTLIER KEY SWITCH)
 
 
 # =============================================================================

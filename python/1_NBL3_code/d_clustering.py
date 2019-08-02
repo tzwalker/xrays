@@ -25,6 +25,7 @@ def find_clusters(samps, N, clust_channels, available_channels):
         c_scan_models = []
         for pre_clust_arrs in samp['c_stand_arrs']:
             trimmed_pre_clust_arrs = pre_clust_arrs[:, indices] # use only array columns of interest
+            print('the number of features: ' +str(np.shape(trimmed_pre_clust_arrs)))
             model = KMeans(init='k-means++', n_clusters=N, n_init=10) # define model (must be included in this loop to reset for each scan/pre_clust_arrs)
             clust_arrs = model.fit(trimmed_pre_clust_arrs) # perform clustering
             c_scan_models.append(clust_arrs) # save model
