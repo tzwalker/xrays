@@ -1,4 +1,4 @@
-get_defs = 'wor'
+get_defs = 'work'
 ### paths for custom defintion files and scans ### change according to the operating system environment
 if get_defs == 'work':
     scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
@@ -39,7 +39,8 @@ eiDefs.get_scan_scalers(samples)
 eiDefs.get_add_elect_channel(samples, 2) # USER input: 1 --> us_ic, 2 --> ds_ic
 eiDefs.cts_to_elect(samples)
 
-elements_in = ['Cu', 'Cd_L']       # USER input: strings must include element lines
+elements_in = ['Cu', 'Cd_L']       # USER input: strings must include element lines, 
+                                    # index of the element strings here dictate their positions in all future structures
 rumH.find_ele_in_h5s(samples, elements_in)
 rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble w/MAPS fit
 
@@ -50,7 +51,9 @@ rumH.apply_ele_iios(samples)
 e_statistics.make_stat_arrays(samples)
 e_statistics.standardize_channels(samples)
 
-d_clustering.find_clusters(samples, 3)
+cluster_channels = ['perf', 'Cu']
+cluster_number = 3
+d_clustering.find_clusters(samples, cluster_number, cluster_channels, elements_in)
 
 
 # =============================================================================

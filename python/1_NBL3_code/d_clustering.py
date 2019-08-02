@@ -2,18 +2,43 @@ from sklearn.cluster import KMeans
 import samp_dict_grow
 import numpy as np
 
-def find_clusters(samps, N):
+def trim_for_clustering(clust_chans, available_chans):
+    if 'all' in clust_chans:
+        indices = list(range(len(available_chans) + 1))
+        return indices
+    else:
+        indices = []
+        for index, channel in enumerate(available_chans):
+            if channel[0:2] in clust_chans:
+                index = index + 1 # XBIC is always @ index 0
+                indices.append(index)
+        if 'perf' in clust_chans:
+            indices.insert(0,0)
+        # do not need to sort indices because i'm interating over the available channels,
+            # the indices of which, by earlier design in e_statistics.py,
+            # correspond directly to those in the stat arrays
+        return indices
+
+def find_clusters(samps, N, clust_channels, available_channels):
+    indices = trim_for_clustering(clust_channels, available_channels) # returns indices of columns of stat/standardized array for scan; used to cluster only channels of interest
     for samp in samps:
-        # model needs to be *inside* list comp loop to avoid overwriting previous models
-        # make list containing the kmeans model for each scan
-        c_scan_models = [KMeans(init='k-means++', n_clusters=N, n_init=10).fit(scan_arrs) for scan_arrs 
-                         in samp['c_stand_arrs']]
-        v_scan_models = [KMeans(init='k-means++', n_clusters=N, n_init=10).fit(scan_arrs) for scan_arrs 
-                         in samp['v_stand_arrs']]
-        samp_dict_grow.build_dict(samp, 'c_kmodels', c_scan_models)
-        samp_dict_grow.build_dict(samp, 'v_kmodels', v_scan_models)
+        c_scan_models = []
+        for pre_clust_arrs in samp['c_stand_arrs']:
+            trimmed_pre_clust_arrs = pre_clust_arrs[:, indices] # use only array columns of interest
+            model = KMeans(init='k-means++', n_clusters=N, n_init=10) # define model (must be included in this loop to reset for each scan/pre_clust_arrs)
+            clust_arrs = model.fit(trimmed_pre_clust_arrs) # perform clustering
+            c_scan_models.append(clust_arrs) # save model
+        samp_dict_grow.build_dict(samp, 'c_kmodels', c_scan_models) # store models
+        v_scan_models = []
+        for pre_clust_arrs in samp['v_stand_arrs']:
+            trimmed_pre_clust_arrs = pre_clust_arrs[:, indices] # use only array columns of interest
+            model = KMeans(init='k-means++', n_clusters=N, n_init=10) # define model (must be included in this loop to reset for each scan/pre_clust_arrs)
+            clust_arrs = model.fit(trimmed_pre_clust_arrs) # perform clustering
+            c_scan_models.append(clust_arrs) # save model
+        samp_dict_grow.build_dict(samp, 'v_kmodels', v_scan_models) # store models
+
     return
-#find_clusters(samples, 3)
+#find_clusters(samples, 3, ['Cd', 'perf'], ['Cu', 'Cd_L'])
 
 ## masking definitions... a little too convoluted and probably not
     # accurate application of clustering
