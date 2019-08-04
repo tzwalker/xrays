@@ -319,3 +319,11 @@
     # my samples are captures by the spatial indices, 
     # however, my features for one sample are much more than one
 
+test_stat_arr = NBL3_2['c_stat_arrs'][0]
+test_stand_arr = NBL3_2['c_stand_arrs'][0]
+
+outliers_of_Cu_channel = np.where(test_stand_arr[:,1]>3)
+
+reduced_stand_arr = test_stand_arr[np.where(test_stand_arr[:,1]<3)] # --> this is the desired output
+
+    

@@ -41,7 +41,7 @@ Functions that change/build the sample dictionaries (syntax shown here follows "
 		
 
 	
-	rummage_thru_h5.py/find_ele_h5s(sample_dicts, element_list)
+	rummage_thru_h5.py/find_ele_h5s(sample_dicts, loaded_ele_channels)
 	# adds key value pairs into sample dictionaries
     # example: 'XBIC_eles': [[17,25], [14, 24]]
         # 17 and 14 are the index positions of the Cu_K map in two different scans
@@ -65,16 +65,36 @@ Functions that change/build the sample dictionaries (syntax shown here follows "
 			# one scan is being processed for a given beamtime
 
 
-	d_clustering.py/get_mask(sample_dicts, mask_channel, elements_in, number_of_clusters)
+	d_clustering.py/get_mask(sample_dicts, mask_channel, loaded_ele_channels, number_of_clusters)
 		# this function does not discriminate between XBIC or XBIV as mask_channel, 
 			# respective masks will be generated for each set of XBIC and XBIV scan sets of a sample
 			# if you'd like to see exactly how the masks are generated, see defs in d_clustering.py
 			
 	e_statistics.py
-	    # do i want ot perform standardization before or after clustering...?
-        # since clustering is performed using many samples of 'one feature', 
-        # scale between the samples within the feature are identical and 
-        # standardization before clustering is not necessary
+	    # do i want to standardize before or after clustering...?
+        # if only clustering features of the same scale, no
+        # if clustering features with different scale, yes 
+    e_statistics.py/reduce_stand_arrs(sample_dicts, bad_channel, loaded_ele_channels, standard_deviation_control)
+        # this function assumes the electrical channel will be of better quality than any XRF
+        # 'bad channel' string is any element string in the 'loaded_ele_channels' list
+        # this function only uses the standardized data of each channel
+            # therefore the standard deviations of each channel is close to unity
+        # 'standard_deviation_control' is essentially a unitless multiple of the standard deviation
+        # for data in 'BAD_CHANNEL' that acts as a threshold;
+            # any standardized sample (i.e. pixel) within the bad channel that is less than or equal to
+            # 'standard_deviation_control' is identified and removed from all maps 
+            # and stored in as seprate data in the sample dictionary
+            # note this fucntion essentially changes the shape of the map...
+                # replacing with nan is an option, but is avoided for stat processing
+            # clustering can be done with either the reduced stat arrays (reccommended) 
+                # or the complete standardized arrays
+        # --> outliers in one channel do not qualify as outliers in another 
+        # --> one channel needs to be specified as the channel with which to exclude pixels
+        # --> the channel with the most outliers (standardized values greater than 'standard_deviation_control')
+            # is not suitable criteria; Cd channel actually 
+            # has more of these points than Cu in the arr tested
+            # therefore, specfiy the channel yourself
+
 	
 Obsolete debugging notes, for developer reference only:
 for clustering.get_mask(sample_dicts, mask_channel, element_list, number_of_clusters)

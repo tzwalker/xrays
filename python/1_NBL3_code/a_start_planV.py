@@ -1,4 +1,4 @@
-get_defs = 'work'
+get_defs = 'wor'
 ### paths for custom defintion files and scans ### change according to the operating system environment
 if get_defs == 'work':
     scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
@@ -50,6 +50,11 @@ rumH.apply_ele_iios(samples)
 
 e_statistics.make_stat_arrays(samples)
 e_statistics.standardize_channels(samples)
+# use this funciton if you want to remove the pixels of all loaded
+    # maps according to bad data in one of the XRF channels
+    # not configured for using electrical channels
+    # see ReadMe.txt for details
+e_statistics.reduce_stand_arrs(samples, 'Cu', elements_in, 3)
 
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
     # type 'all' to include all features, that is, the electrical channels and 
@@ -57,7 +62,7 @@ e_statistics.standardize_channels(samples)
     #that will cluster the data either with or without outliers
 cluster_channels = ['perf', 'Cu'] 
 cluster_number = 3
-#d_clustering.find_clusters(samples, cluster_number, cluster_channels, elements_in)#OUTLIER KEY SWITCH)
+#d_clustering.find_clusters(samples, cluster_number, cluster_channels, elements_in) #OUTLIER KEY SWITCH)
 
 
 # =============================================================================

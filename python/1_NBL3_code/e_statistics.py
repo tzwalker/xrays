@@ -42,13 +42,26 @@ def standardize_channels(samps):
         samp_dict_grow.build_dict(samp, 'v_stand_arrs', v_standardized_stats)
     return
 
+def get_channel_column_index_in_scan_chan_arrs(ch, available_chans):
+    for index, channel in enumerate(available_chans):
+        if ch[0:2] in available_chans:
+            index = index # XBIC is always @ index 0
+    return index
 
+def reduce_stand_arrs(samples, channel, ch_in, standardized_tolerance):
+    ch_i = get_channel_column_index_in_scan_chan_arrs(channel, ch_in)
+    for samp in samples:
+        reduced_scan_arrs = []
+        for scan_channel_arrs in samp['c_stand_arrs']:
+            reduced_stand_arr = scan_channel_arrs[np.where(scan_channel_arrs[:,ch_i] < standardized_tolerance)]
+            reduced_scan_arrs.append(reduced_stand_arr)
+        samp_dict_grow.build_dict(samp, 'c_Rstand_arrs', reduced_scan_arrs)
 
-
+    return
 
 # =============================================================================
 # def standardize_channels(samps):
-#     scaler = skpp.StandardScaler()
+#     scaler = skpp.Stahttps://docs.scipy.org/doc/numpy/reference/generated/numpy.delete.htmlndardScaler()
 #     for samp in samps:
 #         # apply_mask() also saves an arrayed version of every map; this is a requirement for proper statistics and standardization
 #         c_stand_arrs = [[scaler.fit_transform(channel) for channel in stat_arr] for stat_arr in samp['c_stat_arrs']]
