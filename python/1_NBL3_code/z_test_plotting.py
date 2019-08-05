@@ -7,7 +7,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
 
-scan_i = 1     # --> index of scan 
+scan_i = 3     # --> index of scan 
 x_variable = 1 # --> 0:XBIC 1:Cu 2:Cd
 y_variable = 0 # --> 0:XBIC 1:Cu 2:Cd
 #z_variable = 2

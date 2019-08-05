@@ -54,7 +54,7 @@ e_statistics.standardize_channels(samples, ['c_stat_arrs', 'v_stat_arrs'], ['c_s
     # maps according to bad data in one of the XRF channels
     # not configured for using electrical channels as the bad channel
     # see ReadMe.txt for details
-e_statistics.reduce_arrs(samples, 'Cu', elements_in, 1, ['c_stat_arrs', 'v_stat_arrs'])
+e_statistics.reduce_arrs(samples, 'Cu', elements_in, 3, ['c_stat_arrs', 'v_stat_arrs'])
 e_statistics.standardize_channels(samples, ['c_reduced_arrs', 'v_reduced_arrs'], ['c_redStand_arrs', 'v_redStand_arrs'])
 
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
