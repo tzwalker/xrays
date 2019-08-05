@@ -19,11 +19,11 @@ def trim_for_clustering(clust_chans, available_chans):
             # correspond directly to those in the stat arrays
         return indices
 
-def find_clusters(samps, N, clust_channels, available_channels):
+def find_clusters(samps, N, clust_channels, available_channels, dict_data):
     indices = trim_for_clustering(clust_channels, available_channels) # returns indices of columns of stat/standardized array for scan; used to cluster only channels of interest
     for samp in samps:
         c_scan_models = []
-        for pre_clust_arrs in samp['c_stand_arrs']:
+        for pre_clust_arrs in samp[dict_data]:
             trimmed_pre_clust_arrs = pre_clust_arrs[:, indices] # use only array columns of interest
             #print('the number of features: ' +str(np.shape(trimmed_pre_clust_arrs)))
             model = KMeans(init='k-means++', n_clusters=N, n_init=10) # define model (must be included in this loop to reset for each scan/pre_clust_arrs)
@@ -31,15 +31,23 @@ def find_clusters(samps, N, clust_channels, available_channels):
             c_scan_models.append(clust_arrs) # save model
         samp_dict_grow.build_dict(samp, 'c_kmodels', c_scan_models) # store models
         v_scan_models = []
-        for pre_clust_arrs in samp['v_stand_arrs']:
+        for pre_clust_arrs in samp[dict_data]:
             trimmed_pre_clust_arrs = pre_clust_arrs[:, indices] # use only array columns of interest
             model = KMeans(init='k-means++', n_clusters=N, n_init=10) # define model (must be included in this loop to reset for each scan/pre_clust_arrs)
             clust_arrs = model.fit(trimmed_pre_clust_arrs) # perform clustering
-            c_scan_models.append(clust_arrs) # save model
+            v_scan_models.append(clust_arrs) # save model
         samp_dict_grow.build_dict(samp, 'v_kmodels', v_scan_models) # store models
-
     return
-#find_clusters(samples, 3, ['Cd', 'perf'], ['Cu', 'Cd_L'])
+
+def kclustering(samps, N, clust_channels, available_channels, outlier_switch):
+    if outlier_switch == 1:
+        samp_dict_data = 'c_Rstand_arrs'
+        find_clusters(samps, N, clust_channels, available_channels, samp_dict_data)
+    else:
+        samp_dict_data = 'c_stand_arrs'
+        find_clusters(samps, N, clust_channels, available_channels, samp_dict_data)
+    return
+#kclustering(samples, 3, ['Cu', 'perf'], elements_in, 1)
 
 ## masking definitions... a little too convoluted and probably not
     # accurate application of clustering

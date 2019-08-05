@@ -45,20 +45,30 @@ def standardize_channels(samps):
 def get_channel_column_index_in_scan_chan_arrs(ch, available_chans):
     for index, channel in enumerate(available_chans):
         if ch[0:2] in available_chans:
-            index = index # XBIC is always @ index 0
+            index = index # do not add 1 to index here because XBIC is not in list 'available_chans'
     return index
 
-def reduce_stand_arrs(samples, channel, ch_in, standardized_tolerance):
+def reduce_arrs(samples, channel, ch_in, threshold_control, data_to_reduce): # where data_to_reduce is the dict key of interest
     ch_i = get_channel_column_index_in_scan_chan_arrs(channel, ch_in)
     for samp in samples:
         reduced_scan_arrs = []
-        for scan_channel_arrs in samp['c_stand_arrs']:
-            reduced_stand_arr = scan_channel_arrs[np.where(scan_channel_arrs[:,ch_i] < standardized_tolerance)]
-            reduced_scan_arrs.append(reduced_stand_arr)
-        samp_dict_grow.build_dict(samp, 'c_Rstand_arrs', reduced_scan_arrs)
-
+        for scan_channel_arrs in samp[data_to_reduce]:
+            bad_chan = scan_channel_arrs[:,ch_i]
+            bad_chan_mean = np.mean(bad_chan)
+            bad_chan_sig = np.std(bad_chan)
+            upr_lim = bad_chan_mean + threshold_control * bad_chan_sig
+            lwr_lim = bad_chan_mean - threshold_control * bad_chan_sig
+            red_arr_list = [x for x in bad_chan if (lwr_lim < x < upr_lim)]
+            reduced_arr = np.array(red_arr_list)
+            reduced_scan_arrs.append(reduced_arr)
+        samp_dict_grow.build_dict(samp, 'c_reduced_arrs', reduced_scan_arrs)
     return
 
+reduce_arrs(samples, 'Cu', elements_in, 2, 'c_stat_arrs') 
+# --> left off: revised boundaries with which to remove data samples before tranformation
+    # whole standardized arrays exist in samp dictionary along with whole original data
+    # check if the function above will make reduced scan_channel_arrays for either the original data
+        # and the standardized data
 # =============================================================================
 # def standardize_channels(samps):
 #     scaler = skpp.Stahttps://docs.scipy.org/doc/numpy/reference/generated/numpy.delete.htmlndardScaler()

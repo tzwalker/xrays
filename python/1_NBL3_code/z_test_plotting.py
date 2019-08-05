@@ -8,31 +8,31 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 scan_i = 1     # --> index of scan 
-x_variable = 2 # --> 0:XBIC 1:Cu 2:Cd
+x_variable = 1 # --> 0:XBIC 1:Cu 2:Cd
 y_variable = 0 # --> 0:XBIC 1:Cu 2:Cd
-z_variable = 2
-samp = TS58A
+#z_variable = 2
+samp = NBL3_2
 #from os import path
 #outpath = r"C:\Users\Trumann\Desktop\Plot Directory\NBL3\20190801 cluster investigation"
 
 test_models = samp['c_kmodels'][scan_i] # --> XBIC, Cu, and Cd arrays for scan422
 labels = test_models.labels_
-test_data = samp['c_stand_arrs'][scan_i]
+test_data = samp['c_Rstand_arrs'][scan_i]
 x = test_data[:, x_variable]
 y = test_data[:, y_variable]
-z = test_data[:, z_variable]
+#z = test_data[:, z_variable]
 
 #fig, (ax1, ax2) = plt.subplots(1, 2)
 #fig.suptitle('Scatter and Map '+ samp['Name'] + ' ' + str(samp['XBIC_scans'][scan_i]))
-#fig, ax = plt.subplots()
-#ax = plt.scatter(x, y, c = labels)
+fig, ax = plt.subplots()
+ax = plt.scatter(x, y, c = labels)
 #plt.title()
 #filename = 'scat ' + samp['Name'] + ' ' + str(samp['XBIC_scans'][scan_i]) + '.png'
 #fig.savefig(path.join(outpath, filename))
 
-fig, ax1 = plt.subplots()
-ax1 = sns.distplot(x)
-plt.title(samp['Name'] + ' scan ' + str(samp['XBIC_scans'][scan_i]))
+#fig, ax1 = plt.subplots()
+#ax1 = sns.distplot(x)
+#plt.title(samp['Name'] + ' scan ' + str(samp['XBIC_scans'][scan_i]))
 #filename = 'hex ' + samp['Name'] + ' ' + str(samp['XBIC_scans'][scan_i]) + '.png'
 #hexbin.savefig(outpath + filename)
 
@@ -42,9 +42,9 @@ plt.title(samp['Name'] + ' scan ' + str(samp['XBIC_scans'][scan_i]))
 # fig.colorbar(im)
 # =============================================================================
 
-fig, ax3 = plt.subplots()
-im = ax3.imshow(samp['elXBIC_corr'][scan_i][x_variable-1], cmap=plt.get_cmap('hot'), origin = 'lower')
-fig.colorbar(im)
+#fig, ax3 = plt.subplots()
+#im = ax3.imshow(samp['elXBIC_corr'][scan_i][x_variable-1], cmap=plt.get_cmap('hot'), origin = 'lower')
+#fig.colorbar(im)
 #plt.title(samp['Name'] + ' ' + str(samp['XBIC_scans'][scan_i]))
 #filename = 'heat ' + samp['Name'] + ' ' + str(samp['XBIC_scans'][scan_i]) + '.png'
 #fig.savefig(path.join(outpath, filename))
@@ -69,7 +69,7 @@ fig.colorbar(im)
 
 
 
-# stackoverflow attempts
+# stackoverflow attempts to get proper heatmap axis tick labels
 # =============================================================================
 # x = np.linspace(0, 15, 151)
 # y = np.linspace(0, 15, 151)

@@ -1,4 +1,4 @@
-get_defs = 'wor'
+get_defs = 'work'
 ### paths for custom defintion files and scans ### change according to the operating system environment
 if get_defs == 'work':
     scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
@@ -54,7 +54,7 @@ e_statistics.standardize_channels(samples)
     # maps according to bad data in one of the XRF channels
     # not configured for using electrical channels
     # see ReadMe.txt for details
-e_statistics.reduce_stand_arrs(samples, 'Cu', elements_in, 3)
+#e_statistics.reduce_stand_arrs(samples, 'Cu', elements_in, 3)
 
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
     # type 'all' to include all features, that is, the electrical channels and 
@@ -62,7 +62,9 @@ e_statistics.reduce_stand_arrs(samples, 'Cu', elements_in, 3)
     #that will cluster the data either with or without outliers
 cluster_channels = ['perf', 'Cu'] 
 cluster_number = 3
-#d_clustering.find_clusters(samples, cluster_number, cluster_channels, elements_in) #OUTLIER KEY SWITCH)
+# enter 1 in the last argument position of this function if you want to cluster data
+    # without anamolous pixels (data from e_statistics.reduce_stand_arrs())
+#d_clustering.kclustering(samples, cluster_number, cluster_channels, elements_in, 1)
 
 
 # =============================================================================
