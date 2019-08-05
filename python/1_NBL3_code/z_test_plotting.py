@@ -17,7 +17,7 @@ samp = NBL3_2
 
 test_models = samp['c_kmodels'][scan_i] # --> XBIC, Cu, and Cd arrays for scan422
 labels = test_models.labels_
-test_data = samp['c_Rstand_arrs'][scan_i]
+test_data = samp['c_redStand_arrs'][scan_i]
 x = test_data[:, x_variable]
 y = test_data[:, y_variable]
 #z = test_data[:, z_variable]

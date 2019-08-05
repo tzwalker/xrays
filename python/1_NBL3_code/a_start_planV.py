@@ -49,12 +49,13 @@ rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble
 rumH.apply_ele_iios(samples)
 
 e_statistics.make_stat_arrays(samples)
-e_statistics.standardize_channels(samples)
+e_statistics.standardize_channels(samples, ['c_stat_arrs', 'v_stat_arrs'], ['c_stand_arrs', 'v_stand_arrs'])
 # use this funciton if you want to remove the pixels of all loaded
     # maps according to bad data in one of the XRF channels
-    # not configured for using electrical channels
+    # not configured for using electrical channels as the bad channel
     # see ReadMe.txt for details
-#e_statistics.reduce_stand_arrs(samples, 'Cu', elements_in, 3)
+e_statistics.reduce_arrs(samples, 'Cu', elements_in, 1, ['c_stat_arrs', 'v_stat_arrs'])
+e_statistics.standardize_channels(samples, ['c_reduced_arrs', 'v_reduced_arrs'], ['c_redStand_arrs', 'v_redStand_arrs'])
 
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
     # type 'all' to include all features, that is, the electrical channels and 
@@ -62,9 +63,11 @@ e_statistics.standardize_channels(samples)
     #that will cluster the data either with or without outliers
 cluster_channels = ['perf', 'Cu'] 
 cluster_number = 3
-# enter 1 in the last argument position of this function if you want to cluster data
-    # without anamolous pixels (data from e_statistics.reduce_stand_arrs())
-#d_clustering.kclustering(samples, cluster_number, cluster_channels, elements_in, 1)
+# the integer argument in this function is a switch that deetermiens which data to cluster
+# 0 --> original data (no NaN), 1 --> standardized data, 
+# 2 --> reduced original data, 3 --> reduced standardized data
+# switches 1 and 3 are reccomended as they use the standardized data
+d_clustering.kclustering(samples, cluster_number, cluster_channels, elements_in, 3)
 
 
 # =============================================================================

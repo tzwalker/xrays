@@ -25,21 +25,21 @@ def make_stat_arrays(samps):
         samp_dict_grow.build_dict(samp, 'v_stat_arrs', v_stats_of_scans)  # add comb arrs to dict
     return
 
-def standardize_channels(samps):
+def standardize_channels(samps, dict_data, new_keys):
     scaler = skpp.StandardScaler()
     for samp in samps:
         c_standardized_stats = []
-        for scan_arrays in samp['c_stat_arrs']:
+        for scan_arrays in samp[dict_data[0]]:
             c_stand_arrs = [scaler.fit_transform(column.reshape(-1,1)) for column in scan_arrays.T]
             combine_stand_arrs_of_scan = np.concatenate(c_stand_arrs, axis = 1)
             c_standardized_stats.append(combine_stand_arrs_of_scan)
-        samp_dict_grow.build_dict(samp, 'c_stand_arrs', c_standardized_stats)
+        samp_dict_grow.build_dict(samp, new_keys[0], c_standardized_stats)
         v_standardized_stats = []
-        for scan_arrays in samp['v_stat_arrs']:
+        for scan_arrays in samp[dict_data[1]]:
             c_stand_arrs = [scaler.fit_transform(column.reshape(-1,1)) for column in scan_arrays.T]
             combine_stand_arrs_of_scan = np.concatenate(c_stand_arrs, axis = 1)
             v_standardized_stats.append(combine_stand_arrs_of_scan)
-        samp_dict_grow.build_dict(samp, 'v_stand_arrs', v_standardized_stats)
+        samp_dict_grow.build_dict(samp, new_keys[1], v_standardized_stats)
     return
 
 def get_channel_column_index_in_scan_chan_arrs(ch, available_chans):
@@ -48,23 +48,37 @@ def get_channel_column_index_in_scan_chan_arrs(ch, available_chans):
             index = index # do not add 1 to index here because XBIC is not in list 'available_chans'
     return index
 
+def get_bad_chan_limits(scan_channel_arrs, control, ch_i):
+    bad_chan = scan_channel_arrs[:,ch_i]
+    bad_chan_mean = np.mean(bad_chan)
+    bad_chan_sig = np.std(bad_chan)
+    upr_lim = bad_chan_mean + control * bad_chan_sig
+    lwr_lim = bad_chan_mean - control * bad_chan_sig
+    return bad_chan, lwr_lim, upr_lim
+
 def reduce_arrs(samples, channel, ch_in, threshold_control, data_to_reduce): # where data_to_reduce is the dict key of interest
     ch_i = get_channel_column_index_in_scan_chan_arrs(channel, ch_in)
     for samp in samples:
         reduced_scan_arrs = []
-        for scan_channel_arrs in samp[data_to_reduce]:
-            bad_chan = scan_channel_arrs[:,ch_i]
-            bad_chan_mean = np.mean(bad_chan)
-            bad_chan_sig = np.std(bad_chan)
-            upr_lim = bad_chan_mean + threshold_control * bad_chan_sig
-            lwr_lim = bad_chan_mean - threshold_control * bad_chan_sig
-            red_arr_list = [x for x in bad_chan if (lwr_lim < x < upr_lim)]
-            reduced_arr = np.array(red_arr_list)
-            reduced_scan_arrs.append(reduced_arr)
+        for scan_channel_arrs in samp[data_to_reduce[0]]:
+            bad_chan, lwr_lim, upr_lim = get_bad_chan_limits(scan_channel_arrs, threshold_control, ch_i)
+            indices_to_keep = [i for i,x in enumerate(bad_chan) if (lwr_lim < x < upr_lim)]
+            indices_to_keep = np.array(indices_to_keep)
+            red_arrs = scan_channel_arrs[indices_to_keep, :]
+            reduced_scan_arrs.append(red_arrs)
         samp_dict_grow.build_dict(samp, 'c_reduced_arrs', reduced_scan_arrs)
+        # do same for voltage scans
+        reduced_scan_arrs = []
+        for scan_channel_arrs in samp[data_to_reduce[1]]:
+            bad_chan, lwr_lim, upr_lim = get_bad_chan_limits(scan_channel_arrs, threshold_control, ch_i)
+            indices_to_keep = [i for i,x in enumerate(bad_chan) if (lwr_lim < x < upr_lim)]
+            indices_to_keep = np.array(indices_to_keep)
+            red_arrs = scan_channel_arrs[indices_to_keep, :]
+            reduced_scan_arrs.append(red_arrs)
+        samp_dict_grow.build_dict(samp, 'v_reduced_arrs', reduced_scan_arrs)
     return
 
-reduce_arrs(samples, 'Cu', elements_in, 2, 'c_stat_arrs') 
+#reduce_arrs(samples, 'Cu', elements_in, 2, ['c_stat_arrs', 'v_stat_arrs']) 
 # --> left off: revised boundaries with which to remove data samples before tranformation
     # whole standardized arrays exist in samp dictionary along with whole original data
     # check if the function above will make reduced scan_channel_arrays for either the original data
