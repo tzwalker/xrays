@@ -88,7 +88,7 @@ plt.gca().xaxis.set_major_locator(locator)
 plt.gca().xaxis.set_major_formatter(fstrform)
 plt.show()
 
-# smasking scatterplots #
+# masked scatterplots #
 
 # =============================================================================
 # #models_arrs = NBL3_3['c_kclust_arrs']#[scan][model]

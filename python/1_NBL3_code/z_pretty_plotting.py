@@ -9,28 +9,12 @@ def get_real_coordinates(x_axis, y_axis):
     x_list = list(x_axis)
     x_diff = max(x_list) - min(x_list)
     x_real = np.linspace(0, x_diff, len(x_axis))
-
+    x_real_rounded = [round(i,3) for i in x_real]
     y_list = list(y_axis)
     y_diff = max(y_list) - min(y_list)
     y_real = np.linspace(0, y_diff, len(y_axis))
-
-    x_real, y_real = make_integersForTickLabels(x_real, y_real)
-    print(len(y_axis))
-    return x_real, y_real
-
-def get_first_ints(axis_list):
-    # Python program to find second largest number in a list 
-    firstmax = max(axis_list[0], axis_list[1]) 
-    secondmax = min(axis_list[0], axis_list[1]) 
-    for i in range(2, len(axis_list)): 
-    	if axis_list[i] < firstmax: 
-    		secondmax = firstmax
-    		firstmax = axis_list[i] 
-    	else: 
-    		if axis_list[i] < secondmax: 
-    			secondmax = axis_list[i] 
-    return secondmax
-get_first_ints(x_rounded)
+    y_real_rounded = [round(i,3) for i in y_real]
+    return x_real_rounded, y_real_rounded
 
 def plot_elect_maps(samps, elect_channel): # input only 'XBIC' or 'XBIV'
     #formatter = tkr.FormatStrFormatter("%.05f")
@@ -46,61 +30,52 @@ def plot_elect_maps(samps, elect_channel): # input only 'XBIC' or 'XBIV'
             plt.figure()
             ax = sns.heatmap(df_map, square = True, xticklabels  = 20, yticklabels = 20)
             ax.invert_yaxis()
-            #ax.xaxis.set_major_locator(tkr.MaxNLocator(integer=True))
-            #ax.xaxis.get_major_ticks().label.set_fontsize(14)
-            #plt.gca().xaxis.set_major_formatter(formatter)
             #plt.xticks(rotation=0)
             #plt.title(samp['Name'] + ' XBIC ' + str(scan_num))
     return
 
+def custom_format_ticks(axes_object):
+    x_txt_labs = [label.get_text() for label in axes_object.get_xticklabels()]
+    x_ticking = ['{:g}'.format(float(x)) for x in x_txt_labs]
+    
+    y_txt_labs = [label.get_text() for label in axes_object.get_yticklabels()]
+    y_ticking = ['{:g}'.format(float(y)) for y in y_txt_labs]
+    return x_ticking, y_ticking
 
-c_scan = NBL3_3['XBIC_h5s'][0]
+c_scan = TS58A['XBIC_h5s'][3]
 x_axis = c_scan['/MAPS/x_axis']  # x position of pixels  [position in um]
 y_axis = c_scan['/MAPS/y_axis']  # y position of pixels  [position in um]
-x, y = get_real_coordinates(x_axis, y_axis)
-x_rounded = [round(i,3) for i in x]
-y_rounded = [round(i,3) for i in y]
+x_real, y_real = get_real_coordinates(x_axis, y_axis)
 
-c_map = NBL3_3['XBIC_maps'][0]
-df_map = pd.DataFrame(c_map, index = y_rounded, columns = x_rounded)
-x_index_of_first_int, y_index_of_first_int = get_first_ints(x_rounded, y_rounded)
+c_map = TS58A['XBIC_maps'][3]
+df_map = pd.DataFrame(c_map, index = y_real, columns = x_real)
+
+
 fig, ax0 = plt.subplots()
-ax0 = sns.heatmap(df_map, square = True, xticklabels = 15)
+#ax0 = plt.pcolormesh(x_real, y_real, df_map, cmap="rocket")
+ax0 = sns.heatmap(df_map, square = True, xticklabels = 30, yticklabels = 30, vmin = 0)#, cbar_kws={'format': '%0.2f'})
+
+plt.xlabel('um', fontsize=16)
+plt.ylabel('um', fontsize=16)
+
+x_labls, y_labls = custom_format_ticks(ax0)
+ax0.tick_params(labelsize = 14)
+
+ax0.set_xticklabels(x_labls)
+
+ax0.set_yticklabels(y_labls, rotation = 0)
 ax0.invert_yaxis()
-#ax0.xaxis.set_major_locator(tkr.MaxNLocator(20))
 
-labels = [label.get_text() for label in ax0.get_xticklabels()]
-ax0.set_xticklabels(map(lambda x: "{:g}".format(float(x)), labels)) # --> works! gotta get proper tick indices now
+#fig.colorbar(ax0).ax0 <--> plt.gcf().axes[-1]
+cbar_ax = plt.gcf().axes[-1]
+cbar_ax.set_ylabel('A', fontsize = 16, rotation = -90, labelpad = 20)
+cbar_ax.tick_params(labelsize=12) 
 
-labels = [label.get_text() for label in ax0.get_yticklabels()]
-ax0.set_yticklabels(map(lambda x: "{:g}".format(float(x)), labels))
-
-
-my_data = np.random.rand(150,150)
-x = (np.linspace(0, my_data.shape[0], my_data.shape[0]+1)-0.5)/10
-y = (np.linspace(0, my_data.shape[1], my_data.shape[1]+1)-0.5)/10
+cbar_ax.yaxis.set_offset_position('left')
+cbar_ax.yaxis.get_offset_text().set(size=12)
+#cbar_ax.get_yticklabels()
 
 
-fig, ax = plt.subplots()
-pc = ax.pcolormesh(x, y, my_data, cmap="rocket")
-fig.colorbar(pc)
-ax.set_aspect("equal")
-plt.show()
-# =============================================================================
-# x_axis, y_axis = get_real_coordinates(NBL3_2['XBIC_h5s'][0]['/MAPS/x_axis'], NBL3_2['XBIC_h5s'][0]['/MAPS/y_axis'])
-# xr, yr = get_real_coordinates(x_axis, y_axis)
-# replace_w_integers(xr, yr)
-# 
-# locator = matplotlib.ticker.MultipleLocator(2)
-# plt.gca().xaxis.set_major_locator(locator)
-# formatter = matplotlib.ticker.StrMethodFormatter("{x:.0f}")
-# plt.gca().xaxis.set_major_formatter(formatter)
-# plt.show()
-# from matplotlib.ticker import FormatStrFormatter
-# 
-# 
-# def get_nth_index(real_axis, n):
-#     c = itertools.count()
-#     second_matching_index = next(i for i, um in enumerate(real_axis) if isinstance(um, int) and next(c) == n-1)
-#     return second_matching_index
-# =============================================================================
+
+
+
