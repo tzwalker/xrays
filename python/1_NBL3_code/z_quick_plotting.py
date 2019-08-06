@@ -24,30 +24,24 @@ y = test_data[:, y_variable]
 
 #fig, (ax1, ax2) = plt.subplots(1, 2)
 #fig.suptitle('Scatter and Map '+ samp['Name'] + ' ' + str(samp['XBIC_scans'][scan_i]))
+
 fig, ax = plt.subplots()
 ax = plt.scatter(x, y, c = labels)
-#plt.title()
-#filename = 'scat ' + samp['Name'] + ' ' + str(samp['XBIC_scans'][scan_i]) + '.png'
-#fig.savefig(path.join(outpath, filename))
 
-#fig, ax1 = plt.subplots()
-#ax1 = sns.distplot(x)
-#plt.title(samp['Name'] + ' scan ' + str(samp['XBIC_scans'][scan_i]))
-#filename = 'hex ' + samp['Name'] + ' ' + str(samp['XBIC_scans'][scan_i]) + '.png'
-#hexbin.savefig(outpath + filename)
+fig, ax1 = plt.subplots()
+ax1 = sns.distplot(x)
+plt.title(samp['Name'] + ' scan ' + str(samp['XBIC_scans'][scan_i]))
 
-# =============================================================================
-# fig, ax2 = plt.subplots()
-# im = ax2.imshow(samp['elXBIC_corr'][scan_i][x_variable], cmap=plt.get_cmap('hot'), origin = 'lower', vmax = 50)
-# fig.colorbar(im)
-# =============================================================================
+fig, ax2 = plt.subplots()
+im = ax2.imshow(samp['elXBIC_corr'][scan_i][x_variable], cmap=plt.get_cmap('hot'), origin = 'lower', vmax = 50)
+fig.colorbar(im)
 
-#fig, ax3 = plt.subplots()
-#im = ax3.imshow(samp['elXBIC_corr'][scan_i][x_variable-1], cmap=plt.get_cmap('hot'), origin = 'lower')
-#fig.colorbar(im)
-#plt.title(samp['Name'] + ' ' + str(samp['XBIC_scans'][scan_i]))
-#filename = 'heat ' + samp['Name'] + ' ' + str(samp['XBIC_scans'][scan_i]) + '.png'
-#fig.savefig(path.join(outpath, filename))
+fig, ax3 = plt.subplots()
+im = ax3.imshow(samp['elXBIC_corr'][scan_i][x_variable-1], cmap=plt.get_cmap('hot'), origin = 'lower')
+fig.colorbar(im)
+plt.title(samp['Name'] + ' ' + str(samp['XBIC_scans'][scan_i]))
+filename = 'heat ' + samp['Name'] + ' ' + str(samp['XBIC_scans'][scan_i]) + '.png'
+fig.savefig(path.join(outpath, filename))
 
 # for 3D plots
 # =============================================================================
@@ -70,31 +64,29 @@ ax = plt.scatter(x, y, c = labels)
 
 
 # stackoverflow attempts to get proper heatmap axis tick labels
+x = np.linspace(0, 15, 151)
+y = np.linspace(0, 15, 151)
+
+my_data = NBL3_2['XBIC_maps'][3]
+df_map = pd.DataFrame(my_data, index = y, columns = x) 
+plt.figure()
+ax = sns.heatmap(df_map, square = True, xticklabels  = 20, yticklabels = 20)
+ax.invert_yaxis()
+
 # =============================================================================
-# x = np.linspace(0, 15, 151)
-# y = np.linspace(0, 15, 151)
-# 
-# my_data = NBL3_2['XBIC_maps'][3]
-# df_map = pd.DataFrame(my_data, index = y, columns = x) 
-# plt.figure()
-# ax = sns.heatmap(df_map, square = True, xticklabels  = 20, yticklabels = 20)
-# ax.invert_yaxis()
-# 
-# # =============================================================================
-# # fmtr = tkr.StrMethodFormatter('{x:.0f}')
-# # ax.xaxis.set_major_formatter(fmtr)
-# # =============================================================================
-# 
-# 
-# fmtr = tkr.StrMethodFormatter("{x:.0f}")
-# locator = tkr.MultipleLocator(50)
-# fstrform = tkr.FormatStrFormatter('%.0f')
-# 
-# #plt.gca().xaxis.set_major_formatter(fmtr)
-# plt.gca().xaxis.set_major_locator(locator)
-# plt.gca().xaxis.set_major_formatter(fstrform)
-# plt.show()
+# fmtr = tkr.StrMethodFormatter('{x:.0f}')
+# ax.xaxis.set_major_formatter(fmtr)
 # =============================================================================
+
+
+fmtr = tkr.StrMethodFormatter("{x:.0f}")
+locator = tkr.MultipleLocator(50)
+fstrform = tkr.FormatStrFormatter('%.0f')
+
+#plt.gca().xaxis.set_major_formatter(fmtr)
+plt.gca().xaxis.set_major_locator(locator)
+plt.gca().xaxis.set_major_formatter(fstrform)
+plt.show()
 
 # smasking scatterplots #
 
