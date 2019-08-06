@@ -59,8 +59,6 @@ e_statistics.standardize_channels(samples, ['c_reduced_arrs', 'v_reduced_arrs'],
 
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
     # type 'all' to include all features, that is, the electrical channels and 
-# note REMEMBER to add dictionary key switch to the find_clusters() 
-    #that will cluster the data either with or without outliers
 cluster_channels = ['perf', 'Cu'] 
 cluster_number = 3
 # the integer argument in this function is a switch that deetermiens which data to cluster
@@ -69,29 +67,8 @@ cluster_number = 3
 # switches 1 and 3 are reccomended as they use the standardized data
 d_clustering.kclustering(samples, cluster_number, cluster_channels, elements_in, 3)
 
+# use separate programs for plotting
 
-# =============================================================================
-# # USER input: enter 'XBIV', 'XBIC', or any element in 'elements_in'
-# number_of_clusters = 3
-# mask_channel = 'Cu'  # XRF line need not be included, but if it is no error will rise
-# d_clustering.get_mask(samples, mask_channel, elements_in, number_of_clusters)
-# # USER input:  XRF line need not be included, but if it is no error will rise
-#     # note masks are automatically applied to 'XBIC/V' channels
-#     # do not include 'XBIC/V' in 'correlate_elements' list
-#     # position eles in same manner as in ele_in, for use in stadardize_channels()
-#         # should make this more flexible in the future, but for now this is will have to do
-# correlate_elements = ['Cu', 'Cd'] 
-# # calling the mask on the element used to make the mask 
-#     # captures the actaul quantities within each cluster (output of kmeans model is just labels)
-# e_statistics.apply_mask(samples, correlate_elements, elements_in) 
-# e_statistics.standardize_channels(samples) # these should have same structure as NBL3_2['v_stat_arrs'] 
-# =============================================================================
-
-
-# =============================================================================
-# import z_plotting
-# z_plotting.plot_elect_maps(samples, 'XBIC')
-# =============================================================================
 
 
 

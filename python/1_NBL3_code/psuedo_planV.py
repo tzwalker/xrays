@@ -1,6 +1,11 @@
+import numpy as np
+from sklearn.cluster import KMeans
+import seaborn as sns
+import matplotlib.pyplot as plt
+import sklearn.preprocessing as skpp
+
 ### NOTES: b_h5_in_elect_scale.py ###
 # =============================================================================
-# 
 # # finding elements in h5
 # wanted =        ['cu', 'cd', 'te']
 # h5_channels =   ['cd', 'fe', 'cu', 'zn', 'se', 'te']
@@ -39,9 +44,9 @@
 # sample_dict.setdefault(key, sample_maps)
 # =============================================================================
 
+
 ### NOTES: c_rummage_thru_h5.py ###
 # =============================================================================
-# 
 # #this function performs a strign comparison within the pertinent H5 group and extracts the index of interest
 # def get_desired_channel_index(H5_channel_names_as_strings, e):
 #     s=0                                                                             #initialize index search
@@ -64,7 +69,7 @@
 #         list_of_indices.append(decoded_ele_string_indices)          #add internal list (i.e. a scan) to master list
 #     return list_of_indices
 # 
-# #intiallyt for find_ele_in_h5s()
+# #intially for find_ele_in_h5s()
 #         c_indices = [get_elem_indices(ChOIs, file['/MAPS/channel_names']) for file in samp['XBIC_h5s']]
 #         v_indices = [get_elem_indices(ChOIs, file['/MAPS/channel_names']) for file in samp['XBIV_h5s']]
 #         
@@ -112,76 +117,10 @@
 #     # change c2 into the form of c, and be sure to slice list according to corresponding positions in sample dict
 # =============================================================================
 
+
 ### NOTES: d_clustering.py ###
 # =============================================================================
-# 
-# import numpy as np
-# from sklearn.cluster import KMeans
-# import numpy as np
-# import seaborn as sns
-# import matplotlib.pyplot as plt
-# 
-# # make mask
-# cu_map = NBL3_2['eXBIC_corr'][0][0] # practice map, [area 1 : 2019_03][Cu]
-# stat_cu_map = cu_map[:,:-2] # eliminate nan
-# cu_arr = stat_cu_map.reshape(-1, 1) # array data to cluster each entry individually
-# model = KMeans(init='k-means++', n_clusters=3, n_init=10)
-# model.fit(cu_arr) # cluster array
-# 
-# Z = model.labels_
-# A = Z.reshape(np.shape(stat_cu_map)) # for cluster map
-# # other map to mask to
-# XBIC_map = NBL3_2['XBIC_maps'][0]
-# stat_XBIC_map = XBIC_map[:,:-2] # eliminate nan columns
-# XBIC_arr = stat_XBIC_map.reshape(-1, 1) # array data to identify indices matching with those in cluster labels
-# # to find actual values of clusters in other maps
-# dict_of_cu_map_cluster_indices = {str(i): np.where(Z == i)[0] for i in range(model.n_clusters)}
-# XBIC_from_clusters_of_cu = []
-# for index_list in dict_of_cu_map_cluster_indices.values():
-#     matched_values_in_XBIC = np.take(XBIC_arr, index_list)
-#     XBIC_from_clusters_of_cu.append(matched_values_in_XBIC)
-# 
-# cu_clust_zero = cu_arr[ClusterIndicesNumpy(0,model.labels_)]
-# cu_clust_one = cu_arr[ClusterIndicesNumpy(1,model.labels_)]
-# cu_clust_two = cu_arr[ClusterIndicesNumpy(2,model.labels_)]
-# # cluster scatters
-# plt.figure()
-# plt.scatter(cu_clust_zero, XBIC_from_clusters_of_cu[0]) 
-# plt.ylim(0, 4E-8)
-# plt.xlim(0)
-# plt.scatter(cu_clust_one, XBIC_from_clusters_of_cu[1]) 
-# plt.ylim(0, 4E-8)
-# plt.xlim(0)
-# plt.scatter(cu_clust_two, XBIC_from_clusters_of_cu[2]) 
-# plt.ylim(0, 4E-8)
-# plt.xlim(0)
-# plt.figure()
-# plt.scatter(cu_arr, XBIC_arr) 
-# plt.ylim(0, 4E-8)
-# plt.xlim(0)
-# # heatmaps
-# plt.figure()
-# ax = sns.heatmap(cu_map, square = True)
-# ax.invert_yaxis()
-# plt.figure()
-# ay = sns.heatmap(A, square = True)
-# ay.invert_yaxis()
-# plt.figure()
-# ay = sns.heatmap(XBIC_map, square = True)
-# ay.invert_yaxis()
-# 
-# =============================================================================
-
-### NOTES: e_statistics.py
-# =============================================================================
-# 
-# # for all three samples, compare the correlation of XBIC to Cd, Te, Zn, and Cu using:
-# # with standaraizations
-# # without standardization
-# # with gaussian applied to Cu
-# # without gaussian applied to Cu
-# 
-# ## comments during development ##
+# ## debugging masking definitions
 # def get_index_in_user_ele_list(s, E):               # copied from d_clustering.py
 #     for i, e in enumerate(E):                       
 #         if s == e[0:2]:                             # test first two characters of ele
@@ -219,6 +158,123 @@
 #         samp['C_kclust_masked'] = correlated_channels_in_ea_scan    # update entry if needed
 #     return other_map_clusters
 # 
+# ## used masking defintions
+# def make_IV_mask_arrays(samps, N):
+#     for samp in samps:
+#         # cluster XBIC scans first
+#         c_clust_arrays = []
+#         for i, scan in enumerate(samp['XBIC_maps']):
+#             stat_c_map = scan[:,:-2]                # remove nans
+#             c_arr = stat_c_map.reshape(-1,1)        # array data for proper clustering
+#             model = KMeans(init='k-means++', n_clusters=N, n_init=10) # setup model
+#             scn_clst_arr = model.fit(c_arr)         # cluster
+#             c_clust_arrays.append(scn_clst_arr)     # build mask arrays for each scan
+#         key = 'c_kclust_arrs'
+#         samp.setdefault(key, c_clust_arrays)        # make arrays
+#         samp['c_kclust_arrs'] = c_clust_arrays      # update arrays
+#         # cluster XBIV maps
+#         v_clust_arrays = []
+#         for i, scan in enumerate(samp['XBIV_maps']):
+#             stat_v_map = scan[:,:-2]                # remove nans
+#             v_arr = stat_v_map.reshape(-1,1)        # array data for proper clustering
+#             model = KMeans(init='k-means++', n_clusters=N, n_init=20) # setup model
+#             scn_clst_arr = model.fit(v_arr)         # cluster
+#             v_clust_arrays.append(scn_clst_arr)     # build mask arrays for each scan
+#         key = 'v_kclust_arrs' 
+#         samp.setdefault(key, c_clust_arrays)        # make arrays
+#         samp['v_kclust_arrs'] = v_clust_arrays      # update arrays
+#     return 
+# 
+# def get_index_in_user_ele_list(s, E):
+#     for i, e in enumerate(E):
+#         if s == e[0:2]:                             # test first two characters of ele
+#             ele_i = i                               # use index of matched ele in 'elements' list
+#     return ele_i
+# def make_ele_mask_arrays(ele_i, samps, N):
+#     for samp in samps:
+#         # cluster ele in XBIC maps first
+#         c_clust_arrays = []
+#         for scan in samp['elXBIC_corr']:
+#             ele_map = scan[ele_i]                   # get element map for mask
+#             stat_ele_map = ele_map[:,:-2]           # remove nans
+#             ele_arr = stat_ele_map.reshape(-1,1)    # array data for proper clustering
+#             model = KMeans(init='k-means++', n_clusters=N, n_init=10)
+#             scn_clst_arr = model.fit(ele_arr)       # cluster
+#             c_clust_arrays.append(scn_clst_arr)
+#         key = 'c_kclust_arrs'
+#         samp.setdefault(key, c_clust_arrays)        # make arrays
+#         samp['c_kclust_arrs'] = c_clust_arrays      # update arrays
+#         # cluster ele in XBIV maps
+#         v_clust_arrays = []
+#         for scan in samp['elXBIV_corr']:
+#             ele_map = scan[ele_i]                   # get element map for mask
+#             stat_ele_map = ele_map[:,:-2]           # remove nans
+#             ele_arr = stat_ele_map.reshape(-1,1)    # array data for proper clustering
+#             model = KMeans(init='k-means++', n_clusters=N, n_init=10)
+#             scn_clst_arr = model.fit(ele_arr)       # cluster
+#             v_clust_arrays.append(scn_clst_arr)
+#         key = 'v_kclust_arrs'
+#         samp.setdefault(key, v_clust_arrays)
+#         samp['v_kclust_arrs'] = v_clust_arrays      # update arrays
+#     return 
+# def get_mask(samples, mask, eles, N):
+#     if mask == 'XBIC' or mask == 'XBIV':
+#         make_IV_mask_arrays(samples, N)
+#         print('this is the electrical  mask loop')
+#     else:
+#         ele_i = get_index_in_user_ele_list(mask, eles)
+#         make_ele_mask_arrays(ele_i, samples, N)
+#         print('this is the element mask loop')
+#     return
+# # make mask
+# cu_map = NBL3_2['eXBIC_corr'][0][0] # practice map, [area 1 : 2019_03][Cu]
+# stat_cu_map = cu_map[:,:-2] # eliminate nan
+# cu_arr = stat_cu_map.reshape(-1, 1) # array data to cluster each entry individually
+# model = KMeans(init='k-means++', n_clusters=3, n_init=10)
+# model.fit(cu_arr) # cluster array
+# 
+# Z = model.labels_
+# A = Z.reshape(np.shape(stat_cu_map)) # for cluster map
+# # other map to mask to
+# XBIC_map = NBL3_2['XBIC_maps'][0]
+# stat_XBIC_map = XBIC_map[:,:-2] # eliminate nan columns
+# XBIC_arr = stat_XBIC_map.reshape(-1, 1) # array data to identify indices matching with those in cluster labels
+# # to find actual values of clusters in other maps
+# dict_of_cu_map_cluster_indices = {str(i): np.where(Z == i)[0] for i in range(model.n_clusters)}
+# XBIC_from_clusters_of_cu = []
+# for index_list in dict_of_cu_map_cluster_indices.values():
+#     matched_values_in_XBIC = np.take(XBIC_arr, index_list)
+#     XBIC_from_clusters_of_cu.append(matched_values_in_XBIC)
+# 
+# cu_clust_zero = cu_arr[ClusterIndicesNumpy(0,model.labels_)]
+# cu_clust_one = cu_arr[ClusterIndicesNumpy(1,model.labels_)]
+# cu_clust_two = cu_arr[ClusterIndicesNumpy(2,model.labels_)]
+# 
+# ## from home file
+# # USER input: enter 'XBIV', 'XBIC', or any element in 'elements_in'
+# number_of_clusters = 3
+# mask_channel = 'Cu'  # XRF line need not be included, but if it is no error will rise
+# d_clustering.get_mask(samples, mask_channel, elements_in, number_of_clusters)
+# # USER input:  XRF line need not be included, but if it is no error will rise
+#     # note masks are automatically applied to 'XBIC/V' channels
+#     # do not include 'XBIC/V' in 'correlate_elements' list
+#     # position eles in same manner as in ele_in, for use in stadardize_channels()
+#         # should make this more flexible in the future, but for now this is will have to do
+# correlate_elements = ['Cu', 'Cd'] 
+# # calling the mask on the element used to make the mask 
+#     # captures the actaul quantities within each cluster (output of kmeans model is just labels)
+# e_statistics.apply_mask(samples, correlate_elements, elements_in)
+# =============================================================================
+
+
+### NOTES: e_statistics.py
+# =============================================================================
+# # for all three samples, compare the correlation of XBIC to Cd, Te, Zn, and Cu using:
+# # with standaraizations
+# # without standardization
+# # with gaussian applied to Cu
+# # without gaussian applied to Cu
+# 
 # # use for standardization 
 # # compare results of standardized and non-standardized bivariate comparisons
 #     # note, relative differences within dataset (i.e. the heatmap)
@@ -226,18 +282,11 @@
 # scaler = skpp.StandardScaler()
 # reshape_maps = []
 # std_maps = []
-#     
 # for r_m,z in zip(reshape_maps, std_maps):
 #     plt.figure()
 #     sns.distplot(r_m)
 #     sns.distplot(z)
-# 
 # # check standardization features
-# import numpy as np
-# import seaborn as sns
-# import matplotlib.pyplot as plt
-# import sklearn.preprocessing as skpp
-# 
 # scaler = skpp.StandardScaler()
 # cu_stat_map = NBL3_2['elXBIC_corr'][0][0][:,:-2] # practice map, [area 1 : 2019_03][Cu]
 # stand_cu_stat_map = scaler.fit_transform(cu_stat_map)
@@ -252,12 +301,42 @@
 # plt.figure()
 # sns.heatmap(stand_cu_stat_map_from_arr, square = True).invert_yaxis()
 # 
+# ## revising array structure
+# import numpy as np
+# #NBL3_3['c_stat_arrs'][scan][channel]; navigation syntax
+# scan264_stats = NBL3_3['c_stat_arrs'][0]
+# scan264_stats1 = NBL3_3['c_stat_arrs'][0][1]
+# c = np.concatenate((scan264_stats, scan264_stats1), axis=1) # --> works
+# 
+# arr = np.concatenate(scan264_stats, axis = 1) 
+# # --> works better, just make list then concatenate whole list! no list of lists
+# # i've been using kmeans incorrectly... 
+#     # my samples are captures by the spatial indices, 
+#     # however, my features for one sample are much more than one
+# test_stat_arr = NBL3_2['c_stat_arrs'][0]
+# test_stand_arr = NBL3_2['c_stand_arrs'][0]
+# outliers_of_Cu_channel = np.where(test_stand_arr[:,1]>3)
+# reduced_stand_arr = test_stand_arr[np.where(test_stand_arr[:,1]<3)] # --> this is the desired output
 # =============================================================================
-
 
 
 ### NOTES: z_plotting.py, spacing axes
 # =============================================================================
+# ## ticklabel formating
+# # how to figure out what the proper indeices to plot are...?
+# # the integer in xticklabels represents every 'n' index to be plotted
+#     # e.g. xtixklabels = 50 --> 0, 50, 150 all plotted
+#     # the list x_real has actual numbers that map to the indices... but how does that help me...   
+#     # could use mod?
+# # find where first whole number is in x_real!
+#   # get index of this number... 
+#   # when would whole number not exist...? 
+#       # when the width of the axis is not evenly split by the resolution
+#       # e.g. np.linspace(0,16,38)
+#   # HOWEVER: the first and last number, as they are int, are guaranteed
+#       # to be whole, therefore, the above approach will always find a whole number index
+#       # and will plot either the bounds of the axes, or every whole number that exists in the linear space!
+# 
 # practice_axis_list = list(practice_axis)
 # 
 # max(practice_axis_list)
@@ -286,44 +365,68 @@
 #        12.15, 12.3 , 12.45, 12.6 , 12.75, 12.9 , 13.05, 13.2 , 13.35,
 #        13.5 , 13.65, 13.8 , 13.95, 14.1 , 14.25, 14.4 , 14.55, 14.7 ,
 #        14.85, 15.  ])
+# 
+# # stack overflow attempts
+# x = np.linspace(0, 15, 151)
+# y = np.linspace(0, 15, 151)
+# 
+# my_data = NBL3_2['XBIC_maps'][3]
+# df_map = pd.DataFrame(my_data, index = y, columns = x) 
+# plt.figure()
+# ax = sns.heatmap(df_map, square = True, xticklabels  = 20, yticklabels = 20)
+# ax.invert_yaxis()
+# 
+# fmtr = tkr.StrMethodFormatter('{x:.0f}')
+# ax.xaxis.set_major_formatter(fmtr)
+# fmtr = tkr.StrMethodFormatter("{x:.0f}")
+# locator = tkr.MultipleLocator(50)
+# fstrform = tkr.FormatStrFormatter('%.0f')
+# 
+# #plt.gca().xaxis.set_major_formatter(fmtr)
+# plt.gca().xaxis.set_major_locator(locator)
+# plt.gca().xaxis.set_major_formatter(fstrform)
+# plt.show()
+# 
+# ## for 3D plots, be sure to change matplotlib backend from 'inline' to 'qt'
+# ax = Axes3D(fig, rect=[0, 0, .95, 1]) 
+# ax.w_xaxis.set_ticklabels([])
+# ax.w_yaxis.set_ticklabels([])
+# ax.w_zaxis.set_ticklabels([])
+# ax.set_xlabel('Cu')
+# ax.set_ylabel('XBIC')
+# ax.set_zlabel('Cd')
+# # Set rotation angle to 30 degrees
+# ax.view_init(azim=0)
+# for angle in range(0, 360):
+#     ax.view_init(60, angle)
+#     plt.draw()
+#     plt.show()
+#     plt.pause(0.001)
 #     
-# # how to figure out what the proper indeices to plot are...?
-# # the integer in xticklabels represents every 'n' index to be plotted
-#     # e.g. xtixklabels = 50 --> 0, 50, 150 all plotted
-#     # the list x_real has actual numbers that map to the indices... but how does that help me...   
-#     # could use mod?
-# # find where first whole number is in x_real!
-#   # get index of this number... 
-#   # when would whole number not exist...? 
-#       # when the width of the axis is not evenly split by the resolution
-#       # e.g. np.linspace(0,16,38)
-#   # HOWEVER: the first and last number, as they are int, are guaranteed
-#       # to be whole, therefore, the above approach will always find a whole number index
-#       # and will plot either the bounds of the axes, or every whole number that exists in the linear space!
-# =============================================================================
-
-
-# =============================================================================
-# import numpy as np
+# ## masked scatterplots 
+# #models_arrs = NBL3_3['c_kclust_arrs']#[scan][model]
+# #no_nan_arrs = NBL3_3['c_stat_arrs']#[scan][channel]
+# masked = NBL3_2['C_kclust_masked']#[scan][channel][cluster]
+# #k_stats_stand = NBL3_3['c_kclust_arrs_stand']#[scan][channel][cluster]
 # 
-# #NBL3_3['c_stat_arrs'][scan][channel]
+# xbicMap0_cl0 = masked[0][2][0]
+# xbicMap0_cl1 = masked[0][2][1]
+# xbicMap0_cl2 = masked[0][2][2]
+# combined_arr_max = np.array([max(xbicMap0_cl0), max(xbicMap0_cl1), max(xbicMap0_cl2)])
+# combined_arr_min = np.array([min(xbicMap0_cl0), min(xbicMap0_cl1), min(xbicMap0_cl2)])
+# ymax = np.max(combined_arr_max) *1.1
+# ymin = np.min(combined_arr_min) *0.9
 # 
-# scan264_stats = NBL3_3['c_stat_arrs'][0]
-# scan264_stats1 = NBL3_3['c_stat_arrs'][0][1]
-# c = np.concatenate((scan264_stats, scan264_stats1), axis=1) # --> works
+# cuMap0_cl0 = masked[0][1][0]
+# cuMap0_cl1 = masked[0][1][1]
+# cuMap0_cl2 = masked[0][1][2]
 # 
-# arr = np.concatenate(scan264_stats, axis = 1) # --> works better, just make list then concatenate whole list!
+# plt.figure()
+# sns.jointplot(cuMap0_cl0, xbicMap0_cl0, kind = 'hex')#, x_bins = 3, x_ci = 'sd')
+# sns.jointplot(cuMap0_cl1, xbicMap0_cl1, kind = 'hex')#, x_bins = 4, x_ci = 'sd')
+# sns.jointplot(cuMap0_cl2, xbicMap0_cl2, kind = 'hex')#, x_bins = 4, ci = None)
+# 
+# sns.distplot(cuMap0_cl0)
+# #plt.ylim(ymin, ymax)
+# #plt.xlim(0)
 # =============================================================================
-    
-# i've been using kmeans incorrectly... 
-    # my samples are captures by the spatial indices, 
-    # however, my features for one sample are much more than one
-
-test_stat_arr = NBL3_2['c_stat_arrs'][0]
-test_stand_arr = NBL3_2['c_stand_arrs'][0]
-
-outliers_of_Cu_channel = np.where(test_stand_arr[:,1]>3)
-
-reduced_stand_arr = test_stand_arr[np.where(test_stand_arr[:,1]<3)] # --> this is the desired output
-
-    
