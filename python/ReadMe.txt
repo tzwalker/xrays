@@ -11,6 +11,10 @@ Home file info:
 		# and taking the average of the resulting iio vs. depth array.
 		# attenuation by upstream Mo and ZnTe accounted
 	# should make a ReadMe for that file...
+	# if electrical settings are not provided, no XBIC maps will exist
+		# more specifically, the list e.g. 'c_stanford' will be length zero
+		# and iteration will be performed on this zero length list
+	
 
 Object lengths/sizes that should always match (in sample dictionaries):
 

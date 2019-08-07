@@ -2,9 +2,12 @@ get_defs = 'work'
 ### paths for custom defintion files and scans ### change according to the operating system environment
 if get_defs == 'work':
     scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
+    def_path = r'C:\Users\Trumann\Desktop\xrays\python'
 else:
     scan_path = '/home/kineticcross/Desktop/data'
-
+    def_path = '/home/kineticcross/Desktop/xrays/python'
+import sys
+sys.path.append(def_path)
 import b_h5_in_elect_scale as eiDefs
 import c_rummage_thru_H5 as rumH
 import d_clustering
@@ -27,7 +30,7 @@ NBL3_3 = {'Name': 'NBL3-3', 'XBIC_scans': [264,265,266, 475], 'XBIV_scans': [261
 TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439], 'XBIV_scans': [382,383,384, 440], 
          'beam_conv': [2E5, 2E5, 2E5, 1E5], 
          'c_stanford': [5000,5000,5000, 200], 
-         'c_lockin':[10000,10000,10000, 20], 
+         'c_lockin':[500,10000,10000, 20], 
          'v_lockin': [1000,1000,1000, 100000],
          '2017_12_ele_iios': [0.381, 0.0682, 0.0867],
          '2019_03_ele_iios': [0.162, 0.00209, 0.00669]}
