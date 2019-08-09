@@ -100,15 +100,15 @@ Functions that change/build the sample dictionaries (syntax shown here follows "
 			# respective masks will be generated for each set of XBIC and XBIV scan sets of a sample
 			# if you'd like to see exactly how the masks are generated, see defs in d_clustering.py
 	
-	d_clustering.py/kclustering(sample_dicts, number_of_clusters, features_to_cluster, loaded_ele_channels, outlier switch)
+	d_clustering.py/kclustering(sample_dicts, number_of_clusters, features_to_cluster, loaded_ele_channels, outlier_switch)
 		# 'outlier_switch':
 			# 0 --> for whole, no NaN, original data (in physical units)
 			# 1 --> for whole, no NaN, standardized original data
 				# the data and each channel was standardized independently
-			# 2 --> for reduced arrays; either standardized or original data will be clustered
-				WARNING: do not use switch == 2 if 'e_statistics.reduce_arrs()' is not run
-				as these data will not exist in th sample dictionary;
-				you will likely get a KeyError as the dictionary is accessed
+			# 2 --> for reduced original data arrays; original data will be clustered
+			# 3 --> for reduced standardized arrays; standardized arays of either whole or reduced original data will be clustered (depends on whether reduce_arrs() is run)
+		WARNING: do not use outlier_switch == 2 or 3 if 'e_statistics.reduce_arrs()' is not run; these data will not exist in th sample dictionary;
+		you will likely get a KeyError as the dictionary is accessed
 
 	
 Obsolete debugging notes, for developer reference only:

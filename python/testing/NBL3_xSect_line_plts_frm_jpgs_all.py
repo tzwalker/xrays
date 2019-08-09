@@ -5,8 +5,6 @@ from skimage.color import rgb2gray
 import matplotlib.pyplot as plt
 from skimage.transform import rotate
 
-
-
 #'Name' strings must correspond to the file name of the screenshot of the cross-seciton
 #'Rot' determined from manually loading image file into python, then testing angles using rotate() from skimage
     #be sure to import all packages listed above if running soley from command line:
@@ -42,10 +40,8 @@ samples = [sam1, sam2]#, sam3]
 
 def rotate_and_integrate_cross_section(samples):
     master_list = []
-    
     for sample in samples:
         channel_list = []
-        
         for channel, ch_max in zip(sample['channels'], sample['channel_maxes']):
             image_name = sample['Name'] + "_" + channel                                     #make sure this corresponds to the filename syntax being used
             #print(image_name)
@@ -54,8 +50,6 @@ def rotate_and_integrate_cross_section(samples):
             gry_img = rgb2gray(img)
             rot_gry_img = rotate(gry_img, sample['Rot'])                                    #rotates the picture according to the rotation you determined manually
             column_sum = rot_gry_img.sum(axis=0)                                            #sums the columns of the rotated image matrix, equivalent to integrating
-
-            
             #calibrate line plot y axis
             #by default the integration returns a sum of the pixels in a column that corresponds to an intensity 
             #the intensity is determined by rgb2gray() when converting to greyscale
@@ -64,12 +58,7 @@ def rotate_and_integrate_cross_section(samples):
             y_max = max(column_sum)                                                         #gets the maximum intensity from the integration of the rotated image
             channel_calib_factor = ch_max / y_max                                           #get scaling factor that will convert greyscale intenisty to XRF intensity
             scaled_column_sum = column_sum * channel_calib_factor                           #convert 
-            
-            
-            
             channel_list.append(scaled_column_sum)
-        
-        
         master_list.append(channel_list)
     return master_list
 
