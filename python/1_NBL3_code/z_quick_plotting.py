@@ -7,25 +7,24 @@ import matplotlib.pyplot as plt
 def plot_nice_stats(samp, scan, x, y, axis_label_sizes):
     x_data = samp['c_redStand_arrs'][scan][:,x_channel]
     y_data = samp['c_redStand_arrs'][scan][:,y_channel]
-    #data_models = samp['c_kmodels'][scan] # --> XBIC, Cu, and Cd arrays for scan422
-    #labels = data_models.labels_
+    data_models = samp['c_kmodels'][scan] # --> XBIC, Cu, and Cd arrays for scan422
+    labels = data_models.labels_
     
     fig, ax0 = plt.subplots()
-    sns.set(font_scale = 1.5)
-    ax0 = sns.jointplot(x_data, y_data, kind='hex', color='g')
-    ax0.set_axis_labels('Stand. ' + elements_in[x-1] + ' (a.u.)', 'Stand. XBIC (a.u.)')
-# =============================================================================
-#     # figure level
-#     plt.xlabel('Stand. ' + elements_in[x-1] + ' (a.u.)', fontsize=axis_label_sizes)
-#     plt.ylabel('Stand. XBIC (a.u.)', fontsize=axis_label_sizes)
-#     #plt.title(samp['Name'] + ' scan ' + str(samp['XBIC_scans'][scan]))
-#     # axis level
-#     ax0.tick_params(labelsize = 14)                     #formats size of ticklabels
-# =============================================================================
+    ax0 = sns.scatterplot(x_data, y_data, s = 15, hue = labels, palette = "Set1")
+    #sns.set(font_scale = 1.5)
+    #ax0 = sns.jointplot(x_data, y_data, kind='hex', color='g')
+    #ax0.set_axis_labels('Stand. ' + elements_in[x-1] + ' (a.u.)', 'Stand. XBIC (a.u.)')
+    # figure level
+    plt.xlabel('Stand. ' + elements_in[x-1] + ' (a.u.)', fontsize=axis_label_sizes)
+    plt.ylabel('Stand. XBIC (a.u.)', fontsize=axis_label_sizes)
+    #plt.title(samp['Name'] + ' scan ' + str(samp['XBIC_scans'][scan]))
+    # axis level
+    ax0.tick_params(labelsize = 14)                     #formats size of ticklabels
     return #plt.show(fig)
 
 
-samp = TS58A
+samp = NBL3_2
 scan = 0     # --> index of scan 
 x_channel = 1 # --> 0:XBIC 1:Cu 2:Cd
 y_channel = 0 # --> 0:XBIC 1:Cu 2:Cd

@@ -63,7 +63,7 @@ e_statistics.standardize_channels(samples, ['c_reduced_arrs', 'v_reduced_arrs'],
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
     # type 'all' to include all features, that is, the electrical channels and 
 cluster_channels = ['perf', 'Cu'] 
-cluster_number = 3
+cluster_number = 2
 # the integer argument in this function is a switch that deetermiens which data to cluster
 # 0 --> original data (no NaN), 1 --> standardized data, 
 # 2 --> reduced original data, 3 --> reduced standardized data
