@@ -1,4 +1,4 @@
-get_defs = 'work'
+get_defs = 'wor'
 ### paths for custom defintion files and scans ### change according to the operating system environment
 if get_defs == 'work':
     scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
@@ -6,6 +6,7 @@ if get_defs == 'work':
 else:
     scan_path = '/home/kineticcross/Desktop/data'
     def_path = '/home/kineticcross/Desktop/xrays/python'
+    
 import sys
 sys.path.append(def_path)
 import b_h5_in_elect_scale as eiDefs
@@ -13,7 +14,7 @@ import c_rummage_thru_H5 as rumH
 import d_clustering
 import e_statistics
 
-NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550], 'XBIV_scans': [419,420,421, 551], 
+NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [416, 422,423,424, 550], 'XBIV_scans': [419,420,421, 551], 
           'beam_conv': [2E5,2E5,2E5, 2E5], 
           'c_stanford': [5000,5000,5000, 50000], 
           'c_lockin':[500,500,500, 100], 
@@ -68,7 +69,7 @@ cluster_number = 2
 # 0 --> original data (no NaN), 1 --> standardized data, 
 # 2 --> reduced original data, 3 --> reduced standardized data
 # switches 1 and 3 are reccomended as they use the standardized data
-d_clustering.kclustering(samples, cluster_number, cluster_channels, elements_in, 3)
+#d_clustering.kclustering(samples, cluster_number, cluster_channels, elements_in, 3)
 
 # use separate programs for plotting
 

@@ -24,7 +24,7 @@ def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
     
     if ele_index == -1: 
         c_map = samp[data_channel][scan]; 
-        colors = 'magma'; units = 'V'
+        colors = 'magma'; units = 'A'
     else: 
         c_map = samp[data_channel][scan][ele_index]; 
         colors = 'viridis'; units = '\u03BCg/cm'+ r'$^{2}$'
@@ -53,15 +53,15 @@ def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
     cbar_ax.tick_params(labelsize=12)                   #tick label formatting
     cbar_ax.yaxis.get_offset_text().set(size=12)        #format colorbar offset text
     cbar_ax.yaxis.set_offset_position('left')           #scale at top of colorbar (i.e. 'offset') position
-    z_labls = custom_format_ticks(cbar_ax.get_yticklabels(), '{:.1e}')
+    #z_labls = custom_format_ticks(cbar_ax.get_yticklabels(), '{:g}')
     #cbar_ax.set_yticklabels(, fontsize=16, weight='bold') --> from internet
-    cbar_ax.set_yticklabels(z_labls) #--> debug
+    #cbar_ax.set_yticklabels(z_labls) #--> debug
     return #plt.show(fig)
 
 samp = NBL3_2
 scan = 0
 axis_label_sizes = 16
-plot_nice_2Dmap(samp, scan, axis_label_sizes, 'elXBIV_corr', 0) # -1: electrical, 0,1,etc. for elements
+plot_nice_2Dmap(samp, scan, axis_label_sizes, 'XBIC_maps', -1) # -1: electrical, 0,1,etc. for elements
 
 # vmin = 2, vmax = 10,
 
