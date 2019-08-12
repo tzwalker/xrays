@@ -1,4 +1,4 @@
-get_defs = 'wor'
+get_defs = 'work'
 ### paths for custom defintion files and scans ### change according to the operating system environment
 if get_defs == 'work':
     scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
@@ -14,11 +14,11 @@ import c_rummage_thru_H5 as rumH
 import d_clustering
 import e_statistics
 
-NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [416, 422,423,424, 550], 'XBIV_scans': [419,420,421, 551], 
-          'beam_conv': [2E5,2E5,2E5, 2E5], 
-          'c_stanford': [5000,5000,5000, 50000], 
-          'c_lockin':[500,500,500, 100], 
-          'v_lockin': [1E3,1E3,1E3, 10000],
+NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550], 'XBIV_scans': [419,420,421, 551], 
+          'beam_conv':      [2E5,2E5,2E5, 2E5], 
+          'c_stanford':     [5000,5000,5000, 50000], 
+          'c_lockin':       [500,500,500, 100], 
+          'v_lockin':       [1E3,1E3,1E3, 10000],
           '2017_12_ele_iios': [0.275, 0.0446, 0.0550], # if 2018_07 geometry is same as 2017_12 geometry then the key label doesn't matter here
           '2019_03_ele_iios': [0.104, 0.00131, 0.00418]}
 NBL3_3 = {'Name': 'NBL3-3', 'XBIC_scans': [264,265,266, 475], 'XBIV_scans': [261,262,263, 472], 
@@ -28,7 +28,7 @@ NBL3_3 = {'Name': 'NBL3-3', 'XBIC_scans': [264,265,266, 475], 'XBIV_scans': [261
           'v_lockin': [1E4,1E4,1E4, 100000],
           '2017_12_ele_iios': [0.296, 0.0488, 0.0604],
           '2019_03_ele_iios': [0.114, 0.00144, 0.00459]}
-TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439, 480], 'XBIV_scans': [382,383,384, 440], 
+TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439], 'XBIV_scans': [382,383,384, 440], 
          'beam_conv': [2E5, 2E5, 2E5, 1E5], 
          'c_stanford': [5000,5000,5000, 200], 
          'c_lockin':[500,10000,10000, 20], 
@@ -58,18 +58,18 @@ e_statistics.standardize_channels(samples, ['c_stat_arrs', 'v_stat_arrs'], ['c_s
     # maps according to bad data in one of the XRF channels
     # not configured for using electrical channels as the bad channel
     # see ReadMe.txt for details
-e_statistics.reduce_arrs(samples, 'Cu', elements_in, 3, ['c_stat_arrs', 'v_stat_arrs'])
+e_statistics.reduce_arrs(samples, 'Cu', elements_in, 3, ['c_stat_arrs', 'v_stat_arrs']) # int here is number of standard deviations to include
 e_statistics.standardize_channels(samples, ['c_reduced_arrs', 'v_reduced_arrs'], ['c_redStand_arrs', 'v_redStand_arrs'])
 
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
     # type 'all' to include all features, that is, the electrical channels and 
 cluster_channels = ['perf', 'Cu'] 
-cluster_number = 2
+cluster_number = 3
 # the integer argument in this function is a switch that deetermiens which data to cluster
 # 0 --> original data (no NaN), 1 --> standardized data, 
 # 2 --> reduced original data, 3 --> reduced standardized data
 # switches 1 and 3 are reccomended as they use the standardized data
-#d_clustering.kclustering(samples, cluster_number, cluster_channels, elements_in, 3)
+d_clustering.kclustering(samples, cluster_number, cluster_channels, elements_in, 1)
 
 # use separate programs for plotting
 
