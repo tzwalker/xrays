@@ -133,21 +133,19 @@ plot_save_combined_channels(samples, master_list)
 ### EXTRA CODE
 
 # quick-and-dirty export Cu and XBIC line profiles to CSVs for PVSC poster
-# =============================================================================
-# calib_xs = plot_save_combined_channels(samples, master_list)
-# 
-# arrays = []
-# for sample, x in zip(master_list, calib_xs):
-#     for channel in sample:
-#         a = [x, channel]
-#         a = np.asmatrix(a)
-#         a = np.transpose(a)
-#         arrays.append(a)
-# count = 0      
-# for array in arrays:
-#     np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\DefectLab\PVSC 46 -2019\foo' + str(count) + '.csv', array, delimiter = ',')
-#     count = count +1 
-# =============================================================================
+calib_xs = plot_save_combined_channels(samples, master_list)
+
+arrays = []
+for sample, x in zip(master_list, calib_xs):
+    for channel in sample:
+        a = [x, channel]
+        a = np.asmatrix(a)
+        a = np.transpose(a)
+        arrays.append(a)
+count = 0      
+for array in arrays:
+    np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\DefectLab\PVSC 46 -2019\foo' + str(count) + '.csv', array, delimiter = ',')
+    count = count +1 
 
 # batch convert color to greyscale without DigitialMicrograph (DM) software
 # =============================================================================
