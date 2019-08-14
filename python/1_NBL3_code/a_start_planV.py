@@ -43,7 +43,7 @@ eiDefs.get_scan_scalers(samples)
 eiDefs.get_add_elect_channel(samples, 2) # USER input: 1 --> us_ic, 2 --> ds_ic
 eiDefs.cts_to_elect(samples)
 
-elements_in = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']       # USER input: strings must include element lines, 
+elements_in = ['Cu', 'Cd_L', 'Te_L', 'Mo_L', 'Zn']       # USER input: strings must include element lines, 
                                     # index of the element strings here dictate their positions in all future structures
 rumH.find_ele_in_h5s(samples, elements_in)
 rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble w/MAPS fit
@@ -52,13 +52,13 @@ rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble
 # ATTENTION: see ReadME.txt for proper use of apply_ele_iios() below
 rumH.apply_ele_iios(samples)
 
-e_statistics.make_stat_arrays(samples)
+e_statistics.make_stat_arrays(samples, ['elXBIC', 'elXBIV'], ['c_stat_arrs', 'v_stat_arrs'])
 e_statistics.standardize_channels(samples, ['c_stat_arrs', 'v_stat_arrs'], ['c_stand_arrs', 'v_stand_arrs'])
 # use this funciton if you want to remove the pixels of all loaded
     # maps according to bad data in one of the XRF channels
     # not configured for using electrical channels as the bad channel
     # see ReadMe.txt for details
-e_statistics.reduce_arrs(samples, 'Cu', elements_in, 3, ['c_stat_arrs', 'v_stat_arrs']) # int here is number of standard deviations to include
+e_statistics.reduce_arrs(samples, 'Cu', elements_in, 3, ['c_stat_arrs', 'v_stat_arrs'], ['c_reduced_arrs', 'v_reduced_arrs']) # int here is number of standard deviations to include
 e_statistics.standardize_channels(samples, ['c_reduced_arrs', 'v_reduced_arrs'], ['c_redStand_arrs', 'v_redStand_arrs'])
 
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
@@ -68,7 +68,7 @@ cluster_number = 3
 # the integer argument in this function is a switch that deetermiens which data to cluster
 # 0 --> original data (no NaN), 1 --> standardized data, 
 # 2 --> reduced original data, 3 --> reduced standardized data
-# switches 1 and 3 are reccomended as they use the standardized data
+# switches 1 and 3 are reccomended as they use the standardized data, switch 3 recommended for scatter plots
 d_clustering.kclustering(samples, cluster_number, cluster_channels, elements_in, 1)
 
 # use separate programs for plotting

@@ -1,6 +1,6 @@
-def get_elem_indices(wanted_channels, channels_in_scan):
-    chan = [c.decode('utf-8') for c in channels_in_scan]
-    index_list = [i for i,ele in enumerate(chan) for e in wanted_channels if e == ele]
+def get_elem_indices(user_channels, channels_in_scan):
+    decoded_chs = [chan.decode('utf-8') for chan in channels_in_scan]
+    index_list = [i for user_ch in user_channels for i,decoded_ch in enumerate(decoded_chs) if user_ch == decoded_ch]
     return index_list
 
 def find_ele_in_h5s(sample_dicts, ChOIs):
@@ -47,7 +47,6 @@ def extract_norm_ele_maps(sample_dicts, fluxnorm, fitnorm):
         key = 'elXBIV'
         samp.setdefault(key, v_ele_maps)
     return 
-
 
 def apply_ele_iios(sample_dicts):
     for samp in sample_dicts:

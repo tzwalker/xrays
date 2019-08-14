@@ -430,3 +430,19 @@ import sklearn.preprocessing as skpp
 # #plt.ylim(ymin, ymax)
 # #plt.xlim(0)
 # =============================================================================
+
+
+### stack overflow question, list compmrehension sorting...
+# =============================================================================
+# decoded_chans1 = ['A', 'B', 'C', 'D', 'H']
+# user_chans1 = ['H', 'B', 'C']
+# adj_index_list = [i for i,decoded_ch in enumerate(decoded_chans1) 
+#                   for user_ch in user_chans1 
+#                   if user_ch == decoded_ch]
+# 
+# adj_index_list = []
+# for user_ch in user_chans1:
+#     for i, decoded_ch in enumerate(decoded_chans1):
+#         if user_ch == decoded_ch:
+#             adj_index_list.append(i)
+# =============================================================================

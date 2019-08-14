@@ -27,7 +27,7 @@ def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
         colors = 'magma'; units = 'A'
     else: 
         c_map = samp[data_channel][scan][ele_index]; 
-        colors = 'Greys_r'; units = '\u03BCg/cm'+ r'$^{2}$'
+        colors = 'viridis'; units = '\u03BCg/cm'+ r'$^{2}$'
     
     df_map = pd.DataFrame(c_map, index = y_real, columns = x_real)
     fig, ax0 = plt.subplots()

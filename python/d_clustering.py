@@ -1,9 +1,9 @@
 from sklearn.cluster import KMeans
 import samp_dict_grow
 
-def trim_for_clustering(clust_chans, available_chans):
+def trim_for_clustering(clust_chans, available_chans): # this is finding the column in the stat arrays that corresponds to the channels you want to cluster
     if 'all' in clust_chans:
-        indices = list(range(len(available_chans) + 1))
+        indices = list(range(len(available_chans) + 1)) # add one to include XBIC array
         return indices
     else:
         indices = []
@@ -39,7 +39,7 @@ def find_clusters(samps, N, clust_channels, available_channels, dict_data):
     return
 
 def kclustering(samps, N, clust_channels, available_channels, outlier_switch):
-    if outlier_switch == 0: # use this switch for whole no nan original data
+    if outlier_switch == 0: # use this switch for original data without two nan columns on the end (removed in )
         samp_dict_data = ['c_stat_arrs', 'v_stat_arrs'] 
         find_clusters(samps, N, clust_channels, available_channels, samp_dict_data) 
     elif outlier_switch == 1: # use this switch for whole standardized original data
@@ -52,5 +52,18 @@ def kclustering(samps, N, clust_channels, available_channels, outlier_switch):
         samp_dict_data = ['c_redStand_arrs', 'v_redStand_arrs'] 
         find_clusters(samps, N, clust_channels, available_channels, samp_dict_data)
     return
-#kclustering(samples, 3, ['Cu', 'perf'], elements_in, 1)
+
+#run after kclustering()
+import numpy as np
+def clusters_in_2D(samps):
+    for samp in samps:
+        models = samp['c_kmodels']
+        map_size = np.shape(samp['XBIC_maps'])
+        for model in models:
+            labels = model.labels_
+            
+            print(len(labels))
+    return
+
+clusters_in_2D(samples)
 
