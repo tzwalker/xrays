@@ -54,16 +54,18 @@ def kclustering(samps, N, clust_channels, available_channels, outlier_switch):
     return
 
 #run after kclustering()
-import numpy as np
-def clusters_in_2D(samps):
-    for samp in samps:
-        models = samp['c_kmodels']
-        map_size = np.shape(samp['XBIC_maps'])
-        for model in models:
-            labels = model.labels_
-            
-            print(len(labels))
-    return
-
-clusters_in_2D(samples)
-
+# =============================================================================
+# import numpy as np
+# def clusters_in_2D(samps):
+#     for samp in samps:
+#         models = samp['c_kmodels']
+#         map_size = np.shape(samp['XBIC_maps'])
+#         for model in models:
+#             labels = model.labels_
+#             
+#             print(len(labels))
+#     return
+# 
+# clusters_in_2D(samples)
+# 
+# =============================================================================

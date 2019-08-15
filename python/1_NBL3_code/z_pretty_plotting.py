@@ -37,6 +37,7 @@ def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
     # figure level
     plt.xlabel('X (\u03BCm)', fontsize=axis_label_sizes)
     plt.ylabel('Y (\u03BCm)', fontsize=axis_label_sizes)
+    plt.title(samp['Name'], fontsize=axis_label_sizes)
     # axis level
     ax0.tick_params(labelsize = 14)                     #formats size of ticklabels
     x_labls = custom_format_ticks(ax0.get_xticklabels(), '{:g}')
@@ -53,15 +54,13 @@ def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
     cbar_ax.tick_params(labelsize=12)                   #tick label formatting
     cbar_ax.yaxis.get_offset_text().set(size=12)        #format colorbar offset text
     cbar_ax.yaxis.set_offset_position('left')           #scale at top of colorbar (i.e. 'offset') position
-    #z_labls = custom_format_ticks(cbar_ax.get_yticklabels(), '{:g}')
-    #cbar_ax.set_yticklabels(, fontsize=16, weight='bold') --> from internet
-    #cbar_ax.set_yticklabels(z_labls) #--> debug
-    return #plt.show(fig)
+    
+    return 
 
 samp = NBL3_3
 scan = 0
 axis_label_sizes = 16
-plot_nice_2Dmap(samp, scan, axis_label_sizes, 'elXBIC', 3) # -1: electrical, 0,1,etc. for elements
+plot_nice_2Dmap(samp, scan, axis_label_sizes, 'elXBIC', 0) # -1: electrical, 0,1,etc. for elements
 
 # vmin = 2, vmax = 10,
 
