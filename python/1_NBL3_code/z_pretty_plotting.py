@@ -27,7 +27,7 @@ def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
         colors = 'magma'; units = 'A'
     else: 
         c_map = samp[data_channel][scan][ele_index]; 
-        colors = 'viridis'; units = '\u03BCg/cm'+ r'$^{2}$'
+        colors = 'Oranges_r'; units = '\u03BCg/cm'+ r'$^{2}$'
     
     df_map = pd.DataFrame(c_map, index = y_real, columns = x_real)
     fig, ax0 = plt.subplots()
@@ -57,11 +57,8 @@ def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
     
     return 
 
-samp = NBL3_3
+samp = NBL3_2
 scan = 0
 axis_label_sizes = 16
 plot_nice_2Dmap(samp, scan, axis_label_sizes, 'elXBIC', 0) # -1: electrical, 0,1,etc. for elements
-
-# vmin = 2, vmax = 10,
-
 
