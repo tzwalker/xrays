@@ -1,11 +1,16 @@
-get_defs = 'work'
-### paths for custom defintion files and scans ### change according to the operating system environment
-if get_defs == 'work':
-    scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
-    def_path = r'C:\Users\Trumann\Desktop\xrays\python'
-else:
-    scan_path = '/home/kineticcross/Desktop/data'
-    def_path = '/home/kineticcross/Desktop/xrays/python'
+def get_directory(machine_index):
+    if machine_index==0: #--> Dell work
+        scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
+        def_path = r'C:\Users\Trumann\Desktop\xrays\python'
+    elif machine_index==1: #-->ASUS windows
+        scan_path = r'C:\Users\triton\Desktop\NBL3_data\all_H5s'
+        def_path = r'C:\Users\triton\xrays\python'
+    elif machine_index==2: #-->ASUS ubuntu
+        scan_path = '/home/kineticcross/Desktop/data'
+        def_path = '/home/kineticcross/Desktop/xrays/python'
+    return scan_path, def_path
+
+scan_path, def_path = get_directory(1)
     
 import sys
 sys.path.append(def_path)

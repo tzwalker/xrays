@@ -1,45 +1,30 @@
+# calculatign Sobel gradient; identifying edges of images
+    # works well for XBIC, not so well for Cu and Cd, which contain noise (see consolidated notes)
+    # next step: apply gaussian filter to XRF, then find edges (or alter Sobel kernels, ,if possible)
+    
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+from skimage import filters
 
 
+def calc_grad_map(channel_map):
+    img_grad = filters.sobel(channel_map)
+    return img_grad
 
-def plot_nice_stats(samp, scan, x, y, axis_label_sizes):
-    x_data = samp['c_redStand_arrs'][scan][:,x_channel]
-    y_data = samp['c_redStand_arrs'][scan][:,y_channel]
-    data_models = samp['c_kmodels'][scan] # --> XBIC, Cu, and Cd arrays for scan422
-    labels = data_models.labels_
-    
-    fig, ax0 = plt.subplots()
-    ax0 = sns.scatterplot(x_data, y_data, s = 15, hue = labels, palette = "Set1")
-    #sns.set(font_scale = 1.5)
-    #ax0 = sns.jointplot(x_data, y_data, kind='hex', color='g')
-    #ax0.set_axis_labels('Stand. ' + elements_in[x-1] + ' (a.u.)', 'Stand. XBIC (a.u.)')
-    # figure level
-    plt.xlabel('Stand. ' + elements_in[x-1] + ' (a.u.)', fontsize=axis_label_sizes)
-    plt.ylabel('Stand. XBIC (a.u.)', fontsize=axis_label_sizes)
-    #plt.title(samp['Name'] + ' scan ' + str(samp['XBIC_scans'][scan]))
-    # axis level
-    ax0.tick_params(labelsize = 14)                     #formats size of ticklabels
-    return #plt.show(fig)
+samp_maps = [NBL3_2['XBIC_maps'][0], NBL3_2['elXBIC_corr'][0][0], NBL3_2['elXBIC_corr'][0][1]]
+
+#grad_matrix= filters.sobel(samp_maps[0])
+#print(np.shape(samp_maps[0]))
+#fig, (ax0,ax1) = plt.subplots(nrows=1,ncols=2)
+#plt.tight_layout()
+#sns.heatmap(samp_maps[0],square=True, ax=ax0, xticklabels=20,yticklabels=20,cbar_kws={'shrink':0.5}).invert_yaxis()
+#sns.heatmap(grad_matrix, square=True, ax=ax1,xticklabels=20,yticklabels=20,cbar_kws={'shrink':0.5}).invert_yaxis()
+#sns.heatmap(grad_matrix[1], square=True, ax=ax2,xticklabels=20,yticklabels=20,cbar_kws={'shrink':0.5}).invert_yaxis()
 
 
-samp = NBL3_2
-scan = 0     # --> index of scan 
-x_channel = 1 # --> 0:XBIC 1:Cu 2:Cd
-y_channel = 0 # --> 0:XBIC 1:Cu 2:Cd
-label_sizes = 16
-plot_nice_stats(samp, scan, x_channel, y_channel, label_sizes)
-
-#z = test_data[:, z_variable]
-
-#fig, (ax1, ax2) = plt.subplots(1, 2)
-#fig.suptitle('Scatter and Map '+ samp['Name'] + ' ' + str(samp['XBIC_scans'][scan_i]))
-
-
-
-# =============================================================================
-# fig, ax1 = plt.subplots()
-# ax1 = sns.distplot(x)
-# plt.title(samp['Name'] + ' scan ' + str(samp['XBIC_scans'][scan_i]))
-# =============================================================================
+for index, Map in enumerate(samp_maps):
+    fig, (ax0, ax1) = plt.subplots(nrows=1,ncols=2)
+    gradient_map = calc_grad_map(Map)
+    sns.heatmap(Map, square=True, ax=ax0, xticklabels=20,yticklabels=20,cbar_kws={'shrink':0.5}).invert_yaxis()
+    sns.heatmap(gradient_map, square=True, ax=ax1, xticklabels=20,yticklabels=20,cbar_kws={'shrink':0.5}).invert_yaxis()
