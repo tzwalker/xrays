@@ -10,7 +10,7 @@ def get_directory(machine_index):
         def_path = '/home/kineticcross/Desktop/xrays/python'
     return scan_path, def_path
 
-scan_path, def_path = get_directory(1)
+scan_path, def_path = get_directory(0)
     
 import sys
 sys.path.append(def_path)
@@ -47,7 +47,7 @@ samples = [NBL3_2, NBL3_3, TS58A]
 get_add_h5s(samples, scan_path)
 get_add_electrical(samples, 2) # 1 --> us_ic, 2 --> ds_ic, 
 
-elements_in = ['Cu', 'Cd_L']       # USER input: strings must include element lines, 
+elements_in = ['Cu', 'Cd_L', 'Zn', 'Mo_L']       # USER input: strings must include element lines, 
                                     # index of the element strings here dictate their positions in all future structures
 rumH.find_ele_in_h5s(samples, elements_in)
 rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble w/MAPS fit
@@ -67,8 +67,8 @@ e_statistics.standardize_channels(samples, ['c_reduced_arrs', 'v_reduced_arrs'],
 
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
     # type 'all' to include all features, that is, the electrical channels and 
-cluster_channels = ['perf', 'Cu'] 
-cluster_number = 3
+#cluster_channels = ['perf', 'Cu'] 
+#cluster_number = 3
 # the integer argument in this function is a switch that deetermiens which data to cluster
 # 0 --> original data (no NaN), 1 --> standardized data, 
 # 2 --> reduced original data, 3 --> reduced standardized data
