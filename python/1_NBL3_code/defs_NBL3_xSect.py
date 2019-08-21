@@ -42,27 +42,29 @@ def custom_format_ticks(axes_object_labels, string_type):
     return ticking
 
 def plot_2D_xSect(imp_rot_dfs, ch_units, colors):
-    for df, un, color in zip(imp_rot_dfs, ch_units, colors):
-        fig, ax0 = plt.subplots()
+    fig, axes = plt.subplots(1,3)
+    plt.tight_layout()
+    for df, axis, un, color in zip(imp_rot_dfs, axes, ch_units, colors):
         ch_max = df.values.max()
-        sns.heatmap(df, ax=ax0, vmax=ch_max, xticklabels=50, yticklabels=50, cmap=color)
-        x_labls = custom_format_ticks(ax0.get_xticklabels(), '{:.0f}')
-        y_labls = custom_format_ticks(ax0.get_yticklabels(), '{:.0f}')         #formats tick label strings without ".0"
-        ax0.set_xticklabels(x_labls)                        #set the tick labels
-        ax0.set_yticklabels(y_labls, rotation = 0)          #set the ticklabels and rotate (if needed)
-        ax0.invert_yaxis()                                  #invert the yaxis after formatting is complete
+        sns.heatmap(df, vmax=ch_max, xticklabels=20, yticklabels=4, cmap=color, ax=axis)#, cbar_kws={'format': '%.0g'})
+        x_labls = custom_format_ticks(axis.get_xticklabels(), '{:.0f}')
+        y_labls = custom_format_ticks(axis.get_yticklabels(), '{:.0f}')         #formats tick label strings without ".0"
+        axis.set_xticklabels(x_labls)                        #set the tick labels
+        axis.set_yticklabels(y_labls, rotation = 0)          #set the ticklabels and rotate (if needed)
+        axis.invert_yaxis()                                  #invert the yaxis after formatting is complete
         
         cbar_ax = plt.gcf().axes[-1]                        #gets colorbar of current figure object, behaves as second y axes object
         # colorbar label settings
-        cbar_ax.set_ylabel(un, fontsize = 16, 
-                           rotation = 90, labelpad = 10)   #label formatting
-        cbar_ax.tick_params(labelsize=12)                   #tick label formatting
-        cbar_ax.yaxis.get_offset_text().set(size=12)        #format colorbar offset text
+        cbar_ax.set_ylabel(un, rotation = 90)               #label formatting
+        #cbar_ax.tick_params(labelsize=12)                   #tick label formatting
+        #cbar_ax.yaxis.get_offset_text().set(size=12)        #format colorbar offset text
         cbar_ax.yaxis.set_offset_position('left')           #scale at top of colorbar (i.e. 'offset') position
-        z_labls = custom_format_ticks(cbar_ax.get_yticklabels(), '{:g}')
-        #cbar_ax.set_yticklabels(, fontsize=16, weight='bold') --> from internet
-        cbar_ax.set_yticklabels(z_labls)
-        #fig.tight_layout(pad=0, h_pad=0, w_pad=0)
+        if un == 'A':
+            pass
+        else:
+            short_cbar_labls = ['{:,.0f}'.format(x) + 'K' for x in cbar_ax.get_yticks()/1000]
+            cbar_ax.set_yticklabels(short_cbar_labls)
+    fig.tight_layout(pad=0, h_pad=0.25, w_pad=0)
     return
 
 def import_xSect_csvs(path, sample, scannum, channels, meta, rot):
