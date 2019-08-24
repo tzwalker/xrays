@@ -431,6 +431,64 @@ import sklearn.preprocessing as skpp
 # #plt.xlim(0)
 # =============================================================================
 
+### NOTES: z_img_processing.py
+# =============================================================================
+# 
+#     # pix by pix product
+#     product = cu_gradient * zn_gradient
+#     # geometric mean of gradients
+#     gmean = np.sqrt(product)
+# =============================================================================
+# =============================================================================
+# fig, (ax0,ax1) = plt.subplots(nrows=1,ncols=2)
+# plt.tight_layout()
+# sns.heatmap(samp_maps[0],square=True, ax=ax0, xticklabels=20,yticklabels=20,cbar_kws={'shrink':0.5}).invert_yaxis()
+# sns.heatmap(grad_matrix, square=True, ax=ax1,xticklabels=20,yticklabels=20,cbar_kws={'shrink':0.5}).invert_yaxis()
+# sns.heatmap(grad_matrix[1], square=True, ax=ax2,xticklabels=20,yticklabels=20,cbar_kws={'shrink':0.5}).invert_yaxis()
+# 
+# for index, Map in enumerate(samp_maps):
+#     fig, (ax0, ax1) = plt.subplots(nrows=1,ncols=2)
+#     gradient_map = calc_grad_map(Map)
+#     sns.heatmap(Map, square=True, ax=ax0, xticklabels=20,yticklabels=20,cbar_kws={'shrink':0.5}).invert_yaxis()
+#     sns.heatmap(gradient_map, square=True, ax=ax1, xticklabels=20,yticklabels=20,cbar_kws={'shrink':0.5}).invert_yaxis()
+# =============================================================================
+
+# =============================================================================
+# # gaussian filter of (shaped) standardized data
+# cu_stand = cu_stand.reshape(np.shape(gauss_map))
+# gauss_of_cu_stand = gaussian_filter(cu_stand, sigma=2)
+# zn_stand = zn_stand.reshape(np.shape(gauss_map))
+# gauss_of_zn_stand = gaussian_filter(zn_stand, sigma=2)
+# =============================================================================
+
+# =============================================================================
+# # threshold percentile of gradient map
+# cu_gradient_75quart_thres = np.percentile(cu_gradient_no_edge, percentile)
+# zn_gradient_75quart_thres = np.percentile(zn_gradient_no_edge, percentile)
+# # find pixels in gradient map within a given percentile
+# cu_mask = np.where(cu_gradient >= cu_gradient_75quart_thres, 1,0) # retains shape
+# zn_mask = np.where(zn_gradient >= zn_gradient_75quart_thres, 1,0)
+# # find where gradient maps mismatch --> quantifies the error in saying g.bs are where the gradients lie??
+# a_mismatched_map = np.where(cu_mask == zn_mask, 1, 0)
+# # parameter to minimize mismatch
+# mismatch = a_mismatched_map.sum()
+# print(percentile, mismatch, round(mismatch/init_mismatch, 3))
+# 
+# fig, (ax0, ax1, ax2) = plt.subplots(nrows=1,ncols=3)
+# plt.tight_layout()
+# ax0.imshow(cu_mask, origin='lower', cmap='Greys_r')
+# ax1.imshow(zn_mask, origin='lower', cmap='Greys_r')
+# ax2.imshow(a_mismatched_map, origin='lower', cmap='Greys_r')
+# #if mismatch < init_mismatch:
+#     #best_percentile = percentile
+# # for each pixel in the masks, if values match, record pixel coordinates for indexing into real data arrays, plot on scatter
+# calculatign Sobel gradient; identifying edges of images
+#    # works well for XBIC, not so well for Cu and Cd, which contain noise (see consolidated notes)
+#    # next step: apply gaussian filter to XRF, then find edges (or alter Sobel kernels, ,if possible)
+#
+#      # --> matches pixels in the gradient maps that are above a certaiin percentile... make bulk stats of number of matches among the various areas scanned
+# =============================================================================
+
 
 ### stack overflow question, list compmrehension sorting...
 # =============================================================================

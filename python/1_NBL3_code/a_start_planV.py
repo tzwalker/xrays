@@ -17,7 +17,7 @@ sys.path.append(def_path)
 from b_import_h5 import get_add_h5s
 from b_scale_elect import get_add_electrical
 import c_rummage_thru_H5 as rumH
-import d_clustering
+#import d_clustering
 import e_statistics
 
 NBL3_2 = {'Name': 'Med. Cu (450°C)', 'XBIC_scans': [422,423,424, 550], 'XBIV_scans': [419,420,421, 551], 
@@ -58,12 +58,15 @@ rumH.apply_ele_iios(samples)
 
 e_statistics.make_stat_arrays(samples, ['elXBIC', 'elXBIV'], ['c_stat_arrs', 'v_stat_arrs'])
 e_statistics.standardize_channels(samples, ['c_stat_arrs', 'v_stat_arrs'], ['c_stand_arrs', 'v_stand_arrs'])
+
+
+## preparation for clustering ###
 # use this funciton if you want to remove the pixels of all loaded
     # maps according to bad data in one of the XRF channels
     # not configured for using electrical channels as the bad channel
     # see ReadMe.txt for details
-e_statistics.reduce_arrs(samples, 'Cu', elements_in, 3, ['c_stat_arrs', 'v_stat_arrs'], ['c_reduced_arrs', 'v_reduced_arrs']) # int here is number of standard deviations to include
-e_statistics.standardize_channels(samples, ['c_reduced_arrs', 'v_reduced_arrs'], ['c_redStand_arrs', 'v_redStand_arrs'])
+#e_statistics.reduce_arrs(samples, 'Cu', elements_in, 3, ['c_stat_arrs', 'v_stat_arrs'], ['c_reduced_arrs', 'v_reduced_arrs']) # int here is number of standard deviations to include
+#e_statistics.standardize_channels(samples, ['c_reduced_arrs', 'v_reduced_arrs'], ['c_redStand_arrs', 'v_redStand_arrs'])
 
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
     # type 'all' to include all features, that is, the electrical channels and 
