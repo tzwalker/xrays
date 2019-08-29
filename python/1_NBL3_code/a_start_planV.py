@@ -10,7 +10,7 @@ def get_directory(machine_index):
         def_path = '/home/kineticcross/Desktop/xrays/python'
     return scan_path, def_path
 
-scan_path, def_path = get_directory(0)
+scan_path, def_path = get_directory(2)
     
 import sys
 sys.path.append(def_path)
