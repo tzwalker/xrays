@@ -2,10 +2,11 @@
 """
 created: Fri Aug 16 14:49:13 2019
 author: Trumann
-this plots from the numpy arrayed strcuture
-    has to add the nans back unto the raveled map so they can match the size
-    extracted from the h5 axes
-    vmin and vamx of cbar are set because stat arrays are already used
+
+this file is used to plto standardized data;
+    take standardized arrays, shapes them,
+    adds two nan columns for prettiness
+useful for XBIC data mostly!
 """
 import numpy as np
 import seaborn as sns

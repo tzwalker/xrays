@@ -1,9 +1,11 @@
 '''
 created: Fri Aug 16 14:49:13 2019
 author: Trumann
-this plots from the shaped data before major stat processing
-    has the original nans of the h5 file, vmin and max of cbar
-    are calculated from the data
+
+this file plots the original data with or without correct;
+    original nans of the h5 file
+    vmin and max of cbar calculated from data
+useful for element plots!
 '''
 
 import seaborn as sns
@@ -18,7 +20,7 @@ def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
     x_real = plt_supp.get_real_coordinates(x_axis)
     y_real = plt_supp.get_real_coordinates(y_axis)
     
-    if ele_index == -1: 
+    if ele_index == -1:             
         c_map = samp[data_channel][scan];
         c_map = c_map / c_map[:,:-2].max()
         colors = 'magma'; units = '% Max Current'
@@ -26,6 +28,7 @@ def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
         c_map = samp[data_channel][scan][ele_index];
         #c_map = c_map / c_map[:,:-2].max()
         colors = 'Oranges_r'; units = '\u03BCg/cm'+ r'$^{2}$'
+    
     lower,upper = plt_supp.get_colorbar_axis(c_map, 3) # int here sets num_of_std to include
     df_map = pd.DataFrame(c_map, index = y_real, columns = x_real)
     fig, ax0 = plt.subplots()

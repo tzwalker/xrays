@@ -47,9 +47,9 @@ samples = [NBL3_2, NBL3_3, TS58A]
 get_add_h5s(samples, scan_path)
 get_add_electrical(samples, 2) # 1 --> us_ic, 2 --> ds_ic, 
 
-elements_in = ['Cu', 'Cd_L', 'Te_L','Zn', 'Mo_L']       # USER input: strings must include element lines, 
+elements = ['Cu', 'Cd_L', 'Te_L','Zn', 'Mo_L']       # USER input: strings must include element lines, 
                                     # index of the element strings here dictate their positions in all future structures
-rumH.find_ele_in_h5s(samples, elements_in)
+rumH.find_ele_in_h5s(samples, elements)
 rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble w/MAPS fit
 
 # now apply XRF correction
@@ -69,7 +69,8 @@ e_statistics.standardize_channels(samples, ['c_stat_arrs', 'v_stat_arrs'], ['c_s
 #e_statistics.standardize_channels(samples, ['c_reduced_arrs', 'v_reduced_arrs'], ['c_redStand_arrs', 'v_redStand_arrs'])
 
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
-    # type 'all' to include all features, that is, the electrical channels and 
+    # type 'all' to include all features, that is, the electrical channel and
+    # all elements in 'elements_in'
 #cluster_channels = ['perf', 'Cu'] 
 #cluster_number = 3
 # the integer argument in this function is a switch that deetermiens which data to cluster
