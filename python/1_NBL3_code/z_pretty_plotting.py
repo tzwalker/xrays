@@ -58,8 +58,8 @@ def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
     #cbar_ax.set_yticklabels(custom_format_ticks(cbar_ax.get_yticklabels(), '{:.2f}'))
     return 
 
-samp = NBL3_2
-scan = 0
+samp = NBL3_3
+scan = 2
 axis_label_sizes = 16
 plot_nice_2Dmap(samp, scan, axis_label_sizes, 'elXBIC_corr', 0) # -1: electrical, 0,1,etc. for elements
 

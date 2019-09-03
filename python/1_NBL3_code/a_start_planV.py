@@ -10,7 +10,7 @@ def get_directory(machine_index):
         def_path = '/home/kineticcross/Desktop/xrays/python'
     return scan_path, def_path
 
-scan_path, def_path = get_directory(0)
+scan_path, def_path = get_directory(1)
     
 import sys
 sys.path.append(def_path)
@@ -28,7 +28,7 @@ NBL3_2 = {'Name': 'Med. Cu (450°C)', 'XBIC_scans': [422,423,424, 550], 'XBIV_sc
           # wrong key decriptor 2017_12_2IDD, but geometry same between the two beamtimes
           '2017_12_ele_iios': [0.275, 0.0446, 0.0550], 
           '2019_03_ele_iios': [0.104, 0.00131, 0.00418]}
-NBL3_3 = {'Name': 'Hi. Cu, (450°C)', 'XBIC_scans': [264,265,266, 475], 'XBIV_scans': [261,262,263, 472], 
+NBL3_3 = {'Name': 'Hi. Cu, (450°C)', 'XBIC_scans': [264,265,266, 491], 'XBIV_scans': [261,262,263, 472], 
           'beam_conv':      [2E5, 2E5, 2E5, 1E5], 
           'c_stanford':     [5000,5000,5000, 200], 
           'c_lockin':       [500,500,500, 20], 
@@ -50,7 +50,7 @@ get_add_electrical(samples, 2) # 1 --> us_ic, 2 --> ds_ic,
 
 # enter elements you want to work with
 # index of the element string dictates position future structures
-elements = ['Cu', 'Cd_L', 'Te_L','Zn', 'Mo_L']        
+elements = ['Cu', 'Cd_L']#, 'Te_L','Zn', 'Mo_L']        
 
 rumH.find_ele_in_h5s(samples, elements)
 rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble w/MAPS fit
