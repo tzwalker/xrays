@@ -2,22 +2,7 @@ import xraylib as xl
 import numpy as np
 import matplotlib.pyplot as plt
 
-# returns highest energy photon fluoresced at the given beam energy
-def get_Ele_XRF_Energy(ele, energy):
-    Z = xl.SymbolToAtomicNumber(ele)
-    #will it abosrb? if so, it will fluoresce
-    F = xl.LineEnergy(Z, xl.KA1_LINE)
-    if xl.EdgeEnergy(Z, xl.K_SHELL) > energy:
-            F = xl.LineEnergy(Z, xl.LA1_LINE)
-            if xl.EdgeEnergy(Z, xl.L1_SHELL) > energy:
-                    F = xl.LineEnergy(Z, xl.LB1_LINE)
-                    if xl.EdgeEnergy(Z, xl.L2_SHELL) > energy:
-                            F = xl.LineEnergy(Z, xl.LB1_LINE)
-                            if xl.EdgeEnergy(Z, xl.L3_SHELL) > energy:
-                                    F = xl.LineEnergy(Z, xl.LG1_LINE)
-                                    if xl.EdgeEnergy(Z, xl.M1_SHELL) > energy:
-                                            F = xl.LineEnergy(Z, xl.MA1_LINE) 
-    return F
+from eleXRF_energy import get_Ele_XRF_Energy
 
 # values being compared in comments are for Cd_L
 def iio_vs_depth(ele, t, dt):
@@ -48,10 +33,10 @@ def iio_vs_depth(ele, t, dt):
 
 
 ## define settings and stack parameters ##
-beam_energy = 12.7 #keV
-beam_theta = 75                                                     #angle of the beam relative to sample normal
+beam_energy = 8.99 #keV
+beam_theta = 90                                                     #angle of the beam relative to sample normal
 beam_geometry = np.sin(beam_theta*np.pi/180)                        #convert to radians
-detect_theta = 15                                                   #angle of the detector sample normal
+detect_theta = 43                                                   #angle of the detector sample normal
 detect_geometry = np.sin(detect_theta*np.pi/180)                    #convert to radians
 # enter thickness of layer in cm
 # only upstream layers are of interest
@@ -69,39 +54,37 @@ no_rough_iio = iio_vs_depth(ele, no_rough, dt)      #calc reference profile
 no_rough_converted = (no_rough/1000).reshape(-1,1)
 save_arr = np.concatenate((no_rough_converted, no_rough_iio.reshape(-1,1)), axis=1)
 
-np.savetxt(r'C:\Users\triton\iio_sim_' + str(detect_theta) +'deg.csv', save_arr, delimiter=',')
-plt.plot(no_rough, no_rough_iio)
+#np.savetxt(r'C:\Users\triton\iio_sim_' + str(detect_theta) +'deg.csv', save_arr, delimiter=',')
+#plt.plot(no_rough, no_rough_iio)
 
 
-# =============================================================================
-# # specfiy roughness parameters
-# roughnesses = np.linspace(0.05, 0.2, 3)
-# rough_ups, rough_downs = gen_upd_and_downs(roughnesses)
-# ele_rough_iios_up, ele_rough_iios_down = gen_up_down_iios(rough_ups, rough_downs)
-# no_rough_in_um = no_rough / 1000        #for proper x-axis units while plotting
-# 
-# def gen_upd_and_downs(r):
-#     rough_ups = []
-#     rough_downs = []
-#     for roughness in roughnesses:
-#         rough_up = no_rough * (1+roughness)
-#         rough_down = no_rough * (1-roughness)
-#         rough_ups.append(rough_up)
-#         rough_downs.append(rough_down)
-#     return rough_ups, rough_downs
-# 
-# def gen_up_down_iios(rough_ups, rough_downs):
-#     ele_rough_iios_up = []
-#     for roughness in rough_ups:
-#         ele_rough_iio_up = iio_vs_depth(ele, roughness, dt)
-#         ele_rough_iios_up.append(ele_rough_iio_up)
-#     
-#     ele_rough_iios_down = []
-#     for roughness in rough_downs:
-#         ele_rough_iio_down = iio_vs_depth(ele, roughness, dt)
-#         ele_rough_iios_down.append(ele_rough_iio_down)
-#     return ele_rough_iios_up, ele_rough_iios_down
-# =============================================================================
+# specfiy roughness parameters
+roughnesses = np.linspace(0.05, 0.2, 3)
+
+no_rough_in_um = no_rough / 1000        #for proper x-axis units while plotting
+
+def gen_upd_and_downs(r):
+    rough_ups = []
+    rough_downs = []
+    for roughness in roughnesses:
+        rough_up = no_rough * (1+roughness)
+        rough_down = no_rough * (1-roughness)
+        rough_ups.append(rough_up)
+        rough_downs.append(rough_down)
+    return rough_ups, rough_downs
+
+def gen_up_down_iios(rough_ups, rough_downs):
+    ele_rough_iios_up =     [iio_vs_depth(ele, roughness, dt) for roughness in rough_ups]
+    ele_rough_iios_up = np.stack(ele_rough_iios_up, axis=1)
+    ele_rough_iios_down =   [iio_vs_depth(ele, roughness, dt) for roughness in rough_downs]
+    ele_rough_iios_down = np.stack(ele_rough_iios_down, axis=1)
+    return ele_rough_iios_up, ele_rough_iios_down
+
+rough_ups, rough_downs = gen_upd_and_downs(roughnesses)
+ele_rough_iios_up, ele_rough_iios_down = gen_up_down_iios(rough_ups, rough_downs)
+
+np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3 data\iio_sim_' + str(detect_theta) +'deg_roughUP.csv', ele_rough_iios_up, delimiter=',')
+np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3 data\iio_sim_' + str(detect_theta) +'deg_roughDOWN.csv', ele_rough_iios_down, delimiter=',')
 
 # iio vs. depth() is essentially the same as the calculation seen in absorb_matlib_v_xraylib
 # only dependency iio_vs_depth() has on CdTe thickness is seen in the "no_rough" variable
@@ -118,8 +101,8 @@ plt.plot(no_rough, no_rough_iio)
 #     samp_iios.append(mean_iio)
 # =============================================================================
 
-### plotting iio vs. CdTe thickness ###
 # =============================================================================
+# ### quick plotting roughness lines ###
 # 
 # # labels for legend are automatically genrated
 # label_nums = roughnesses * 100

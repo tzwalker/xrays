@@ -36,17 +36,17 @@ def make_plots(index1, index2, sig, switch):
     
     if switch == 'raw':
         map_key = [ele_1, ele_2]
-        x = map_key[0].ravel() ; xlab = 'raw ' + elements_in[index1]
-        y = map_key[1].ravel() ; ylab = 'raw ' + elements_in[index2]
+        x = map_key[0].ravel() ; xlab = 'raw ' + elements[index1]
+        y = map_key[1].ravel() ; ylab = 'raw ' + elements[index2]
     elif switch=='just_gauss': 
         map_key = [cu_gauss, zn_gauss]
-        x = map_key[0].ravel() ; xlab = elements_in[index1] + ' gauss filt sig={s}'.format(s=str(sig))
-        y = map_key[1].ravel() ; ylab = elements_in[index2] + ' gauss filt sig={s}'.format(s=str(sig))
+        x = map_key[0].ravel() ; xlab = elements[index1] + ' gauss filt sig={s}'.format(s=str(sig))
+        y = map_key[1].ravel() ; ylab = elements[index2] + ' gauss filt sig={s}'.format(s=str(sig))
     elif switch=='filt_grad':
         map_key = [cu_gradient, zn_gradient]
         scatter_key = [cu_gradient_no_edge, zn_gradient_no_edge]
-        x = scatter_key[0] ; xlab = elements_in[index1] + ' gradient filt sig={s}'.format(s=str(sig))
-        y = scatter_key[1] ; ylab = elements_in[index2] + ' gradient filt sig={s}'.format(s=str(sig))
+        x = scatter_key[0] ; xlab = elements[index1] + ' gradient filt sig={s}'.format(s=str(sig))
+        y = scatter_key[1] ; ylab = elements[index2] + ' gradient filt sig={s}'.format(s=str(sig))
     
     fig, axs = plt.subplots(1,3)
     plt.tight_layout()
@@ -67,10 +67,10 @@ def make_plots(index1, index2, sig, switch):
     return
 
 samp = NBL3_2
-scan = 0
+scan = 3
 # 0:Cu, 1:Cd, 2:Te, 3:Zn, 4:Mo
-index1 = 1
-index2 = 3
+index1 = 0
+index2 = 1
 sigma = 1
 
 # strings used here: 

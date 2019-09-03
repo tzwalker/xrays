@@ -10,7 +10,7 @@ def get_directory(machine_index):
         def_path = '/home/kineticcross/Desktop/xrays/python'
     return scan_path, def_path
 
-scan_path, def_path = get_directory(1)
+scan_path, def_path = get_directory(0)
     
 import sys
 sys.path.append(def_path)
@@ -28,7 +28,7 @@ NBL3_2 = {'Name': 'Med. Cu (450°C)', 'XBIC_scans': [422,423,424, 550], 'XBIV_sc
           # wrong key decriptor 2017_12_2IDD, but geometry same between the two beamtimes
           '2017_12_ele_iios': [0.275, 0.0446, 0.0550], 
           '2019_03_ele_iios': [0.104, 0.00131, 0.00418]}
-NBL3_3 = {'Name': 'Hi. Cu, (450°C)', 'XBIC_scans': [264,265,266, 491], 'XBIV_scans': [261,262,263, 472], 
+NBL3_3 = {'Name': 'Hi. Cu, (450°C)', 'XBIC_scans': [264,265,266, 475], 'XBIV_scans': [261,262,263, 472], 
           'beam_conv':      [2E5, 2E5, 2E5, 1E5], 
           'c_stanford':     [5000,5000,5000, 200], 
           'c_lockin':       [500,500,500, 20], 
@@ -70,9 +70,11 @@ e_statistics.standardize_channels(samples,
     # maps according to bad data in one of the XRF channels
     # not configured for using electrical channels as the bad channel
     # see ReadMe.txt for details
-e_statistics.reduce_arrs(samples, 'Cu', elements, 3,                    # int = # of std
-                         ['c_stat_arrs', 'v_stat_arrs'],                # reference data
-                         ['c_reduced_arrs', 'v_reduced_arrs'])          # new data
+#e_statistics.reduce_arrs(samples, 'Cu', elements, 3,                    # int = # of std
+                         #['c_stat_arrs', 'v_stat_arrs'],                # reference data
+                         #['c_reduced_arrs', 'v_reduced_arrs'])          # new data
+
+
 #e_statistics.standardize_channels(samples, ['c_reduced_arrs', 'v_reduced_arrs'], ['c_redStand_arrs', 'v_redStand_arrs'])
 
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
