@@ -5,18 +5,24 @@ Mon Aug 26 17:49:23 2019
 """
 import numpy as np
 import matplotlib.pyplot as plt
-#from z_stand_arr import from_stand_to_stand_map
+from scipy.ndimage import gaussian_filter
+from scipy import stats
+from put_nans_back_on import put_nans_back_on
 
-xbic_map =  NBL3_3['c_stand_arrs'][0][:,0]
-cu_map =    NBL3_3['c_stand_arrs'][0][:,1]
+cu_arr = NBL3_2['c_stand_arrs'][0][:,1]
+xbic_arr =  NBL3_2['c_stand_arrs'][0][:,0]
 
-wanted_indices = np.where(xbic_map > 2)
 
-thres_cu_map = cu_map[wanted_indices]
+slope, intercept, r_squared, p_value, std_err = stats.linregress(cu_arr, xbic_arr)
 
-thres_xbic_map = xbic_map[wanted_indices]
+
+wanted_indices = np.where(xbic_arr > 2)
+thres_cu_map = cu_arr[wanted_indices]
+thres_xbic_map = xbic_arr[wanted_indices]
 
 plt.figure()
-data = [thres_cu_map, thres_xbic_map]
-plt.boxplot(data)
-#plt.boxplot(cu_map.reshape(-1,1))
+#data = [thres_cu_map, thres_xbic_map]
+#plt.boxplot(data)
+plt.scatter(cu_arr, xbic_arr, s=4)
+
+

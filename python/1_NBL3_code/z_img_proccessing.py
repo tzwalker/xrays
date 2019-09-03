@@ -19,7 +19,7 @@ def make_plots(index1, index2, sig, switch):
     cu_gradient_no_edge = cu_gradient[np.nonzero(cu_gradient)] # returns raveled array
     zn_gradient_no_edge = zn_gradient[np.nonzero(zn_gradient)]
     
-    # generate the colors for your colormap
+    # for overlaying plots ; generate the colors for your colormap
     color1 = colorConverter.to_rgba('c')
     color2 = colorConverter.to_rgba('c')
     # make the colormaps

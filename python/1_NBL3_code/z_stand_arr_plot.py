@@ -8,11 +8,11 @@ this file is used to plto standardized data;
     adds two nan columns for prettiness
 useful for XBIC data mostly!
 """
-import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 import z_plot_supplement as plt_supp 
+from put_nans_back_on import put_nans_back_on
 
 def channel_formatting(index):
     if index == 0:
@@ -33,10 +33,8 @@ def from_stand_to_stand_map(samp, scan, data, channel):
     y_real = plt_supp.get_real_coordinates(y_axis)
     format_list = channel_formatting(channel)
     c_map = samp[data][scan][:,channel]
+    c_map = put_nans_back_on(c_map, y_real, x_real)
     
-    c_map = c_map.reshape(len(y_real), len(x_real)-2)           # minus 2cols (chopped off nans in e_statistics.py)
-    nans_to_attach = np.full((np.size(c_map, axis=0),2), np.nan) # get 2cols of nan
-    c_map = np.append(c_map, nans_to_attach, 1)                 # attach nan
     df_map = pd.DataFrame(c_map, index = y_real, columns = x_real)
     fig, ax0 = plt.subplots()
     ax0 = sns.heatmap(df_map, square = True, cmap = format_list[0],
