@@ -5,76 +5,67 @@ Mon Aug 26 17:49:23 2019
 """
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.ndimage import gaussian_filter
-from scipy import stats
-from put_nans_back_on import put_nans_back_on
-import z_plot_supplement as plt_supp
 
-c_scan = NBL3_2['XBIC_h5s'][3]  # h5 always has coordinates
-x_axis = c_scan['/MAPS/x_axis']  # x position of pixels  [position in um]
-y_axis = c_scan['/MAPS/y_axis']  # y position of pixels  [position in um]
-x_real = plt_supp.get_real_coordinates(x_axis)
-y_real = plt_supp.get_real_coordinates(y_axis)
+scan = 2
 
-xbic_arr =  NBL3_2['c_stand_arrs'][3][:,0]
-cu_arr = NBL3_2['c_stand_arrs'][3][:,1]
+cu_maps = [samp['elXBIC_corr'][scan][0][:,:-2] for samp in samples]
+xbic_maps = [samp['XBIC_maps'][scan][:,:-2] for samp in samples]
 
-cu_standmap = cu_arr.reshape(len(x_real), len(y_real)-2)
-plt.figure()
-plt.imshow(cu_standmap, origin='lower')
+cu_data = [samp['elXBIC_corr'][scan][0][:,:-2].ravel() for samp in samples]
+xbic_data = [samp['XBIC_maps'][scan][:,:-2].ravel() for samp in samples]
+    
+x_boxlabs = [samp['Name'] for samp in samples]
 
-cu_gaussmap = gaussian_filter(cu_standmap, sigma=1)
-plt.figure()
-plt.imshow(cu_gaussmap, origin='lower')
-
-cu_gaussravel = cu_gaussmap.ravel()
-
-lin_model = stats.linregress(cu_gaussravel, xbic_arr)
-lin_fit = lin_model.slope * cu_gaussravel + lin_model.intercept
+fig, axs = plt.subplots(1,2)
+plt.tight_layout()
+axs[0].imshow(cu_maps[2], origin='lower')
+axs[1].imshow(xbic_maps[2], origin='lower')
 
 plt.figure()
-plt.scatter(cu_gaussravel, xbic_arr, s=4)
-plt.plot(cu_gaussravel, lin_fit)
-plt.text(max(cu_gaussravel)*0.75, max(xbic_arr)*0.50, "$R^2$ = {s}".format(s=str(round(lin_model.rvalue,3))))
+plt.boxplot(cu_data)
+plt.xticks([1, 2, 3], x_boxlabs)
+plt.suptitle('Thickness corrected Cu')
+plt.figure()
+plt.boxplot(xbic_data)
+plt.xticks([1, 2, 3], x_boxlabs)
+plt.suptitle('XBIC')
 
+### plotting and correlating (via scatter) gaussian filtered standardized arrays
 # =============================================================================
-# cu_arr_gauss = gaussian_filter(cu_arr, sigma=1)
-# cu_standmap_gauss =  gaussian_filter(cu_stand_map, sigma=1)
-# cu_trim_standmap_gauss = cu_standmap_gauss[:,:-6]
-# cu_standarr_ravel = cu_trim_standmap_gauss.ravel()
+# from scipy.ndimage import gaussian_filter
+# from scipy import stats
+# from put_nans_back_on import put_nans_back_on
+# import z_plot_supplement as plt_supp
+# samp = TS58A
+# c_scan = samp['XBIC_h5s'][scan]  # h5 always has coordinates
+# x_axis = c_scan['/MAPS/x_axis']  # x position of pixels  [position in um]
+# y_axis = c_scan['/MAPS/y_axis']  # y position of pixels  [position in um]
+# x_real = plt_supp.get_real_coordinates(x_axis)
+# y_real = plt_supp.get_real_coordinates(y_axis)
 # 
-# xbic_stand_map = put_nans_back_on(xbic_arr, x_real, y_real)
-# xbic_trim_standmap = xbic_stand_map[:,:-4]
-# xbic_standarr_ravel = cu_trim_standmap_gauss.ravel()
+# xbic_arr =  samp['c_stand_arrs'][scan][:,0]
+# cu_arr = samp['c_stand_arrs'][scan][:,1]
 # 
-# #cu_standarr_ravel.reshape(-1,1)
-# #xbic_standarr_ravel.reshape(-1,1)
+# fig, axs = plt.subplots(1,3)
+# plt.tight_layout()
+# cu_standmap = cu_arr.reshape(len(x_real), len(y_real)-2)
+# axs[0].imshow(cu_standmap, origin='lower')
 # 
+# cu_gaussmap = gaussian_filter(cu_standmap, sigma=1)
+# axs[1].imshow(cu_gaussmap, origin='lower')
 # 
-# def plot_correlation(channel, xbic):
-#     slope, intercept, r_squared, p_value, std_err = stats.linregress(channel, xbic_arr)
-#     fit_line = slope*channel + intercept
-#     
-#     #wanted_indices = np.where(xbic_arr > 2)
-#     #thres_cu_map = cu_arr[wanted_indices]
-#     #thres_xbic_map = xbic_arr[wanted_indices]
-#     
-#     plt.figure()
-#     #data = [thres_cu_map, thres_xbic_map]
-#     #plt.boxplot(data)
-#     plt.scatter(channel, xbic, s=4)
-#     plt.plot(channel, fit_line)
-#     plt.text(max(channel)*0.75, max(xbic_arr)*0.50, "$R^2$ = {s}".format(s=str(round(r_squared,3))))
-#     return
+# xbic_standmap = xbic_arr.reshape(len(x_real), len(y_real)-2)
+# axs[2].imshow(xbic_standmap, origin= 'lower')
 # 
-# #a = np.concatenate((cu_standarr_ravel, xbic_standarr_ravel), axis=2)
+# cu_gaussravel = cu_gaussmap.ravel()
 # 
-# #plot_correlation(cu_standarr_ravel, xbic_standarr_ravel)
-# plt.figure()
-# plt.imshow(cu_stand_map)
+# lin_model = stats.linregress(cu_gaussravel, xbic_arr)
+# lin_fit = lin_model.slope * cu_gaussravel + lin_model.intercept
 # 
 # plt.figure()
-# plt.imshow(cu_trim_standmap_gauss)
+# plt.scatter(cu_arr, xbic_arr, s=4)
 # plt.figure()
-# plt.imshow(xbic_trim_standmap)
+# plt.scatter(cu_gaussravel, xbic_arr, s=4)
+# plt.plot(cu_gaussravel, lin_fit)
+# plt.text(max(cu_gaussravel)*0.75, max(xbic_arr)*0.50, "$R^2$ = {s}".format(s=str(round(lin_model.rvalue,3))))
 # =============================================================================
