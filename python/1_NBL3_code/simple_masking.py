@@ -15,26 +15,24 @@ clusts = [0,1,2]
 def plot_clust_boxes(clust_nums, clust_labs, x, y, z, scan, sam):
     fig, axs = plt.subplots(3,1)
     plt.tight_layout()
-    x1 = [x[np.where(clust_labs == clust)[0]] for clust in clust_nums]
-    y1 = [y[np.where(clust_labs == clust)[0]] for clust in clust_nums]
+    x1 = [x[np.where(clust_labs == clust)[0]] for clust in clust_nums] # each item in list are the values of a cluster for x data
+    y1 = [y[np.where(clust_labs == clust)[0]] for clust in clust_nums] # each item in list are the values of a cluster for y data
     z1 = [z[np.where(clust_labs == clust)[0]] for clust in clust_nums]
     
-    bp_dictx = axs[0].boxplot(x1, showfliers=False)
+    bp_dictx = axs[0].boxplot(x1, showfliers=False) # initialize boxplot object
     for line in bp_dictx['medians']:
-        med = line.get_ydata() # get median value array (horizontal line)
-        xpoint, ypoint = line.get_xydata()[1] # get plot coordinates of median
+        med = line.get_ydata()                  # get median value array
+        xpoint, ypoint = line.get_xydata()[1]   # get plot coordinates of median
         # annotate this position with median as string
         axs[0].annotate(xy=(xpoint,ypoint), 
            s=' ' + "{:.3f}".format(med[0]), 
-           horizontalalignment='left') # draw above, centered
+           horizontalalignment='left') # add text with formatting
     axs[0].title.set_text('reduced copper')
     
     bp_dicty = axs[1].boxplot(y1, showfliers=False)
     for line in bp_dicty['medians']:
         med = line.get_ydata()
-        # get position data for median line
-        xpoint, ypoint = line.get_xydata()[1] # top of median line
-        # overlay median value
+        xpoint, ypoint = line.get_xydata()[1] 
         axs[1].annotate(xy=(xpoint,ypoint), 
            s=' ' + "{:.2e}".format(med[0]), horizontalalignment='left')
     axs[1].title.set_text('reduced xbic')
@@ -42,9 +40,7 @@ def plot_clust_boxes(clust_nums, clust_labs, x, y, z, scan, sam):
     bp_dictz = axs[2].boxplot(z1, showfliers=False)
     for line in bp_dictz['medians']:
         med = line.get_ydata()
-        # get position data for median line
-        xpoint, ypoint = line.get_xydata()[1] # top of median line
-        # overlay median value
+        xpoint, ypoint = line.get_xydata()[1] 
         axs[2].annotate(xy=(xpoint,ypoint), 
            s=' ' + "{:.2e}".format(med[0]), horizontalalignment='left')
     axs[2].title.set_text('reduced cd')
