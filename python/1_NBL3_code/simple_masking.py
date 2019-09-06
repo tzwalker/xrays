@@ -6,17 +6,12 @@ Mon Aug 26 17:49:23 2019
 import numpy as np
 import matplotlib.pyplot as plt
 
-#samp = TS58A
-scans = [0,1,2,3]
-model = 'c_kmodels'
-data_key = 'c_reduced_arrs'
-clusts = [0,1,2]
 
 def plot_clust_boxes(clust_nums, clust_labs, data, scan, sam):
     fig, axs = plt.subplots(len(data),1)
     plt.tight_layout()
     clusters_for_each_channel = []
-    for channel in data:
+    for channel in data: # data is a list; each item is a column from the original numpy arr
         cluster_list = [channel[np.where(clust_labs == clust)[0]] for clust in clust_nums]
         clusters_for_each_channel.append(cluster_list)
     for i, clusters in enumerate(clusters_for_each_channel):
@@ -32,6 +27,29 @@ def plot_clust_boxes(clust_nums, clust_labs, data, scan, sam):
     plt.savefig(r'C:\Users\Trumann\Desktop\Plot Directory\NBL3\20190904 clustering and boxplots\noflier_{sample}_area{sc}'.format(sample=sam, sc=scan))
     return
 
+def plot_clust_scatters(samp, scan, clust_nums, mod, key):
+    data = samp[key][scan]
+    clust_labs = samp[model][scan].labels_
+    data_split_into_clusters = [data[np.where(clust_labs == clust)[0]] for clust in clust_nums]
+        
+    #fig, axs = plt.subplots(len(data),1)
+    #plt.tight_layout()    
+        
+    #plt.savefig(r'C:\Users\Trumann\Desktop\Plot Directory\NBL3\20190904 clustering and boxplots\noflier_{sample}_area{sc}'.format(sample=sam, sc=scan))
+    return data_split_into_clusters
+
+samp = NBL3_2
+scan = 0
+model = 'c_kmodels'
+data_key = 'c_reduced_arrs'
+clusts = [0,1,2]
+
+z_exit_test_def = plot_clust_scatters(samp, scan, clusts, model, data_key)
+z_test_corr = np.corrcoef(z_exit_test_def[0].T) #--> plot using scatter off-diag, hist on diag plot (pariplots?)
+# need to know the form of the data for such paiplots...
+
+
+
 def plot_more_boxes(model, key, scans):
     for samp, samp_name in zip(samples, samp_names):
         for scan in scans:
@@ -41,7 +59,8 @@ def plot_more_boxes(model, key, scans):
     return
 samp_names = ['NBL3_2', 'NBL3_3', 'TS58A']
 boxplot_names = ['reduced xbic', 'reduced cu','reduced cd','reduced te']
-plot_more_boxes(model, data_key, scans)
+#plot_more_boxes(model, data_key, scans)
+
 
 
 ### basic boxplots of raw data 

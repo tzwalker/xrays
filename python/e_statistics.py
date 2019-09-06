@@ -78,44 +78,50 @@ def reduce_arrs(samples, channel, ch_in, threshold_control, data_to_reduce, new_
         samp_dict_grow.build_dict(samp, new_keys[1], reduced_scan_arrs)
     return
 
-samp = NBL3_2
-scan = 0
-data_key = 'c_reduced_arrs'
-model_key = 'c_kmodels'
-data = samp[data_key][scan]
-clust_label = samp[model_key][scan].labels_
-clust_numbers = list(range(cluster_number))
 
-data_channels_as_list_items = [data[:,i] for i, ele in enumerate(data.T)] # make list out of each column/channel of numpy array
-medians = []
-for channel in data_channels_as_list_items:
-    clusters_for_each_channel = [ channel[np.where(clust_label == cluster_number)[0]] for cluster_number in clust_numbers ] # find where indices match for each cluster in the column/channel 
-    cluster_medians = [np.median(cluster) for cluster in clusters_for_each_channel] # find the median of each cluster array of the column/channel
-    medians.append(cluster_medians)
 
-indices_of_median_maxes = []
-indices_of_median_mins = []
-for channel in medians:
-    index_of_median_maxes = channel.index(max(channel)) #--> really "cluster containing median max"
-    index_of_median_mins = channel.index(min(channel))  #--> really "cluster containing median min"
-    indices_of_median_maxes.append(index_of_median_maxes)
-    indices_of_median_mins.append(index_of_median_mins)
 
-# these lists trade off, producing a unique identifier for a given combo in the max XBIC cluster
-indices_test_cluster0 = [i for i, cluster in enumerate(indices_of_median_maxes) if cluster == 0]
-indices_test_cluster1 = [i for i, cluster in enumerate(indices_of_median_maxes) if cluster == 1]
-indices_test_cluster2 = [i for i, cluster in enumerate(indices_of_median_maxes) if cluster == 2]
+def return_cluster_unique_lists(samp, data_key, model_key):
+    data = samp[data_key][scan]
+    clust_label = samp[model_key][scan].labels_
+    clust_numbers = list(range(cluster_number))
+    data_channels_as_list_items = [data[:,i] for i, ele in enumerate(data.T)] # make list out of each column/channel of numpy array
+    medians = []
+    #revise according to label application in simple masking
+    for channel in data_channels_as_list_items:
+        clusters_for_each_channel = [ channel[np.where(clust_label == cluster_number)[0]] for cluster_number in clust_numbers ] # find where indices match for each cluster in the column/channel 
+        cluster_medians = [np.median(cluster) for cluster in clusters_for_each_channel] # find the median of each cluster array of the column/channel
+        medians.append(cluster_medians)
+    
+    indices_of_median_maxes = []
+    indices_of_median_mins = []
+    for channel in medians:
+        index_of_median_maxes = channel.index(max(channel)) #--> really "cluster containing median max"
+        index_of_median_mins = channel.index(min(channel))  #--> really "cluster containing median min"
+        indices_of_median_maxes.append(index_of_median_maxes)
+        indices_of_median_mins.append(index_of_median_mins)
+    
+    # these lists trade off, producing a unique identifier for a given combo in the max XBIC cluster
+    indices_test_cluster0 = [i for i, cluster in enumerate(indices_of_median_maxes) if cluster == 0]
+    indices_test_cluster1 = [i for i, cluster in enumerate(indices_of_median_maxes) if cluster == 1]
+    indices_test_cluster2 = [i for i, cluster in enumerate(indices_of_median_maxes) if cluster == 2]
+    return 
 
-test_combo_labels = ['A', 'B', 'C', 'D'] #--> change these to the indices 0,1,2,3 ; or however many channels you have
+#samp = NBL3_2
+#scan = 0
+#data_key = 'c_reduced_arrs'
+#model_key = 'c_kmodels'
 
-# use this to generate the possible combinations
-from itertools import chain, combinations
+test_combo_labels = list(range(len(elements)+1)) #--> change these to the indices 0,1,2,3 ; or however many channels you have
+
+from itertools import chain, combinations # use this to generate the possible combinations
 
 def all_subsets(ss):
-    return chain(*map(lambda x: combinations(ss, x), range(0, len(ss)+1)))
+    combos = [combinations(ss, x) for x in range(0,len(ss)+1)]
+    return chain(*combos)
 
-for subset in all_subsets(test_combo_labels):
-    print(subset)
+subsets = all_subsets(test_combo_labels)
+print(subsets)
 
 # match/count the tuples of 'print(subset)' to the identifiers outputted by 'indices_test_cluster0' lines
     
