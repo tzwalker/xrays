@@ -50,7 +50,7 @@ get_add_electrical(samples, 2) # 1 --> us_ic, 2 --> ds_ic,
 
 # enter elements you want to work with
 # index of the element string dictates position future structures
-elements = ['Cu', 'Cd_L']#, 'Te_L','Zn', 'Mo_L']        
+elements = ['Cu', 'Cd_L', 'Te_L']        
 
 rumH.find_ele_in_h5s(samples, elements)
 rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble w/MAPS fit

@@ -9,79 +9,43 @@ import matplotlib.pyplot as plt
 #samp = TS58A
 scans = [0,1,2,3]
 model = 'c_kmodels'
-data = 'c_reduced_arrs'
+data_key = 'c_reduced_arrs'
 clusts = [0,1,2]
 
-def plot_clust_boxes(clust_nums, clust_labs, x, y, z, scan, sam):
-    fig, axs = plt.subplots(3,1)
+def plot_clust_boxes(clust_nums, clust_labs, data, scan, sam):
+    fig, axs = plt.subplots(len(data),1)
     plt.tight_layout()
-    x1 = [x[np.where(clust_labs == clust)[0]] for clust in clust_nums] # each item in list are the values of a cluster for x data
-    y1 = [y[np.where(clust_labs == clust)[0]] for clust in clust_nums] # each item in list are the values of a cluster for y data
-    z1 = [z[np.where(clust_labs == clust)[0]] for clust in clust_nums]
-    
-    bp_dictx = axs[0].boxplot(x1, showfliers=False) # initialize boxplot object
-    for line in bp_dictx['medians']:
-        med = line.get_ydata()                  # get median value array
-        xpoint, ypoint = line.get_xydata()[1]   # get plot coordinates of median
-        # annotate this position with median as string
-        axs[0].annotate(xy=(xpoint,ypoint), 
-           s=' ' + "{:.3f}".format(med[0]), 
-           horizontalalignment='left') # add text with formatting
-    axs[0].title.set_text('reduced copper')
-    
-    bp_dicty = axs[1].boxplot(y1, showfliers=False)
-    for line in bp_dicty['medians']:
-        med = line.get_ydata()
-        xpoint, ypoint = line.get_xydata()[1] 
-        axs[1].annotate(xy=(xpoint,ypoint), 
-           s=' ' + "{:.2e}".format(med[0]), horizontalalignment='left')
-    axs[1].title.set_text('reduced xbic')
-    
-    bp_dictz = axs[2].boxplot(z1, showfliers=False)
-    for line in bp_dictz['medians']:
-        med = line.get_ydata()
-        xpoint, ypoint = line.get_xydata()[1] 
-        axs[2].annotate(xy=(xpoint,ypoint), 
-           s=' ' + "{:.2e}".format(med[0]), horizontalalignment='left')
-    axs[2].title.set_text('reduced cd')
-    plt.savefig(r'C:\Users\Trumann\Desktop\Plot Directory\NBL3\20190904 clustering and boxplots\{sample}_area{sc}'.format(sample=sam, sc=scan))
+    clusters_for_each_channel = []
+    for channel in data:
+        cluster_list = [channel[np.where(clust_labs == clust)[0]] for clust in clust_nums]
+        clusters_for_each_channel.append(cluster_list)
+    for i, clusters in enumerate(clusters_for_each_channel):
+        bp_dict = axs[i].boxplot(clusters, showfliers=False)
+        for line in bp_dict['medians']:
+            med = line.get_ydata()                  # get median value array
+            xpoint, ypoint = line.get_xydata()[1]   # get plot coordinates of median
+            # annotate this position with median as string
+            axs[i].annotate(xy=(xpoint,ypoint), 
+               s=' ' + "{:.4g}".format(med[0]), 
+               horizontalalignment='left') # add text with formatting
+        axs[i].title.set_text(boxplot_names[i])
+    plt.savefig(r'C:\Users\Trumann\Desktop\Plot Directory\NBL3\20190904 clustering and boxplots\noflier_{sample}_area{sc}'.format(sample=sam, sc=scan))
     return
 
-def plot_more_boxes(model, data, scans):
+def plot_more_boxes(model, key, scans):
     for samp, samp_name in zip(samples, samp_names):
         for scan in scans:
             clust_labs = samp[model][scan].labels_
-            #clust_cent  = samp[model][scan].cluster_centers_
-            data_xbic = samp[data][scan][:,0]
-            data_cu = samp[data][scan][:,1]
-            data_cd = samp[data][scan][:,2]
-            plot_clust_boxes(clusts, clust_labs, data_cu, data_xbic, data_cd, scan, samp_name)
+            data = [samp[key][scan][:,i] for i, ele in enumerate(samp[key][scan].T)]
+            plot_clust_boxes(clusts, clust_labs, data, scan, samp_name)
     return
 samp_names = ['NBL3_2', 'NBL3_3', 'TS58A']
-plot_more_boxes(model, data, scans)
+boxplot_names = ['reduced xbic', 'reduced cu','reduced cd','reduced te']
+plot_more_boxes(model, data_key, scans)
 
-# =============================================================================
-# def print_clust_means(clust_nums, x, y):
-#     x1 = [x[np.where(clust_labs == clust)[0]] for clust in clust_nums]
-#     y1 = [y[np.where(clust_labs == clust)[0]] for clust in clust_nums]
-#     for i, (xclust, yclust) in enumerate(zip(x1,y1)):
-#         print('copper clust ' + str(i) + ': ' + str(np.mean(xclust)))
-#         print('xbic clust ' + str(i) + ': ' + str(np.mean(yclust)))
-#     return
-#     
-# #print_clust_means(clust, data_cu, data_xbic)
-# =============================================================================
-# =============================================================================
-#     for clust in clust_nums:
-#         
-#         indices = np.where(clust_labs == clust)[0]
-#         x1 = x[indices]
-#         y1 = y[indices]
-# =============================================================================
 
 ### basic boxplots of raw data 
 # =============================================================================
-# 
 # cu_maps = [samp['elXBIC_corr'][scan][0][:,:-2] for samp in samples]
 # xbic_maps = [samp['XBIC_maps'][scan][:,:-2] for samp in samples]
 # 
@@ -111,6 +75,7 @@ plot_more_boxes(model, data, scans)
 # from scipy import stats
 # from put_nans_back_on import put_nans_back_on
 # import z_plot_supplement as plt_supp
+# 
 # samp = TS58A
 # c_scan = samp['XBIC_h5s'][scan]  # h5 always has coordinates
 # x_axis = c_scan['/MAPS/x_axis']  # x position of pixels  [position in um]

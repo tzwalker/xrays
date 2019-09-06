@@ -78,75 +78,48 @@ def reduce_arrs(samples, channel, ch_in, threshold_control, data_to_reduce, new_
         samp_dict_grow.build_dict(samp, new_keys[1], reduced_scan_arrs)
     return
 
-#reduce_arrs(samples, 'Cu', elements_in, 2, ['c_stat_arrs', 'v_stat_arrs']) 
-# --> left off: revised boundaries with which to remove data samples before tranformation
-    # whole standardized arrays exist in samp dictionary along with whole original data
-    # check if the function above will make reduced scan_channel_arrays for either the original data
-        # and the standardized data
-# =============================================================================
-# def standardize_channels(samps):
-#     scaler = skpp.Stahttps://docs.scipy.org/doc/numpy/reference/generated/numpy.delete.htmlndardScaler()
-#     for samp in samps:
-#         # apply_mask() also saves an arrayed version of every map; this is a requirement for proper statistics and standardization
-#         c_stand_arrs = [[scaler.fit_transform(channel) for channel in stat_arr] for stat_arr in samp['c_stat_arrs']]
-#         # essentially the clustered arrays are just one level deeper, i.e. each channel has n clusters
-#         c_stand_clust_arrs = [[[scaler.fit_transform(clust.reshape(-1,1)) for clust in channel] for channel in stat_arr] for stat_arr in samp['C_kclust_masked']]
-#         # do the same with XBIV maps
-#         v_stand_arrs = [[scaler.fit_transform(channel) for channel in stat_arr] for stat_arr in samp['v_stat_arrs']]
-#         v_stand_clust_arrs = [[[scaler.fit_transform(clust.reshape(-1,1)) for clust in channel] for channel in stat_arr] for stat_arr in samp['V_kclust_masked']]
-#         
-#         c_key = 'c_stat_arrs_stand'
-#         v_key = 'v_stat_arrs_stand'
-#         samp.setdefault(c_key, c_stand_arrs)
-#         samp.setdefault(v_key, v_stand_arrs)
-#         samp['c_stat_arrs_stand'] = c_stand_arrs
-#         samp['v_stat_arrs_stand'] = v_stand_arrs
-#         
-#         c_key = 'c_kclust_arrs_stand'
-#         v_key = 'v_kclust_arrs_stand'
-#         samp.setdefault(c_key, c_stand_clust_arrs)
-#         samp.setdefault(v_key, v_stand_clust_arrs)
-#         samp['c_kclust_arrs_stand'] = c_stand_clust_arrs
-#         samp['v_kclust_arrs_stand'] = v_stand_clust_arrs
-#     return
-# =============================================================================
+samp = NBL3_2
+scan = 0
+data_key = 'c_reduced_arrs'
+model_key = 'c_kmodels'
+data = samp[data_key][scan]
+clust_label = samp[model_key][scan].labels_
+clust_numbers = list(range(cluster_number))
 
-# =============================================================================
-# # use with apply_mask() maybe...
-# def get_index_in_user_ele_list(s, E):               # copied from d_clustering.py
-#     for i, e in enumerate(E):                       
-#         if s == e[0:2]:                             # test first two characters of ele
-#             ele_i = i                               # use index of matched ele in 'elements' list
-#     return ele_i
-# 
-# def get_ele_maps(samp_dict, scan_i, corr_channels, user_channels):
-#     ele_maps = []
-#     for ch in corr_channels:
-#         ele_i = get_index_in_user_ele_list(ch, user_channels) 
-#         e_map = samp_dict['elXBIC_corr'][scan_i][ele_i][:,:-2]
-#         ele_maps.append(e_map)
-#     return ele_maps
-# 
-# def apply_mask(samps, channels_to_correlate, channels_inputed_by_user):
-#     for samp in samps:
-#         # apply mask to channels in XBIC scans first
-#         c_correlated_channels_in_ea_scan = []
-#         for scan_i, c_model in enumerate(samp['c_kclust_arrs']):
-#             clust_ele_mask_dict = {str(clust_num): np.where(c_model.labels_ == clust_num)[0] for clust_num in range(c_model.n_clusters)}
-#             other_map_clusters = [[np.take(other_map, mask_indices) for mask_indices in clust_ele_mask_dict.values()] for other_map in stat_arrs]
-#             c_correlated_channels_in_ea_scan.append(other_map_clusters) # save masked arrays 
-#         key = 'C_kclust_masked' 
-#         samp.setdefault(key, c_correlated_channels_in_ea_scan)        # store masked arrays
-#         samp['C_kclust_masked'] = c_correlated_channels_in_ea_scan    # update entry if needed
-# 
-#         # apply mask to channels in XBIV scans
-#         v_correlated_channels_in_ea_scan = []
-#         for scan_i, c_model in enumerate(samp['c_kclust_arrs']):
-#             clust_ele_mask_dict = {str(clust_num): np.where(c_model.labels_ == clust_num)[0] for clust_num in range(c_model.n_clusters)}
-#             other_map_clusters = [[np.take(other_map, mask_indices) for mask_indices in clust_ele_mask_dict.values()] for other_map in stat_arrs]
-#             v_correlated_channels_in_ea_scan.append(other_map_clusters)
-#         key = 'V_kclust_masked' 
-#         samp.setdefault(key, v_correlated_channels_in_ea_scan)        # make samp dict entry
-#         samp['V_kclust_masked'] = v_correlated_channels_in_ea_scan    # update entry if needed
-#     return
-# =============================================================================
+data_channels_as_list_items = [data[:,i] for i, ele in enumerate(data.T)] # make list out of each column/channel of numpy array
+medians = []
+for channel in data_channels_as_list_items:
+    clusters_for_each_channel = [ channel[np.where(clust_label == cluster_number)[0]] for cluster_number in clust_numbers ] # find where indices match for each cluster in the column/channel 
+    cluster_medians = [np.median(cluster) for cluster in clusters_for_each_channel] # find the median of each cluster array of the column/channel
+    medians.append(cluster_medians)
+
+indices_of_median_maxes = []
+indices_of_median_mins = []
+for channel in medians:
+    index_of_median_maxes = channel.index(max(channel)) #--> really "cluster containing median max"
+    index_of_median_mins = channel.index(min(channel))  #--> really "cluster containing median min"
+    indices_of_median_maxes.append(index_of_median_maxes)
+    indices_of_median_mins.append(index_of_median_mins)
+
+# these lists trade off, producing a unique identifier for a given combo in the max XBIC cluster
+indices_test_cluster0 = [i for i, cluster in enumerate(indices_of_median_maxes) if cluster == 0]
+indices_test_cluster1 = [i for i, cluster in enumerate(indices_of_median_maxes) if cluster == 1]
+indices_test_cluster2 = [i for i, cluster in enumerate(indices_of_median_maxes) if cluster == 2]
+
+test_combo_labels = ['A', 'B', 'C', 'D'] #--> change these to the indices 0,1,2,3 ; or however many channels you have
+
+# use this to generate the possible combinations
+from itertools import chain, combinations
+
+def all_subsets(ss):
+    return chain(*map(lambda x: combinations(ss, x), range(0, len(ss)+1)))
+
+for subset in all_subsets(test_combo_labels):
+    print(subset)
+
+# match/count the tuples of 'print(subset)' to the identifiers outputted by 'indices_test_cluster0' lines
+    
+
+
+
+
