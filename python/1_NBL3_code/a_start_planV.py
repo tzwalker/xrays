@@ -10,7 +10,7 @@ def get_directory(machine_index):
         def_path = '/home/kineticcross/Desktop/xrays/python'
     return scan_path, def_path
 
-scan_path, def_path = get_directory(0)
+scan_path, def_path = get_directory(1)
     
 import sys
 sys.path.append(def_path)
@@ -90,7 +90,7 @@ cluster_number = 3
 # 0 --> original data (no NaN), 1 --> standardized data, 
 # 2 --> reduced original data, 3 --> reduced standardized data
 # switches 1 and 3 are reccomended as they use the standardized data, switch 3 recommended for scatter plots
-d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 2)
+d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 3)
 
 # use separate programs for plotting
 
