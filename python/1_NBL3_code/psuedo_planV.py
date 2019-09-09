@@ -392,6 +392,13 @@ import sklearn.preprocessing as skpp
 # test_stand_arr = NBL3_2['c_stand_arrs'][0]
 # outliers_of_Cu_channel = np.where(test_stand_arr[:,1]>3)
 # reduced_stand_arr = test_stand_arr[np.where(test_stand_arr[:,1]<3)] # --> this is the desired output
+# 20190909
+# critical dependency: the reduced arrays created by e_statistics.reduce_arrs 
+    # vary in length depending on how many elemental channels are included
+# therefore, the array that ends up being fit using kmeans is dependent
+    # on the size of the reduced array; this dependency is not acceptable
+# error corrected
+
 # =============================================================================
 
 

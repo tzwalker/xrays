@@ -1,7 +1,7 @@
 from sklearn.cluster import KMeans
 import samp_dict_grow
 
-def trim_for_clustering(clust_chans, available_chans): # this is finding the column in the stat arrays that corresponds to the channels you want to cluster
+def get_column_indices(clust_chans, available_chans): # this is finding the column in the stat arrays that corresponds to the channels you want to cluster
     if 'all' in clust_chans:
         indices = list(range(len(available_chans) + 1)) # add one to include XBIC array
         return indices
@@ -13,26 +13,25 @@ def trim_for_clustering(clust_chans, available_chans): # this is finding the col
                 indices.append(index)
         if 'perf' in clust_chans:
             indices.insert(0,0)
-        # do not need to sort indices because i'm interating over the available channels,
+        # do not need to sort indices because i'm iterating over the available channels,
             # the indices of which, by earlier design in e_statistics.py,
             # correspond directly to those in the stat arrays
         return indices
 
-def find_clusters(samps, N, clust_channels, available_channels, dict_data):
-    indices = trim_for_clustering(clust_channels, available_channels) # returns indices of columns of stat/standardized array for scan; used to cluster only channels of interest
+def find_clusters(samps, num_of_clusters, clust_channels, loaded_XRF, dict_data):
+    column_indices = get_column_indices(clust_channels, loaded_XRF) # returns indices of columns of stat/standardized array for scan; used to cluster only channels of interest
     for samp in samps:
         c_scan_models = []
-        for pre_clust_arrs in samp[dict_data[0]]:
-            trimmed_pre_clust_arrs = pre_clust_arrs[:, indices] # use only array columns of interest
-            #print('the number of features: ' +str(np.shape(trimmed_pre_clust_arrs)))
-            model = KMeans(init='k-means++', n_clusters=N, n_init=10) # define model (must be included in this loop to reset for each scan/pre_clust_arrs)
+        for preclust_arr in samp[dict_data[0]]:
+            trimmed_pre_clust_arrs = preclust_arr[:, column_indices] # use only array columns of interest
+            model = KMeans(init='k-means++', n_clusters=num_of_clusters, n_init=10) # define model (must be included in this loop to reset for each scan/pre_clust_arrs)
             clust_arrs = model.fit(trimmed_pre_clust_arrs) # perform clustering
             c_scan_models.append(clust_arrs) # save model
         samp_dict_grow.build_dict(samp, 'c_kmodels', c_scan_models) # store models
         v_scan_models = []
-        for pre_clust_arrs in samp[dict_data[1]]:
-            trimmed_pre_clust_arrs = pre_clust_arrs[:, indices] # use only array columns of interest
-            model = KMeans(init='k-means++', n_clusters=N, n_init=10) # define model (must be included in this loop to reset for each scan/pre_clust_arrs)
+        for preclust_arr in samp[dict_data[1]]:
+            trimmed_pre_clust_arrs = preclust_arr[:, column_indices] # use only array columns of interest
+            model = KMeans(init='k-means++', n_clusters=num_of_clusters, n_init=10) # define model (must be included in this loop to reset for each scan/pre_clust_arrs)
             clust_arrs = model.fit(trimmed_pre_clust_arrs) # perform clustering
             v_scan_models.append(clust_arrs) # save model
         samp_dict_grow.build_dict(samp, 'v_kmodels', v_scan_models) # store models
@@ -53,19 +52,15 @@ def kclustering(samps, N, clust_channels, available_channels, outlier_switch):
         find_clusters(samps, N, clust_channels, available_channels, samp_dict_data)
     return
 
-#run after kclustering()
+
 # =============================================================================
-# import numpy as np
-# def clusters_in_2D(samps):
-#     for samp in samps:
-#         models = samp['c_kmodels']
-#         map_size = np.shape(samp['XBIC_maps'])
-#         for model in models:
-#             labels = model.labels_
-#             
-#             print(len(labels))
-#     return
+# samp = NBL3_2
+# scan = 0
 # 
-# clusters_in_2D(samples)
-# 
+# z = samp['c_reduced_arrs'][scan]
+# preclust_arr = z[:,0]
+# preclust_arr = preclust_arr.reshape(-1,1)
+# model =  KMeans(init='k-means++', n_clusters=3, n_init=10)
+# clust_arr = model.fit(preclust_arr)
 # =============================================================================
+

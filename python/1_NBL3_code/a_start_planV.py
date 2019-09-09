@@ -10,7 +10,7 @@ def get_directory(machine_index):
         def_path = '/home/kineticcross/Desktop/xrays/python'
     return scan_path, def_path
 
-scan_path, def_path = get_directory(1)
+scan_path, def_path = get_directory(0)
     
 import sys
 sys.path.append(def_path)
@@ -50,7 +50,7 @@ get_add_electrical(samples, 2) # 1 --> us_ic, 2 --> ds_ic,
 
 # enter elements you want to work with
 # index of the element string dictates position future structures
-elements = ['Cu', 'Cd_L', 'Te_L']        
+elements = ['Cu', 'Cd_L']#, 'Te_L']        
 
 rumH.find_ele_in_h5s(samples, elements)
 rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble w/MAPS fit
@@ -72,7 +72,7 @@ e_statistics.standardize_channels(samples,
     # maps according to bad data in one of the XRF channels
     # not configured for using electrical channels as the bad channel
     # see ReadMe.txt for details
-e_statistics.reduce_arrs(samples, 'Cu', elements, 3,                    # int = # of std
+e_statistics.reduce_arrs_actual(samples, 'Cu', elements, 3,                    # int = # of std
                          ['c_stat_arrs', 'v_stat_arrs'],                # reference data
                          ['c_reduced_arrs', 'v_reduced_arrs'])          # new data
 
@@ -89,7 +89,8 @@ cluster_number = 3
 # the integer argument in this function is a switch that deetermiens which data to cluster
 # 0 --> original data (no NaN), 1 --> standardized data, 
 # 2 --> reduced original data, 3 --> reduced standardized data
-# switches 1 and 3 are reccomended as they use the standardized data, switch 3 recommended for scatter plots
+# switches 1 and 3 are reccomended as they use the standardized data, 
+    # switch 3 recommended for scatter plots and fitting
 d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 3)
 
 # use separate programs for plotting

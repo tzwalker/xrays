@@ -42,43 +42,37 @@ def standardize_channels(samps, dict_data, new_keys):
         samp_dict_grow.build_dict(samp, new_keys[1], v_standardized_stats)
     return
 
-def get_channel_column_index_in_scan_chan_arrs(ch, available_chans):
-    for index, channel in enumerate(available_chans):
-        if ch[0:2] in available_chans:
-            index = index # do not add 1 to index here because XBIC is not in list 'available_chans'
+def get_channel_column_index(bad_XRF, loaded_XRF):
+    for i, e in enumerate(loaded_XRF):
+        if e[0:2] == bad_XRF:
+            index = i
     return index
 
-def get_bad_chan_limits(scan_channel_arrs, control, ch_i):
-    bad_chan = scan_channel_arrs[:,ch_i]
-    bad_chan_mean = np.mean(bad_chan)
-    bad_chan_sig = np.std(bad_chan)
-    upr_lim = bad_chan_mean + control * bad_chan_sig
-    lwr_lim = bad_chan_mean - control * bad_chan_sig
-    return bad_chan, lwr_lim, upr_lim
-
-def reduce_arrs(samples, channel, ch_in, threshold_control, data_to_reduce, new_keys): # where data_to_reduce is the dict key of interest
-    ch_i = get_channel_column_index_in_scan_chan_arrs(channel, ch_in)
-    for samp in samples:
-        reduced_scan_arrs = []
-        for scan_channel_arrs in samp[data_to_reduce[0]]:
-            bad_chan, lwr_lim, upr_lim = get_bad_chan_limits(scan_channel_arrs, threshold_control, ch_i)
-            indices_to_keep = [i for i,x in enumerate(bad_chan) if (lwr_lim < x < upr_lim)]
-            indices_to_keep = np.array(indices_to_keep)
-            red_arrs = scan_channel_arrs[indices_to_keep, :]
-            reduced_scan_arrs.append(red_arrs)
-        samp_dict_grow.build_dict(samp, new_keys[0], reduced_scan_arrs)
-        # do same for voltage scans
-        reduced_scan_arrs = []
-        for scan_channel_arrs in samp[data_to_reduce[1]]:
-            bad_chan, lwr_lim, upr_lim = get_bad_chan_limits(scan_channel_arrs, threshold_control, ch_i)
-            indices_to_keep = [i for i,x in enumerate(bad_chan) if (lwr_lim < x < upr_lim)]
-            indices_to_keep = np.array(indices_to_keep)
-            red_arrs = scan_channel_arrs[indices_to_keep, :]
-            reduced_scan_arrs.append(red_arrs)
-        samp_dict_grow.build_dict(samp, new_keys[1], reduced_scan_arrs)
+def reduce_arrs_actual(samps, bad_XRF, loaded_XRF, sigma_control, original_data, new_data):
+    for samp in samps:
+        c_reduced_arrs = []
+        for full_data_array in samp[original_data[0]]:
+            bad_channel_column_index = get_channel_column_index(bad_XRF, loaded_XRF) # find bad column
+            bad_channel_column_index = bad_channel_column_index + 1 # add 1; xbic in position 0
+            bad_chan_column = full_data_array[:, bad_channel_column_index] # isolate bad XRF column
+            lwr_lim = np.mean(bad_chan_column) - sigma_control * np.std(bad_chan_column) # determine bounds
+            upr_lim = np.mean(bad_chan_column) + sigma_control * np.std(bad_chan_column)
+            good_indices = np.where(np.logical_and(bad_chan_column >= lwr_lim , bad_chan_column <= upr_lim)) # get indices within these bounds
+            reduced_data_array = full_data_array[good_indices] # take good indices from whole array
+            c_reduced_arrs.append(reduced_data_array) # store data
+        samp_dict_grow.build_dict(samp, new_data[0], c_reduced_arrs)
+        v_reduced_arrs = []
+        for full_data_array in samp[original_data[1]]:
+            bad_channel_column_index = get_channel_column_index(bad_XRF, loaded_XRF) # find bad column
+            bad_channel_column_index = bad_channel_column_index + 1 # add 1; xbic in position 0
+            bad_chan_column = full_data_array[:, bad_channel_column_index] # isolate bad XRF column
+            lwr_lim = np.mean(bad_chan_column) - sigma_control * np.std(bad_chan_column) # determine bounds
+            upr_lim = np.mean(bad_chan_column) + sigma_control * np.std(bad_chan_column)
+            good_indices = np.where(np.logical_and(bad_chan_column >= lwr_lim , bad_chan_column <= upr_lim)) # get indices within these bounds
+            reduced_data_array = full_data_array[good_indices] # take good indices from whole array
+            v_reduced_arrs.append(reduced_data_array) # store data
+        samp_dict_grow.build_dict(samp, new_data[1], v_reduced_arrs)
     return
-
-    
 
 
 
