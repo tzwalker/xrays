@@ -35,7 +35,7 @@ def cluster_correlations(samp, scans, model, data_key, cluster_number, chan_of_i
     return correlations_of_each_scan
 
 samp = NBL3_2
-scans = [0,1,2,3]
+scans = 3#[0,1,2,3]
 model = 'c_kmodels'
 data_key = 'c_reduced_arrs'
 channel_of_interest = 0 # --> index of channel median (xbic,cu,cd, etc...) you'd like to use for identifying cluster of interest (not sure if necessary)
@@ -46,19 +46,17 @@ clusters_of_interest = 'high' # --> can be 'high' or 'low'; not configured for f
         # find cluster with highest xbic value for a given scan (channel_of_interest = 0)
         # calculate correlation matrix between the elements and xbic in that cluster
         # repeat for the length of 'scans'
-pearson_corr_coeffs = cluster_correlations(samp, scans, model, data_key, 
-                                           cluster_number, channel_of_interest, clusters_of_interest)
+#pearson_corr_coeffs = cluster_correlations(samp, scans, model, data_key, 
+                                           #cluster_number, channel_of_interest, clusters_of_interest)
     
 # make combination counter
 
-# =============================================================================
-# 
-# z_cluster_data = get_cluster_data(samp, scans, model, data_key, cluster_number)
-# z_medians = [np.median(cluster, axis=0) for cluster in z_cluster_data]
-# z_medians_arr = np.array(z_medians)
-# z_cluster_index_where_max_med_exists = np.argmax(z_medians_arr, axis=0)
-# z_cluster_index_where_min_med_exists = np.argmin(z_medians_arr, axis=0)
-# =============================================================================
+
+z_cluster_data = get_cluster_data(samp, scans, model, data_key, cluster_number)
+z_medians = [np.median(cluster, axis=0) for cluster in z_cluster_data]
+z_medians_arr = np.array(z_medians)
+z_cluster_index_where_max_med_exists = np.argmax(z_medians_arr, axis=0)
+z_cluster_index_where_min_med_exists = np.argmin(z_medians_arr, axis=0)
 
 #for i, feature in enumerate(z_cluster_index_where_max_med_exists):
     
