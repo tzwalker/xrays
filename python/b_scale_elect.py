@@ -13,10 +13,13 @@ def get_add_electrical(samps, scaler_ch):
         xbic_scale_factors = [ (stan* 1E-9) / (V2F * lock) 
         for stan, V2F, lock 
         in zip(samp['c_stanford'], samp['beam_conv'], samp['c_lockin'])]
+        
         # store scaler containing electrical in list
-        raw_xbic = [h5['/MAPS/scalers'][scaler_ch] for h5 in samp['XBIC_h5s']]  
+        raw_xbic = [h5['/MAPS/scalers'][scaler_ch] for h5 in samp['XBIC_h5s']]
+        
         # convert scaler channel into amps
         xbic_scaled = [ds_ic * scale for ds_ic, scale in zip(raw_xbic, xbic_scale_factors)]
+        
         # import XBIC_maps to sample dict
         build_dict(samp, 'XBIC_maps', xbic_scaled)
         

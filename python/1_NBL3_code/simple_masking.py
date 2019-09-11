@@ -6,6 +6,7 @@ Mon Aug 26 17:49:23 2019
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 def get_cluster_data(samp, scan, model_key, data_key, num_of_clust):
     data = samp[data_key][scan]
@@ -35,32 +36,60 @@ def cluster_correlations(samp, scans, model, data_key, cluster_number, chan_of_i
     return correlations_of_each_scan
 
 samp = NBL3_2
-scans = 3#[0,1,2,3]
+scans = [3]
 model = 'c_kmodels'
 data_key = 'c_reduced_arrs'
 channel_of_interest = 0 # --> index of channel median (xbic,cu,cd, etc...) you'd like to use for identifying cluster of interest (not sure if necessary)
-clusters_of_interest = 'high' # --> can be 'high' or 'low'; not configured for finding other clusters yet
-# returns pearson correlation coeff matrix for each scan
+clusters_of_interest = 'low' # --> can be 'high' or 'low'; not configured for finding other clusters yet
+# returns 3D pearson correlation coeff matrix for each scan
     # based off the highest or lowest feature
     # for example:
         # find cluster with highest xbic value for a given scan (channel_of_interest = 0)
         # calculate correlation matrix between the elements and xbic in that cluster
         # repeat for the length of 'scans'
-#pearson_corr_coeffs = cluster_correlations(samp, scans, model, data_key, 
-                                           #cluster_number, channel_of_interest, clusters_of_interest)
-    
+pearson_corr_coeffs = cluster_correlations(samp, scans, model, data_key, 
+                                           cluster_number, channel_of_interest, clusters_of_interest)
+def plot_avg_pearson(corr_coeffs):
+    # data conversion
+    avg_corr = np.mean(corr_coeffs, axis=0)
+    ele_labels = [e[0:2] for e in elements]
+    cols = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo'] # MAKE SURE THIS MATCHES NUMBER OF LOADED ELEMENTS
+    df = pd.DataFrame(avg_corr, columns=cols, index=cols)
+    # plot
+    sns.set(style="white")
+    # generate a mask for the upper triangle
+    mask = np.zeros_like(df, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
+    # make cbar ticks
+    cbar_tick={'ticks': list(list(np.linspace(-1,1,5)))}
+    fig, ax = plt.subplots(1)
+    ax = sns.heatmap(df, mask=mask, cbar_kws=cbar_tick, 
+                     cmap='coolwarm', annot=True, vmin=-1, vmax=1)
+    return
+
+plot_avg_pearson(pearson_corr_coeffs)
+# other heatmap option...
+# =============================================================================
+# from z_plot_supplement import heatmap, annotate_heatmap
+# 
+# fig, ax = plt.subplots()
+# im, cbar = heatmap(avg_corr, cols, cols, ax=ax,
+#                    cmap="coolwarm", cbarlabel="Pearson Correlation Coeff.")
+# texts = annotate_heatmap(im, valfmt="{x:.3f}")
+# fig.tight_layout()
+# plt.show()
+# =============================================================================
+
 # make combination counter
+# =============================================================================
+# z_cluster_data = get_cluster_data(samp, scans, model, data_key, cluster_number)
+# z_medians = [np.median(cluster, axis=0) for cluster in z_cluster_data]
+# z_medians_arr = np.array(z_medians)
+# z_cluster_index_where_max_med_exists = np.argmax(z_medians_arr, axis=0)
+# z_cluster_index_where_min_med_exists = np.argmin(z_medians_arr, axis=0)
+# =============================================================================
 
-
-z_cluster_data = get_cluster_data(samp, scans, model, data_key, cluster_number)
-z_medians = [np.median(cluster, axis=0) for cluster in z_cluster_data]
-z_medians_arr = np.array(z_medians)
-z_cluster_index_where_max_med_exists = np.argmax(z_medians_arr, axis=0)
-z_cluster_index_where_min_med_exists = np.argmin(z_medians_arr, axis=0)
-
-#for i, feature in enumerate(z_cluster_index_where_max_med_exists):
-    
-
+# combination psuedo-generator
 # =============================================================================
 # test_combo_labels = list(range(len(elements)+1)) #--> change these to the indices 0,1,2,3 ; or however many channels you have
 # from itertools import chain, combinations # use this to generate the possible combinations
@@ -71,11 +100,8 @@ z_cluster_index_where_min_med_exists = np.argmin(z_medians_arr, axis=0)
 # print(subsets)
 # =============================================================================
 
-# match/count the tuples of 'print(subset)' to the identifiers outputted by 'indices_test_cluster0' lines
-
-
+# plot a bunch of boxplots...
 # =============================================================================
-# ### ####
 # def plot_more_boxes(model, key, scans):
 #     for samp, samp_name in zip(samples, samp_names):
 #         for scan in scans:

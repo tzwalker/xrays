@@ -28,17 +28,19 @@ NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550], 'XBIV_scans': [419
           # wrong key decriptor 2017_12_2IDD, but geometry same between the two beamtimes
           '2017_12_ele_iios': [0.275, 0.0446, 0.0550], 
           '2019_03_ele_iios': [0.104, 0.00131, 0.00418]}
-NBL3_3 = {'Name': 'NBL3_3', 'XBIC_scans': [264,265,266, 491], 'XBIV_scans': [261,262,263, 472], 
-          'beam_conv':      [2E5, 2E5, 2E5, 1E5], 
-          'c_stanford':     [5000,5000,5000, 200], 
-          'c_lockin':       [500,500,500, 20], 
+NBL3_3 = {'Name': 'NBL3_3', 'XBIC_scans': [264,265,266, 475,491], 'XBIV_scans': [261,262,263, 472], 
+          'beam_conv':      [2E5, 2E5, 2E5, 1E5,1E5], 
+          'c_stanford':     [5000,5000,5000, 200,200], 
+          'c_lockin':       [500,500,500, 20,20], 
           'v_lockin':       [1E4,1E4,1E4, 100000],
           '2017_12_ele_iios': [0.296, 0.0488, 0.0604],
           '2019_03_ele_iios': [0.114, 0.00144, 0.00459]}
 TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439], 'XBIV_scans': [382,383,384, 440], 
          'beam_conv':       [2E5, 2E5, 2E5, 1E5], 
          'c_stanford':      [5000,5000,5000, 200], 
-         'c_lockin':        [10000,10000,10000, 20], # the scaler values recordered were 10000, however, better comparison can be made with the 500 values seen here...
+         'c_lockin':        [10000,10000,10000, 20], 
+         # lockin amp almost certainly 10000 for 2019_03_2idd scans 385-387;
+         # cross-sample comparison can be made with 500, but this is not how science is done
          'v_lockin':        [1000,1000,1000, 100000],
          '2017_12_ele_iios': [0.381, 0.0682, 0.0867],
          '2019_03_ele_iios': [0.162, 0.00209, 0.00669]}
@@ -50,7 +52,7 @@ get_add_electrical(samples, 2) # 1 --> us_ic, 2 --> ds_ic,
 
 # enter elements you want to work with
 # index of the element string dictates position future structures
-elements = ['Cu', 'Cd_L', 'Te_L']        
+elements = ['Cu', 'Cd_L', 'Te_L', 'Zn', 'Mo_L']        
 
 rumH.find_ele_in_h5s(samples, elements)
 rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble w/MAPS fit
@@ -59,6 +61,9 @@ rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble
 # ATTENTION: see ReadME.txt for proper use of apply_ele_iios() below
 rumH.apply_ele_iios(samples)
 
+# note if "IndexError: out of range" is thrown, 
+    # make sure length of all the electrical setting dictionary entries match
+    # the length of the scans
 e_statistics.make_stat_arrays(samples, 
                               ['elXBIC', 'elXBIV'],                     # reference data
                               ['c_stat_arrs', 'v_stat_arrs'])           # new data
