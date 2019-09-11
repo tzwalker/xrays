@@ -31,10 +31,20 @@ def get_colorbar_axis(c_map, num_of_std):
     return heatmap_min, heatmap_max
 
 
+
+# usefeul function for visualizing standardized data as a map
+# puts two nan columns back on standardized arrays
+import numpy as np
+def put_nans_back_on(array, y_coord, x_coord):
+    slim_map = array.reshape(len(y_coord), len(x_coord)-2)           # minus 2cols (chopped off nans in e_statistics.py)
+    nans_to_attach = np.full((np.size(slim_map, axis=0),2), np.nan) # get 2cols of nan
+    nan_map = np.append(slim_map, nans_to_attach, 1)                 # attach nan
+    return nan_map
+
 def heatmap(data, row_labels, col_labels, ax=None,
             cbar_kw={}, cbarlabel="", **kwargs):
     """
-    Create a heatmap from a numpy array and two lists of labels.
+    Create a heatmap/correlation matrix from a numpy array and two lists of labels.
 
     Parameters
     ----------
