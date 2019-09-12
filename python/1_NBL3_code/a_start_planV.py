@@ -78,7 +78,7 @@ e_statistics.standardize_channels(samples,
     # maps according to bad data in one of the XRF channels
     # not configured for using electrical channels as the bad channel
     # see ReadMe.txt for details
-e_statistics.reduce_arrs_actual(samples, 'Cu', elements, 3,                    # int = # of std
+e_statistics.reduce_arrs_actual(samples, 'Cu', elements, 2,                    # int = # of std
                          ['c_stat_arrs', 'v_stat_arrs'],                # reference data
                          ['c_reduced_arrs', 'v_reduced_arrs'])          # new data
 
@@ -97,7 +97,7 @@ cluster_number = 3
 # 2 --> reduced original data, 3 --> reduced standardized data
 # switches 1 and 3 are reccomended as they use the standardized data, 
     # switch 3 recommended for scatter plots and fitting
-d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 0)
+d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 2)
 
 # use separate programs for plotting
 
