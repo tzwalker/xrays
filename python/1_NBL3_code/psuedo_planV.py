@@ -1,9 +1,3 @@
-import numpy as np
-from sklearn.cluster import KMeans
-import seaborn as sns
-import matplotlib.pyplot as plt
-import sklearn.preprocessing as skpp
-
 ### NOTES: b_h5_in_elect_scale.py ###
 # =============================================================================
 # # finding elements in h5
@@ -585,4 +579,29 @@ import sklearn.preprocessing as skpp
 #     for i, decoded_ch in enumerate(decoded_chans1):
 #         if user_ch == decoded_ch:
 #             adj_index_list.append(i)
+# =============================================================================
+
+### never used; for applying filter to every loaded
+    # XRF channel in every scan
+    # problematic if channel has large variances (ex. Cd or Mo)
+# =============================================================================
+# def gauss_filtXRF(samps, ele_index, data_in_keys, data_out_keys):
+#     for samp in samps:
+#         c_filt_maps = []
+#         for scan in samp[data_in_keys[0]]:
+#             ele_map = scan[ele_index][:,:-2] # element map without nan columns (not compatible with filter)
+#             ele_arr = ele_map.ravel()   # array for stats
+#             sig = 3*np.var(ele_arr)     # define degree of filtering
+#             filt_map = gaussian_filter(ele_map, sigma=sig) # apply filter to map
+#             c_filt_maps.append(filt_map)
+#         build_dict(samp, data_out_keys[0], c_filt_maps)
+#         v_filt_maps = []
+#         for scan in samp[data_in_keys[1]]:
+#             ele_map = scan[ele_index][:,:-2] # element map without nan columns (not compatible with filter)
+#             ele_arr = ele_map.ravel()   # array for stats
+#             sig = 3*np.var(ele_arr)     # define degree of filtering
+#             filt_map = gaussian_filter(ele_map, sigma=sig) # apply filter to map
+#             v_filt_maps.append(filt_map)
+#         build_dict(samp, data_out_keys[1], v_filt_maps)
+#     return
 # =============================================================================

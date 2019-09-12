@@ -90,14 +90,14 @@ e_statistics.standardize_channels(samples,
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
     # type 'all' to include all features, that is, the electrical channel and
     # all elements in 'elements_in'
-cluster_channels = ['perf'] 
+cluster_channels = ['Cu'] 
 cluster_number = 3
 # the integer argument in this function is a switch that deetermiens which data to cluster
 # 0 --> original data (no NaN), 1 --> standardized data, 
 # 2 --> reduced original data, 3 --> reduced standardized data
 # switches 1 and 3 are reccomended as they use the standardized data, 
     # switch 3 recommended for scatter plots and fitting
-d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 3)
+d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 0)
 
 # use separate programs for plotting
 
