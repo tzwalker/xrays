@@ -28,9 +28,9 @@ def focus_cluster_corr(samp, scans, model, data_key, cluster_number, focus_clust
     correlations_of_each_scan = []
     for scan in scans:
         data_of_clusters = get_cluster_data(samp, scan, model, data_key, cluster_number)
-        all_channel_medians = [np.median(cluster, axis=0) for cluster in data_of_clusters] # compress features in each cluster to their median values
-        all_channel_medians = np.array(all_channel_medians) # row --> cluster; column --> median of feature (xbic,cu,cd,...)
-        cluster_row_index = get_focus_cluster_index(all_channel_medians, focus_channel, focus_cluster)
+        medians_of_clusters = [np.median(cluster, axis=0) for cluster in data_of_clusters] # compress features in each cluster to their median values
+        medians_of_clusters = np.array(medians_of_clusters) # row --> cluster; column --> median of feature (xbic,cu,cd,...)
+        cluster_row_index = get_focus_cluster_index(medians_of_clusters, focus_channel, focus_cluster)
         data_of_focus_cluster = data_of_clusters[cluster_row_index].T # --> extract channels of focus cluster; transpose to prep for correlation
         clust_corrcoeffs = np.corrcoef(data_of_focus_cluster) # generate the correlation matrix for desired cluster
         correlations_of_each_scan.append(clust_corrcoeffs)
