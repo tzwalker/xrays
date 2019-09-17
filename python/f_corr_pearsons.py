@@ -52,7 +52,7 @@ def focus_cluster_corr(samp, scans, model, data_key, cluster_number, focus_clust
         # find cluster with highest xbic value for a given scan (channel_of_interest = 0)
         # calculate correlation matrix between the elements and xbic in that cluster
         # repeat for the length of 'scans'
-pearson_corr_coeffs = focus_cluster_corr(NBL3_2, [0,1,2], 'c_kmodels', 'c_reduced_arrs', 
+pearson_corr_coeffs = focus_cluster_corr(NBL3_2, [3,4,5], 'c_kmodels', 'c_reduced_arrs', 
                                            cluster_number, 'low', 0)
 
 # two compenents to finding cluster data
@@ -74,7 +74,7 @@ def plot_avg_pearson(corr_coeffs):
     # data conversion
     avg_corr = np.mean(corr_coeffs, axis=0)
     ele_labels = [e[0:2] for e in elements]
-    cols = ['XBIC', 'Cu', 'Cd', 'Te', 'Zn', 'Mo'] # MAKE SURE THIS MATCHES NUMBER OF LOADED ELEMENTS; changes depending on how h5s were fit
+    cols = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo'] # MAKE SURE THIS MATCHES NUMBER OF LOADED ELEMENTS; changes depending on how h5s were fit
     df = pd.DataFrame(avg_corr, columns=cols, index=cols)
     # plot
     sns.set(style="white")
@@ -86,6 +86,7 @@ def plot_avg_pearson(corr_coeffs):
     fig, ax = plt.subplots(1)
     ax = sns.heatmap(df, mask=mask, cbar_kws=cbar_tick, 
                      cmap='coolwarm', annot=True, vmin=-1, vmax=1)
+    
     return
 
 plot_avg_pearson(pearson_corr_coeffs)

@@ -4,6 +4,7 @@ kineticcross
 Mon Aug 26 17:49:23 2019
 """
 from scipy.ndimage.filters import gaussian_filter
+from skimage.filters import sobel
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -38,34 +39,36 @@ def quick_label_check(original_map, model):
 # =============================================================================
 
 
-
-
 # get the maps
-xbic = NBL3_2['XBIC_maps'][2][:,:-2]
-xbiv = NBL3_2['XBIV_maps'][2][:,:-2]
+xbic = NBL3_2['XBIC_maps'][0][:,:-2] ; xbic_sob = sobel(xbic)
+xbiv = NBL3_2['XBIV_maps'][2][:,:-2] ; xbiv_sob = sobel(xbiv)
 
+quick_label_check(xbic, NBL3_2['c_kmodels'][0])
 # map check
 fig, (ax0,ax1) = plt.subplots(1,2)
 plt.tight_layout()
 ax0.imshow(xbic, origin='lower')
 ax1.imshow(xbiv, origin='lower')
 
-# if necessary, filter map
-xbic_filt = gaussian_filter(xbic, sigma=1)
-xbiv_filt = gaussian_filter(xbiv, sigma=1)
-
-# map check
 plt.figure()
 fig1, (ax1,ax2) = plt.subplots(1,2)
 plt.tight_layout()
-ax1.imshow(xbic_filt, origin='lower')
-ax2.imshow(xbiv_filt, origin='lower')
+ax1.imshow(xbic_sob, origin='lower')
+ax2.imshow(xbiv_sob, origin='lower')
+
+# if necessary, filter map; sobel maps as well
+xbic_filt = gaussian_filter(xbic, sigma=1) 
+xbiv_filt = gaussian_filter(xbiv, sigma=1) 
+
+# map check
+
 
 # correlation check
 plt.figure()
-plt.scatter(xbic,xbiv, s=3)
-plt.xlim([np.min(xbic), np.max(xbic)])
-plt.ylim([np.min(xbiv), np.max(xbiv)])
+plt.scatter(xbic_sob,xbiv_sob, s=3)
+plt.xlim([np.min(xbic_sob), np.max(xbic_sob)])
+plt.ylim([np.min(xbiv_sob), np.max(xbiv_sob)])
+
 # translate map --> manually...
 
 

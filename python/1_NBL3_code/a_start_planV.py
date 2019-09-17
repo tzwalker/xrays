@@ -10,8 +10,8 @@ def get_directory(machine_index):
         def_path = '/home/kineticcross/Desktop/xrays/python'
     return scan_path, def_path
 
-system = int(input('system?: '))
-scan_path, def_path = get_directory(system)
+#system = int(input('system?: '))
+scan_path, def_path = get_directory(0)
     
 import sys
 sys.path.append(def_path)
@@ -21,10 +21,10 @@ import c_rummage_thru_H5 as rumH
 import d_clustering
 import e_statistics
 
-NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550], 'XBIV_scans': [419,420,421, 551], 
-          'beam_conv':      [2E5,2E5,2E5, 2E5], 
-          'c_stanford':     [5000,5000,5000, 50000], 
-          'c_lockin':       [500,500,500, 100], 
+NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550,538,575], 'XBIV_scans': [419,420,421, 551], 
+          'beam_conv':      [2E5,2E5,2E5, 2E5,2E5,2E5], 
+          'c_stanford':     [5000,5000,5000, 50000,50000,50000], 
+          'c_lockin':       [500,500,500, 100,100,100], 
           'v_lockin':       [1E3,1E3,1E3, 10000],
           # wrong key decriptor 2017_12_2IDD, but geometry same between the two beamtimes
           '2017_12_ele_iios': [0.275, 0.0446, 0.0550], 
@@ -36,10 +36,10 @@ NBL3_3 = {'Name': 'NBL3_3', 'XBIC_scans': [264,265,266, 475,491], 'XBIV_scans': 
           'v_lockin':       [1E4,1E4,1E4, 100000],
           '2017_12_ele_iios': [0.296, 0.0488, 0.0604],
           '2019_03_ele_iios': [0.114, 0.00144, 0.00459]}
-TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439], 'XBIV_scans': [382,383,384, 440], 
-         'beam_conv':       [2E5, 2E5, 2E5, 1E5], 
-         'c_stanford':      [5000,5000,5000, 200], 
-         'c_lockin':        [10000,10000,10000, 20], 
+TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439,427,439], 'XBIV_scans': [382,383,384, 440], 
+         'beam_conv':       [2E5, 2E5, 2E5, 1E5,1E5,1E5], 
+         'c_stanford':      [5000,5000,5000, 200,200,200], 
+         'c_lockin':        [10000,10000,10000, 20,20,20], 
          # lockin amp almost certainly 10000 for 2019_03_2idd scans 385-387;
          # cross-sample comparison can be made with 500, but this is not how science is done
          'v_lockin':        [1000,1000,1000, 100000],
@@ -78,7 +78,7 @@ e_statistics.standardize_channels(samples,
     # maps according to bad data in one of the XRF channels
     # not configured for using electrical channels as the bad channel
     # see ReadMe.txt for details
-e_statistics.reduce_arrs_actual(samples, 'Cu', elements, 2,                    # int = # of std
+e_statistics.reduce_arrs_actual(samples, 'Cu', elements, 3,                    # int = # of std
                          ['c_stat_arrs', 'v_stat_arrs'],                # reference data
                          ['c_reduced_arrs', 'v_reduced_arrs'])          # new data
 
@@ -90,14 +90,14 @@ e_statistics.standardize_channels(samples,
 # 'perf' is electrical: will be performed for both XBIC and XBIV if entered
     # type 'all' to include all features, that is, the electrical channel and
     # all elements in 'elements_in'
-cluster_channels = ['Cu'] 
+cluster_channels = ['perf'] 
 cluster_number = 3
 # the integer argument in this function is a switch that deetermiens which data to cluster
 # 0 --> original data (no NaN), 1 --> standardized data, 
 # 2 --> reduced original data, 3 --> reduced standardized data
 # switches 1 and 3 are reccomended as they use the standardized data, 
     # switch 3 recommended for scatter plots and fitting
-d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 2)
+d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 3)
 
 # use separate programs for plotting
 
