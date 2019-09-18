@@ -40,10 +40,10 @@ def quick_label_check(original_map, model):
 
 
 # get the maps
-xbic = NBL3_2['XBIC_maps'][0][:,:-2] ; xbic_sob = sobel(xbic)
-xbiv = NBL3_2['XBIV_maps'][2][:,:-2] ; xbiv_sob = sobel(xbiv)
+xbic = NBL3_2['XBIC_maps'][1][:,:-2] ; xbic_sob = sobel(xbic)
+xbiv = NBL3_2['elXBIC'][1][2][:,:-2] ; xbiv_sob = sobel(xbiv)
 
-quick_label_check(xbic, NBL3_2['c_kmodels'][0])
+#quick_label_check(xbic, NBL3_2['c_kmodels'][0])
 # map check
 fig, (ax0,ax1) = plt.subplots(1,2)
 plt.tight_layout()

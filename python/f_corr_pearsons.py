@@ -37,6 +37,14 @@ def focus_cluster_corr(samp, scans, model, data_key, cluster_number, focus_clust
     correlations_of_each_scan = np.array(correlations_of_each_scan)
     return correlations_of_each_scan
 
+def unmasked_mapcorr(samp, scans, data_key):
+    correlations_of_each_scan = []
+    for scan in scans:
+        data = samp[data_key][scan]
+        map_corrcoeffs = np.corrcoef(data.T)
+        correlations_of_each_scan.append(map_corrcoeffs)
+    correlations_of_each_scan = np.array(correlations_of_each_scan)
+    return correlations_of_each_scan
 #samp = NBL3_2
 #scans = [0,1,2]
 #model = 'c_kmodels'
@@ -52,8 +60,11 @@ def focus_cluster_corr(samp, scans, model, data_key, cluster_number, focus_clust
         # find cluster with highest xbic value for a given scan (channel_of_interest = 0)
         # calculate correlation matrix between the elements and xbic in that cluster
         # repeat for the length of 'scans'
-pearson_corr_coeffs = focus_cluster_corr(NBL3_2, [3,4,5], 'c_kmodels', 'c_reduced_arrs', 
-                                           cluster_number, 'low', 0)
+# =============================================================================
+# masked_corr_coeffs = focus_cluster_corr(NBL3_2, [0,1,2], 'c_kmodels', 'c_reduced_arrs', 
+#                                            cluster_number, 'low', 0)
+# =============================================================================
+unmasked_corr_coeffs = unmasked_mapcorr(TS58A, [0,1,2], 'c_reduced_arrs')
 
 # two compenents to finding cluster data
 # example: 'high' xbic cluster
@@ -67,13 +78,11 @@ pearson_corr_coeffs = focus_cluster_corr(NBL3_2, [3,4,5], 'c_kmodels', 'c_reduce
         # need to check using arrs as reduced cannot be shaped easily
     # RESULT: clustering mask seemed identical when only using a single cluster channel
 
-
 def plot_avg_pearson(corr_coeffs):
     # data conversion
-    avg_corr = np.mean(corr_coeffs, axis=0)
-    std_corr = np.std(corr_coeffs, axis=0)
-    ele_labels = [e[0:2] for e in elements]
-    cols = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo'] # MAKE SURE THIS MATCHES NUMBER OF LOADED ELEMENTS; changes depending on how h5s were fit
+    avg_corr = np.mean(corr_coeffs[:,indices[:,None], indices], axis=0)
+    std_corr = np.std(corr_coeffs[:,indices[:,None], indices], axis=0)
+    cols = ['Cu', 'Cd', 'Te', 'Mo'] # MAKE SURE THIS MATCHES NUMBER OF LOADED ELEMENTS; changes depending on how h5s were fit
     avgs = pd.DataFrame(avg_corr, columns=cols, index=cols)
     std_devs = pd.DataFrame(std_corr, columns=cols, index=cols)
     # plot
@@ -93,5 +102,4 @@ def plot_avg_pearson(corr_coeffs):
                  cmap='Greys',annot=True, vmin=0, vmax=1)
     ax1.title.set_text('standard deviations')
     return
-
-plot_avg_pearson(pearson_corr_coeffs)
+plot_avg_pearson(unmasked_corr_coeffs)
