@@ -77,7 +77,9 @@ unmasked_corr_coeffs = unmasked_mapcorr(TS58A, [0,1,2], 'c_reduced_arrs')
     # but need to check if there's a difference in the mask produced
         # need to check using arrs as reduced cannot be shaped easily
     # RESULT: clustering mask seemed identical when only using a single cluster channel
-
+#--> taking Cu, Cd, Te, and Mo (skipped Zn) in bad geometry scans
+    # these beamtimes were run at 12.7 keV, and therefore have more XRF channels
+indices = np.array([1,2,3,5]) 
 def plot_avg_pearson(corr_coeffs):
     # data conversion
     avg_corr = np.mean(corr_coeffs[:,indices[:,None], indices], axis=0)

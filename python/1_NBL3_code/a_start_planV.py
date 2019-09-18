@@ -97,7 +97,7 @@ cluster_number = 3
 # 2 --> reduced original data, 3 --> reduced standardized data
 # switches 1 and 3 are reccomended as they use the standardized data, 
     # switch 3 recommended for scatter plots and fitting
-d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 3)
+d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 1)
 
 # use separate programs for plotting
 
