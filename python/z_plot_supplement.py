@@ -133,6 +133,35 @@ def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
     #cbar_ax.set_yticklabels(custom_format_ticks(cbar_ax.get_yticklabels(), '{:.2f}'))
     return 
 
+def plot_cluster_map(scan_data, original_map, model, cnum):
+    x = scan_data['/MAPS/x_axis'];      y = scan_data['/MAPS/y_axis']
+    x_real = get_real_coordinates(x)  
+    y_real = get_real_coordinates(y)
+    
+    clust_map = model.labels_.reshape(np.shape(original_map))
+    clust_nan_map = put_nans_back_on(clust_map, y_real, x_real)
+    df_map = pd.DataFrame(clust_nan_map, index=y_real, columns=x_real)
+    
+    cbar_format={'ticks': list(list(np.linspace(0,cnum,cnum+1)))}
+    fig, ax = plt.subplots(1)
+    ax = sns.heatmap(df_map, square=True, cmap='Greys', cbar_kws=cbar_format, 
+                xticklabels=20, yticklabels=20)
+    ax.invert_yaxis()
+    
+    plt.xlabel('X (\u03BCm)', fontsize=16)
+    plt.ylabel('Y (\u03BCm)', fontsize=16)
+    
+    x_labls = custom_format_ticks(ax.get_xticklabels(), '{:g}')
+    y_labls = custom_format_ticks(ax.get_yticklabels(), '{:g}')
+    ax.set_xticklabels(x_labls, fontsize=14)
+    ax.set_yticklabels(y_labls, rotation=0, fontsize=14)
+    
+    cbar_ax = plt.gcf().axes[-1]
+    cbar_ax.set_ylabel('Cluster #', fontsize=16, labelpad = 10)
+    cbar_ax.tick_params(labelsize=12)
+    return
+
+
 ### from online
 def heatmap(data, row_labels, col_labels, ax=None,
             cbar_kw={}, cbarlabel="", **kwargs):
