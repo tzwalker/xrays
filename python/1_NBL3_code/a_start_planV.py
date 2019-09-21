@@ -11,7 +11,7 @@ def get_directory(machine_index):
     return scan_path, def_path
 
 #system = int(input('system?: '))
-scan_path, def_path = get_directory(0)
+scan_path, def_path = get_directory(1)
     
 import sys
 sys.path.append(def_path)
