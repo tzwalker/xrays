@@ -37,6 +37,14 @@ def focus_cluster_corr(samp, scans, model, data_key, cluster_number, focus_clust
     correlations_of_each_scan = np.array(correlations_of_each_scan)
     return correlations_of_each_scan
 
+def unmasked_mapcorr(samp, scans, data_key):
+    correlations_of_each_scan = []
+    for scan in scans:
+        data = samp[data_key][scan]
+        map_corrcoeffs = np.corrcoef(data.T)
+        correlations_of_each_scan.append(map_corrcoeffs)
+    correlations_of_each_scan = np.array(correlations_of_each_scan)
+    return correlations_of_each_scan
 #samp = NBL3_2
 #scans = [0,1,2]
 #model = 'c_kmodels'
@@ -52,8 +60,11 @@ def focus_cluster_corr(samp, scans, model, data_key, cluster_number, focus_clust
         # find cluster with highest xbic value for a given scan (channel_of_interest = 0)
         # calculate correlation matrix between the elements and xbic in that cluster
         # repeat for the length of 'scans'
-pearson_corr_coeffs = focus_cluster_corr(NBL3_2, [0,1,2], 'c_kmodels', 'c_reduced_arrs', 
-                                           cluster_number, 'low', 0)
+# =============================================================================
+# masked_corr_coeffs = focus_cluster_corr(NBL3_2, [0,1,2], 'c_kmodels', 'c_reduced_arrs', 
+#                                            cluster_number, 'low', 0)
+# =============================================================================
+unmasked_corr_coeffs = unmasked_mapcorr(TS58A, [0,1,2], 'c_reduced_arrs')
 
 # two compenents to finding cluster data
 # example: 'high' xbic cluster
@@ -61,31 +72,36 @@ pearson_corr_coeffs = focus_cluster_corr(NBL3_2, [0,1,2], 'c_kmodels', 'c_reduce
 # focus_channel --> 'high' xbic finds medians of feature, i.e. the column in all_channel_medians
 # focus_cluster finds row of cluster...
 
-# clustering performed with reduced stand arrays, but map retrieved from regular
-    # reduced data; no error thrown because these arrays are of same length
+# clustering performed with reduced_stand arrays, but map retrieved from reduced_normal-unit
+    # no error thrown because both arrays are same length
     # but need to check if there's a difference in the mask produced
         # need to check using arrs as reduced cannot be shaped easily
     # RESULT: clustering mask seemed identical when only using a single cluster channel
-
-# Next step: make matrices for these scans when focus channel is high copper!
-
-
+#--> taking Cu, Cd, Te, and Mo (skipped Zn) in bad geometry scans
+    # these beamtimes were run at 12.7 keV, and therefore have more XRF channels
+indices = np.array([1,2,3,5]) 
 def plot_avg_pearson(corr_coeffs):
     # data conversion
-    avg_corr = np.mean(corr_coeffs, axis=0)
-    ele_labels = [e[0:2] for e in elements]
-    cols = ['XBIC', 'Cu', 'Cd', 'Te', 'Zn', 'Mo'] # MAKE SURE THIS MATCHES NUMBER OF LOADED ELEMENTS; changes depending on how h5s were fit
-    df = pd.DataFrame(avg_corr, columns=cols, index=cols)
+    avg_corr = np.mean(corr_coeffs[:,indices[:,None], indices], axis=0)
+    std_corr = np.std(corr_coeffs[:,indices[:,None], indices], axis=0)
+    cols = ['Cu', 'Cd', 'Te', 'Mo'] # MAKE SURE THIS MATCHES NUMBER OF LOADED ELEMENTS; changes depending on how h5s were fit
+    avgs = pd.DataFrame(avg_corr, columns=cols, index=cols)
+    std_devs = pd.DataFrame(std_corr, columns=cols, index=cols)
     # plot
     sns.set(style="white")
     # generate a mask for the upper triangle
-    mask = np.zeros_like(df, dtype=np.bool)
+    mask = np.zeros_like(avgs, dtype=np.bool)
     mask[np.triu_indices_from(mask)] = True
     # make cbar ticks
-    cbar_tick={'ticks': list(list(np.linspace(-1,1,5)))}
-    fig, ax = plt.subplots(1)
-    ax = sns.heatmap(df, mask=mask, cbar_kws=cbar_tick, 
+    cbar_tick={'ticks': list(list(np.linspace(-1,1,5))), 'label': 'pearson corr coefficient'}
+    cbar_tick1={'ticks': list(list(np.linspace(-1,1,5))), 'label': 'standard deviation'}
+    fig, (ax0, ax1) = plt.subplots(2,1)
+    plt.tight_layout()
+    sns.heatmap(avgs, mask=mask, cbar_kws=cbar_tick, ax=ax0,
                      cmap='coolwarm', annot=True, vmin=-1, vmax=1)
+    ax0.title.set_text('average linearity between areas')
+    sns.heatmap(std_devs, mask=mask, cbar_kws=cbar_tick1, ax=ax1,
+                 cmap='Greys',annot=True, vmin=0, vmax=1)
+    ax1.title.set_text('standard deviations')
     return
-
-plot_avg_pearson(pearson_corr_coeffs)
+plot_avg_pearson(unmasked_corr_coeffs)
