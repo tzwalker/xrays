@@ -46,12 +46,12 @@ def unmasked_mapcorr(samp, scans, data_key):
     correlations_of_each_scan = np.array(correlations_of_each_scan)
     return correlations_of_each_scan
 
-def plot_avg_pearson(corr_coeffs):
+def plot_avg_pearson(corr_coeffs, eles):
     # data conversion
     avg_corr = np.mean(corr_coeffs, axis=0)
     std_corr = np.std(corr_coeffs, axis=0)
     # MAKE SURE THIS MATCHES NUMBER OF LOADED ELEMENTS; changes depending on how h5s were fit
-    cols = ['XBIC', 'Cu', 'Cd', 'Te', 'Zn', 'Mo'] 
+    cols = ['XBIC'] + eles
     avgs = pd.DataFrame(avg_corr, columns=cols, index=cols)
     std_devs = pd.DataFrame(std_corr, columns=cols, index=cols)
     # plot
@@ -72,14 +72,20 @@ def plot_avg_pearson(corr_coeffs):
     ax1.title.set_text('standard deviations')
     return
 
-def main(switch):
-    if switch == "focus":
-        corr_coeffs = focus_cluster_corr(NBL3_2, [0,1,2], 'c_kmodels', 'c_stat_arrs', 
-                                           cluster_number, 'high', 0)
-    elif switch == "no_focus":
-        corr_coeffs = unmasked_mapcorr(TS58A, [0,1,2], 'c_reduced_arrs')
+def pearson_correlations(samp, scans, eles, model, masked_data, mask_switch, num_of_clusts):
+    if mask_switch == "focus":
+        corr_coeffs = focus_cluster_corr(samp, scans, model, masked_data, num_of_clusts, 
+                                           'high', 0)
+    elif mask_switch == "no_focus":
+        corr_coeffs = unmasked_mapcorr(samp, scans, masked_data)
     
-    plot_avg_pearson(corr_coeffs)
+    plot_avg_pearson(corr_coeffs, eles)
     return
 
-main('focus')
+# =============================================================================
+# scans = [0,1,2]
+# mask_switch = 'focus' #or 'no_focus'
+# model = 'c_kmodels'
+# masked_data = 'c_stat_arrs'
+# pearson_correlations(mask_switch, model, masked_data, scans)
+# =============================================================================

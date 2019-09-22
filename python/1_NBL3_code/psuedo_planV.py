@@ -638,3 +638,30 @@
     # these beamtimes were run at 12.7 keV, and therefore have more XRF channels
     
 #a[:, indices[:,None], indices] # --> in 3d array, get specified row and column indices
+    
+# find elements and return normalized maps of elements using numpy; note this turned out not to be as flexible
+    #as lists, in that the order of the elements must be ordered that same as in the h5 file)
+# =============================================================================
+# def get_ele_maps(sample_dicts, user_channels, fluxnorm, fittingnorm):
+#     for samp in sample_dicts:
+#         xbic_h5s = samp['XBIC_h5s']
+#         xbic_eles = []
+#         for scan in xbic_h5s:
+#             flxnorm, nav_keys = get_normalization_keys(fluxnorm, fittingnorm)
+#             
+#             all_ele_maps = np.array(scan[nav_keys[0]])
+#             user_ele_idxs = get_ele_idxs(user_channels, scan['/MAPS/channel_names'])
+#             user_ele_maps = all_ele_maps[user_ele_idxs,:,:]
+#             
+#             flux_norm_data = scan['/MAPS/scalers'][flxnorm,:,:]
+#             eles_norm_data = scan[nav_keys[1]][flxnorm, 0, user_ele_idxs] ### problem: slicing out of order ex: Cu, Cd, Mo --> 17,25,22
+#             eles_norm_data = eles_norm_data.reshape(len(user_ele_idxs),1,1)
+#             
+#             norm1 = np.divide(user_ele_maps, flux_norm_data)
+#             normalized_ele_maps = np.divide(norm1, eles_norm_data)
+#             xbic_eles.append(normalized_ele_maps)
+#         samp_dict_grow.build_dict(samp, 'elXBIC_cts', xbic_eles)
+#         #v_indices = [get_ele_idxs(user_channels, file['/MAPS/channel_names']) for file in samp['XBIV_h5s']]
+#         #samp_dict_grow.build_dict(samp, 'XBIV_eles_i', v_indices)
+#     return
+# =============================================================================

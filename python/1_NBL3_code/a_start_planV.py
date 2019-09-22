@@ -11,17 +11,18 @@ def get_directory(machine_index):
     return scan_path, def_path
 
 #system = int(input('system?: '))
-scan_path, def_path = get_directory(1)
+scan_path, def_path = get_directory(0)
     
 import sys
 sys.path.append(def_path)
 from b_import_h5 import get_add_h5s
 from b_scale_elect import get_add_electrical
-import c_rummage_thru_H5 as rumH
+import c_rummage_thru_H5
 import d_clustering
 import e_statistics
+import f_corr_pearsons
 
-NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550], 'XBIV_scans': [419,420,421, 551], #,538,575 good geom XBIC
+NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550,538,575], 'XBIV_scans': [419,420,421, 551], # good geom XBIC
           'beam_conv':      [2E5,2E5,2E5, 2E5,2E5,2E5], 
           'c_stanford':     [5000,5000,5000, 50000,50000,50000], 
           'c_lockin':       [500,500,500, 100,100,100], 
@@ -36,7 +37,7 @@ NBL3_3 = {'Name': 'NBL3_3', 'XBIC_scans': [264,265,266, 475,491], 'XBIV_scans': 
           'v_lockin':       [1E4,1E4,1E4, 100000],
           '2017_12_ele_iios': [0.296, 0.0488, 0.0604],
           '2019_03_ele_iios': [0.114, 0.00144, 0.00459]}
-TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439], 'XBIV_scans': [382,383,384, 440], #,427,439
+TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439,427,404], 'XBIV_scans': [382,383,384, 440], #
          'beam_conv':       [2E5, 2E5, 2E5, 1E5,1E5,1E5], 
          'c_stanford':      [5000,5000,5000, 200,200,200], 
          'c_lockin':        [10000,10000,10000, 20,20,20], 
@@ -53,14 +54,14 @@ get_add_electrical(samples, 2) # 1: us_ic, 2: ds_ic
 
 # enter elements you want to work with
 # index of the element string dictates position future structures
-elements = ['Cu', 'Cd_L', 'Te_L', 'Zn', 'Mo_L']        #remove zinc to allow beam to beam comparisons
+elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']        #remove zinc to allow beam to beam comparisons
 
-rumH.find_ele_in_h5s(samples, elements)
-rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble w/MAPS fit
+c_rummage_thru_H5.find_ele_in_h5s(samples, elements)
+c_rummage_thru_H5.extract_norm_ele_maps(samples, 'us_ic', 'fit')
 
 # now apply XRF correction
 # ATTENTION: see ReadME.txt for proper use of apply_ele_iios() below
-rumH.apply_ele_iios(samples)
+#c_rummage_thru_H5.apply_ele_iios(samples)
 
 # note if "IndexError: out of range" is thrown, 
     # make sure length of all the electrical setting dictionary entries match
@@ -99,7 +100,12 @@ cluster_number = 3
     # switch 3 recommended for scatter plots and fitting
 d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 1)
 
-# use separate programs for plotting
+
+scans = [0,1,2]
+mask_switch = 'focus' # or 'no_focus'
+model = 'c_kmodels'
+masked_data = 'c_stat_arrs'
+f_corr_pearsons.pearson_correlations(NBL3_2, [0,1,2], elements, model, masked_data, mask_switch, cluster_number)
 
 
 
