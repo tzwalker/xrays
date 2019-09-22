@@ -21,7 +21,7 @@ import c_rummage_thru_H5 as rumH
 import d_clustering
 import e_statistics
 
-NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550,538,575], 'XBIV_scans': [419,420,421, 551], 
+NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550], 'XBIV_scans': [419,420,421, 551], #,538,575 good geom XBIC
           'beam_conv':      [2E5,2E5,2E5, 2E5,2E5,2E5], 
           'c_stanford':     [5000,5000,5000, 50000,50000,50000], 
           'c_lockin':       [500,500,500, 100,100,100], 
@@ -36,7 +36,7 @@ NBL3_3 = {'Name': 'NBL3_3', 'XBIC_scans': [264,265,266, 475,491], 'XBIV_scans': 
           'v_lockin':       [1E4,1E4,1E4, 100000],
           '2017_12_ele_iios': [0.296, 0.0488, 0.0604],
           '2019_03_ele_iios': [0.114, 0.00144, 0.00459]}
-TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439,427,439], 'XBIV_scans': [382,383,384, 440], 
+TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439], 'XBIV_scans': [382,383,384, 440], #,427,439
          'beam_conv':       [2E5, 2E5, 2E5, 1E5,1E5,1E5], 
          'c_stanford':      [5000,5000,5000, 200,200,200], 
          'c_lockin':        [10000,10000,10000, 20,20,20], 
@@ -49,11 +49,11 @@ TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439,427,439], 'XBIV_scans'
 samples = [NBL3_2, NBL3_3, TS58A]
 
 get_add_h5s(samples, scan_path)
-get_add_electrical(samples, 2) # 1 --> us_ic, 2 --> ds_ic, 
+get_add_electrical(samples, 2) # 1: us_ic, 2: ds_ic
 
 # enter elements you want to work with
 # index of the element string dictates position future structures
-elements = ['Cu', 'Cd_L', 'Te_L', 'Zn', 'Mo_L']        
+elements = ['Cu', 'Cd_L', 'Te_L', 'Zn', 'Mo_L']        #remove zinc to allow beam to beam comparisons
 
 rumH.find_ele_in_h5s(samples, elements)
 rumH.extract_norm_ele_maps(samples, 'us_ic', 'roi') # 'roi' --> 'fit' if trouble w/MAPS fit
