@@ -54,7 +54,7 @@ get_add_electrical(samples, 2) # 1: us_ic, 2: ds_ic
 
 # enter elements you want to work with
 # index of the element string dictates position future structures
-elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']        #remove zinc to allow beam to beam comparisons
+elements = ['Cu', 'Cd_L']        #remove zinc to allow beam to beam comparisons
 
 c_rummage_thru_H5.find_ele_in_h5s(samples, elements)
 c_rummage_thru_H5.extract_norm_ele_maps(samples, 'us_ic', 'fit')
@@ -101,13 +101,15 @@ cluster_number = 3
 #d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 3)
 
 
-# =============================================================================
-# scans = [0,1,2]
-# mask_switch = 'focus' # or 'no_focus'
-# model = 'c_kmodels'
-# masked_data = 'c_stat_arrs'
-# f_corr_pearsons.pearson_correlations(NBL3_2, [0,1,2], elements, model, masked_data, mask_switch, cluster_number)
-# =============================================================================
-
+samp = NBL3_2
+scans = [0,1,2]
+data_key = 'c_reduced_arrs'
+model_key = 'c_redStand_arrs'
+cluster_number = 3
+focus_channel = 0
+focus_cluster = 'high'
+iterations = 10
+d_clustering.stats_after_many_kmeans_trials(samp, scans, data_key, model_key, cluster_number, 
+                           focus_channel, focus_cluster, iterations, elements)
 
 

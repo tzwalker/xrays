@@ -62,27 +62,63 @@ def get_focus_cluster_index(medians, chan_column_index, focus_cluster):
         cluster_index = np.argmin(medians_of_focus_channel)  # returns index of smallest median cluster
     return cluster_index
 
-def avg_over_kmeans_trials(samp, scans, data_key, model_key, cluster_number, focus_channel, focus_cluster, iterations):
+def get_focus_cluster_data(real_data,clust_labs,clust_nums,focus_channel, focus_cluster):
+    # separate data into clusters
+    cluster_data = [real_data[np.where(clust_labs == clust)[0]] for clust in clust_nums]
+    # array of median values of the data in each cluster 
+        # row --> cluster; column --> median of feature (xbic,cu,cd,...)
+    medians_of_clusters = np.array([np.median(cluster, axis=0) for cluster in cluster_data]) 
+    focus_cluster_row_index = get_focus_cluster_index(medians_of_clusters, focus_channel, focus_cluster)
+    # extract channels of focus cluster; transpose to prep for correlation
+    data_of_focus_cluster = cluster_data[focus_cluster_row_index].T 
+    return data_of_focus_cluster
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+def plot_pearson_matrix(corr1, corr2, eles):
+    cols = ['XBIC'] + eles
+    corr1 = pd.DataFrame(corr1, columns=cols, index=cols)
+    corr2 = pd.DataFrame(corr2, columns=cols, index=cols)
+    # plot
+    sns.set(style="white")
+    # generate a mask for the upper triangle
+    mask = np.zeros_like(corr1, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
+    # make cbar ticks
+    cbar_tick={'ticks': list(list(np.linspace(-1,1,5))), 'label': 'Pearson Correlation Coeff.'}
+    cbar_tick1={'ticks': list(list(np.linspace(-1,1,5))), 'label': 'Standard Deviation'}
+    fig, (ax0, ax1) = plt.subplots(2,1)
+    plt.tight_layout()
+    sns.heatmap(corr1, mask=mask, cbar_kws=cbar_tick, ax=ax0,
+                 cmap='coolwarm',annot=True, vmin=-1, vmax=1)
+    ax0.title.set_text('Average Linearity Between Scans')
+    sns.heatmap(corr2, mask=mask, cbar_kws=cbar_tick1, ax=ax1,
+                 cmap='Greys',annot=True, vmin=0, vmax=1)
+    ax1.title.set_text('Standard Devation')
+    return
+
+def stats_after_many_kmeans_trials(samp, scans, data_key, model_key, cluster_number, 
+                           focus_channel, focus_cluster, iterations, eles):
     correlation_of_all_scans = []
+    deviation_of_all_scans = []
     for scan in scans:
         real_data = samp[data_key][scan]
         model_xbic_data = samp[model_key][scan][:,focus_channel]
         model_xbic_data = model_xbic_data.reshape(-1,1)
         model =  KMeans(init='k-means++', n_clusters=cluster_number, n_init=10)
+        
         correlations_of_all_clusterings = []
         count = 0
         while count < iterations:
             clust_xbic = model.fit(model_xbic_data)
             clust_labs = clust_xbic.labels_
             clust_nums = list(range(cluster_number))
-            # separate data into clusters
-            cluster_data = [real_data[np.where(clust_labs == clust)[0]] for clust in clust_nums]
-            # array of median values of the data in each cluster 
-                # row --> cluster; column --> median of feature (xbic,cu,cd,...)
-            medians_of_clusters = np.array([np.median(cluster, axis=0) for cluster in cluster_data]) 
-            focus_cluster_row_index = get_focus_cluster_index(medians_of_clusters, focus_channel, focus_cluster)
-            # extract channels of focus cluster; transpose to prep for correlation
-            data_of_focus_cluster = cluster_data[focus_cluster_row_index].T 
+            data_of_focus_cluster = get_focus_cluster_data(real_data,
+                                                           clust_labs,
+                                                           clust_nums,
+                                                           focus_channel,
+                                                           focus_cluster)
             # pearson correlation matrix of focus cluster
             clust_corrcoeffs = np.corrcoef(data_of_focus_cluster)
             # store coefficient matrix of this clustering
@@ -91,22 +127,33 @@ def avg_over_kmeans_trials(samp, scans, data_key, model_key, cluster_number, foc
         correlations_of_all_clusterings = np.array(correlations_of_all_clusterings)
         # calculate average of coeff matrices for all clusterings performed
         avg_corr_kmeans = np.mean(correlations_of_all_clusterings, axis=0)
+        std_corr_kmeans = np.std(correlations_of_all_clusterings, axis=0)
+        #plot_pearson_matrix(avg_corr_kmeans, std_corr_kmeans, elements)
         # store average coeff matrix of this scan
         correlation_of_all_scans.append(avg_corr_kmeans)
+        deviation_of_all_scans.append(std_corr_kmeans)
+        
     correlation_of_all_scans = np.array(correlation_of_all_scans)
+    deviation_of_all_scans = np.array(deviation_of_all_scans)
     # calculate the average of coeff matrices for all scans looked at
     avg_corr_scans = np.mean(correlation_of_all_scans, axis=0)
-    return avg_corr_scans
+    std_corr_scans = np.std(correlation_of_all_scans, axis=0)
+    plot_pearson_matrix(avg_corr_scans, std_corr_scans, eles)
+    return avg_corr_scans, std_corr_scans
 
-samp = NBL3_2
-scans = [0,1,2]
-data_key = 'c_reduced_arrs'
-model_key = 'c_redStand_arrs'
-cluster_number = 3
-focus_channel = 0
-focus_cluster = 'high'
-iterations = 1
-b = avg_over_kmeans_trials(samp, scans, data_key, model_key, cluster_number, focus_channel, focus_cluster, iterations)
+# =============================================================================
+# samp = NBL3_2
+# scans = [0,1,2]
+# data_key = 'c_reduced_arrs'
+# model_key = 'c_redStand_arrs'
+# cluster_number = 3
+# focus_channel = 0
+# focus_cluster = 'high'
+# iterations = 10
+# stats_after_many_kmeans_trials(samp, scans, data_key, model_key, cluster_number, 
+#                            focus_channel, focus_cluster, iterations)
+# =============================================================================
+
 
 
 
