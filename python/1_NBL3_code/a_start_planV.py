@@ -98,14 +98,16 @@ cluster_number = 3
 # 2 --> reduced original data, 3 --> reduced standardized data
 # switches 1 and 3 are reccomended as they use the standardized data, 
     # switch 3 recommended for scatter plots and fitting
-d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 1)
+#d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 3)
 
 
-scans = [0,1,2]
-mask_switch = 'focus' # or 'no_focus'
-model = 'c_kmodels'
-masked_data = 'c_stat_arrs'
-f_corr_pearsons.pearson_correlations(NBL3_2, [0,1,2], elements, model, masked_data, mask_switch, cluster_number)
-
+# =============================================================================
+# scans = [0,1,2]
+# mask_switch = 'focus' # or 'no_focus'
+# model = 'c_kmodels'
+# masked_data = 'c_stat_arrs'
+# f_corr_pearsons.pearson_correlations(NBL3_2, [0,1,2], elements, model, masked_data, mask_switch, cluster_number)
+# 
+# =============================================================================
 
 
