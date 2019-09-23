@@ -53,14 +53,6 @@ def kclustering(samps, N, clust_channels, available_channels, outlier_switch):
     return
 
 import numpy as np
-samp = NBL3_2
-scan = 0
-real_data = samp['c_reduced_arrs'][scan]
-model_data = samp['c_redStand_arrs'][scan]
-model_xbic_data = model_data[:,0]
-model_xbic_data = model_xbic_data.reshape(-1,1)
-num_of_clusts = 3
-model =  KMeans(init='k-means++', n_clusters=num_of_clusts, n_init=10)
 
 def get_focus_cluster_index(medians, chan_column_index, focus_cluster):
     medians_of_focus_channel = medians[:,chan_column_index] # if chan_column_index = 0 --> gets xbic medians; they are first column in medians_of_each_cluster
@@ -70,48 +62,83 @@ def get_focus_cluster_index(medians, chan_column_index, focus_cluster):
         cluster_index = np.argmin(medians_of_focus_channel)  # returns index of smallest median cluster
     return cluster_index
 
-count = 0
-correlations_of_each_scan = []
-while count < 10:
-    clust_xbic = model.fit(model_xbic_data)
-    clust_labs = clust_xbic.labels_
-    clust_nums = list(range(num_of_clusts))
-    cluster_data = [real_data[np.where(clust_labs == clust)[0]] for clust in clust_nums]
-    medians_of_clusters = [np.median(cluster, axis=0) for cluster in cluster_data]
-    medians_of_clusters = np.array(medians_of_clusters) # row --> cluster; column --> median of feature (xbic,cu,cd,...)
-    cluster_row_index = get_focus_cluster_index(medians_of_clusters, 0, 'high')
-    data_of_focus_cluster = cluster_data[cluster_row_index].T # --> extract channels of focus cluster; transpose to prep for correlation
-    clust_corrcoeffs = np.corrcoef(data_of_focus_cluster)
-    correlations_of_each_scan.append(clust_corrcoeffs)
-    count = count+1
-correlations_of_each_scan = np.array(correlations_of_each_scan)
-#need some way to visualize this... ask Tara
-# will adding more data to the optimization reduce the number of local minima?
-    # rerun code above with full data array
-    # result: still varied convergence
-# using labels to index into real data is a no-go as the reustling arrays will be of different lengths
-    # according to the difference in the labels (which is what i'm trying to determine)
-    # for simplicity, only use xbic channel to cluster for now
-# the most common sums resulting from summing along rows of clust_labels_from_each_attempt 
-    # will identify a data point that was put in the same cluster between each clustering attempt
-    # exception: if all cluster attempts place a data point in cluster "0",
-    # then the sum of that row will equal zero (this is unlikely)
-        # solution would be to first check the summed_rows array for any sums of zero
-summed_rows = np.sum(clust_labels_from_each_attempt1, axis=1)
-if 0 in summed_rows:
-    print('cannot use bincount')
-else:
-    print("take indices of 'most common' sums")
-try_bincount = np.bincount(summed_rows)
-# find indices of "most common" sums
-# note this threshold of 100 will have to scale with the number of kmeans iterations, 
-    # for now the number of iterations will be 10
-    # future suggestion: make threshold 10x the number of iterations
-trim_bincount = np.array(np.where(try_bincount > 100))
-indices_of_consistently_clustered_data = np.where(summed_rows == trim_bincount)
-indices_of_consistently_clustered_data = [np.array(np.where(summed_rows==important_sum)) for important_sum in trim_bincount[0]]
-# combine all these indices in preparation for indexing into actual data
-indices_of_consistent_data_combined = np.vstack(indices_of_consistently_clustered_data)
+def avg_over_kmeans_trials(samp, scans, data_key, model_key, cluster_number, focus_channel, focus_cluster, iterations):
+    correlation_of_all_scans = []
+    for scan in scans:
+        real_data = samp[data_key][scan]
+        model_xbic_data = samp[model_key][scan][:,focus_channel]
+        model_xbic_data = model_xbic_data.reshape(-1,1)
+        model =  KMeans(init='k-means++', n_clusters=cluster_number, n_init=10)
+        correlations_of_all_clusterings = []
+        count = 0
+        while count < iterations:
+            clust_xbic = model.fit(model_xbic_data)
+            clust_labs = clust_xbic.labels_
+            clust_nums = list(range(cluster_number))
+            # separate data into clusters
+            cluster_data = [real_data[np.where(clust_labs == clust)[0]] for clust in clust_nums]
+            # array of median values of the data in each cluster 
+                # row --> cluster; column --> median of feature (xbic,cu,cd,...)
+            medians_of_clusters = np.array([np.median(cluster, axis=0) for cluster in cluster_data]) 
+            focus_cluster_row_index = get_focus_cluster_index(medians_of_clusters, focus_channel, focus_cluster)
+            # extract channels of focus cluster; transpose to prep for correlation
+            data_of_focus_cluster = cluster_data[focus_cluster_row_index].T 
+            # pearson correlation matrix of focus cluster
+            clust_corrcoeffs = np.corrcoef(data_of_focus_cluster)
+            # store coefficient matrix of this clustering
+            correlations_of_all_clusterings.append(clust_corrcoeffs)
+            count = count+1
+        correlations_of_all_clusterings = np.array(correlations_of_all_clusterings)
+        # calculate average of coeff matrices for all clusterings performed
+        avg_corr_kmeans = np.mean(correlations_of_all_clusterings, axis=0)
+        # store average coeff matrix of this scan
+        correlation_of_all_scans.append(avg_corr_kmeans)
+    correlation_of_all_scans = np.array(correlation_of_all_scans)
+    # calculate the average of coeff matrices for all scans looked at
+    avg_corr_scans = np.mean(correlation_of_all_scans, axis=0)
+    return avg_corr_scans
+
+samp = NBL3_2
+scans = [0,1,2]
+data_key = 'c_reduced_arrs'
+model_key = 'c_redStand_arrs'
+cluster_number = 3
+focus_channel = 0
+focus_cluster = 'high'
+iterations = 1
+b = avg_over_kmeans_trials(samp, scans, data_key, model_key, cluster_number, focus_channel, focus_cluster, iterations)
+
+
+
+# =============================================================================
+# #need some way to visualize this... ask Tara
+# # will adding more data to the optimization reduce the number of local minima?
+#     # rerun code above with full data array
+#     # result: still varied convergence
+# # using labels to index into real data is a no-go as the reustling arrays will be of different lengths
+#     # according to the difference in the labels (which is what i'm trying to determine)
+#     # for simplicity, only use xbic channel to cluster for now
+# # the most common sums resulting from summing along rows of clust_labels_from_each_attempt 
+#     # will identify a data point that was put in the same cluster between each clustering attempt
+#     # exception: if all cluster attempts place a data point in cluster "0",
+#     # then the sum of that row will equal zero (this is unlikely)
+#         # solution would be to first check the summed_rows array for any sums of zero
+# summed_rows = np.sum(clust_labels_from_each_attempt1, axis=1)
+# if 0 in summed_rows:
+#     print('cannot use bincount')
+# else:
+#     print("take indices of 'most common' sums")
+# try_bincount = np.bincount(summed_rows)
+# # find indices of "most common" sums
+# # note this threshold of 100 will have to scale with the number of kmeans iterations, 
+#     # for now the number of iterations will be 10
+#     # future suggestion: make threshold 10x the number of iterations
+# trim_bincount = np.array(np.where(try_bincount > 100))
+# indices_of_consistently_clustered_data = np.where(summed_rows == trim_bincount)
+# indices_of_consistently_clustered_data = [np.array(np.where(summed_rows==important_sum)) for important_sum in trim_bincount[0]]
+# # combine all these indices in preparation for indexing into actual data
+# indices_of_consistent_data_combined = np.vstack(indices_of_consistently_clustered_data)
+# =============================================================================
 
 
 
