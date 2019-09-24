@@ -141,19 +141,6 @@ def stats_after_many_kmeans_trials(samp, scans, data_key, model_key, cluster_num
     plot_pearson_matrix(avg_corr_scans, std_corr_scans, eles)
     return avg_corr_scans, std_corr_scans
 
-# =============================================================================
-# samp = NBL3_2
-# scans = [0,1,2]
-# data_key = 'c_reduced_arrs'
-# model_key = 'c_redStand_arrs'
-# cluster_number = 3
-# focus_channel = 0
-# focus_cluster = 'high'
-# iterations = 10
-# stats_after_many_kmeans_trials(samp, scans, data_key, model_key, cluster_number, 
-#                            focus_channel, focus_cluster, iterations)
-# =============================================================================
-
 def kmeans_trials(samps, model_key, mask_chan, clust_num, iter_num):
     for samp in samps:
         scans_models = []
@@ -173,6 +160,9 @@ def kmeans_trials(samps, model_key, mask_chan, clust_num, iter_num):
         samp_dict_grow.build_dict(samp, model_key[0:2]+ 'kmeans_trials', scans_models)
     return
 
+#do not average over the data between scans before performing correlation!
+#want to capture relative relationships WITHIN each map; also arrays are not 
+    #of same length
 def get_focus_cluster(cluster_data, cluster_row, cluster_column):
     # compress clusters to their medians
     medians_of_clusters = np.array([np.median(cluster, axis=0) for cluster in cluster_data])
@@ -197,4 +187,29 @@ def correlations_of_kmeans_trials(real_data, kmeans_trials, number_of_clusters, 
     # stats
     avg_corr_of_kmeans_trials = np.mean(corrs_of_kmeans_trials, axis=0)
     std_corr_of_kmeans_trials = np.std(corrs_of_kmeans_trials, axis=0)
-    return corrs_of_kmeans_trials
+    return avg_corr_of_kmeans_trials, std_corr_of_kmeans_trials
+
+def correlation_stats(samp, scans, data_key, trials_key, number_of_clusters, focus_cluster_row, focus_channel_col):
+    corrs_of_scans_kavg_matrices = []
+    corrs_of_scans_kstd_dev_matrices = []
+    for scan in scans:
+        real_data = samp[data_key][scan]
+        kmeans_trials = samp[trials_key][scan] # error?
+        avg, std_dev = correlations_of_kmeans_trials(real_data, 
+                                                     kmeans_trials, 
+                                                     number_of_clusters, 
+                                                     focus_cluster_row, 
+                                                     focus_channel_col)
+        corrs_of_scans_kavg_matrices.append(avg)
+        corrs_of_scans_kstd_dev_matrices.append(std_dev)
+    corrs_of_scans_kavg_matrices = np.array(corrs_of_scans_kavg_matrices)
+    corrs_of_scans_kstd_dev_matrices = np.array(corrs_of_scans_kstd_dev_matrices)
+    # stats
+    scan_avg = np.mean(corrs_of_scans_kavg_matrices, axis=0)
+    scan_stdev = np.std(corrs_of_scans_kavg_matrices, axis=0)
+    trials_stdev_avg = np.mean(corrs_of_scans_kstd_dev_matrices, axis=0)
+    trials_stdev_stdev = np.std(corrs_of_scans_kstd_dev_matrices, axis=0)
+    samp_dict_grow.build_dict(samp, data_key[0:2]+'kcorr_avg', scan_avg)
+    samp_dict_grow.build_dict(samp, data_key[0:2]+'kcorr_std', scan_stdev)
+    samp_dict_grow.build_dict(samp, data_key[0:2]+'ktrials_stats', [trials_stdev_avg,trials_stdev_stdev])
+    return

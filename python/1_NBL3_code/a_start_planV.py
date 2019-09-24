@@ -87,18 +87,20 @@ e_statistics.standardize_channels(samples,
                                   ['c_reduced_arrs', 'v_reduced_arrs'], 
                                   ['c_redStand_arrs', 'v_redStand_arrs'])
 
+data_key = 'c_reduced_arrs'
 channel_for_mask = 0 #column index of channel within stat array of choice (the key used in kmeans_trials())
 number_of_clusters = 3
 number_of_kmeans_trials = 5
 # stores numpy array of 'n' kmeans clustering trials for each scan for each sample
     # for a given scan, array will be 'n'x'len(redStand_arr)'
     # example navigation use: sample_dict['c_kmeans_trials'][scan_num]
-d_clustering.kmeans_trials(samples, 'c_redStand_arrs', channel_for_mask, 
+d_clustering.kmeans_trials(samples, data_key, channel_for_mask, 
                            number_of_clusters, number_of_kmeans_trials)
-
-real_data = NBL3_2['c_reduced_arrs'][0]
-kmeans_trials = NBL3_2['c_kmeans_trials'][0]
+samp = NBL3_2
+trials_key = 'c_kmeans_trials'
 focus_cluster = 'high'
 focus_channel = 0
+scans = [0,1,2]
 
-z = d_clustering.correlations_of_kmeans_trials(real_data, kmeans_trials, number_of_clusters, focus_cluster_row, focus_channel_col)
+d_clustering.correlation_stats(NBL3_2, scans, data_key, trials_key, number_of_clusters, focus_cluster, focus_channel)
+z = NBL3_2['c_kcorr_std']
