@@ -154,38 +154,47 @@ def stats_after_many_kmeans_trials(samp, scans, data_key, model_key, cluster_num
 #                            focus_channel, focus_cluster, iterations)
 # =============================================================================
 
+def kmeans_trials(samps, model_key, mask_chan, clust_num, iter_num):
+    for samp in samps:
+        scans_models = []
+        for i, scan_arr in enumerate(samp[model_key]):
+            model_data = scan_arr[:,mask_chan]
+            model_data = model_data.reshape(-1,1)
+            model =  KMeans(init='k-means++', n_clusters=clust_num, n_init=10)
+            models_labels = []
+            count = 0
+            while count < iter_num:
+                model_fit = model.fit(model_data)
+                model_labels = model_fit.labels_
+                models_labels.append(model_labels)
+                count = count+1
+            models_labels = np.array(models_labels)
+            scans_models.append(models_labels)
+        samp_dict_grow.build_dict(samp, model_key[0:2]+ 'kmeans_trials', scans_models)
+    return
 
+def get_focus_cluster(cluster_data, cluster_row, cluster_column):
+    # compress clusters to their medians
+    medians_of_clusters = np.array([np.median(cluster, axis=0) for cluster in cluster_data])
+    # identify median of desired channel
+    medians_of_focus_channel = medians_of_clusters[:,cluster_column] # if chan_column_index = 0 --> gets xbic medians; they are first column in medians_of_each_cluster
+    if cluster_row == 'high':
+        cluster_index = np.argmax(medians_of_focus_channel)# returns index of largest median cluster
+    elif cluster_row == 'low':
+        cluster_index = np.argmin(medians_of_focus_channel)  # returns index of smallest median cluster
+    # extract channels of focus cluster; transpose to prep for correlation
+    data_of_focus_cluster = cluster_data[cluster_index].T 
+    return data_of_focus_cluster
 
-
-# =============================================================================
-# #need some way to visualize this... ask Tara
-# # will adding more data to the optimization reduce the number of local minima?
-#     # rerun code above with full data array
-#     # result: still varied convergence
-# # using labels to index into real data is a no-go as the reustling arrays will be of different lengths
-#     # according to the difference in the labels (which is what i'm trying to determine)
-#     # for simplicity, only use xbic channel to cluster for now
-# # the most common sums resulting from summing along rows of clust_labels_from_each_attempt 
-#     # will identify a data point that was put in the same cluster between each clustering attempt
-#     # exception: if all cluster attempts place a data point in cluster "0",
-#     # then the sum of that row will equal zero (this is unlikely)
-#         # solution would be to first check the summed_rows array for any sums of zero
-# summed_rows = np.sum(clust_labels_from_each_attempt1, axis=1)
-# if 0 in summed_rows:
-#     print('cannot use bincount')
-# else:
-#     print("take indices of 'most common' sums")
-# try_bincount = np.bincount(summed_rows)
-# # find indices of "most common" sums
-# # note this threshold of 100 will have to scale with the number of kmeans iterations, 
-#     # for now the number of iterations will be 10
-#     # future suggestion: make threshold 10x the number of iterations
-# trim_bincount = np.array(np.where(try_bincount > 100))
-# indices_of_consistently_clustered_data = np.where(summed_rows == trim_bincount)
-# indices_of_consistently_clustered_data = [np.array(np.where(summed_rows==important_sum)) for important_sum in trim_bincount[0]]
-# # combine all these indices in preparation for indexing into actual data
-# indices_of_consistent_data_combined = np.vstack(indices_of_consistently_clustered_data)
-# =============================================================================
-
-
-
+def correlations_of_kmeans_trials(real_data, kmeans_trials, number_of_clusters, focus_cluster_row, focus_channel_col):
+    corrs_of_kmeans_trials = []
+    for trial in kmeans_trials:
+        cluster_data = [real_data[np.where(trial==clust)[0]] for clust in list(range(number_of_clusters))]
+        focus_cluster = get_focus_cluster(cluster_data, focus_cluster_row, focus_channel_col)
+        focus_clust_corrs = np.corrcoef(focus_cluster)
+        corrs_of_kmeans_trials.append(focus_clust_corrs)
+    corrs_of_kmeans_trials = np.array(corrs_of_kmeans_trials)
+    # stats
+    avg_corr_of_kmeans_trials = np.mean(corrs_of_kmeans_trials, axis=0)
+    std_corr_of_kmeans_trials = np.std(corrs_of_kmeans_trials, axis=0)
+    return corrs_of_kmeans_trials

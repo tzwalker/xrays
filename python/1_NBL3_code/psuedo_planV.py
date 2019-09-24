@@ -665,3 +665,164 @@
 #         #samp_dict_grow.build_dict(samp, 'XBIV_eles_i', v_indices)
 #     return
 # =============================================================================
+
+### troubleshooting kmeans iterations
+# =============================================================================
+# #need some way to visualize this... ask Tara
+# # will adding more data to the optimization reduce the number of local minima?
+#     # rerun code above with full data array
+#     # result: still varied convergence
+# # using labels to index into real data is a no-go as the reustling arrays will be of different lengths
+#     # according to the difference in the labels (which is what i'm trying to determine)
+#     # for simplicity, only use xbic channel to cluster for now
+# # the most common sums resulting from summing along rows of clust_labels_from_each_attempt 
+#     # will identify a data point that was put in the same cluster between each clustering attempt
+#     # exception: if all cluster attempts place a data point in cluster "0",
+#     # then the sum of that row will equal zero (this is unlikely)
+#         # solution would be to first check the summed_rows array for any sums of zero
+# summed_rows = np.sum(clust_labels_from_each_attempt1, axis=1)
+# if 0 in summed_rows:
+#     print('cannot use bincount')
+# else:
+#     print("take indices of 'most common' sums")
+# try_bincount = np.bincount(summed_rows)
+# # find indices of "most common" sums
+# # note this threshold of 100 will have to scale with the number of kmeans iterations, 
+#     # for now the number of iterations will be 10
+#     # future suggestion: make threshold 10x the number of iterations
+# trim_bincount = np.array(np.where(try_bincount > 100))
+# indices_of_consistently_clustered_data = np.where(summed_rows == trim_bincount)
+# indices_of_consistently_clustered_data = [np.array(np.where(summed_rows==important_sum)) for important_sum in trim_bincount[0]]
+# # combine all these indices in preparation for indexing into actual data
+# indices_of_consistent_data_combined = np.vstack(indices_of_consistently_clustered_data)
+# =============================================================================
+
+### experimenting with xbic xbiv alignment
+# =============================================================================
+# from scipy.ndimage.filters import gaussian_filter
+# from skimage.filters import sobel
+# import numpy as np
+# import matplotlib.pyplot as plt
+# 
+# # cannot be used when kclustering is called on reduced arrays
+# def quick_label_check(original_map, model):
+#     clust_map = model.labels_.reshape(np.shape(original_map))
+#     plt.imshow(clust_map, origin='lower')
+#     return
+# ### view difference between mask generated from clusters with filtered vs. non-filtered XRF channel
+#     # filtered (single, Cu) XRF channel; applied clustering algorithim 
+#     # refer to consolidated notes for some results: mostly no difference for good maps
+# # =============================================================================
+# # cu = NBL3_2['elXBIC'][2][0][:,:-2]
+# # model = NBL3_2['c_kmodels'][2]
+# # quick_label_check(cu, model)
+# # 
+# # cu_arr = cu_map.ravel()
+# # # check maps
+# # fig, axs = plt.subplots(1,2)
+# # axs[0].imshow(ele_map)
+# # # ravel filtered map
+# # filt_arr = filt_map.ravel()
+# # filt_arr = filt_arr.reshape(-1,1)
+# # # cluster filtered map
+# # model = KMeans(init='k-means++', n_clusters=3, n_init=10) 
+# # filt_clust = model.fit(filt_arr)
+# # # check clusters
+# # filt_clust_map = filt_clust.labels_.reshape(np.shape(ele_map))
+# # axs[1].imshow(filt_clust_map, cmap='Greys')
+# # plt.figure()
+# # sns.distplot(ele_arr, bins=50)
+# # =============================================================================
+# 
+# 
+# # get the maps
+# xbic = NBL3_3['XBIC_maps'][0][:,:-2] ; xbic_sob = sobel(xbic)
+# #xbiv = NBL3_2['elXBIC'][1][2][:,:-2] ; xbiv_sob = sobel(xbiv)
+# 
+# quick_label_check(xbic, NBL3_2['c_kmodels'][0])
+# # map check
+# fig, (ax0,ax1) = plt.subplots(1,2)
+# plt.tight_layout()
+# ax0.imshow(xbic, origin='lower')
+# ax1.imshow(xbiv, origin='lower')
+# 
+# plt.figure()
+# fig1, (ax1,ax2) = plt.subplots(1,2)
+# plt.tight_layout()
+# ax1.imshow(xbic_sob, origin='lower')
+# ax2.imshow(xbiv_sob, origin='lower')
+# 
+# # if necessary, filter map; sobel maps as well
+# xbic_filt = gaussian_filter(xbic, sigma=1) 
+# xbiv_filt = gaussian_filter(xbiv, sigma=1) 
+# 
+# # map check
+# 
+# 
+# # correlation check
+# plt.figure()
+# plt.scatter(xbic_sob,xbiv_sob, s=3)
+# plt.xlim([np.min(xbic_sob), np.max(xbic_sob)])
+# plt.ylim([np.min(xbiv_sob), np.max(xbiv_sob)])
+# 
+# ### plotting 2-feature cluster map for a sample
+# import numpy as np
+# import matplotlib.pyplot as plt
+# 
+# map1 = NBL3_2['elXBIC'][0][1]
+# map2 =  NBL3_2['elXBIC'][0][3]
+# labels = NBL3_2['c_kmodels'][0].labels_
+# label_map = np.reshape(labels, (101,99))
+# 
+# import seaborn as sns
+# import pandas as pd
+# 
+# def custom_format_ticks(axes_object_labels, string_type):
+#     txt_labs = [label.get_text() for label in axes_object_labels]
+#     ticking = [string_type.format(float(txt)) for txt in txt_labs]
+#     return ticking
+# 
+# def get_real_coordinates(axis_list):
+#     data_coord = list(axis_list)
+#     axis_width = max(data_coord) - min(data_coord)
+#     axis_resolution = np.linspace(0, axis_width, len(data_coord))
+#     round_steps = [round(i,3) for i in axis_resolution]
+#     return round_steps
+# 
+# y_width = np.linspace(0, 15, 101)
+# x_width = np.linspace(0, 15, 99)
+# y = [round(i,3) for i in y_width]
+# x = [round(i,0) for i in x_width]
+# label_map = pd.DataFrame(label_map, index = y, columns = x)
+# 
+# fig, ax0 = plt.subplots()
+# #plt.tight_layout()
+# cbar_ticks = np.linspace(min(labels), max(labels), max(labels)+1)
+# ax0 = sns.heatmap(label_map, square = True, cmap='Greys', cbar_kws={"shrink": 1, "ticks":cbar_ticks}, xticklabels = 20, yticklabels = 20)
+# 
+# # figure level
+# plt.xlabel('X (\u03BCm)', fontsize=16)
+# plt.ylabel('Y (\u03BCm)', fontsize=16)
+# # axis level
+# ax0.tick_params(labelsize = 14)                     #formats size of ticklabels
+# x_labls = custom_format_ticks(ax0.get_xticklabels(), '{:g}')
+# y_labls = custom_format_ticks(ax0.get_yticklabels(), '{:g}')         #formats tick label strings without ".0"
+# ax0.set_xticklabels(x_labls)                        #set the tick labels
+# ax0.set_yticklabels(y_labls, rotation = 0)          #set the ticklabels and rotate (if needed)
+# ax0.invert_yaxis()                                  #invert the yaxis after formatting is complete
+# 
+# #fig.colorbar(ax0).ax0 <--> plt.gcf().axes[-1]
+# cbar_ax = plt.gcf().axes[-1]                        #gets colorbar of current figure object, behaves as second y axes object
+# # colorbar label settings
+# cbar_ax.set_ylabel('Cluster', fontsize = 16, 
+#                    rotation = -90, labelpad = 20)    #label formatting
+# cbar_ax.tick_params(labelsize=12)                   #tick label formatting
+# cbar_ax.yaxis.get_offset_text().set(size=12)        #format colorbar offset text
+# #z_labls = custom_format_ticks(cbar_ax.get_yticklabels(), '{:g}')
+# 
+# #sns.heatmap(map1, square = True, ax = ax1, cbar_kws={"shrink": 0.50}, xticklabels = 20, yticklabels = 20).invert_yaxis()
+# 
+# #sns.heatmap(map2, square = True, ax = ax2, cbar_kws={"shrink": 0.50}, xticklabels = 20, yticklabels = 20).invert_yaxis()
+# 
+# =============================================================================
+

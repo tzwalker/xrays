@@ -10,7 +10,6 @@ def get_directory(machine_index):
         def_path = '/home/kineticcross/Desktop/xrays/python'
     return scan_path, def_path
 
-#system = int(input('system?: '))
 scan_path, def_path = get_directory(0)
     
 import sys
@@ -54,7 +53,7 @@ get_add_electrical(samples, 2) # 1: us_ic, 2: ds_ic
 
 # enter elements you want to work with
 # index of the element string dictates position future structures
-elements = ['Cu', 'Cd_L']        #remove zinc to allow beam to beam comparisons
+elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']        #remove zinc to allow beam to beam comparisons
 
 c_rummage_thru_H5.find_ele_in_h5s(samples, elements)
 c_rummage_thru_H5.extract_norm_ele_maps(samples, 'us_ic', 'fit')
@@ -79,7 +78,7 @@ e_statistics.standardize_channels(samples,
     # maps according to bad data in one of the XRF channels
     # not configured for using electrical channels as the bad channel
     # see ReadMe.txt for details
-e_statistics.reduce_arrs_actual(samples, 'Cu', elements, 3,                    # int = # of std
+e_statistics.reduce_arrs_actual(samples, 'Cu', elements, 3,             # int = # of std
                          ['c_stat_arrs', 'v_stat_arrs'],                # reference data
                          ['c_reduced_arrs', 'v_reduced_arrs'])          # new data
 
@@ -88,28 +87,18 @@ e_statistics.standardize_channels(samples,
                                   ['c_reduced_arrs', 'v_reduced_arrs'], 
                                   ['c_redStand_arrs', 'v_redStand_arrs'])
 
-# 'perf' is electrical: will be performed for both XBIC and XBIV if entered
-    # type 'all' to include all features, that is, the electrical channel and
-    # all elements in 'elements_in'
-cluster_channels = ['perf'] 
-cluster_number = 3
-# the integer argument in this function is a switch that deetermiens which data to cluster
-# 0 --> original data (no NaN), 1 --> standardized data, 
-# 2 --> reduced original data, 3 --> reduced standardized data
-# switches 1 and 3 are reccomended as they use the standardized data, 
-    # switch 3 recommended for scatter plots and fitting
-#d_clustering.kclustering(samples, cluster_number, cluster_channels, elements, 3)
+channel_for_mask = 0 #column index of channel within stat array of choice (the key used in kmeans_trials())
+number_of_clusters = 3
+number_of_kmeans_trials = 5
+# stores numpy array of 'n' kmeans clustering trials for each scan for each sample
+    # for a given scan, array will be 'n'x'len(redStand_arr)'
+    # example navigation use: sample_dict['c_kmeans_trials'][scan_num]
+d_clustering.kmeans_trials(samples, 'c_redStand_arrs', channel_for_mask, 
+                           number_of_clusters, number_of_kmeans_trials)
 
-
-samp = NBL3_2
-scans = [0,1,2]
-data_key = 'c_reduced_arrs'
-model_key = 'c_redStand_arrs'
-cluster_number = 3
-focus_channel = 0
+real_data = NBL3_2['c_reduced_arrs'][0]
+kmeans_trials = NBL3_2['c_kmeans_trials'][0]
 focus_cluster = 'high'
-iterations = 10
-d_clustering.stats_after_many_kmeans_trials(samp, scans, data_key, model_key, cluster_number, 
-                           focus_channel, focus_cluster, iterations, elements)
+focus_channel = 0
 
-
+z = d_clustering.correlations_of_kmeans_trials(real_data, kmeans_trials, number_of_clusters, focus_cluster_row, focus_channel_col)
