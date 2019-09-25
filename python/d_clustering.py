@@ -81,7 +81,9 @@ def correlation_stats(samp, scans, data_key, trials_key,
     scan_stdev = np.std(corrs_of_scans_kavg_matrices, axis=0)
     trials_stdev_avg = np.mean(corrs_of_scans_kstd_dev_matrices, axis=0)
     trials_stdev_stdev = np.std(corrs_of_scans_kstd_dev_matrices, axis=0)
-    samp_dict_grow.build_dict(samp, data_key[0:2]+'kcorr_avg', scan_avg)
-    samp_dict_grow.build_dict(samp, data_key[0:2]+'kcorr_std', scan_stdev)
-    samp_dict_grow.build_dict(samp, data_key[0:2]+'ktrials_stats', [trials_stdev_avg,trials_stdev_stdev])
+    kstats_dict= dict()
+    samp_dict_grow.build_dict(kstats_dict, 'kcorr_avg', scan_avg)
+    samp_dict_grow.build_dict(kstats_dict, 'kcorr_std', scan_stdev)
+    samp_dict_grow.build_dict(kstats_dict, 'ktrials_stats', [trials_stdev_avg,trials_stdev_stdev])
+    samp_dict_grow.build_dict(samp, data_key[0:2]+'kstats', kstats_dict)
     return

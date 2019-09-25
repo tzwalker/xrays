@@ -22,15 +22,15 @@ side areas: 		#efefef
 custom-1
 normal text: 		#000000
 comment: 			#cd853f
-string: 			#32cd32
+string: 			#00aa00
 number: 			#dc143c
 keyword: 			#0000ff bold
 builtin: 			#900090
 definition: 		#000000 bold
 instance: 			#000000 ital
 
-current cell: 		#fffff0
-current line: 		#f5f5f5
+current cell: 		#eff8fe
+current line: 		#e8f2fe
 occurrence: 		#aaff7f
 matched paren: 		#55ff7f
 unmatched paren: 	#ff557f

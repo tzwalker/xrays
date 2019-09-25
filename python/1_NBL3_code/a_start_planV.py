@@ -10,7 +10,7 @@ def get_directory(machine_index):
         def_path = '/home/kineticcross/Desktop/xrays/python'
     return scan_path, def_path
 
-scan_path, def_path = get_directory(1)
+scan_path, def_path = get_directory(0)
     
 import sys
 sys.path.append(def_path)
@@ -60,7 +60,7 @@ c_rummage_thru_H5.extract_norm_ele_maps(samples, 'us_ic', 'fit')
 
 # now apply XRF correction
 # ATTENTION: see ReadME.txt for proper use of apply_ele_iios() below
-#c_rummage_thru_H5.apply_ele_iios(samples)
+c_rummage_thru_H5.apply_ele_iios(samples)
 
 # note if "IndexError: out of range" is thrown, 
     # make sure length of all the electrical setting dictionary entries match
@@ -87,6 +87,7 @@ e_statistics.standardize_channels(samples,
                                   ['c_reduced_arrs', 'v_reduced_arrs'], 
                                   ['c_redStand_arrs', 'v_redStand_arrs'])
 
+
 data_key = 'c_reduced_arrs'
 channel_for_mask = 0 # column index of channel within stat array of choice (the key used in kmeans_trials())
 number_of_clusters = 3
@@ -97,17 +98,14 @@ number_of_kmeans_trials = 5
 d_clustering.kmeans_trials(samples, data_key, channel_for_mask, 
                            number_of_clusters, number_of_kmeans_trials)
 samp = NBL3_2
-trials_key = 'c_kmeans_trials'
 focus_cluster = 'high'
 focus_channel = 0
 scans = [3,4,5]
 
-d_clustering.correlation_stats(samp, scans, data_key, trials_key, 
+d_clustering.correlation_stats(samp, scans, data_key, 'c_kmeans_trials', 
                                number_of_clusters, focus_cluster, focus_channel)
-avg_corr = samp['c_kcorr_avg']
-stdev_corr = samp['c_kcorr_std']
 
 # plot these matrices and begin writing
-pearson_plot.plot_corrs(avg_corr, stdev_corr, ['XBIV'] + elements)
+#pearson_plot.plot_corrs(samp['c_kcorr_avg'], samp['c_kcorr_std'], ['XBIC'] + elements)
 
-
+#pearson_plot.unmasked_mapcorr(samp, scans, data_key)
