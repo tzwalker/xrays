@@ -3,14 +3,14 @@ def get_directory(machine_index):
         scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
         def_path = r'C:\Users\Trumann\Desktop\xrays\python'
     elif machine_index==1: #-->ASUS windows
-        scan_path = r'C:\Users\triton\Desktop\NBL3_data\all_H5s'
+        scan_path = r'C:\Users\triton\Desktop\NBL3_data'
         def_path = r'C:\Users\triton\xrays\python'
     elif machine_index==2: #-->ASUS ubuntu
         scan_path = '/home/kineticcross/Desktop/data'
         def_path = '/home/kineticcross/Desktop/xrays/python'
     return scan_path, def_path
 
-scan_path, def_path = get_directory(0)
+scan_path, def_path = get_directory(1)
     
 import sys
 sys.path.append(def_path)
@@ -19,7 +19,7 @@ from b_scale_elect import get_add_electrical
 import c_rummage_thru_H5
 import d_clustering
 import e_statistics
-import f_corr_pearsons
+import pearson_plot
 
 NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550,538,575], 'XBIV_scans': [419,420,421, 551], # good geom XBIC
           'beam_conv':      [2E5,2E5,2E5, 2E5,2E5,2E5], 
@@ -88,7 +88,7 @@ e_statistics.standardize_channels(samples,
                                   ['c_redStand_arrs', 'v_redStand_arrs'])
 
 data_key = 'c_reduced_arrs'
-channel_for_mask = 0 #column index of channel within stat array of choice (the key used in kmeans_trials())
+channel_for_mask = 0 # column index of channel within stat array of choice (the key used in kmeans_trials())
 number_of_clusters = 3
 number_of_kmeans_trials = 5
 # stores numpy array of 'n' kmeans clustering trials for each scan for each sample
@@ -100,7 +100,14 @@ samp = NBL3_2
 trials_key = 'c_kmeans_trials'
 focus_cluster = 'high'
 focus_channel = 0
-scans = [0,1,2]
+scans = [3,4,5]
 
-d_clustering.correlation_stats(NBL3_2, scans, data_key, trials_key, number_of_clusters, focus_cluster, focus_channel)
-z = NBL3_2['c_kcorr_std']
+d_clustering.correlation_stats(samp, scans, data_key, trials_key, 
+                               number_of_clusters, focus_cluster, focus_channel)
+avg_corr = samp['c_kcorr_avg']
+stdev_corr = samp['c_kcorr_std']
+
+# plot these matrices and begin writing
+pearson_plot.plot_corrs(avg_corr, stdev_corr, ['XBIV'] + elements)
+
+
