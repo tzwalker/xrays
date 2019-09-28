@@ -45,7 +45,8 @@ get_add_h5s(samples, scan_path)
 # h5 files accessed through dict keys: 'XBIC_h5s', 'XBIV_h5s'
 
 # extracts and converts electrical channel from the scaler used at the beam: 
-  #1: us_ic, 2: ds_ic (do not change for now; it would change depending on how h5 was fit)
+  #1: us_ic, 2: ds_ic
+  # do not change for now; it would change depending on how h5 was fit
 get_add_electrical(samples, 2) 
 # electrical data accessed through dict keys: 'XBIC_maps', 'XBIV_maps'
 
@@ -81,10 +82,11 @@ e_statistics.standardize_channels(samples,
 
 ### all data at this point is stored in the sample dictionary
 # a structure within the dictionary is first accessed by key, 
-# then by index; data indices are determined by the order in which
-# the user inputs scans and elements
+# then by index
+# data indices are determined by the order in which
+    # the user inputs scans and elements
 
-# general syntax: sample_dict[map_key][scan_index][element_index] 
+# general list syntax: sample_dict[map_key][scan_index][element_index] 
 
 # it might be useful to see the structure shape evolve as you go deeper into
 # the sample dict:
@@ -98,13 +100,21 @@ Cd_L_map_of_2nd_scan_of_NBL3_2 = NBL3_2['elXBIC'][1][1]
     # the first index is the scan index
     # the second index is the element index
 
-# each of the above data has an analog in the statistical arrays
+# each of the above data structures has an analog in the arrayed format
+    # e.g. the statistical arrays 
 # these array use Numpy for efficiency, which makes their syntax a bit different
     # REVIEW: https://docs.scipy.org/doc/numpy/user/basics.indexing.html
-# general stat_array syntax: sample_dict[stat_array_key][array_rows, array_columns]
+
+# general stat_array syntax: sample_dict[stat_array_key][scan_index][array_ROWS, array_COLUMNS]
     
-    # rows --> number of pixels in the map
-    # columns --> number of elements extracted + 1 (electrical channel)
+# rows --> number of pixels in the map
+# columns --> number of elements extracted + 1 (electrical channel)
 # column 0 is always the electrical channel
 
-xbic_map_of_1st_scan_of_NBL3_2 = NBL3_2['c_stat_arrs'][:,0]
+all_data_from_1st_scan_of_NBL3_2 = NBL3_2['c_stat_arrs'][0]
+xbic_arr_of_1st_scan_of_NBL3_2 = NBL3_2['c_stat_arrs'][0][:,0]
+xbic_arr_of_2nd_scan_of_NBL3_2 = NBL3_2['c_stat_arrs'][1][:,0]
+Cu_arr_of_2nd_scan_of_NBL3_2 = NBL3_2['c_stat_arrs'][1][:,1]
+Cd_L_arr_of_2nd_scan_of_NBL3_2 = NBL3_2['c_stat_arrs'][1][:,2]
+
+
