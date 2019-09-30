@@ -68,20 +68,22 @@ def mapConvertAxes(dataframes, scans):
         #print(height_factor, scan["Name"])        
     return
 
+from skimage.transform import rotate
+
+def rotate_integrate_normalize(list_of_imported_dfs):
+    rot_arrs = [rotate(df, 25) for df in list_of_imported_dfs]
+    integrated_arrs = [matrix.sum(axis = 0) for matrix in rot_arrs]
+    norm_arrs = [((v - v.min()) / (v.max() - v.min())) for v in integrated_arrs]
+    return norm_arrs
 
 
-def pivot_then_rotate(dfs_as_arrys):
-    #extract a map as a shaped array, then apply skimage.io rotate, then integrate using functions from NBL3 code
-    
-    return
 
 
 
-def make_plots(dataframe_as_array, scan_list, ele_plt_list, ele_plt_lab, plt_t):
+def make_2d_plots(dataframe_as_array, scan_list, ele_plt_list, ele_plt_lab, plt_t):
     for df, scan in zip(dataframe_as_array, scan_list):
         xtick_iter = scan['x_ticks'] 
         ytick_iter = scan['y_ticks']
-        
         df0 = df.pivot(index = 'y pixel no', columns = 'x pixel no', values = 'XBIC')
         
         fig = plt.figure() #figsize = scan["figure_size"], dpi = 250
@@ -118,12 +120,9 @@ def make_plots(dataframe_as_array, scan_list, ele_plt_list, ele_plt_lab, plt_t):
             ax.figure.axes[-1].yaxis.label.set_size(18)
             ax.invert_yaxis()
             
-            
             #changes colorbar tick label size
             cax = plt.gcf().axes[-1]
             cax.tick_params(labelsize = 15)
-
-
             #changes title, x, and y axis text size
             plt.title(pltTitle, fontsize = 18)
             plt.xlabel('X (um)', fontsize = 18)
@@ -155,11 +154,16 @@ def MapsAsMatrices(scan_list, dataframe_as_array, el):
 def integrateStackDepth(imported_shaped_dict):
     for df in imported_shaped_dict:
         column_sum = df.sum(axis = 0, skipna = True)
-            
         fig = plt.figure()
-
         column_sum.plot.line()
+    return
 
+def make_line_plots(x_range, y_vars, labels):
+    for arr,lab in zip(y_vars, labels):
+        fig, ax0 = plt.subplots(1)
+        ax0.plot(x_range,arr)
+        ax0.grid(True)
+        plt.xlim([0, max(x_range)])
     return
 
 ### below was used as testing for generating rotated lineplots

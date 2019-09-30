@@ -1,8 +1,10 @@
-# this file is to plot gold "4" @ 100C during the first stage experiment
-    # scalers for 2019_06_2IDD were not defined properly during fit (20190709)
+# start of FS3 operando stage data processing 
+    # 20190709: scalers for 2019_06_2IDD were not defined properly during fit
+    # cannot normalize to upstream ion chamber for now...
     # this includes all stage scans of FS3
     # refit needs to be performed before presentinig XRF data on the stage!
 # instead of processing h5 in python, process ASCII exported
+# file only plots gold "4" @ 100C during the first stage experiment
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
