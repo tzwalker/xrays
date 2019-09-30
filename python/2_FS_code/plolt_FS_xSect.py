@@ -12,7 +12,7 @@ electrical_scaler_channel = 'ds_ic'
          
 #what do you want to plot? note the number of plots made is limited by the smallest list here!
 element_plot_list =     ['Cd_L', 'Se', 'As']#, 'Cd_L', 'Cd_CdTe', 'Zn', 'As', 'Se', 'Sn_L'] #, 'Cu', 'Zn', 'As', 'Se', 'Sn_L']
-plot_titles =           ['Cd', 'Se', 'As' ,'Cd/Cd+Te', 'Zn', 'As', 'Se', 'Sn']
+plot_titles =           ['Cd', 'Se', 'As']# ,'Cd/Cd+Te', 'Zn', 'As', 'Se', 'Sn']
 element_plot_labels =   ['ug/cm2', 'ug/cm2', 'ug/cm2','ug/cm2', 'ug/cm2', 'ug/cm2', 'ug/cm2'] #, 'ug/cm2', 'ug/cm2', 'ug/cm2', 'ug/cm2', 'ug/cm2']
         
 scan_list = [scan3]#, scan3, scan4]
@@ -32,11 +32,10 @@ shaped_dfs = FSdefs.MapsAsMatrices(scan_list, imported_scan_dfs, element_plot_li
 
 rotated_dfs = FSdefs.rotate_integrate_normalize(shaped_dfs)
 
-line = rotated_dfs[0]
 
 x = list(np.linspace(0,15,151))
-label_list = ['XBIC'] + element_plot_list
-
+label_list = ['XBIC'] + plot_titles
+FSdefs.make_line_plots(x,rotated_dfs, label_list)
 
 
 #FSdefs.integrateStackDepth(shaped_dfs)

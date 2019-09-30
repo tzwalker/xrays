@@ -69,13 +69,31 @@ def mapConvertAxes(dataframes, scans):
     return
 
 from skimage.transform import rotate
-
+import numpy as np
 def rotate_integrate_normalize(list_of_imported_dfs):
     rot_arrs = [rotate(df, 25) for df in list_of_imported_dfs]
     integrated_arrs = [matrix.sum(axis = 0) for matrix in rot_arrs]
     norm_arrs = [((v - v.min()) / (v.max() - v.min())) for v in integrated_arrs]
     return norm_arrs
 
+
+def make_line_plots(x_range, y_vars, labels):
+    for arr,lab in zip(y_vars, labels):
+        fig, ax0 = plt.subplots(1)
+        ax0.plot(x_range,arr)
+        plt.minorticks_on()
+        plt.xlim([0, max(x_range)])
+        plt.yticks(np.arange(0,1.05,0.25))
+        plt.ylim([0, 1])
+        plt.grid(b=True, which='major', color='k', linewidth=1)
+        plt.grid(b=True, which='minor', axis='x', linestyle='--', linewidth=1)
+        
+        plt.xlabel('X (um)', fontsize=16)
+        plt.ylabel(lab + ' Norm (%)', fontsize=16)
+        ax0.tick_params(axis="both", labelsize=14)
+        plt.title('FS2_2 '+ lab)
+        
+    return
 
 
 
@@ -88,7 +106,8 @@ def make_2d_plots(dataframe_as_array, scan_list, ele_plt_list, ele_plt_lab, plt_
         
         fig = plt.figure() #figsize = scan["figure_size"], dpi = 250
         
-        ax = sns.heatmap(df0, xticklabels = xtick_iter, yticklabels = ytick_iter, annot= None, square = True, cbar_kws={'label': 'A'})   #plot heatmap using seaborn
+        ax = sns.heatmap(df0, xticklabels = xtick_iter, yticklabels = ytick_iter, 
+                         annot= None, square = True, cbar_kws={'label': 'A'})   #plot heatmap using seaborn
         #PLOT SETTINGS
         ax.figure.axes[-1].yaxis.label.set_size(18)                             #changes colorbar text label size
         ax.invert_yaxis()                                                       #orients the plot as displayed in MAPS
@@ -114,7 +133,9 @@ def make_2d_plots(dataframe_as_array, scan_list, ele_plt_list, ele_plt_lab, plt_
             formatter.set_scientific(True)
             formatter.set_powerlimits((-2, 0))
             
-            ax = sns.heatmap(df1, xticklabels = xtick_iter, yticklabels = ytick_iter, vmin = 0, annot= None, square = True, cbar_kws={'label': legend, "format": formatter})   #plot heatmap using seaborn
+            ax = sns.heatmap(df1, xticklabels = xtick_iter, yticklabels = ytick_iter, 
+                             vmin = 0, annot= None, square = True, 
+                             cbar_kws={'label': legend, "format": formatter})   #plot heatmap using seaborn
             #PLOT SETTINGS
             #changes colorbar text label size
             ax.figure.axes[-1].yaxis.label.set_size(18)
@@ -158,13 +179,7 @@ def integrateStackDepth(imported_shaped_dict):
         column_sum.plot.line()
     return
 
-def make_line_plots(x_range, y_vars, labels):
-    for arr,lab in zip(y_vars, labels):
-        fig, ax0 = plt.subplots(1)
-        ax0.plot(x_range,arr)
-        ax0.grid(True)
-        plt.xlim([0, max(x_range)])
-    return
+
 
 ### below was used as testing for generating rotated lineplots
     ## need a better way handle removal of noise in FS2_2 (imported_scan_dfs[1])
