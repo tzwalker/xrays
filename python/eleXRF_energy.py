@@ -3,7 +3,7 @@
 Trumann
 Tue Sep  3 09:47:13 2019
 """
-import xralylib as xl
+import xraylib as xl
 
 # returns highest energy photon fluoresced at the given beam energy
 def get_Ele_XRF_Energy(ele, energy):
