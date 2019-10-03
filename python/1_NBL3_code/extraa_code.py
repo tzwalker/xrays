@@ -33,3 +33,35 @@
     
 # find elements and return normalized maps of elements using numpy; note this turned out not to be as flexible
     #as lists, in that the order of the elements must be ordered that same as in the h5 file)
+
+
+### quick plotting roughness lines ###
+# labels for legend are automatically genrated
+# =============================================================================
+# label_nums = roughnesses * 100
+# label_list = []
+# for num in label_nums:
+#     b = int(num)
+#     c = str(b)
+#     d = '+/- ' + c + '%'
+#     label_list.append(d)
+# 
+# # note these list lengths must be greater than or equal to the steps in 'roughnesses'
+# color_list = ['r', 'b', 'g', 'c', 'm', 'r', 'b', 'g', 'c']
+# line_list = ['--', '--','--','--', '--', '-.', '-.', '-.', '-.']
+# # plot
+# fig, ax = plt.subplots()
+# plt.plot(no_rough_in_um, no_rough_iio, 'k', label = 'No roughness')
+# for rough_down, rough_up, l, c, lab in zip(ele_rough_iios_down, ele_rough_iios_up, line_list, color_list, label_list):
+#     plt.plot(no_rough_in_um, rough_down, linestyle = l, color = c, label = lab)
+#     plt.plot(no_rough_in_um, rough_up, linestyle = l, color = c)
+# # axis settings
+# plt.xlabel('CdTe Thickness (um)', fontsize = 16)
+# plt.ylabel('% ' + ele + ' Signal', fontsize = 16)
+# ax.tick_params(axis = 'both', labelsize = 14) 
+# plt.ylim([0, 1.0])
+# plt.grid()
+# ax.legend()
+# plt.legend(prop={'size': 14})
+# plt.show()
+# =============================================================================

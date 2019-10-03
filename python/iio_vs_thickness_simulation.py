@@ -96,18 +96,9 @@ ref_iio = iio_vs_depth(ele, no_rough, dt)
 ref_iio = ref_iio.reshape(-1,1)   # format array      
 
 ## calc roughness profiles
-# specfiy roughness parameters
-deviations = np.linspace(0.05, 0.2, 3)
+deviations = np.linspace(0.05, 0.2, 3) # specfiy roughness parameters
 rough_ups, rough_downs = generate_deviated_thicknesses(deviations)
 rough_up, rough_down = rough_iios(rough_ups, rough_downs)
-
-plt.plot(x_for_plotting, beam_attn)
-plt.plot(x_for_plotting, ref_iio)
-plt.plot(x_for_plotting, rough_up[:,1])
-plt.plot(x_for_plotting, rough_down[:,1])
-plt.grid()
-plt.ylabel('% attenuation')
-plt.xlabel('CdTe thickness')
 
 ## save x and y for plotting in Origin
 arr_for_plotting0 = np.concatenate((x_for_plotting, beam_attn, ref_iio, 
@@ -117,6 +108,16 @@ arr_for_plotting0 = np.concatenate((x_for_plotting, beam_attn, ref_iio,
 
 np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3 data\for Origin iio_sims\iio_sim_' + str(detect_theta) +'deg_ALL'+ ele +'.csv', arr_for_plotting0, delimiter=',')
 
+
+# supplementary info plotting
+plt.plot(x_for_plotting, beam_attn)
+plt.plot(x_for_plotting, ref_iio)
+plt.plot(x_for_plotting, rough_up[:,1])
+plt.plot(x_for_plotting, rough_down[:,1])
+plt.grid()
+plt.ylabel('% attenuation')
+plt.xlabel('CdTe thickness')
+
 # iio vs. depth() is essentially the same as the calculation seen in absorb_matlib_v_xraylib
 # only dependency iio_vs_depth() has on CdTe thickness is seen in the "no_rough" variable
     # an arbitrarily large 12um thickness was chosen to calculate iio through the entirety of a thick cdte layer
@@ -125,41 +126,8 @@ np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3 data\for Origin iio_sims\iio_
     # enter these factors somewhere into a_start.py, and apply them to Cu maps
 
 # =============================================================================
-# samp_cdte_thicknesses = [8516, 7745, 5320]
-# samp_iios = []
-# for s in samp_cdte_thicknesses:
-#     mean_iio = np.mean(no_rough_iio[0:s])
-#     samp_iios.append(mean_iio)
+### get average iio for absorbers of different thicknesses
+# absorbers = [8516, 7745, 5320]
+# samp_iios = [np.mean(ref_iio[0:absorber_thick] for absorber_thick in absorbers]
 # =============================================================================
 
-# =============================================================================
-# ### quick plotting roughness lines ###
-# 
-# # labels for legend are automatically genrated
-# label_nums = roughnesses * 100
-# label_list = []
-# for num in label_nums:
-#     b = int(num)
-#     c = str(b)
-#     d = '+/- ' + c + '%'
-#     label_list.append(d)
-# 
-# # note these list lengths must be greater than or equal to the steps in 'roughnesses'
-# color_list = ['r', 'b', 'g', 'c', 'm', 'r', 'b', 'g', 'c']
-# line_list = ['--', '--','--','--', '--', '-.', '-.', '-.', '-.']
-# # plot
-# fig, ax = plt.subplots()
-# plt.plot(no_rough_in_um, no_rough_iio, 'k', label = 'No roughness')
-# for rough_down, rough_up, l, c, lab in zip(ele_rough_iios_down, ele_rough_iios_up, line_list, color_list, label_list):
-#     plt.plot(no_rough_in_um, rough_down, linestyle = l, color = c, label = lab)
-#     plt.plot(no_rough_in_um, rough_up, linestyle = l, color = c)
-# # axis settings
-# plt.xlabel('CdTe Thickness (um)', fontsize = 16)
-# plt.ylabel('% ' + ele + ' Signal', fontsize = 16)
-# ax.tick_params(axis = 'both', labelsize = 14) 
-# plt.ylim([0, 1.0])
-# plt.grid()
-# ax.legend()
-# plt.legend(prop={'size': 14})
-# plt.show()
-# =============================================================================
