@@ -101,8 +101,8 @@ def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
         colors = 'magma'; units = '% Max Current'
     else: 
         c_map = samp[data_channel][scan][ele_index];
-        #c_map = c_map / c_map[:,:-2].max()
-        colors = 'Oranges_r'; units = '\u03BCg/cm'+ r'$^{2}$'
+        format_list = channel_formatting(ele_index+1); 
+        colors = format_list[0]; units = format_list[1]
     
     lower,upper = get_colorbar_axis(c_map, 3) # int here sets num_of_std to include
     df_map = pd.DataFrame(c_map, index = y_real, columns = x_real)
@@ -161,6 +161,13 @@ def plot_cluster_map(scan_data, original_map, model, cnum):
     cbar_ax.tick_params(labelsize=12)
     return
 
+
+def map_to_hist(samp,scan,label_sizes, data_channel, ele_index, bins):
+    map_data = samp[data_channel][scan][ele_index]
+    map_distro = plt.hist(map_data.ravel(), bins=50)
+    plt.xlabel('ug/cm2')
+    plt.ylabel('pixel count')
+    return
 
 ### from online
 def heatmap(data, row_labels, col_labels, ax=None,

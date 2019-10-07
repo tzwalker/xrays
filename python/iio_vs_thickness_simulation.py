@@ -62,7 +62,7 @@ def rough_iios(rough_ups, rough_downs):
     return ele_rough_iios_up, ele_rough_iios_down
 
 ## define settings and stack parameters ##
-beam_time = 'good_geom'
+beam_time = 'bad_geom'
 if beam_time == 'good_geom':
     beam_energy = 8.99
     beam_theta = 90
@@ -106,17 +106,19 @@ arr_for_plotting0 = np.concatenate((x_for_plotting, beam_attn, ref_iio,
                                     rough_up[:,1].reshape(-1,1), 
                                     rough_down[:,1].reshape(-1,1)), axis=1)
 
-np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3 data\for Origin iio_sims\iio_sim_' + str(detect_theta) +'deg_ALL'+ ele +'.csv', arr_for_plotting0, delimiter=',')
-
-
-# supplementary info plotting
-plt.plot(x_for_plotting, beam_attn)
-plt.plot(x_for_plotting, ref_iio)
-plt.plot(x_for_plotting, rough_up[:,1])
-plt.plot(x_for_plotting, rough_down[:,1])
-plt.grid()
-plt.ylabel('% attenuation')
-plt.xlabel('CdTe thickness')
+# =============================================================================
+# np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3 data\for Origin iio_sims\iio_sim_' + str(detect_theta) +'deg_ALL'+ ele +'.csv', arr_for_plotting0, delimiter=',')
+# 
+# 
+# # supplementary info plotting
+# plt.plot(x_for_plotting, beam_attn)
+# plt.plot(x_for_plotting, ref_iio)
+# plt.plot(x_for_plotting, rough_up[:,1])
+# plt.plot(x_for_plotting, rough_down[:,1])
+# plt.grid()
+# plt.ylabel('% attenuation')
+# plt.xlabel('CdTe thickness')
+# =============================================================================
 
 # iio vs. depth() is essentially the same as the calculation seen in absorb_matlib_v_xraylib
 # only dependency iio_vs_depth() has on CdTe thickness is seen in the "no_rough" variable
@@ -125,9 +127,7 @@ plt.xlabel('CdTe thickness')
     # yield mean iio correction factor for Cu in all samples
     # enter these factors somewhere into a_start.py, and apply them to Cu maps
 
-# =============================================================================
-### get average iio for absorbers of different thicknesses
-# absorbers = [8516, 7745, 5320]
-# samp_iios = [np.mean(ref_iio[0:absorber_thick] for absorber_thick in absorbers]
-# =============================================================================
+# get average iio for absorbers of different thicknesses
+absorbers = [8515, 10850, 5350]
+samp_iios = [np.mean(ref_iio[0:absorber_thick]) for absorber_thick in absorbers]
 
