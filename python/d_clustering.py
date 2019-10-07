@@ -35,7 +35,7 @@ def get_focus_cluster(cluster_data, cluster_row, cluster_column):
     elif cluster_row == 'low':
         cluster_index = np.argmin(medians_of_focus_channel)
     # extract channels of focus cluster; transpose in prep for correlation
-    data_of_focus_cluster = cluster_data[cluster_index].T 
+    data_of_focus_cluster = cluster_data[cluster_index].T
     return data_of_focus_cluster
 
 def correlations_of_kmeans_trials(real_data, kmeans_trials, number_of_clusters, 
@@ -77,10 +77,10 @@ def correlation_stats(samp, scans, data_key, trials_key,
     corrs_of_scans_kavg_matrices = np.array(corrs_of_scans_kavg_matrices)
     corrs_of_scans_kstd_dev_matrices = np.array(corrs_of_scans_kstd_dev_matrices)
     # stats
-    scan_avg = np.mean(corrs_of_scans_kavg_matrices, axis=0)
-    scan_stdev = np.std(corrs_of_scans_kavg_matrices, axis=0)
-    trials_stdev_avg = np.mean(corrs_of_scans_kstd_dev_matrices, axis=0)
-    trials_stdev_stdev = np.std(corrs_of_scans_kstd_dev_matrices, axis=0)
+    scan_avg = np.mean(corrs_of_scans_kavg_matrices, axis=0) # average over all scans
+    scan_stdev = np.std(corrs_of_scans_kavg_matrices, axis=0) # std_dev from averaging over all scans
+    trials_stdev_avg = np.mean(corrs_of_scans_kstd_dev_matrices, axis=0) # average over standard_deviation of all ktrials
+    trials_stdev_stdev = np.std(corrs_of_scans_kstd_dev_matrices, axis=0) # std_dev from averaging over std_dev of all ktrials
     kstats_dict= dict()
     samp_dict_grow.build_dict(kstats_dict, 'kcorr_avg', scan_avg)
     samp_dict_grow.build_dict(kstats_dict, 'kcorr_std', scan_stdev)

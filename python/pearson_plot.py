@@ -4,6 +4,7 @@ Trumann
 Wed Sep 11 11:47:57 2019
 """
 
+import samp_dict_grow
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -15,8 +16,12 @@ def unmasked_mapcorr(samp, scans, data_key):
         data = samp[data_key][scan]
         map_corrcoeffs = np.corrcoef(data.T)
         correlations_of_each_scan.append(map_corrcoeffs)
-    correlations_of_each_scan = np.array(correlations_of_each_scan)
-    return correlations_of_each_scan
+    corrs_of_scans_regavg_matrices = np.array(correlations_of_each_scan)
+    scan_avg = np.mean(corrs_of_scans_regavg_matrices, axis=0)
+    scan_stdev = np.std(corrs_of_scans_regavg_matrices, axis=0)
+    samp_dict_grow.build_dict(samp, 'nomask_avg', scan_avg)
+    samp_dict_grow.build_dict(samp, 'nomask_std', scan_stdev)
+    return
 
 def plot_corrs(corr1, corr2, cols):
     # MAKE SURE THIS MATCHES NUMBER OF LOADED ELEMENTS; changes depending on how h5s were fit
