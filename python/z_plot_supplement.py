@@ -48,6 +48,8 @@ def channel_formatting(index):
         data_formatting = ['viridis', '\u03BCg/cm'+ r'$^{2}$']
     elif index == 3:
         data_formatting = ['Greys_r', '\u03BCg/cm'+ r'$^{2}$']
+    elif index == 4:
+        data_formatting = ['cividis', '\u03BCg/cm'+ r'$^{2}$']
     return data_formatting
 
 def from_stand_to_stand_map(samp, scan, data, channel):

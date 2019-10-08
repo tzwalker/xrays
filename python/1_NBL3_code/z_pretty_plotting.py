@@ -10,7 +10,7 @@ axis_label_sizes = 16
 
 # use this function to plot normal-unit, corrected elemental maps
     # -1:XBIC, 0:Cu, 1:Cd, 2:Te, etc...
-PLT.plot_nice_2Dmap(samp, scan, axis_label_sizes, 'elXBIC_corr', 1) 
+PLT.plot_nice_2Dmap(samp, scan, axis_label_sizes, 'elXBIC', 0) 
 PLT.map_to_hist(samp, scan, axis_label_sizes, 'elXBIC_corr', 1, 50)
 
 

@@ -87,27 +87,27 @@ e_statistics.standardize_channels(samples,
                                   ['c_reduced_arrs', 'v_reduced_arrs'], 
                                   ['c_redStand_arrs', 'v_redStand_arrs'])
 
+## clustering trials ##
+data_key = 'c_reduced_arrs'
+channel_for_mask = 0 # column index of channel within stat array of choice (the key used in kmeans_trials())
+number_of_clusters = 3
+number_of_kmeans_trials = 10
+# stores numpy array of 'n' kmeans clustering trials for each scan for each sample
+    # for a given scan, array will be 'n'x'len(redStand_arr)'
+    # example navigation use: sample_dict['c_kmeans_trials'][scan_num]
+d_clustering.kmeans_trials(samples, data_key, channel_for_mask, 
+                           number_of_clusters, number_of_kmeans_trials)
 
-# =============================================================================
-# data_key = 'c_reduced_arrs'
-# channel_for_mask = 0 # column index of channel within stat array of choice (the key used in kmeans_trials())
-# number_of_clusters = 3
-# number_of_kmeans_trials = 5
-# # stores numpy array of 'n' kmeans clustering trials for each scan for each sample
-#     # for a given scan, array will be 'n'x'len(redStand_arr)'
-#     # example navigation use: sample_dict['c_kmeans_trials'][scan_num]
-# d_clustering.kmeans_trials(samples, data_key, channel_for_mask, 
-#                            number_of_clusters, number_of_kmeans_trials)
-# samp = NBL3_2
-# focus_cluster = 'high'
-# focus_channel = 0
-# scans = [3,4,5]
-# 
-# d_clustering.correlation_stats(samp, scans, data_key, 'c_kmeans_trials', 
-#                                number_of_clusters, focus_cluster, focus_channel)
-# 
-# # plot these matrices and begin writing
-# pearson_plot.plot_corrs(samp['c_kstats']['kcorr_avg'], samp['c_kstats']['kcorr_std'], ['XBIC'] + elements)
-# 
-# #pearson_plot.unmasked_mapcorr(samp, scans, data_key)
-# =============================================================================
+## extractign correlations from trial arrays ##
+samp = NBL3_2
+focus_cluster = 'low'
+focus_channel = 0
+scans = [0,1,2]
+
+d_clustering.correlation_stats(samp, scans, data_key, 'c_kmeans_trials', 
+                               number_of_clusters, focus_cluster, focus_channel)
+
+# plot these matrices and begin writing
+pearson_plot.plot_corrs(samp['c_kstats']['kcorr_avg'], samp['c_kstats']['kcorr_std'], ['XBIC'] + elements)
+
+#pearson_plot.unmasked_mapcorr(samp, scans, data_key)
