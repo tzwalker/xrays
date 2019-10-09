@@ -2,7 +2,7 @@ from sklearn.cluster import KMeans
 import samp_dict_grow
 import numpy as np
 
-def kmeans_trials(samps, model_key, mask_chan, clust_num, iter_num):
+def kmeans_trials(samps, model_key, mask_chan, clust_num, iter_num, new_data_key):
     for samp in samps:
         scans_models = []
         for i, scan_arr in enumerate(samp[model_key]):
@@ -18,7 +18,7 @@ def kmeans_trials(samps, model_key, mask_chan, clust_num, iter_num):
                 count = count+1
             models_labels = np.array(models_labels)
             scans_models.append(models_labels)
-        samp_dict_grow.build_dict(samp, model_key[0:2]+ 'kmeans_trials', scans_models)
+        samp_dict_grow.build_dict(samp, model_key[0:2]+ new_data_key, scans_models)
     return
 
 #do not average over the data between scans before performing correlation!
@@ -67,6 +67,7 @@ def correlation_stats(samp, scans, data_key, trials_key,
         kmeans_trials = samp[trials_key][scan]
         # average between correlations of all kmeans trials
         # std dev of correlations of all kmeans trials
+            # this fxn is a dobule inner for loop
         avg, std_dev = correlations_of_kmeans_trials(real_data, 
                                                      kmeans_trials, 
                                                      number_of_clusters, 
@@ -82,6 +83,7 @@ def correlation_stats(samp, scans, data_key, trials_key,
     trials_stdev_avg = np.mean(corrs_of_scans_kstd_dev_matrices, axis=0) # average over standard_deviation of all ktrials
     trials_stdev_stdev = np.std(corrs_of_scans_kstd_dev_matrices, axis=0) # std_dev from averaging over std_dev of all ktrials
     kstats_dict= dict()
+    samp_dict_grow.build_dict(kstats_dict, 'all_kcorrs', corrs_of_scans_kavg_matrices)
     samp_dict_grow.build_dict(kstats_dict, 'kcorr_avg', scan_avg)
     samp_dict_grow.build_dict(kstats_dict, 'kcorr_std', scan_stdev)
     samp_dict_grow.build_dict(kstats_dict, 'ktrials_stats', [trials_stdev_avg,trials_stdev_stdev])

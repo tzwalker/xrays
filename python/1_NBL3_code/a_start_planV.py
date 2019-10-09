@@ -91,16 +91,16 @@ e_statistics.standardize_channels(samples,
 data_key = 'c_reduced_arrs'
 channel_for_mask = 0 # column index of channel within stat array of choice (the key used in kmeans_trials())
 number_of_clusters = 3
-number_of_kmeans_trials = 10
+number_of_kmeans_trials = 5
 # stores numpy array of 'n' kmeans clustering trials for each scan for each sample
     # for a given scan, array will be 'n'x'len(redStand_arr)'
     # example navigation use: sample_dict['c_kmeans_trials'][scan_num]
 d_clustering.kmeans_trials(samples, data_key, channel_for_mask, 
-                           number_of_clusters, number_of_kmeans_trials)
+                           number_of_clusters, number_of_kmeans_trials, 'kmeans_trials')
 
 ## extractign correlations from trial arrays ##
-samp = NBL3_2
-focus_cluster = 'low'
+samp = NBL3_3
+focus_cluster = 'high'
 focus_channel = 0
 scans = [0,1,2]
 
