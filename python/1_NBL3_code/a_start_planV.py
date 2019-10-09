@@ -108,6 +108,6 @@ d_clustering.correlation_stats(samp, scans, data_key, 'c_kmeans_trials',
                                number_of_clusters, focus_cluster, focus_channel)
 
 # plot these matrices and begin writing
-pearson_plot.plot_corrs(samp['c_kstats']['samp_avg'], samp['c_kstats']['samp_std'], ['XBIC'] + elements)
+pearson_plot.plot_corrs(samp['avg_std_corr'][0], samp['avgt_std_corr'][1], ['XBIC'] + elements)
 
 #pearson_plot.unmasked_mapcorr(samp, scans, data_key)

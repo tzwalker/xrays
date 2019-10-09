@@ -55,32 +55,39 @@ def correlations_of_kmeans_trials(real_data, kmeans_trials, number_of_clusters,
     trials_avg = np.mean(trials_corrs, axis=0)
     # std dev of average correlation of all ktrials
     trials_std = np.std(trials_corrs, axis=0)
-    return trials_avg, trials_std
+    return trials_corrs, trials_avg, trials_std
 
 def correlation_stats(samp, scans, data_key, trials_key, 
                       number_of_clusters, focus_cluster_row, focus_channel_col):
-    scans_corrs = [] # avg correlations for each scan (after multiple clusterings)
-    scans_stds = [] # std_devs from averaging over ktrials for each scan
+    trials_corrs = [] # individual trial correlations
+    scans_corrs = [] # trials avg correlation for each scan
+    scans_stds = [] # std_dev of trials avg correlation for each scan
     for scan in scans:
         real_data = samp[data_key][scan]
         kmeans_trials = samp[trials_key][scan]
-        # average correlation of all ktrials ; # std dev of average correlation of all ktrials
-        trials_avg, trials_std = correlations_of_kmeans_trials(real_data, 
+        # correlations from each trial; # avg corr of all ktrials ; # std dev of avg corr of all ktrials
+        each_trial_corrs, trials_avg, trials_std = correlations_of_kmeans_trials(real_data, 
                                                      kmeans_trials, 
                                                      number_of_clusters, 
                                                      focus_cluster_row, 
                                                      focus_channel_col)
+        trials_corrs.append(each_trial_corrs);
         scans_corrs.append(trials_avg);  scans_stds.append(trials_std)
     scans_corrs = np.array(scans_corrs); scans_stds = np.array(scans_stds)
     # scan level stats
     trials_stdev_avg = np.mean(scans_stds, axis=0) # average st_dev of ktrials for each scan
     trials_stdev_stdev = np.std(scans_stds, axis=0) # std_dev of average st_dev of ktrials for each scan
+    # sample level stats
     sample_avg = np.mean(scans_corrs, axis=0) # average correlation for each sample
     sample_stdev = np.std(scans_corrs, axis=0) # std_dev of average correlation for each sample
-    kstats_dict= dict()
-    samp_dict_grow.build_dict(kstats_dict, 'trials_avgs', scans_corrs)
-    samp_dict_grow.build_dict(kstats_dict, 'samp_avg', sample_avg)
-    samp_dict_grow.build_dict(kstats_dict, 'samp_std', sample_stdev)
-    samp_dict_grow.build_dict(kstats_dict, 'ktrials_stats', [trials_stdev_avg,trials_stdev_stdev])
-    samp_dict_grow.build_dict(samp, data_key[0:2]+'kstats', kstats_dict)
+    # build subsidiary supplement info dictionary (lower-level)
+    supplement_dict = dict()
+    samp_dict_grow.build_dict(supplement_dict, 'ktrial_corrs', trials_corrs)
+    samp_dict_grow.build_dict(supplement_dict, 'ktrial_properties', [trials_stdev_avg, trials_stdev_stdev])
+    samp_dict_grow.build_dict(supplement_dict, 'scan_corrs', scans_corrs)
+    samp_dict_grow.build_dict(supplement_dict, 'scan_stds', scans_stds)
+    
+    #build sample dictionary (upper-level)
+    samp_dict_grow.build_dict(samp, 'avg_std_corr', [sample_avg, sample_stdev])
+    samp_dict_grow.build_dict(samp, data_key[0:2]+'kstats', supplement_dict)
     return
