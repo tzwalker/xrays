@@ -96,13 +96,5 @@ number_of_kmeans_trials = 5
     # example navigation use: sample_dict['c_kmeans_trials'][scan_num]
 d_clustering.kmeans_trials(samples, data_key, channel_for_mask, 
                            number_of_clusters, number_of_kmeans_trials, 'kmeans_trials')
-#%%
-## extracting correlations from trial arrays ##
-samp = NBL3_3
-focus_cluster = 'high'
-focus_channel = 0
-scans = [0,1,2]
 
-d_clustering.correlation_stats(samp, scans, data_key, 'c_kmeans_trials', 
-                               number_of_clusters, focus_cluster, focus_channel)
 
