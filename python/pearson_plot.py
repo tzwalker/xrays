@@ -44,3 +44,5 @@ def plot_corrs(corr1, corr2, cols):
                  cmap='Greys',annot=True, vmin=0, vmax=1)
     return
 
+def revised_plot_corrs():
+    return

@@ -17,7 +17,7 @@ sys.path.append(def_path)
 from b_import_h5 import get_add_h5s
 from b_scale_elect import get_add_electrical
 import c_rummage_thru_H5
-import d_clustering
+
 import e_statistics
 import pearson_plot
 
@@ -86,7 +86,8 @@ e_statistics.reduce_arrs_actual(samples, 'Cu', elements, 3,             # int = 
 e_statistics.standardize_channels(samples, 
                                   ['c_reduced_arrs', 'v_reduced_arrs'], 
                                   ['c_redStand_arrs', 'v_redStand_arrs'])
-
+#%%
+import d_clustering
 ## clustering trials ##
 data_key = 'c_reduced_arrs'
 channel_for_mask = 0 # column index of channel within stat array of choice (the key used in kmeans_trials())
@@ -97,7 +98,7 @@ number_of_kmeans_trials = 5
     # example navigation use: sample_dict['c_kmeans_trials'][scan_num]
 d_clustering.kmeans_trials(samples, data_key, channel_for_mask, 
                            number_of_clusters, number_of_kmeans_trials, 'kmeans_trials')
-
+#%%
 ## extractign correlations from trial arrays ##
 samp = NBL3_3
 focus_cluster = 'high'
@@ -106,8 +107,8 @@ scans = [0,1,2]
 
 d_clustering.correlation_stats(samp, scans, data_key, 'c_kmeans_trials', 
                                number_of_clusters, focus_cluster, focus_channel)
-
+#%%
 # plot these matrices and begin writing
-pearson_plot.plot_corrs(samp['avg_std_corr'][0], samp['avgt_std_corr'][1], ['XBIC'] + elements)
+pearson_plot.plot_corrs(samp['avg_std_corr'], ['XBIC'] + elements)
 
 #pearson_plot.unmasked_mapcorr(samp, scans, data_key)
