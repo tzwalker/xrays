@@ -94,12 +94,14 @@ def correlation_stats(samp, scans, data_key, trials_key,
     samp_dict_grow.build_dict(samp, 'avg_std_corr', [sample_avg, sample_stdev])
     samp_dict_grow.build_dict(samp, data_key[0:2]+'kstats', supplement_dict)
     return
-samp = NBL3_3
-focus_cluster = 'high'
-focus_channel = 0
-scans = [0,1,2]
-
-correlation_stats(samp, scans, data_key, 'c_kmeans_trials', 
-                               number_of_clusters, focus_cluster, focus_channel)
+# =============================================================================
+# samp = NBL3_3
+# focus_cluster = 'high'
+# focus_channel = 0
+# scans = [0,1,2]
+# 
+# correlation_stats(samp, scans, data_key, 'c_kmeans_trials', 
+#                                number_of_clusters, focus_cluster, focus_channel)
+# =============================================================================
 
 

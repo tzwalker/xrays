@@ -17,9 +17,7 @@ sys.path.append(def_path)
 from b_import_h5 import get_add_h5s
 from b_scale_elect import get_add_electrical
 import c_rummage_thru_H5
-
 import e_statistics
-import pearson_plot
 
 NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550,538,575], 'XBIV_scans': [419,420,421, 551], # good geom XBIC
           'beam_conv':      [2E5,2E5,2E5, 2E5,2E5,2E5], 
@@ -99,7 +97,7 @@ number_of_kmeans_trials = 5
 d_clustering.kmeans_trials(samples, data_key, channel_for_mask, 
                            number_of_clusters, number_of_kmeans_trials, 'kmeans_trials')
 #%%
-## extractign correlations from trial arrays ##
+## extracting correlations from trial arrays ##
 samp = NBL3_3
 focus_cluster = 'high'
 focus_channel = 0
@@ -107,8 +105,4 @@ scans = [0,1,2]
 
 d_clustering.correlation_stats(samp, scans, data_key, 'c_kmeans_trials', 
                                number_of_clusters, focus_cluster, focus_channel)
-#%%
-# plot these matrices and begin writing
-pearson_plot.plot_corrs(samp['avg_std_corr'], ['XBIC'] + elements)
 
-#pearson_plot.unmasked_mapcorr(samp, scans, data_key)

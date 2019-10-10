@@ -23,26 +23,29 @@ def unmasked_mapcorr(samp, scans, data_key):
     samp_dict_grow.build_dict(samp, 'nomask_std', scan_stdev)
     return
 
-def plot_corrs(corr1, corr2, cols):
-    # MAKE SURE THIS MATCHES NUMBER OF LOADED ELEMENTS; changes depending on how h5s were fit
-    df_top = pd.DataFrame(corr1, columns=cols, index=cols)
-    df_bot = pd.DataFrame(corr2, columns=cols, index=cols)
-    # plot
-    sns.set(style="white")
-    # generate a mask for the upper triangle
-    mask = np.zeros_like(df_top, dtype=np.bool)
-    mask[np.triu_indices_from(mask)] = True
-    # make cbar ticks
-    cbar_tick={'ticks': list(list(np.linspace(-1,1,5))), 'label': 'Pearson Correlation Coeff.'}
-    cbar_tick1={'ticks': list(list(np.linspace(-1,1,5))), 'label': 'Standard Error'}
-    fig, (ax0, ax1) = plt.subplots(2,1)
-    plt.tight_layout()
-    sns.heatmap(df_top, mask=mask, cbar_kws=cbar_tick, ax=ax0,
-                     cmap='coolwarm', annot=True, vmin=-1, vmax=1)
-    ax0.title.set_text('Average Linearity')
-    sns.heatmap(df_bot, mask=mask, cbar_kws=cbar_tick1, ax=ax1,
-                 cmap='Greys',annot=True, vmin=0, vmax=1)
+
+def get_corrmtx_plot(array, cols, f, axis):
+    df = pd.DataFrame(array, columns=cols, index=cols)
+    sns.set(style="white") # set style of seaborn objects
+    mask = np.zeros_like(df, dtype=np.bool) # make mask of symmetric portion
+    mask[np.triu_indices_from(mask)] = True # apply mask
+    sns.heatmap(df, mask=mask, cbar_kws=f['cbar_format'], ax=axis,
+                     cmap=f['color'], annot=True, vmin=f['v_range'][0], vmax=f['v_range'][1])
+    axis.title.set_text(f['plt_title'])
     return
 
-def revised_plot_corrs():
-    return
+corrcoeff_formatting = {'color': 'coolwarm', 
+                      'cbar_format': {'ticks': list(list(np.linspace(-1,1,5))), 
+                                      'label': 'Spearman Coefficient'},
+                      'plt_title': 'Average Monotonicity',
+                      'v_range': [-1,1]}
+stdev_formatting = {'color': 'Greys', 
+                      'cbar_format': {'ticks': list(list(np.linspace(-1,1,5))), 
+                                      'label': 'Standard Error'},
+                      'plt_title': 'Average Error',
+                      'v_range': [0,1]}
+
+fig, (ax0, ax1) = plt.subplots(2,1)
+plt.tight_layout()
+get_corrmtx_plot(NBL3_3['avg_std_corr'][0], ['XBIC'] + elements, corrcoeff_formatting, ax0)
+get_corrmtx_plot(NBL3_3['avg_std_corr'][1], ['XBIC'] + elements, stdev_formatting, ax1)
