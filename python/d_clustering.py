@@ -80,18 +80,25 @@ def correlation_stats(samp, scans, data_key, trials_key,
         pvals_stats = trials_list[2:4]; pvals_stats=np.array(pvals_stats)
         sCorrs.append(corrs_stats); sPvals.append(pvals_stats)
     sCorrs = np.array(sCorrs); sPvals = np.array(sPvals)
-    CORRS = np.mean(sCorrs[:,0,:,:]); PVALS = np.mean(sPvals[:,0,:,:]) # global average between scans
-    CORRS_std=np.std(sCorrs[:,0,:,:]); PVALS_std=np.std(sPvals[:,0,:,:]) # std dev of global average between scans
+    CORRS = np.mean(sCorrs[:,0,:,:], axis=0); PVALS = np.mean(sPvals[:,0,:,:], axis=0) # global average between scans
+    CORRS_std=np.std(sCorrs[:,0,:,:], axis=0); PVALS_std=np.std(sPvals[:,0,:,:], axis=0) # std dev of global average between scans
     # compress CORRS and CORRS_std into (2,5,5) array, save into samp dict --> not clear how to combine the two 5,5 avg and std arrays
+    global_stats = np.dstack((CORRS, CORRS_std, PVALS))
     print('dummy line')
     return
 
-samp = NBL3_3
-focus_cluster = 'high'
-focus_channel = 0
-scans = [0,1,2]
+def main():
+    samp = NBL3_3
+    focus_cluster = 'high'
+    focus_channel = 0
+    scans = [0,1,2]
+    
+    correlation_stats(samp, scans, data_key, 'c_kmeans_trials', 
+                                   number_of_clusters, focus_cluster, focus_channel)
+    return
 
-correlation_stats(samp, scans, data_key, 'c_kmeans_trials', 
-                               number_of_clusters, focus_cluster, focus_channel)
+if __name__ == '__main__':
+    main()
+
 
 
