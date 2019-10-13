@@ -2,7 +2,7 @@
 created: Fri Aug 16 14:49:13 2019
 author: Trumann
 '''
-import z_plot_supplement as PLT
+import plot_supplement as PLT
 
 samp = NBL3_3
 scan = 0

@@ -41,22 +41,18 @@ lay_thicks = [ [500E-7, 375E-7, 4E-4, 80E-7, 100E-7],
 #master_map_list = rummage_thru_H5.extract_maps(files, master_index_list)
 
 import numpy as np
-import stk_info
+import absorb_defs
 
 ### beam settings ###
 beam_theta = np.sin(90*np.pi/180)                                                     #angle between beam and sample normal
 detect_theta = np.sin(47*np.pi/180)                                                   #angle between detector and sample normal
 
-list_of_list_of_layer_dicts = stk_info.get_stack_info(STACKS, lay_densities, lay_thicks, energy)
+list_of_list_of_layer_dicts = absorb_defs.get_stack_info(STACKS, lay_densities, lay_thicks, energy)
 
 #ChOIs = channels_of_interest
 ChOIs = ['Cd_L', 'Te_L', 'Cu']
 
-import play_absorb
-
 #print(play_absorb.test_fxn(ChOIs, list_of_list_of_layer_dicts))
-
-
 
 #Zs = a_begin_absorb.channel_to_atomic_num(ChOIs)
 

@@ -4,50 +4,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.ticker as tkr
 
-#IMPORT AND SHIRNK DATAFRAME: imports and shrinks ASCII according to what elements are specified and the sector the scan was taken
-def shrinkASCII(large_ASCII_files):
-    smaller_dfs = []
-    for scan in large_ASCII_files:
-        if scan["sector"] == 2:
-            file_name = r'\combined_ASCII_2idd_0{n}.h5.csv'.format(n = scan['Scan #'])
-        else:
-            file_name = r'\combined_ASCII_26idbSOFT_0{n}.h5.csv'.format(n = scan['Scan #'])
-        csvIn = pd.read_csv(path_to_ASCIIs + file_name, skiprows = 1)
-        noColNameSpaces(csvIn)                                                                      #removes whitspaces from column headers, for easy access
-        shrink1 = csvIn[['x pixel no', 'y pixel no', 'ds_ic']]                                      #isolates x,y,and electrical columns
-        shrink2 = csvIn[scan["EOI"]]                                                                #isolates element of interest columns
-        shrink = pd.concat([shrink1, shrink2], axis=1, sort=False)                                  #combines these columns into one matrix while maintaining indices
-        smaller_dfs.append(shrink)                                                                  #add smaller matrices to list so they may be iterated over...
-    return smaller_dfs
+import old_ASCII_defs as old_ascii
 
-#supplement to "shrinkASCII()": MAPS exports ASCIIs with column header whitespace, this removes that whitespace
-def noColNameSpaces(pd_csv_df):
-    old_colnames = pd_csv_df.columns.values
-    new_colnames = []
-    for name in old_colnames:
-        new_colnames.append(name.strip())
-    pd_csv_df.rename(columns = {i:j for i,j in zip(old_colnames,new_colnames)}, inplace=True)
-    return pd_csv_df
+# this files takes asciis of the scans below and integrates them
 
-#CALCULATE XBIC
-def generate_scalar_factor(scan_list):
-    beamconversion_factor = 100000
-    for scan in scan_list:
-        correction = ((scan['stanford']*(1*10**-9)) / (beamconversion_factor * scan['lockin']))     #calculate scale factor for chosen scan
-        key = 'scale factor'                                                                        #define key for scan dictionary
-        scan.setdefault(key, correction)                                                            #add key and correction factor to scan
-        #print(correction)
-    return
-
-def collect_XBIC(dataframes_as_array):
-    for df, scan in zip(dataframes_as_array, scan_list):
-        df["ds_ic"] = df["ds_ic"].astype(float)                             #reformat column for floating arithmetic operations
-        scaled_dsic = df.loc[:,'ds_ic'] * scan['scale factor']              #apply amplifaction settings  (converts counts to amps)
-        df['ds_ic'] = scaled_dsic                                           #OVERWRITE ds_ic
-        df.rename(columns = {'ds_ic': 'XBIC'}, inplace = True)              #renames column from "ds_ic" to "XBIC" for convenience          
-    return 
-
-#CALCULATE CDTE RATIOS
 def CdTe_ratio(dataframes_as_arrays):
     for df in dataframes_as_arrays:
         Cd_and_Te = pd.concat([df["Cd_L"], df["Te_L"]], axis=1, sort=False)     #isolate and make Cd and Te matrix
@@ -55,33 +15,6 @@ def CdTe_ratio(dataframes_as_arrays):
         df["Cd_CdTe"] = (df["Cd_L"] / Cd_plus_Te) * 100                         #CREATE Cd/(Cd+Te) column
         df["Te_CdTe"] = (df["Te_L"] / Cd_plus_Te) * 100                         #CREATE Te/(Cd+Te) column
     return
-
-
-#PLOTTING FUNCTIONS
-def mapConvertAxes(dataframes, scans):
-    for df, scan in zip(dataframes, scans):
-        height_factor = scan['height'] / scan['y_points']                       #converts to (um/line) for y-direction
-        width_factor = scan['width'] / scan['x_points']                         #converts to (um/line) for x-direction
-        df['y pixel no']  = df['y pixel no'] * height_factor                    #OVERWRITE Y PIXEL COLUMN: ypixel-no/line *(um/line) = um (y)
-        df['x pixel no']  = df['x pixel no'] * width_factor                     #OVERWRITE X PIXEL COLUMN: xpixel-no/line *(um/line) = um (x)
-        #print(width_factor, scan["Name"])
-        #print(height_factor, scan["Name"])        
-    return
-
-# =============================================================================
-# class OOMFormatter(tkr.ScalarFormatter):
-#     def __init__(self, order=0, fformat="%1.1f", offset=True, mathText=True):
-#         self.oom = order
-#         self.fformat = fformat
-#         tkr.ScalarFormatter.__init__(self, useOffset=offset, useMathText=mathText)
-#     def _set_orderOfMagnitude(self, nothing):
-#         self.orderOfMagnitude = self.oom
-#     def _set_format(self, vmin, vmax):
-#         self.format = self.fformat
-#         if self._useMathText:
-#             self.format = '$%s$' % tkr._mathdefault(self.format)
-# =============================================================================
-
 
 def make_plots(dataframe_as_array, scan_list):
     for df, scan in zip(dataframe_as_array, scan_list):
@@ -143,6 +76,20 @@ def make_plots(dataframe_as_array, scan_list):
             #fig.savefig(r"C:\Users\Trumann\Desktop\Plot Directory\FS\20190326 FS Set 2_Se edge_normalized pic size\{s}, {e}.jpg".format(e = ele, s = scan["Name"]))
     return 
 
+	
+def MapsAsMatrices(scan_list, dataframe_as_array):
+    shaped_scan_dictionary = {}                                                         #initializes empty dictionary to contain each scans
+    for scan, df in zip(scan_list, dataframe_as_array):
+        plotList = []                                                                   #initializes list to contain the shaped channels of interest
+        df1 = df.pivot(index = 'y pixel no', columns = 'x pixel no', values = 'XBIC')   #shapes the XBIC channel
+        plotList.append(df1)                                                        
+        for ele in element_plot_list:
+            df2 = df.pivot(index = 'y pixel no', columns = 'x pixel no', values = ele)  #shapes the element channels
+            plotList.append(df2)
+        key = 'shaped_dfs of ' + str(scan["Scan #"])                                          #CREATE key for shaped_dictionary
+        shaped_scan_dictionary.setdefault(key, plotList) 
+    return shaped_scan_dictionary
+	
 path_to_ASCIIs = r'C:\Users\Trumann\Desktop\ASCII\FS'
 
 #enter energy in keV, stanford amplifcations in nanoamps, width/height in um, (x_y_points - 1), and elements of interest (EOI)
@@ -158,31 +105,17 @@ element_plot_labels =   ['ug/cm2']#, 'ug/cm2', 'ug/cm2','ug/cm2', 'ug/cm2', 'ug/
         
 scan_list = [scan2] #, scan3, scan4]
 
-imported_scan_dfs = shrinkASCII(scan_list)  #returns list containing dataframes of each scan
-generate_scalar_factor(scan_list)           #generates the scalar factor for each scan and adds it to the scan in scan_list dictionary
-collect_XBIC(imported_scan_dfs)             #converts from ds_ic to amperes for each scan (replaces ds_ic column)
+imported_scan_dfs = old_ascii.shrinkASCII(scan_list)  #returns list containing dataframes of each scan
+old_ascii.generate_scalar_factor(scan_list)           #generates the scalar factor for each scan and adds it to the scan in scan_list dictionary
+old_ascii.collect_XBIC(imported_scan_dfs)             #converts from ds_ic to amperes for each scan (replaces ds_ic column)
 
 #FOR PLOTTING
-mapConvertAxes(imported_scan_dfs, scan_list)
+old_ascii.mapConvertAxes(imported_scan_dfs, scan_list)
 CdTe_ratio(imported_scan_dfs)
 make_plots(imported_scan_dfs, scan_list)
 
 #FOR summed concntration of species as a function of depth
 #want to create sum of concentrations for a given "stack depth (x)" and plot vs. x
-
-def MapsAsMatrices(scan_list, dataframe_as_array):
-    shaped_scan_dictionary = {}                                                         #initializes empty dictionary to contain each scans
-    for scan, df in zip(scan_list, dataframe_as_array):
-        plotList = []                                                                   #initializes list to contain the shaped channels of interest
-        df1 = df.pivot(index = 'y pixel no', columns = 'x pixel no', values = 'XBIC')   #shapes the XBIC channel
-        plotList.append(df1)                                                        
-        for ele in element_plot_list:
-            df2 = df.pivot(index = 'y pixel no', columns = 'x pixel no', values = ele)  #shapes the element channels
-            plotList.append(df2)
-        key = 'shaped_dfs of ' + str(scan["Scan #"])                                          #CREATE key for shaped_dictionary
-        shaped_scan_dictionary.setdefault(key, plotList) 
-    return shaped_scan_dictionary
-
 imported_shaped_dict = MapsAsMatrices(scan_list, imported_scan_dfs)
 
 plot_titles2 =           ['XBIC', 'Cu', 'Cd', 'Te', 'Zn', 'As', 'Se', 'Sn']

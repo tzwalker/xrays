@@ -1,37 +1,9 @@
 import pandas as pd
+from defs_old_ASCII_defs import noColNameSpaces, import_line_ASCIIS
 #from scipy.stats import norm
 from astropy import modeling
 import matplotlib.pyplot as plt
 #from scipy.stats import norm
-
-path_to_ASCIIs = r'C:\Users\Trumann\Desktop\2019_03_2IDD_BIAS\output'
-
-scans = list(range(552,620,2))
-
-def noColNameSpaces(pd_csv_df):
-    old_colnames = pd_csv_df.columns.values
-    new_colnames = []
-    for name in old_colnames:
-        new_colnames.append(name.strip())
-    pd_csv_df.rename(columns = {i:j for i,j in zip(old_colnames,new_colnames)}, inplace=True)
-    return pd_csv_df
-
-def importASCIIS(scans):
-    line_scans = []
-    usecols = list(range(7))                                            #line plots exported only with ds_ic channel
-    for scan in scans:
-        s = str(scan)
-        filename = r'\line2idd_0'+s+'.h5.csv'
-        df = pd.read_csv(path_to_ASCIIs + filename, usecols=usecols)
-        noColNameSpaces(df)
-        line_scans.append(df)
-    return line_scans
-
-dfs = importASCIIS(scans)
-
-lockin = 2000
-stanford = 5000*10**-9
-scale_factor = stanford / (200000 * lockin)
 
 def collect_XBIC(dfs):
     for df in dfs:
@@ -39,8 +11,15 @@ def collect_XBIC(dfs):
         scaled_dsic = df.loc[:,'ds_ic[cts/s]'] * scale_factor              #apply amplifaction settings  (converts counts to amps)
         df['XBIC'] = scaled_dsic                                           #make new XBIC column          
     return 
-
-collect_XBIC(dfs)
+	
+def fitGaussians(dfs):
+    gauss_models = []
+    for df in dfs:
+        x = df['pixel_number']
+        y = df['XBIC']
+        fitted_model = fitter(model, x, y)
+        gauss_models.append(fitted_model)
+    return gauss_models
 
 # =============================================================================
 # def fit_normal(dfs):
@@ -54,17 +33,22 @@ collect_XBIC(dfs)
 # 
 # mus, st_devs = fit_normal(dfs)
 # =============================================================================
+
+
+path_to_ASCIIs = r'C:\Users\Trumann\Desktop\2019_03_2IDD_BIAS\output'
+
+scans = list(range(552,620,2))
+
+dfs = import_line_ASCIIS(scans)
+
+lockin = 2000
+stanford = 5000*10**-9
+scale_factor = stanford / (200000 * lockin)
+
+collect_XBIC(dfs)
+
 fitter = modeling.fitting.LevMarLSQFitter()     #isolate 
 model = modeling.models.Gaussian1D()   #choose gaussian 1D model from model library
-
-def fitGaussians(dfs):
-    gauss_models = []
-    for df in dfs:
-        x = df['pixel_number']
-        y = df['XBIC']
-        fitted_model = fitter(model, x, y)
-        gauss_models.append(fitted_model)
-    return gauss_models
 
 fits = fitGaussians(dfs)
 

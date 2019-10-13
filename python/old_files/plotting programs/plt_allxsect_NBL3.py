@@ -5,8 +5,6 @@ from skimage.color import rgb2gray
 import matplotlib.pyplot as plt
 from skimage.transform import rotate
 
-
-
 #'Name' strings must correspond to the file name of the screenshot of the cross-seciton
 #'Rot' determined from manually loading image file into python, then testing angles using rotate() from skimage
     #be sure to import all packages listed above if running soley from command line:

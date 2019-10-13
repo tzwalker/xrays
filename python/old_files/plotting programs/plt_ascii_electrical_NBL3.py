@@ -5,7 +5,7 @@ sys.path.append(def_path)
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import defs_old_ASCII_defs as old_ascii
+import old_ASCII_defs as old_ascii
 
 def plotXCE(scans, shaped_dataframes):
     for scan, df in zip(scans, shaped_dataframes):
