@@ -6,7 +6,7 @@ def str_list(L):
     L = [str(v) for v in L]
     return L
 
-def get_add_h5s(samps, path):
+def import_h5s(samps, path):
     for samp in samps:
         # make list containing full path+file for each scan
         # make list containing h5 files

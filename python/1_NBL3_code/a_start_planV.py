@@ -17,7 +17,7 @@ sys.path.append(def_path)
 from b_import_h5 import get_add_h5s
 from b_scale_elect import get_add_electrical
 import c_rummage_thru_H5
-import e_statistics
+#import e_statistics
 
 NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550,538,575], 'XBIV_scans': [419,420,421, 551], # good geom XBIC
           'beam_conv':      [2E5,2E5,2E5, 2E5,2E5,2E5], 
@@ -49,6 +49,7 @@ samples = [NBL3_2, NBL3_3, TS58A]
 get_add_h5s(samples, scan_path)
 get_add_electrical(samples, 2) # 1: us_ic, 2: ds_ic
 
+#%%
 # enter elements you want to work with
 # index of the element string dictates position future structures
 elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']        #remove zinc to allow beam to beam comparisons
