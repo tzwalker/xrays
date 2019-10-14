@@ -7,18 +7,6 @@ import h5py
 import numpy as np
 import samp_dict_grow
 
-def get_directory(machine_index):
-    if machine_index==0: #--> Dell work
-        scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
-        def_path = r'C:\Users\Trumann\Desktop\xrays\python'
-    elif machine_index==1: #-->ASUS windows
-        scan_path = r'C:\Users\triton\Desktop\NBL3_data'
-        def_path = r'C:\Users\triton\xrays\python'
-    elif machine_index==2: #-->ASUS ubuntu
-        scan_path = '/home/kineticcross/Desktop/data'
-        def_path = '/home/kineticcross/Desktop/xrays/python'
-    return scan_path, def_path
-
 # transform integers in scan list to strings
 def str_list(L):
     L = [str(v) for v in L]
@@ -88,6 +76,5 @@ def import_maps(samps, switch, scaler_ch, elements, flux_norm, fit_norm):
             all_scan_maps = np.insert(norm_ele_maps, 0, scan_elect, axis=0)
             scan_maps.append(all_scan_maps)
         samp_dict_grow.build_dict(samp, switch+'_maps', scan_maps)
-        print('dummy line')
     return 
 

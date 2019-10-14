@@ -7,7 +7,7 @@ from eleXRF_energy import get_Ele_XRF_Energy
 # values being compared in comments are for Cd_L
 def iio_vs_depth(ele, thickness_increments, dt):
     # percent incoming beam transmitted to CdTe layer
-    iio_Mo = np.exp(- MO['capXsect'] * MO['LDensity'] * MO['Thick'] / beam_geometry)
+    iio_Mo = np.exp(- xl.CS_Total_CP('Mo', beam_energy) * MO['LDensity'] * MO['Thick'] / beam_geometry)
     iio_ZnTe = np.exp(- ZNTE['capXsect'] * ZNTE['LDensity'] * ZNTE['Thick'] / beam_geometry)
     iio_in = iio_Mo * iio_ZnTe
     

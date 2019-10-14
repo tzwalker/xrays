@@ -1,16 +1,28 @@
 import sys
-import home_defs
+
+def get_directory(machine_index):
+    if machine_index==0: #--> Dell work
+        scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
+        def_path = r'C:\Users\Trumann\Desktop\xrays\python'
+    elif machine_index==1: #-->ASUS windows
+        scan_path = r'C:\Users\triton\Desktop\NBL3_data'
+        def_path = r'C:\Users\triton\xrays\python'
+    elif machine_index==2: #-->ASUS ubuntu
+        scan_path = '/home/kineticcross/Desktop/data'
+        def_path = '/home/kineticcross/Desktop/xrays/python'
+    return scan_path, def_path
 
 # 0=Dell work, 1=ASUS windows, 2=ASUS ubuntu
-scan_path, def_path = home_defs.get_directory(1)
+scan_path, def_path = get_directory(0)
 sys.path.append(def_path)
+import home_defs
 
 NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550,538,575], 'XBIV_scans': [419,420,421, 551], # good geom XBIC
           'beam_conv':      [2E5,2E5,2E5, 2E5,2E5,2E5], 
           'c_stanford':     [5000,5000,5000, 50000,50000,50000], 
           'c_lockin':       [500,500,500, 100,100,100], 
           'v_lockin':       [1E3,1E3,1E3, 10000],
-          'STACK': {'Mo':[10.2, 500E-7], 'ZnTe':[6.34, 375E-7], 'CdTe':[5.85, 8.52E-4], 'CdS':[4.82, 80E-7], 'SnO2':[100E-7]},
+          'STACK': {'Mo':[10.2, 500E-7], 'ZnTe':[6.34, 375E-7], 'Cu':[8.96, 2.5E-7], 'CdTe':[5.85, 8.52E-4], 'CdS':[4.82, 80E-7], 'SnO2':[100E-7]},
           # wrong key decriptor 2017_12_2IDD, but geometry same between the two beamtimes
           '2017_12_ele_iios': [0.275, 0.0446, 0.0550], 
           '2019_03_ele_iios': [0.104, 0.00131, 0.00418]}
@@ -18,7 +30,7 @@ NBL3_3 = {'Name': 'NBL3_3', 'XBIC_scans': [264,265,266, 475,491], 'XBIV_scans': 
           'beam_conv':      [2E5, 2E5, 2E5, 1E5,1E5], 
           'c_stanford':     [5000,5000,5000, 200,200], 
           'c_lockin':       [500,500,500, 20,20], 
-          'STACK': {'Mo':[10.2, 500E-7], 'ZnTe':[6.34, 375E-7], 'CdTe':[5.85, 10.85E-4], 'CdS':[4.82, 80E-7], 'SnO2':[100E-7]},
+          'STACK': {'Mo':[10.2, 500E-7], 'ZnTe':[6.34, 375E-7],'Cu':[8.96, 10E-7], 'CdTe':[5.85, 10.85E-4], 'CdS':[4.82, 80E-7], 'SnO2':[100E-7]},
           'v_lockin':       [1E4,1E4,1E4, 100000],
           '2017_12_ele_iios': [0.296, 0.0488, 0.0604],
           '2019_03_ele_iios': [0.114, 0.00144, 0.00459]}
@@ -27,7 +39,7 @@ TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439,427,404], 'XBIV_scans'
          'c_stanford':      [5000,5000,5000, 200,200,200], #(nA/V)
          'c_lockin':        [10000,10000,10000, 20,20,20], #(V/V)
          # first number=compound density g/cm3, second number=layer thickness (cm)
-         'STACK': {'Mo':[10.2, 500E-7], 'ZnTe':[6.34, 375E-7], 'CdTe':[5.35, 10.85E-4], 'CdS':[4.82, 80E-7], 'SnO2':[100E-7]},
+         'STACK': {'Mo':[10.2, 500E-7], 'ZnTe':[6.34, 375E-7], 'Cu':[8.96, 2.5E-7], 'CdTe':[5.85, 5.35E-4], 'CdS':[4.82, 80E-7], 'SnO2':[100E-7]},
          # lockin amp almost certainly 10000 for 2019_03_2idd scans 385-387;
          # cross-sample comparison can be made with 500, but this is not how science is done
          'v_lockin':        [1000,1000,1000, 100000],
@@ -44,42 +56,7 @@ elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']
     # XRF_quantification: fit or roi
 home_defs.import_maps(samples, 'XBIC', 2, elements, 'us_ic', 'fit')
 #%%
-import numpy as np
-import xraylib as xl
-beam_settings = {'beam_energy': 12.7, 'beam_theta': 90, 'detector_theta': 43}
 
-def get_prefactor(idx, compound):
-	if idx == 0:
-	    iio_in = 1
-	else:
-		before_layers = 
-	    iio_in = before_layers_iio...
-	return iio_in
-
-def calc_iio(sample, element, beam_settings):
-    # convert geometries to radians
-    beam_theta = np.sin(beam_settings['beam_theta']*np.pi/180) 
-    detector_theta = np.sin(beam_settings['detector_theta']*np.pi/180)
-    step_size = 1*10**-7  # 1nm steps
-    STACK = sample['STACK']
-    # there needs to be some mechanism that recognizes the layer we are on, what elements come before it, and what elements are inside of it...
-	# build previous layers object...?
-    for layer_idx, layer in enumerate(STACK.items()):
-        compound, layer_info = layer[0], layer[1]
-        # percent incoming beam transmitted to layer...
-        iio_in = get_prefactor(layer_idx, compound) #analogous to iio_in in iio_v_thick_sim.py/iio_vs_depth
-		#...
-        # percent outgoing transmitted by external layers
-        
-        # percent outgoing Cd_L transmitted by CdTe itself
-    return
-
-def get_iios(samples, elements, beam_settings):
-    elements = [element[0:2] for element in elements]
-    for sample in samples:
-        element_iios = [calc_iio(sample, element, beam_settings) for element in elements]
-        # remember to save the iios
-    return 
 
 ele_iios = get_iios(samples, elements, beam_settings)
 
