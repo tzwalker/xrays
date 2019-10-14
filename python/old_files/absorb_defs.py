@@ -8,6 +8,7 @@ def eStringToAtomicNum(e):
         ele_string = e[:-2] #--> remove '_L' or '_M' from channel string        
     s = xl.SymbolToAtomicNumber(ele_string) # --> convert string to atomic number for use in xraylib
     return s
+
 def channel_to_atomic_num(channels):
     Zs_for_xraylib = []
     for e in channels:
@@ -15,7 +16,6 @@ def channel_to_atomic_num(channels):
             ele_string = e
         else:
             ele_string = e[:-2] #--> remove '_L' or '_M' from channel string        
-    
         s = xl.SymbolToAtomicNumber(ele_string) # --> convert string to atomic number for use in xraylib
         Zs_for_xraylib.append(s)
     return Zs_for_xraylib
@@ -76,9 +76,6 @@ def is_ele_in_layer(stack_list, ele_nums):
         matched_elements = [e for e in layer_eles for Z in ele_nums if e == Z]
         es.append(matched_elements)
     return es
-
-import xraylib as xl
-
 
 def get_stack_info(STACKS, dens, T, E):
     stack_whole_info = []

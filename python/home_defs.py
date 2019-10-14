@@ -3,8 +3,40 @@
 created: Mon Jul 15 16:53:32 2019
 author: Trumann
 """
-import samp_dict_grow
+import h5py
 import numpy as np
+import samp_dict_grow
+
+def get_directory(machine_index):
+    if machine_index==0: #--> Dell work
+        scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
+        def_path = r'C:\Users\Trumann\Desktop\xrays\python'
+    elif machine_index==1: #-->ASUS windows
+        scan_path = r'C:\Users\triton\Desktop\NBL3_data'
+        def_path = r'C:\Users\triton\xrays\python'
+    elif machine_index==2: #-->ASUS ubuntu
+        scan_path = '/home/kineticcross/Desktop/data'
+        def_path = '/home/kineticcross/Desktop/xrays/python'
+    return scan_path, def_path
+
+# transform integers in scan list to strings
+def str_list(L):
+    L = [str(v) for v in L]
+    return L
+
+def import_h5s(samps, path):
+    for samp in samps:
+        # make list containing full path+file for each scan
+        # make list containing h5 files
+        # add h5s to sample dictionary
+        c_filenames = [(path + '/2idd_0' + scan + '.h5') for scan in str_list(samp['XBIC_scans'])]
+        xbic_h5s = [h5py.File(file, 'r') for file in c_filenames]
+        samp_dict_grow.build_dict(samp, 'XBIC_h5s', xbic_h5s)
+        
+        v_filenames = [(path + '/2idd_0' + scan + '.h5') for scan in str_list(samp['XBIV_scans'])]
+        xbiv_h5s = [h5py.File(file, 'r') for file in v_filenames]
+        samp_dict_grow.build_dict(samp, 'XBIV_h5s', xbiv_h5s)
+    return
 
 def get_ele_idxs(user_channels, channels_in_scan):
     decoded_chs = [chan.decode('utf-8') for chan in channels_in_scan]
@@ -26,7 +58,7 @@ def get_normalization_keys(fluxnorm, fitnorm):
         nav_keys = ['/MAPS/XRF_fits','/MAPS/XRF_fits_quant']
     return fluxnormindex, nav_keys
 
-def import_maps(samps, scaler_ch, elements, flux_norm, fit_norm):
+def import_maps(samps, switch, scaler_ch, elements, flux_norm, fit_norm):
     for samp in samps:
         ## electrical deal
         # find electrical scaler channel; store cts/s
@@ -53,42 +85,9 @@ def import_maps(samps, scaler_ch, elements, flux_norm, fit_norm):
                               scan_h5['/MAPS/scalers'][flxnorm_idx, :, :] / 
                               scan_h5[nav_keys[1]][flxnorm_idx, 0, ele_idx]) for ele_idx in scan_eles]
             norm_ele_maps = np.array(norm_ele_maps)
-            all_scan_maps = np.insert(norm_ele_maps, 0, scan_xbic, axis=0)
+            all_scan_maps = np.insert(norm_ele_maps, 0, scan_elect, axis=0)
             scan_maps.append(all_scan_maps)
-        samp_dict_grow.build_dict(samp, 'maps', scan_maps)
+        samp_dict_grow.build_dict(samp, switch+'_maps', scan_maps)
         print('dummy line')
     return 
 
-NBL3_2 = {'Name': 'NBL3-2', 'XBIC_scans': [422,423,424, 550,538,575], 'XBIV_scans': [419,420,421, 551], # good geom XBIC
-          'beam_conv':      [2E5,2E5,2E5, 2E5,2E5,2E5], 
-          'c_stanford':     [5000,5000,5000, 50000,50000,50000], 
-          'c_lockin':       [500,500,500, 100,100,100], 
-          'v_lockin':       [1E3,1E3,1E3, 10000],
-          # wrong key decriptor 2017_12_2IDD, but geometry same between the two beamtimes
-          '2017_12_ele_iios': [0.275, 0.0446, 0.0550], 
-          '2019_03_ele_iios': [0.104, 0.00131, 0.00418]}
-NBL3_3 = {'Name': 'NBL3_3', 'XBIC_scans': [264,265,266, 475,491], 'XBIV_scans': [261,262,263, 472], 
-          'beam_conv':      [2E5, 2E5, 2E5, 1E5,1E5], 
-          'c_stanford':     [5000,5000,5000, 200,200], 
-          'c_lockin':       [500,500,500, 20,20], 
-          'v_lockin':       [1E4,1E4,1E4, 100000],
-          '2017_12_ele_iios': [0.296, 0.0488, 0.0604],
-          '2019_03_ele_iios': [0.114, 0.00144, 0.00459]}
-TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439,427,404], 'XBIV_scans': [382,383,384, 440], #
-         'beam_conv':       [2E5, 2E5, 2E5, 1E5,1E5,1E5], 
-         'c_stanford':      [5000,5000,5000, 200,200,200], 
-         'c_lockin':        [10000,10000,10000, 20,20,20], 
-         # lockin amp almost certainly 10000 for 2019_03_2idd scans 385-387;
-         # cross-sample comparison can be made with 500, but this is not how science is done
-         'v_lockin':        [1000,1000,1000, 100000],
-         '2017_12_ele_iios': [0.381, 0.0682, 0.0867],
-         '2019_03_ele_iios': [0.162, 0.00209, 0.00669]}
-
-samples = [NBL3_2, NBL3_3, TS58A]
-
-from b_import_h5 import import_h5s
-scan_path = r'C:\Users\triton\Desktop\NBL3_data'
-import_h5s(samples, scan_path)
-elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']
-# 1: us_ic, 2: ds_ic ; 
-import_maps(samples, 2, elements, 'us_ic', 'fit') 
