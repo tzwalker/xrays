@@ -28,24 +28,33 @@ def eleXRF_energy(ele, energy):
     return F
 
 def get_upstram_iioOUT(layers_before, elements, beam_settings):
-    elements = [element[0:2] for element in elements]
+    det_theta = np.sin(beam_settings['detect_theta']*np.pi/180)
     XRF_lines = [eleXRF_energy(element, beam_settings['beam_energy']) for element in elements]
-    
-    print(XRF_lines)
+    for XRF_line in XRF_lines:
+        iios = []
+        for layer, layer_info in layers_before.items():
+            sigma = xl.CS_Total_CP(layer,XRF_line)
+            density = layer_info[0]; thickness = layer_info[1]
+            iio = np.exp(- sigma * density * thickness / det_theta)
+            iios.append(iio)
+        upstream_ele_iio = np.prod(iios)
+        print(upstream_ele_iio)
+    print()
     return
 
 def get_layer_iios(samples, elements, beam_settings, layer):
     for sample in samples:
         STACK = sample['STACK']
-        layer_info = STACK[layer]; layer_idx=list(STACK.keys()).index(layer)
+        layer_idx=list(STACK.keys()).index(layer)
         if layer_idx != 0:
+            # retrieve info of upstream layers
             layers_before = {k:v for idx,(k,v) in enumerate(STACK.items()) if idx < layer_idx}
             # percent incoming beam transmitted to layer
             upstream_attn_in = get_upstream_iioIN(layers_before, beam_settings)
             # percent outgoing XRF transmitted by upstram layers
             upstream_attn_out = get_upstram_iioOUT(layers_before, elements, beam_settings)
             #print(upstream_attn_out)
-        
+            layer_info = STACK[layer]
 # =============================================================================
 #         if layer in STACK.items():
 #             layer_idx = arg
@@ -54,7 +63,8 @@ def get_layer_iios(samples, elements, beam_settings, layer):
 # =============================================================================
     return 
 beam_settings = {'beam_energy': 8.99, 'beam_theta': 90, 'detect_theta':43}
-layer = 'CdTe'
+layer = 'CdTe'; upstream_elements = ['Mo', 'Zn', 'Te'] 
+# should the user include upstream layers for iio_out calc; can i estimate the placement/thickness of the Cu layer better using SIMS or xsect XRF...?
 layer_iios = get_layer_iios(samples, elements, beam_settings, layer)
 
 # =============================================================================
