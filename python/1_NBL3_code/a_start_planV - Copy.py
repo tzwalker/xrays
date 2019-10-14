@@ -47,19 +47,29 @@ home_defs.import_maps(samples, 'XBIC', 2, elements, 'us_ic', 'fit')
 import numpy as np
 import xraylib as xl
 beam_settings = {'beam_energy': 12.7, 'beam_theta': 90, 'detector_theta': 43}
+
+def get_prefactor(idx, compound):
+	if idx == 0:
+	    iio_in = 1
+	else:
+		before_layers = 
+	    iio_in = before_layers_iio...
+	return iio_in
+
 def calc_iio(sample, element, beam_settings):
     # convert geometries to radians
     beam_theta = np.sin(beam_settings['beam_theta']*np.pi/180) 
     detector_theta = np.sin(beam_settings['detector_theta']*np.pi/180)
     step_size = 1*10**-7  # 1nm steps
     STACK = sample['STACK']
-    # there needs to be some mechanism that recognizes what layer we are on, what elements come before it, and what elements are inside of it...
-    for layer in STACK.items():
+    # there needs to be some mechanism that recognizes the layer we are on, what elements come before it, and what elements are inside of it...
+	# build previous layers object...?
+    for layer_idx, layer in enumerate(STACK.items()):
         compound, layer_info = layer[0], layer[1]
         # percent incoming beam transmitted to layer...
-        
-        iio_layer = np.exp(- xl.CS_Total_CP(layer))
-        # percent outgoing Cd_L transmitted by external layers
+        iio_in = get_prefactor(layer_idx, compound) #analogous to iio_in in iio_v_thick_sim.py/iio_vs_depth
+		#...
+        # percent outgoing transmitted by external layers
         
         # percent outgoing Cd_L transmitted by CdTe itself
     return
