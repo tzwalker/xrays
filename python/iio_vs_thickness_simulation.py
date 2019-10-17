@@ -20,10 +20,10 @@ def iio_vs_depth(ele, thickness_increments, dt):
     iio_out = iio_in * c_1 * c_2                                #0.0151 vs. 0.0163 (matlab)
     
     # percent outgoing Cd_L transmitted by CdTe itself
-    mu_CdTe_ele = xl.CS_Total_CP('CdTe', ele_line)
+    #mu_CdTe_ele = xl.CS_Total_CP('CdTe', ele_line)
     iio_ele_cdte = np.zeros(len(thickness_increments))
-    cap_cross_section_of_one_sublayer_in = - CDTE['capXsect'] * CDTE['LDensity'] * dt / beam_geometry
-    cap_cross_section_of_one_sublayer_out_ele = - mu_CdTe_ele * CDTE['LDensity'] * dt / detect_geometry
+    cap_cross_section_of_one_sublayer_in = - xl.CS_Total_CP('CdTe', beam_energy) * CDTE['LDensity'] * dt / beam_geometry
+    cap_cross_section_of_one_sublayer_out_ele = - xl.CS_Total_CP('CdTe', ele_line) * CDTE['LDensity'] * dt / detect_geometry
     for index, step in enumerate(thickness_increments):
         beam_in = cap_cross_section_of_one_sublayer_in * step;
         beam_out = cap_cross_section_of_one_sublayer_out_ele * step
