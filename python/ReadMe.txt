@@ -1,73 +1,22 @@
-Home file info:
-	# WARNING: these programs are completely dependent on the dictionary keys 
-		# specified by the developer (that's me, Trumann)
-		# if you wish to change the dictionary keys, you will need to go within all definitions 
-			# and change them accordingly
-		# i hope to make roadmap of sorts for the key dependencies at some point so this can be done if desired, 
-			# but for now avoid changing the keys at all possible costs! it will result in complete program failure
-	20190805: think i've found a way around the key definitions being fixed... 
-	# ele_iios calculated using iio_vs_depth_simulation.py
-		# Cu, Cd_L, and Te_L iios of CdTe layer found by typing in each element,
-		# and taking the average of the resulting iio vs. depth array.
-		# attenuation by upstream Mo and ZnTe accounted
-	# should make a ReadMe for that file...
-	# if electrical settings are not provided, no XBIC maps will exist
-		# more specifically, the list e.g. 'c_stanford' will be length zero
-		# and iteration will be performed on this zero length list
-	
-
-Object lengths/sizes that should always match (in sample dictionaries):
+These programs extract desired data from fitted H5 files collected at Argonne National Lab. To facilitate navigation of the project, the following syntax will be used to reference functions within modules: "module.py/function_definition".
 
 
-
-
-
-Functions that change/build the sample dictionaries (syntax shown here follows "module.py/def"):
-	
-	b_h5_in_elect_scale.py/get_add_h5s(sample_dicts, scan_path)
-		# import the H5s
-		# makes a list, adds h5s to that list, attaches the complete list to sample dictionary
+home_abs.py/get_layer_iios(samples, elements, beam_settings, layer)
+# returns iio_matrix with samples as rows and user defined elements as columns
+	# cumulative_upstream_attenuation returns array of corresponding iios for element string included in "elements_for_iios",
+	# the user must decide which iios are relevant
+		# for example, if the stack is Mo/ZnTe/CdTe/CdS/SnO2, 
+		# the upstream atten. of Mo is meaningless as it is the top layer
+	# the program is not configured for calculating iios of only the top layer
+		# though it should easily be adaptable to perform such calculation
 		
-	b_h5_in_elect_scale.py/scan_scalers(sample_dicts)
-		# scales the electrical channel in for either XBIC or XBIV 
-			# as long as the scans are in the appropriate list, they will have the relevant scalers applied to them
-			# 'c_' prefix denotes the XBIC lockin or stanford settings
-			# 'v_' prefix denotes the XBIV locking settings
-			# presently the beam V2F values for the scans can be seen in 'beam_conv' dict key
-	b_h5_in_elect_scale.py/get_add_elect_channel(sample_dicts, int)	
-		# enter 1 for int if XBIC/V collected through us_ic
-		# enter 2 for int if XBIC/V collected through ds_ic
-		# WARNING: only useful if all scans being processed had
-			# the electrical signal collected through the same ion_chamber channel.
-			# If scans are from different beamtimes, and a different ion_chamber scaler
-				# was used at each beamtime, this function will not be suitable.
-			# If this is the case it is recommended to use different processing 'start' files for the different scans
-				# until the get_add_elect_channel() can be modified to accomodate such differences 
-		
-
-	
-	c_rummage_thru_h5.py/find_ele_h5s(sample_dicts, loaded_ele_channels)
-	# adds key value pairs into sample dictionaries
-    # example: 'XBIC_eles': [[17,25], [14, 24]]
-        # 17 and 14 are the index positions of the Cu_K map in two different scans
-        # 25 and 24 are the index positions of the Cd_L map in two different scans
-        # this needs to be done as differences in the data structures could exist from 
-            # not fitting all scans using the same config file or processing scans from different beamtimes
-	
-	
-	c_rummage_thru_h5.py/extract_norm_ele_maps(sample_dicts, normalization_channel, 'roi')
-		# adds element maps to sample dictionaries, 
-			# normalized to desired scaler and fitted data
-				# for 3rd argument:
-				# 'roi' --> default if fit works
-				# 'fit' --> use when MAPS creates problem with quantification
-				
-	c_rummage_thru_h5.py/apply_ele_iios(sample_dicts) 
-		# this function requires user input inside rummage_thru_h5.py:
-			# the iio keys in the sample dictionaries must match those
-				# those inside apply_ele_iios() definition
-		# the list structure depends on whether one or more than 
-			# one scan is being processed for a given beamtime
+	# an especially thin (<10nm) layer, can be excluded from stack entry the sample dicts
+		# as the thickness of the monolayer produces a very small difference in the avg iio results
+		# one may still calculate Cu attn. if no Cu layer is present
+Notes to self:
+# can one estimate the placement/thickness of the Cu layer better using SIMS or xsect XRF?
+# ran code for 75 degree geometry and got identical cumulative_upstream attenuation
+    # as those from Reabsorption Explore Plots slide 42 in consolidated notes1.ppt
 			
 	e_statistics.py
 	    # do i want to standardize before or after clustering...?

@@ -49,10 +49,11 @@ def get_upstream_iioOUT(layers_before, elements, beam_settings):
     upstream_iios_out = np.array(upstream_iios_out)
     return upstream_iios_out
 
-def get_avg_internal_attn(layer_info, elements, beam_settings, cum_upstrm_attn):
+def get_avg_internal_attn(layer_info, layer, elements, beam_settings, cum_upstrm_attn):
     beam_energy = beam_settings['beam_energy']
     beam_rad = np.sin(beam_settings['beam_theta']*np.pi/180)
     det_rad = np.sin(beam_settings['detect_theta']*np.pi/180)
+    
     density=layer_info[0];    thickness=layer_info[1];      step_size=1*10**-7  # 1nm steps
     
     XRF_lines = [eleXRF_energy(element, beam_energy) for element in elements]
@@ -86,34 +87,64 @@ def get_layer_iios(samples, elements, beam_settings, layer):
             upstream_attn_out = get_upstream_iioOUT(layers_before, elements, beam_settings)
             cumulative_upstream_attenuation = upstream_attn_in * upstream_attn_out
             # percent outgoing XRF transmitted
-            ele_avg_iios = get_avg_internal_attn(STACK[layer], elements, beam_settings, cumulative_upstream_attenuation)
-            # ... deciding how to best store the iios for convenient application to scans from different beam times
-            # samp_dict_grow.build_dict(sample, 'avg_iios', ele_avg_iios)
+            ele_avg_iios = get_avg_internal_attn(STACK[layer], layer, elements, 
+                                                 beam_settings, cumulative_upstream_attenuation)
+            iio_arrays.append(ele_avg_iios)
         else:
             print('you have chosen the first layer of the stack.')
             print('this program is not currently configured to calculate element iios for the first layer.')
             print('please either enter another layer, or look into modifying this function')
-    return # ...
+    iio_matrix = np.array(iio_arrays)
+    return iio_matrix
 
-beam_settings = {'beam_energy': 8.99, 'beam_theta':90, 'detect_theta':43}
-layer = 'CdTe'
-elements_for_iios = ['Cu', 'Cd', 'Te'] 
-get_layer_iios(samples, elements_for_iios, beam_settings, layer) # ... 
+
+def apply_iios(samples, new_dict_key, dict_key, scan_range, iio_matrix):    
+    for samp_idx, sample in enumerate(samples):
+        correct_scans = []
+        k = dict_key+'_maps'
+        for raw_maps_of_scan in sample[k][scan_range[0]:scan_range[1]]:
+            # these numbers are the index seen in elements + 1 
+            # & 'elements' and 'elements_for_iios' can only be only off from eachother...
+            ele_map_idxs = [1,2,3] # ... should user set this? 
+            correct_maps = raw_maps_of_scan.copy() # create copy to overwrite
+            for ele_idx in ele_map_idxs:
+                iio_idx = ele_idx - 1 # accounts for xbic map insertion
+                map_to_correct = raw_maps_of_scan[ele_idx,:,:] # extract map
+                correct_map = map_to_correct / iio_matrix[samp_idx, iio_idx] # correct map
+                correct_maps[ele_idx,:,:] = correct_map # store map
+            correct_scans.append(correct_maps)
+        samp_dict_grow(sample, new_dict_key, correct_scans)
+    return 
+
+if __name__ == "__main__":
+    apply_iios(samples, '2019_03_corr', 'XBIC', [0,3], iio_matrix) # ...
+# apply_iios can be run on different scans in the XBIC and XBIV lists
+    # corrected maps will be stored in a list identical to the raw map lists
+        # then stored in the sample dictionary with whatever dict_key is given 
+        # as second argument (e.g. '2019_03_corr') 
+    # future processing will have to recombine the fractured lists for each sample, i.e.
+        #apply_iios(samples, '2019_03_corr', 'XBIC', [0,3], 2019_03_matrix) --> NBL3_2['2019_03_corr']
+        #apply_iios(samples, '2017_12_corr', 'XBIC', [4,7], 2017_12_matrix) --> NBL3_2['2017_12_corr']
+        # ...
+        # an apply_iio line will have to exist for 
+            # both XBIC and XBIV sets of scasn run at different beamtimes
+    # combine fractured dict entries back together after correction:
+        # NBL3_2['2019_03_corr'] + NBL3_2['2017_12_corr']
+    # same will have to be done with XBIV scans
     
+# =============================================================================
+# elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']
+# elements_for_iios = ['Cu', 'Te', 'Cd']
+# elements = [element[0:2] for element in elements]
+# idxs_for_correction = np.array([imported_eles.index(e) for e in imported_eles for i in iio_eles if e==i])
+# matched_ele_index = [elements.index(e) for e in elements for i in elements_for_iios if e==i]
+# =============================================================================
 
-# if Cu is not considered mono-layer, simply exclude it from the stack entries in the sample dicts
-    # one may still calculate Cu attn. if no Cu layer is present
-    # the thickness of the monolayer produces a very small difference in the avg iio results
-        # and whether it is included or not is negligible
-# can one estimate the placement/thickness of the Cu layer better using SIMS or xsect XRF?
-# ran code for 75 degree geometry and got identical cumulative_upstream attenuation
-    # as those from Reabsorption Explore Plots slide 42 in consolidated notes1.ppt
-
-# stuff to include in ReadMe
-    # cumulative_upstream_attenuation returns array of corresponding iios for element string included in "elements_for_iios", 
-    # the user must decide which iios are relevant
-        # for example, if the stack is Mo/ZnTe/CdTe/CdS/SnO2, 
-        # the upstream atten. of Mo is meaningless as it is the top layer
-    # the program is not configured for calculating iios of only the top layer
-        # though it should easily be adaptable to perform such calculation
-    # 
+# =============================================================================
+# for sample, (sort_key, scans) in zip(samples, sorted_scans.items()):
+#     if sample['Name'] == sort_key:
+#         sample_scans = scans
+#         #scans_to_correct = [sample['XBIC_scans'].index(scan_num) for scan_num in scans if scan_num in scans]
+#         print(sample_scans)
+# =============================================================================
+            
