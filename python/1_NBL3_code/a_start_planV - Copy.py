@@ -18,27 +18,52 @@ sys.path.append(def_path)
 import home_defs
 
 # in sample['STACK']: first number=compound density (g/cm3), second number=layer thickness (cm)
-NBL3_2 = {'Name': 'NBL3_2', 'XBIC_scans': [422,423,424, 550,538,575], 'XBIV_scans': [419,420,421, 551],
-          'beam_conv':      [2E5,2E5,2E5, 2E5,2E5,2E5], 
-          'c_stanford':     [5000,5000,5000, 50000,50000,50000], 
-          'c_lockin':       [500,500,500, 100,100,100], 
-          'v_lockin':       [1E3,1E3,1E3, 10000],
+NBL3_2 = {'Name': 'NBL3_2', 
+          'XBIC_scans':     [422,423,424, 
+                             550,538,575], 
+          'beam_conv':      [2E5,2E5,2E5, 
+                             2E5,2E5,2E5], 
+          'c_stanford':     [5000,5000,5000, 
+                             50000,50000,50000], 
+          'c_lockin':       [500,500,500, 
+                             100,100,100], 
+          'XBIV_scans':     [419,420,421, 
+                             551],
+          'v_lockin':       [1E3,1E3,1E3, 
+                             10000],
           'STACK': {'Mo':[10.2, 500E-7], 'ZnTe':[6.34, 375E-7], 'Cu':[8.96, 2.5E-7], 'CdTe':[5.85, 8.52E-4], 'CdS':[4.82, 80E-7], 'SnO2':[100E-7]}
           }
-NBL3_3 = {'Name': 'NBL3_3', 'XBIC_scans': [264,265,266, 475,491], 'XBIV_scans': [261,262,263, 472], 
-          'beam_conv':      [2E5, 2E5, 2E5, 1E5,1E5], 
-          'c_stanford':     [5000,5000,5000, 200,200], 
-          'c_lockin':       [500,500,500, 20,20], 
-          'v_lockin':       [1E4,1E4,1E4, 100000],
+NBL3_3 = {'Name': 'NBL3_3', 
+          'XBIC_scans':     [264,265,266, 
+                             475,491],  
+          'beam_conv':      [2E5, 2E5, 2E5, 
+                             1E5,1E5], 
+          'c_stanford':     [5000,5000,5000, 
+                             200,200], 
+          'c_lockin':       [500,500,500, 
+                             20,20], 
+          
+          'XBIV_scans':     [261,262,263, 
+                             472],
+          'v_lockin':       [1E4,1E4,1E4, 
+                             100000],
           'STACK': {'Mo':[10.2, 500E-7], 'ZnTe':[6.34, 375E-7],'Cu':[8.96, 10E-7], 'CdTe':[5.85, 10.85E-4], 'CdS':[4.82, 80E-7], 'SnO2':[100E-7]}
           }
-TS58A = {'Name': 'TS58A', 'XBIC_scans': [385,386,387, 439,427,404], 'XBIV_scans': [382,383,384, 440], 
-         'beam_conv':       [2E5, 2E5, 2E5, 1E5,1E5,1E5], #(cts/s /V)
-         'c_stanford':      [5000,5000,5000, 200,200,200], #(nA/V)
-         'c_lockin':        [10000,10000,10000, 20,20,20], #(V/V)
-         # lockin amp almost certainly 10000 for 2019_03_2idd scans 385-387;
+TS58A = {'Name': 'TS58A', 
+         'XBIC_scans':     [385,386,387, 
+                            439,427,404],  
+         'beam_conv':       [2E5, 2E5, 2E5, 
+                             1E5,1E5,1E5], #(cts/s /V)
+         'c_stanford':      [5000,5000,5000, 
+                             200,200,200], #(nA/V)
+         'c_lockin':        [10000,10000,10000, 
+                             20,20,20], #(V/V)
+         # lockin scale almost certainly 10000 for 2019_03_2idd scans 385-387;
              # cross-sample comparison can be made with 500, but this is not how science is done
-         'v_lockin':        [1000,1000,1000, 100000],
+         'XBIV_scans':      [382,383,384, 
+                             440],
+         'v_lockin':        [1000,1000,1000, 
+                             10000],
          'STACK': {'Mo':[10.2, 500E-7], 'ZnTe':[6.34, 375E-7], 'Cu':[8.96, 2.5E-7], 'CdTe':[5.85, 5.35E-4], 'CdS':[4.82, 80E-7], 'SnO2':[100E-7]}
          }
 
@@ -51,16 +76,20 @@ elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']
     # XRF_normalization: us_ic or ds_ic
     # XRF_quantification: fit or roi
 home_defs.import_maps(samples, 'XBIC', 2, elements, 'us_ic', 'fit')
-
+home_defs.import_maps(samples, 'XBIV', 2, elements, 'us_ic', 'fit')
+#%%
 import home_abs
-beam_settings_2017_12_2IDD = {'beam_energy': 8.99, 'beam_theta':90, 'detect_theta':43}
-beam_settings_2019_03_2IDD = {'beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
+beam_settings0 = {'beamtime': '2017_12','beam_energy': 8.99, 'beam_theta':90, 'detect_theta':43}
+#beam_settings1 = {'beamtime': '2019_03','beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
 layer = 'CdTe'
 elements_for_iios = ['Cu', 'Cd', 'Te'] # enter in same order as seen in 'elements'
 
-iios_2017_12_2IDD = home_abs.get_layer_iios(samples, elements_for_iios, beam_settings_2017_12_2IDD, layer)
-iio_matrix = home_abs.get_layer_iios(samples, elements_for_iios, beam_settings_2019_03_2IDD, layer)
-
+iio_matrix_2017_12 = home_abs.get_layer_iios(samples, elements_for_iios, beam_settings_2017_12_2IDD, layer)
+iio_matrix_2019_03 = home_abs.get_layer_iios(samples, elements_for_iios, beam_settings_2019_03_2IDD, layer)
+#%%
+ele_map_idxs = [1,2,3] ; iio_idxs = [0,1,2] # have user set these 
+home_abs.apply_iios(samples, '2019_03_corr', 'XBIC', [0,3], 
+                    iio_matrix_2019_03, ele_map_idxs, iio_idxs)
 # ...
 
 #%%
