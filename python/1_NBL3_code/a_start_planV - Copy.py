@@ -118,9 +118,6 @@ print(samples[0].keys())
 #%%
 import e_statistics
 
-# note if "IndexError: out of range" is thrown, 
-    # make sure length of all the electrical setting dictionary entries match
-    # the length of the scans
 e_statistics.make_stat_arrays(samples, 
                               ['elXBIC', 'elXBIV'],                     # reference data
                               ['c_stat_arrs', 'v_stat_arrs'])           # new data
