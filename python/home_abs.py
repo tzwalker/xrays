@@ -97,85 +97,31 @@ def get_layer_iios(samples, elements, beam_settings, layer):
             print('please either enter another layer, or look into modifying this function')
     return 
 
-def apply_iios(samples, electrical_key, scan_ranges, iio_arr_key, ele_map_idxs, ele_iio_idxs):    
-    for sample, scan_range in zip(samples, scan_ranges):
+def apply_iios(samples, electrical_key, sample_scan_idxs, iio_arr_key, ele_map_idxs, ele_iio_idxs):    
+    for sample, scan_idxs in zip(samples, sample_scan_idxs):
         correct_scans = []
         iio_arr = sample[iio_arr_key]
-        # if only one scan is imported
-        if len(scan_range) == 1:
-            scan_raw_maps = sample[electrical_key+'_maps'][scan_range[0]]
+        for scan_idx in scan_idxs:
+            scan_raw_maps = sample[electrical_key+'_maps'][scan_idx]
             correct_maps = scan_raw_maps.copy() # create copy to overwrite
             for ele_idx, iio_idx in zip(ele_map_idxs, ele_iio_idxs):
                 map_to_correct = scan_raw_maps[ele_idx,:,:] # extract map
                 correct_map = map_to_correct / iio_arr[iio_idx] # correct map
                 correct_maps[ele_idx,:,:] = correct_map # store map
             correct_scans.append(correct_maps)
-            samp_dict_grow.build_dict(sample, '{e_key}{dat_key}_corr'.format(e_key=electrical_key, dat_key=iio_arr_key[0:8]), correct_scans)
-        else:
-            scans = sample[electrical_key+'_maps'][scan_range[0]:scan_range[1]]
-            for scan_raw_maps in scans:
-                # to apply to correct map
-                correct_maps = scan_raw_maps.copy() # create copy to overwrite
-                for ele_idx, iio_idx in zip(ele_map_idxs, ele_iio_idxs):
-                    map_to_correct = scan_raw_maps[ele_idx,:,:] # extract map
-                    correct_map = map_to_correct / iio_arr[iio_idx] # correct map
-                    correct_maps[ele_idx,:,:] = correct_map # store map
-                correct_scans.append(correct_maps)
-            samp_dict_grow.build_dict(
-                    sample, 
-                    '{e_key}{dat_key}_corr'.format(e_key=electrical_key, dat_key=iio_arr_key[0:8]), 
-                    correct_scans)
+        samp_dict_grow.build_dict(
+                sample, 
+                '{e_key}{date_key}corr'.format(e_key=electrical_key, date_key=iio_arr_key[0:8]), 
+                correct_scans)
     return 
 
-if __name__ == "__main__":
-    beam_settings0 = {'beamtime': '2017_12','beam_energy': 8.99, 'beam_theta':90, 'detect_theta':43}
-    beam_settings1 = {'beamtime': '2019_03','beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
-    layer = 'CdTe'
-    elements_for_iios = ['Cu', 'Cd', 'Te'] # enter in same order as seen in 'elements'
-    get_layer_iios(samples, elements_for_iios, beam_settings0, layer)
-    get_layer_iios(samples, elements_for_iios, beam_settings1, layer)
-    ele_map_idxs = [1,2,3] ; ele_iio_idxs = [0,1,2] # have user set these 
-    
-    cv_ranges=[[0,3], [0,3], [0,3]] # to avoid having to enter same amount of scans in each dictionary
-    apply_iios(samples, 'XBIC', cv_ranges, '2019_03_iios', ele_map_idxs, ele_iio_idxs) 
-    apply_iios(samples, 'XBIV', cv_ranges, '2019_03_iios', ele_map_idxs, ele_iio_idxs) 
-    
-    c_ranges=[[4,6], [4,5], [4,6]]
-    apply_iios(samples, 'XBIC', c_ranges, '2017_12_iios', ele_map_idxs, ele_iio_idxs)
-    
-    v_ranges=[[3], [3], [3]]
-    apply_iios(samples, 'XBIV', v_ranges, '2017_12_iios', ele_map_idxs, ele_iio_idxs)
-    
-    # combine the XBIC and XBIV maps: NBL3_2['XBIC2019_03_corr'] + NBL3_2['XBIC2017_12_corr']
-        # after this operation, a list with corrected maps will mirror that of the original scan list
-# apply_iios can be run on different scans in the XBIC and XBIV lists
-    # corrected maps will be stored in a list identical to the raw map lists
-        # then stored in the sample dictionary with whatever dict_key is given 
-        # as second argument (e.g. '2019_03_corr') 
-    # future processing will have to recombine the fractured lists for each sample, i.e.
-        #apply_iios(samples, '2019_03_corr', 'XBIC', [0,3], 2019_03_matrix) --> NBL3_2['XBIc2019_03_corr']
-        #apply_iios(samples, '2019_03_corr', 'XBIV', [0,3], 2019_03_matrix) --> NBL3_2['XBIV2019_03_corr']
-        #apply_iios(samples, '2017_12_corr', 'XBIC', [4,7], 2017_12_matrix) --> NBL3_2['XBIC2017_12_corr']
-        #apply_iios(samples, '2017_12_corr', 'XBIV', [4,7], 2017_12_matrix) --> NBL3_2['XBIv2017_12_corr']
-        # an apply_iio line will have to exist for 
-            # both XBIC and XBIV sets of scasn run at different beamtimes
-    # combine fractured dict entries back together after correction:
-        # NBL3_2['2019_03_corr'] + NBL3_2['2017_12_corr']
-    # same will have to be done with XBIV scans
-    
-# =============================================================================
-# elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']
-# elements_for_iios = ['Cu', 'Te', 'Cd']
-# elements = [element[0:2] for element in elements]
-# idxs_for_correction = np.array([imported_eles.index(e) for e in imported_eles for i in iio_eles if e==i])
-# matched_ele_index = [elements.index(e) for e in elements for i in elements_for_iios if e==i]
-# =============================================================================
+def join_corrected_beamtimes(samples, c_keys, v_keys):
+    for sample in samples:
+        all_XBIC_corr = sample[c_keys[0]] + sample[c_keys[1]]
+        all_XBIV_corr = sample[v_keys[0]] + sample[v_keys[1]]
+        samp_dict_grow.build_dict(sample, 'XBIC_corr', all_XBIC_corr)
+        samp_dict_grow.build_dict(sample, 'XBIV_corr', all_XBIV_corr)
+    return
 
-# =============================================================================
-# for sample, (sort_key, scans) in zip(samples, sorted_scans.items()):
-#     if sample['Name'] == sort_key:
-#         sample_scans = scans
-#         #scans_to_correct = [sample['XBIC_scans'].index(scan_num) for scan_num in scans if scan_num in scans]
-#         print(sample_scans)
-# =============================================================================
-            
+if '__main__' == __name__:
+    print('success')

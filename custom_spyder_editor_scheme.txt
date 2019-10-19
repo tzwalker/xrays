@@ -35,7 +35,6 @@ occurrence: 		#aaff7f
 matched paren: 		#55ff7f
 unmatched paren: 	#ff557f
 link: 				#0000ff
-background: 		#000000
 
 background: 		#ffffff
 side areas: 		#efefef
