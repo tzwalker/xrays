@@ -18,16 +18,16 @@ sys.path.append(def_path)
 import home_defs
 
 NBL3_2 = {'Name': 'NBL3_2', 
-          'XBIC_scans':     [422,423,424, 
-                             550,538,575], 
+          'XBIC_scans':     [422,423,424,  # 2019_03
+                             550,538,575], # 2019_12
           'beam_conv':      [2E5,2E5,2E5, 
                              2E5,2E5,2E5], 
           'c_stanford':     [5000,5000,5000, 
                              50000,50000,50000], 
           'c_lockin':       [500,500,500, 
                              100,100,100], 
-          'XBIV_scans':     [419,420,421, 
-                             551],
+          'XBIV_scans':     [419,420,421,   # 2019_03
+                             551],          # 2017_12 
           'v_lockin':       [1E3,1E3,1E3, 
                              10000],
          # in 'STACK': 
@@ -104,13 +104,20 @@ sample_scan_idxs=[[3], [3], [3]]
 home_abs.apply_iios(samples, 'XBIV', sample_scan_idxs, '2017_12_iios', ele_map_idxs, ele_iio_idxs) #--> correct voltage scans from 2017_12
 
 # see dictionary growth; clean workspace
-print(samples[0].keys()); del(sample_scan_idxs, ele_map_idxs, ele_iio_idxs)
-#%%
+del(sample_scan_idxs, ele_map_idxs, ele_iio_idxs)
+
 # combine corrected maps
 home_abs.join_corrected_beamtimes(samples, ['XBIC2019_03_corr', 'XBIC2017_12_corr'], ['XBIV2019_03_corr', 'XBIV2017_12_corr'])
+#print(samples[0].keys())
+
+# clean dictionaries (optional)
+home_abs.clean_dictionaries(samples, '2019_03_corr')
+home_abs.clean_dictionaries(samples, '2017_12_corr')
 print(samples[0].keys())
 
 #%%
+import e_statistics
+
 # note if "IndexError: out of range" is thrown, 
     # make sure length of all the electrical setting dictionary entries match
     # the length of the scans

@@ -123,5 +123,12 @@ def join_corrected_beamtimes(samples, c_keys, v_keys):
         samp_dict_grow.build_dict(sample, 'XBIV_corr', all_XBIV_corr)
     return
 
+def clean_dictionaries(samples, del_key):
+    for sample in samples:
+        del_keys = [key for key in sample.keys() if del_key in key]
+        for key in del_keys:
+            del(sample[key])
+    return
+
 if '__main__' == __name__:
     print('success')
