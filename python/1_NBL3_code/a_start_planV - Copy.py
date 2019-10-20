@@ -13,7 +13,7 @@ def get_directory(machine_index):
     return scan_path, def_path
 
 # 0=Dell work, 1=ASUS windows, 2=ASUS ubuntu
-scan_path, def_path = get_directory(2)
+scan_path, def_path = get_directory(1)
 sys.path.append(def_path)
 import home_defs
 
@@ -77,7 +77,7 @@ elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']
     # XRF_quantification: fit or roi
 home_defs.import_maps(samples, 'XBIC', 2, elements, 'us_ic', 'fit')
 home_defs.import_maps(samples, 'XBIV', 2, elements, 'us_ic', 'fit')
-
+#%%
 import home_abs
 iio_layer = 'CdTe'
 iio_elements = ['Cu', 'Cd', 'Te'] # enter in same order as seen in 'elements'
@@ -116,14 +116,16 @@ home_abs.clean_dictionaries(samples, '2017_12_corr')
 print(samples[0].keys())
 
 #%%
-import e_statistics
+home_defs.make_mol_maps(samples, elements, 'XBIC_corr', 'XBIC_mol')
+home_defs.make_mol_maps(samples, elements, 'XBIV_corr', 'XBIV_mol')
 
-e_statistics.make_stat_arrays(samples, 
-                              ['elXBIC', 'elXBIV'],                     # reference data
-                              ['c_stat_arrs', 'v_stat_arrs'])           # new data
-e_statistics.standardize_channels(samples, 
-                                  ['c_stat_arrs', 'v_stat_arrs'],       # reference data
-                                  ['c_stand_arrs', 'v_stand_arrs'])     # new data
+#%%
+import home_stats
+
+home_stats.stat_arrs(samples, 'XBIC_corr', 'XBIC_stat')
+home_stats.stat_arrs(samples, 'XBIV_corr', 'XBIV_stat')
+
+
 
 
 ## preparation for clustering ###

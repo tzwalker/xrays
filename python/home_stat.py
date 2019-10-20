@@ -1,30 +1,4 @@
-import numpy as np
-import sklearn.preprocessing as skpp
-import samp_dict_grow
 
-# the dimensions of 3d axis can be combine with reshape
-y=z.T.reshape(np.shape(z)[1]*np.shape(z)[2], np.shape(z)[0]) #--> stacked maps to psuedo-ASCII column format
-def make_stat_arrays(samples, dict_data, new_keys):
-    for sample in samples:
-        c_stats_of_scans = []
-        for scan_i, eles in enumerate(samp[dict_data[0]]):     
-            stat_XBIC_map = samp['XBIC_maps'][scan_i][:,:-2]                # get XBIC and chop off nans
-            held_maps = [ele[:,:-2] for ele in eles]                        # get element maps and chop off nans
-            held_maps.insert(0, stat_XBIC_map)                              # combine maps into list with XBIC @ index 0
-            stats_of_scan = [m.reshape(-1,1) for m in held_maps]            # array each map
-            combine_stats_of_scan = np.concatenate(stats_of_scan, axis = 1) # combine the arrays
-            c_stats_of_scans.append(combine_stats_of_scan)                  # add these arrays to sample dictionary
-        samp_dict_grow.build_dict(samp, new_keys[0], c_stats_of_scans)  # add comb arrs to dict
-        v_stats_of_scans = []
-        for scan_i, eles in enumerate(samp[dict_data[1]]):     # samp['elXBIC_corr'][scan][element]
-            stat_XBIC_map = samp['XBIV_maps'][scan_i][:,:-2]                # get XBIV and chop off nans
-            held_maps = [ele[:,:-2] for ele in eles]                        # get element maps and chop off nans
-            held_maps.insert(0, stat_XBIC_map)                              # combine maps into list with XBIC @ index 0
-            stats_of_scan = [m.reshape(-1,1) for m in held_maps]            # array each map
-            combine_stats_of_scan = np.concatenate(stats_of_scan, axis = 1) # combine the arrays
-            v_stats_of_scans.append(combine_stats_of_scan)                  # add these arrays to sample dictionary
-        samp_dict_grow.build_dict(samp, new_keys[1], v_stats_of_scans)  # add comb arrs to dict
-    return
 
 def standardize_channels(samps, dict_data, new_keys):
     scaler = skpp.StandardScaler()
@@ -74,7 +48,39 @@ def reduce_arrs_actual(samps, bad_XRF, loaded_XRF, sigma_control, original_data,
             v_reduced_arrs.append(reduced_data_array) # store data
         samp_dict_grow.build_dict(samp, new_data[1], v_reduced_arrs)
     return
+#%%
+import numpy as np
+import sklearn.preprocessing as skpp
+import samp_dict_grow
 
+# the dimensions of 3d axis can be combine with reshape
+#y=z.T.reshape(np.shape(z)[1]*np.shape(z)[2], np.shape(z)[0]) #--> stacked maps to psuedo-ASCII column format
 
+def stat_arrs(samples, dict_data, new_dict_data):
+    for sample in samples:
+        stat_scans = []
+        for maps in sample[dict_data]:
+            no_nan_maps = maps[:,:,:-2]
+            z3Dto2D_rows = np.shape(no_nan_maps)[1]*np.shape(no_nan_maps)[2]
+            z3Dto2D_cols = np.shape(no_nan_maps)[0]
+            stat_arrs = no_nan_maps.T.reshape(z3Dto2D_rows, z3Dto2D_cols)
+        stat_scans.append(stat_arrs)
+    samp_dict_grow.build_dict(sample, new_dict_data, stat_scans)
+    return
+
+def stand_arrs(samples, dict_data, new_dict_data):
+    scaler = skpp.StandardScaler()
+    for sample in samples:
+        stand_scans = []
+        for stat_arrs in sample[dict_data]:
+            stand_arrs_sep = [scaler.fit_transform(column.reshape(-1,1)) for column in stat_arrs.T] # is this necessary...? can i apply standardization on whole matrix...
+            stand_arrs_comb = np.concatenate(stand_arrs_sep, axis = 1)
+            stand_scans.append(stand_arrs_comb)
+        samp_dict_grow.build_dict(sample, new_dict_data, stand_scans)
+    return
+
+if '__main__' == __name__:
+    stand_arrs(samples, 'XBIC_stat', 'XBIC_stand')
+    print('success')
 
 
