@@ -22,14 +22,14 @@ NBL3_2 = {'Name': 'NBL3_2',
                              550,538,575], # 2019_12
           'beam_conv':      [2E5,2E5,2E5, 
                              2E5,2E5,2E5], 
-          'c_stanford':     [5000,5000,5000, 
-                             50000,50000,50000], 
+          'c_stanford':     [5E3,5E3,5E3, 
+                             5E4,5E4,5E4], 
           'c_lockin':       [500,500,500, 
                              100,100,100], 
           'XBIV_scans':     [419,420,421,   # 2019_03
                              551],          # 2017_12 
           'v_lockin':       [1E3,1E3,1E3, 
-                             10000],
+                             1E4],
          # in 'STACK': 
              # first number=compound density (g/cm3), 
              # second number=layer thickness (cm)
@@ -115,29 +115,26 @@ home_abs.join_corrected_beamtimes(samples, ['XBIV2019_03_corr', 'XBIV2017_12_cor
 # clean dictionaries (optional)
 home_abs.clean_dictionaries(samples, '2019_03_corr')
 home_abs.clean_dictionaries(samples, '2017_12_corr')
-print(samples[0].keys())
 
-#%%
 home_defs.make_mol_maps(samples, elements, 'XBIC_corr', 'XBIC_mol')
 home_defs.make_mol_maps(samples, elements, 'XBIV_corr', 'XBIV_mol')
 print(samples[0].keys())
 
-#%%
 import home_stat
-
 home_stat.stat_arrs(samples, 'XBIC_corr', 'XBIC_stat')
 home_stat.stat_arrs(samples, 'XBIV_corr', 'XBIV_stat')
 print(samples[0].keys())
-#%%
+
 home_stat.stand_arrs(samples, 'XBIC_stat', 'XBIC_stand')
 home_stat.stand_arrs(samples, 'XBIV_stat', 'XBIV_stand')
 print(samples[0].keys())
 
 #%%
-home_stat.remove_outliers(samples, 'XBIC_stat', 1, sigma=3, 'XBIC_slim')
+bad_channel_idx = 1
+sigma = 3
+home_stat.remove_outliers(samples, 'XBIC_stat', bad_channel_idx, sigma, 'XBIC_slim')
 print(samples[0].keys())
 
-#%%
 import d_clustering
 ## clustering trials ##
 data_key = 'XBIC_slim'

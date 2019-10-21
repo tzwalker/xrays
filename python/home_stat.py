@@ -1,36 +1,3 @@
-
-
-def get_channel_column_index(bad_XRF, loaded_XRF):
-    for i, e in enumerate(loaded_XRF):
-        if e[0:2] == bad_XRF:
-            index = i
-    return index
-
-def reduce_arrs_actual(samps, bad_XRF, loaded_XRF, sigma_control, original_data, new_data):
-    for samp in samps:
-        c_reduced_arrs = []
-        for full_data_array in samp[original_data[0]]:
-            bad_channel_column_index = get_channel_column_index(bad_XRF, loaded_XRF) # find bad column
-            bad_channel_column_index = bad_channel_column_index + 1 # add 1; xbic in position 0
-            bad_chan_column = full_data_array[:, bad_channel_column_index] # isolate bad XRF column
-            lwr_lim = np.mean(bad_chan_column) - sigma_control * np.std(bad_chan_column) # determine bounds
-            upr_lim = np.mean(bad_chan_column) + sigma_control * np.std(bad_chan_column)
-            reduced_data_array = full_data_array[good_indices] # take good indices from whole array
-            c_reduced_arrs.append(reduced_data_array) # store data
-        samp_dict_grow.build_dict(samp, new_data[0], c_reduced_arrs)
-        v_reduced_arrs = []
-        for full_data_array in samp[original_data[1]]:
-            bad_channel_column_index = get_channel_column_index(bad_XRF, loaded_XRF) # find bad column
-            bad_channel_column_index = bad_channel_column_index + 1 # add 1; xbic in position 0
-            bad_chan_column = full_data_array[:, bad_channel_column_index] # isolate bad XRF column
-            lwr_lim = np.mean(bad_chan_column) - sigma_control * np.std(bad_chan_column) # determine bounds
-            upr_lim = np.mean(bad_chan_column) + sigma_control * np.std(bad_chan_column)
-            good_indices = np.where(np.logical_and(bad_chan_column >= lwr_lim , bad_chan_column <= upr_lim)) # get indices within these bounds
-            reduced_data_array = full_data_array[good_indices] # take good indices from whole array
-            v_reduced_arrs.append(reduced_data_array) # store data
-        samp_dict_grow.build_dict(samp, new_data[1], v_reduced_arrs)
-    return
-#%%
 import numpy as np
 import sklearn.preprocessing as skpp
 import samp_dict_grow
@@ -81,8 +48,6 @@ def remove_outliers(samples, dict_data, bad_idx, sigma, new_dict_data):
     return
 
 if '__main__' == __name__:
-    sigma=3
-    remove_outliers(samples, 'XBIC_stat', 1, 3, 'XBIC_slim')
     print('success')
 
 
