@@ -14,7 +14,7 @@ def get_directory(machine_index):
 # 0=Dell work, 1=ASUS windows, 2=ASUS ubuntu
 scan_path, def_path = get_directory(0)
 sys.path.append(def_path)
-import home_defs
+import home_import
 import home_abs
 import home_stat
 
@@ -70,14 +70,14 @@ TS58A = {'Name': 'TS58A',
 
 samples = [NBL3_2, NBL3_3, TS58A]
 
-home_defs.import_h5s(samples, scan_path)
+home_import.import_h5s(samples, scan_path)
 elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']
 # sample_list, scans_to_import, electrical_channel, element_list, XRF_normalization, XRF_quantification
     # electrical_channel: 1=ds_ic, 2=us_ic, 3=SRCurrent
     # XRF_normalization: us_ic or ds_ic
     # XRF_quantification: fit or roi
-home_defs.import_maps(samples, 'XBIC', 2, elements, 'us_ic', 'fit')
-home_defs.import_maps(samples, 'XBIV', 2, elements, 'us_ic', 'fit')
+home_import.import_maps(samples, 'XBIC', 2, elements, 'us_ic', 'fit')
+home_import.import_maps(samples, 'XBIV', 2, elements, 'us_ic', 'fit')
 
 iio_layer = 'CdTe'
 iio_elements = ['Cu', 'Cd', 'Te'] # enter in same order as seen in 'elements'
