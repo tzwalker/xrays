@@ -1,22 +1,5 @@
 
 
-def standardize_channels(samps, dict_data, new_keys):
-    scaler = skpp.StandardScaler()
-    for samp in samps:
-        c_standardized_stats = []
-        for scan_arrays in samp[dict_data[0]]:
-            c_stand_arrs = [scaler.fit_transform(column.reshape(-1,1)) for column in scan_arrays.T]
-            combine_stand_arrs_of_scan = np.concatenate(c_stand_arrs, axis = 1)
-            c_standardized_stats.append(combine_stand_arrs_of_scan)
-        samp_dict_grow.build_dict(samp, new_keys[0], c_standardized_stats)
-        v_standardized_stats = []
-        for scan_arrays in samp[dict_data[1]]:
-            c_stand_arrs = [scaler.fit_transform(column.reshape(-1,1)) for column in scan_arrays.T]
-            combine_stand_arrs_of_scan = np.concatenate(c_stand_arrs, axis = 1)
-            v_standardized_stats.append(combine_stand_arrs_of_scan)
-        samp_dict_grow.build_dict(samp, new_keys[1], v_standardized_stats)
-    return
-
 def get_channel_column_index(bad_XRF, loaded_XRF):
     for i, e in enumerate(loaded_XRF):
         if e[0:2] == bad_XRF:
@@ -32,7 +15,6 @@ def reduce_arrs_actual(samps, bad_XRF, loaded_XRF, sigma_control, original_data,
             bad_chan_column = full_data_array[:, bad_channel_column_index] # isolate bad XRF column
             lwr_lim = np.mean(bad_chan_column) - sigma_control * np.std(bad_chan_column) # determine bounds
             upr_lim = np.mean(bad_chan_column) + sigma_control * np.std(bad_chan_column)
-            good_indices = np.where(np.logical_and(bad_chan_column >= lwr_lim , bad_chan_column <= upr_lim)) # get indices within these bounds
             reduced_data_array = full_data_array[good_indices] # take good indices from whole array
             c_reduced_arrs.append(reduced_data_array) # store data
         samp_dict_grow.build_dict(samp, new_data[0], c_reduced_arrs)
@@ -64,8 +46,8 @@ def stat_arrs(samples, dict_data, new_dict_data):
             z3Dto2D_rows = np.shape(no_nan_maps)[1]*np.shape(no_nan_maps)[2]
             z3Dto2D_cols = np.shape(no_nan_maps)[0]
             stat_arrs = no_nan_maps.T.reshape(z3Dto2D_rows, z3Dto2D_cols)
-        stat_scans.append(stat_arrs)
-    samp_dict_grow.build_dict(sample, new_dict_data, stat_scans)
+            stat_scans.append(stat_arrs)
+        samp_dict_grow.build_dict(sample, new_dict_data, stat_scans)
     return
 
 def stand_arrs(samples, dict_data, new_dict_data):
@@ -79,8 +61,27 @@ def stand_arrs(samples, dict_data, new_dict_data):
         samp_dict_grow.build_dict(sample, new_dict_data, stand_scans)
     return
 
+def get_limits(bad_arr, sigma):
+    lwr_lim = np.mean(bad_arr) - sigma*np.std(bad_arr)
+    upr_lim = np.mean(bad_arr) + sigma*np.std(bad_arr)
+    good_logic_arr = np.logical_and(bad_arr >= lwr_lim , bad_arr <= upr_lim)
+    good_indices = np.where(good_logic_arr) # get indices within these bounds
+    return good_indices
+
+def remove_outliers(samples, dict_data, bad_idx, sigma, new_dict_data):
+    for sample in samples:
+        no_outliers = []
+        for scan_arr in sample[dict_data]:
+            bad_arr = scan_arr[:,bad_idx]
+            good_indices = get_limits(bad_arr, sigma)
+            no_outlier = scan_arr[good_indices]
+            no_outliers.append(no_outlier)
+        samp_dict_grow.build_dict(sample, new_dict_data, no_outliers)
+        print('dummy_line')
+    return
+
 if '__main__' == __name__:
-    stand_arrs(samples, 'XBIC_stat', 'XBIC_stand')
+    remove_outliers(samples, 'XBIC_stat', 1, sigma=3, 'XBIC_slim')
     print('success')
 
 

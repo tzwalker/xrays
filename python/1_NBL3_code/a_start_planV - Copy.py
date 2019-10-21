@@ -77,6 +77,7 @@ elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']
     # XRF_quantification: fit or roi
 home_defs.import_maps(samples, 'XBIC', 2, elements, 'us_ic', 'fit')
 home_defs.import_maps(samples, 'XBIV', 2, elements, 'us_ic', 'fit')
+print(samples[0].keys())
 #%%
 import home_abs
 iio_layer = 'CdTe'
@@ -118,33 +119,27 @@ print(samples[0].keys())
 #%%
 home_defs.make_mol_maps(samples, elements, 'XBIC_corr', 'XBIC_mol')
 home_defs.make_mol_maps(samples, elements, 'XBIV_corr', 'XBIV_mol')
+print(samples[0].keys())
 
 #%%
-import home_stats
+import home_stat
 
-home_stats.stat_arrs(samples, 'XBIC_corr', 'XBIC_stat')
-home_stats.stat_arrs(samples, 'XBIV_corr', 'XBIV_stat')
+home_stat.stat_arrs(samples, 'XBIC_corr', 'XBIC_stat')
+home_stat.stat_arrs(samples, 'XBIV_corr', 'XBIV_stat')
+print(samples[0].keys())
+#%%
+home_stat.stand_arrs(samples, 'XBIC_stat', 'XBIC_stand')
+home_stat.stand_arrs(samples, 'XBIV_stat', 'XBIV_stand')
+print(samples[0].keys())
 
+#%%
+home_stat.remove_outliers(samples, 'XBIC_stat', 1, sigma=3, 'XBIC_slim')
+print(samples[0].keys())
 
-
-
-## preparation for clustering ###
-# use this funciton if you want to remove the pixels of all loaded
-    # maps according to bad data in one of the XRF channels
-    # not configured for using electrical channels as the bad channel
-    # see ReadMe.txt for details
-e_statistics.reduce_arrs_actual(samples, 'Cu', elements, 3,             # int = # of std
-                         ['c_stat_arrs', 'v_stat_arrs'],                # reference data
-                         ['c_reduced_arrs', 'v_reduced_arrs'])          # new data
-
-
-e_statistics.standardize_channels(samples, 
-                                  ['c_reduced_arrs', 'v_reduced_arrs'], 
-                                  ['c_redStand_arrs', 'v_redStand_arrs'])
 #%%
 import d_clustering
 ## clustering trials ##
-data_key = 'c_reduced_arrs'
+data_key = 'XBIC_slim'
 channel_for_mask = 0 # column index of channel within stat array of choice (the key used in kmeans_trials())
 number_of_clusters = 3
 number_of_kmeans_trials = 5
@@ -153,5 +148,5 @@ number_of_kmeans_trials = 5
     # example navigation use: sample_dict['c_kmeans_trials'][scan_num]
 d_clustering.kmeans_trials(samples, data_key, channel_for_mask, 
                            number_of_clusters, number_of_kmeans_trials, 'kmeans_trials')
-
-
+print(samples[0].keys())
+#%%
