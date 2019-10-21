@@ -81,7 +81,8 @@ def remove_outliers(samples, dict_data, bad_idx, sigma, new_dict_data):
     return
 
 if '__main__' == __name__:
-    remove_outliers(samples, 'XBIC_stat', 1, sigma=3, 'XBIC_slim')
+    sigma=3
+    remove_outliers(samples, 'XBIC_stat', 1, 3, 'XBIC_slim')
     print('success')
 
 

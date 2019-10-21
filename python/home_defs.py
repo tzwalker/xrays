@@ -98,4 +98,5 @@ def make_mol_maps(samples, elements, dict_data, new_dict_data):
     return
 
 if '__main__' == __name__:
+    home_defs.make_mol_maps(samples, elements, 'XBIC_corr', 'XBIC_mol')
     print('success')

@@ -97,7 +97,7 @@ def get_layer_iios(samples, elements, beam_settings, layer):
             print('please either enter another layer, or look into modifying this function')
     return 
 
-def apply_iios(samples, electrical_key, sample_scan_idxs, iio_arr_key, ele_map_idxs, ele_iio_idxs):    
+def apply_iios(samples, electrical_key, sample_scan_idxs, iio_arr_key, ele_map_idxs, ele_iio_idxs, new_dict_key):    
     for sample, scan_idxs in zip(samples, sample_scan_idxs):
         correct_scans = []
         iio_arr = sample[iio_arr_key]
@@ -111,16 +111,16 @@ def apply_iios(samples, electrical_key, sample_scan_idxs, iio_arr_key, ele_map_i
             correct_scans.append(correct_maps)
         samp_dict_grow.build_dict(
                 sample, 
-                '{e_key}{date_key}corr'.format(e_key=electrical_key, date_key=iio_arr_key[0:8]), 
+                new_dict_key, #'{e_key}{date_key}corr'.format(e_key=electrical_key, date_key=iio_arr_key[0:8]) 
                 correct_scans)
     return 
 
-def join_corrected_beamtimes(samples, c_keys, v_keys):
+def join_corrected_beamtimes(samples, keys, new_key):
     for sample in samples:
-        all_XBIC_corr = sample[c_keys[0]] + sample[c_keys[1]]
-        all_XBIV_corr = sample[v_keys[0]] + sample[v_keys[1]]
-        samp_dict_grow.build_dict(sample, 'XBIC_corr', all_XBIC_corr)
-        samp_dict_grow.build_dict(sample, 'XBIV_corr', all_XBIV_corr)
+        all_corr = [sample[key] for key in keys]
+        flatten = lambda l: [item for sublist in l for item in sublist]
+        all_corr = flatten(all_corr)
+        samp_dict_grow.build_dict(sample, new_key, all_corr)
     return
 
 def clean_dictionaries(samples, del_key):
@@ -131,4 +131,5 @@ def clean_dictionaries(samples, del_key):
     return
 
 if '__main__' == __name__:
+    join_corrected_beamtimes(samples, ['XBIC_corr0', 'XBIC_corr1'], 'XBIC_corr')
     print('success')

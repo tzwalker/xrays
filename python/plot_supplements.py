@@ -24,7 +24,7 @@ def get_real_coordinates(axis_list):
 # usefeul function for visualizing standardized data as a map
 # puts two nan columns back on standardized arrays
 def put_nans_back_on(array, y_coord, x_coord):
-    slim_map = array.reshape(len(y_coord), len(x_coord)-2)           # minus 2cols (chopped off nans in e_statistics.py)
+    slim_map = np.reshape(array, (len(y_coord), len(x_coord)-2), order='F') # minus 2cols (chopped off nans in e_statistics.py)
     nans_to_attach = np.full((np.size(slim_map, axis=0),2), np.nan) # get 2cols of nan
     nan_map = np.append(slim_map, nans_to_attach, 1)                 # attach nan
     return nan_map
@@ -90,34 +90,29 @@ def from_stand_to_stand_map(samp, scan, data, channel):
     #cbar_ax.set_yticklabels(custom_format_ticks(cbar_ax.get_yticklabels(), '{:.2f}'))
     return
 
-def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
-    c_scan = samp['XBIC_h5s'][scan]  # h5 always has coordinates
-    x_axis = c_scan['/MAPS/x_axis']  # x position of pixels  [position in um]
-    y_axis = c_scan['/MAPS/y_axis']  # y position of pixels  [position in um]
+def plot_nice_2Dmap(sample, data_channel, scan, feature_idx, label_list):
+    file = sample['XBIC_h5s'][scan]  # h5 always has coordinates
+    x_axis = file['/MAPS/x_axis']  # x position of pixels  [position in um]
+    y_axis = file['/MAPS/y_axis']  # y position of pixels  [position in um]
     x_real = get_real_coordinates(x_axis)
     y_real = get_real_coordinates(y_axis)
     
-    if ele_index == -1:             
-        c_map = samp[data_channel][scan];
-        c_map = c_map / c_map[:,:-2].max()
-        colors = 'magma'; units = '% Max Current'
-    else: 
-        c_map = samp[data_channel][scan][ele_index];
-        format_list = channel_formatting(ele_index+1); 
-        colors = format_list[0]; units = format_list[1]
+    data_map = sample[data_channel][scan][feature_idx,:,:]
+    format_list = channel_formatting(feature_idx); 
+    colors = format_list[0]; units = format_list[1]
     
-    lower,upper = get_colorbar_axis(c_map, 3) # int here sets num_of_std to include
-    df_map = pd.DataFrame(c_map, index = y_real, columns = x_real)
+    lower,upper = get_colorbar_axis(data_map, 3) # int here sets num_of_std to include
+    df_map = pd.DataFrame(data_map, index = y_real, columns = x_real)
     fig, ax0 = plt.subplots()
     ax0 = sns.heatmap(df_map, square = True, cmap = colors,
-                      xticklabels = 20, yticklabels = 20,
+                      xticklabels = label_list[2], yticklabels = label_list[3],
                       cbar_kws={"shrink": 1.0, 'format': '%.2f'}, vmin=lower, vmax=upper)
     # figure level
-    plt.xlabel('X (\u03BCm)', fontsize=label_sizes)
-    plt.ylabel('Y (\u03BCm)', fontsize=label_sizes)
+    plt.xlabel('X (\u03BCm)', fontsize=label_list[0])
+    plt.ylabel('Y (\u03BCm)', fontsize=label_list[0])
     #plt.title(samp['Name'], fontsize=axis_label_sizes)
     # axis level
-    ax0.tick_params(labelsize = 14)                     #formats size of ticklabels
+    ax0.tick_params(labelsize = label_list[1])                     #formats size of ticklabels
     x_labls = custom_format_ticks(ax0.get_xticklabels(), '{:g}')
     y_labls = custom_format_ticks(ax0.get_yticklabels(), '{:g}')         #formats tick label strings without ".0"
     ax0.set_xticklabels(x_labls)                        #set the tick labels
@@ -127,7 +122,7 @@ def plot_nice_2Dmap(samp,scan,label_sizes, data_channel, ele_index):
     #fig.colorbar(ax0).ax0 <--> plt.gcf().axes[-1]
     cbar_ax = plt.gcf().axes[-1]                        #gets colorbar of current figure object, behaves as second y axes object
     # colorbar label settings
-    cbar_ax.set_ylabel(units, fontsize = label_sizes, 
+    cbar_ax.set_ylabel(units, fontsize = label_list[0], 
                        rotation = 90, labelpad = 10)   #label formatting
     cbar_ax.tick_params(labelsize=12)                   #tick label formatting
     cbar_ax.yaxis.get_offset_text().set(size=12)        #format colorbar offset text
