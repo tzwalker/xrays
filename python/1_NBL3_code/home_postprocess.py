@@ -19,8 +19,6 @@ MASK_FEATURE = 0 # column index of channel within stat array of choice (the key 
 CLUSTERS = 3
 KTRIALS = 5
 # stores numpy array of 'n' kmeans clustering trials for each scan for each sample
-    # for a given scan, array will be 'n'x'len(redStand_arr)'
-    # example navigation use: sample_dict['c_kmeans_trials'][scan_num]
 home_clustering.kmeans_trials(samples, DATA_KEY, MASK_FEATURE, 
                            CLUSTERS, KTRIALS, 'XBICkmeans_trials')
 #print(samples[0].keys())
