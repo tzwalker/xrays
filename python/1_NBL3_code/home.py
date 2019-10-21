@@ -1,5 +1,4 @@
 import sys
-
 def get_directory(machine_index):
     if machine_index==0: #--> Dell work
         scan_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
@@ -16,6 +15,8 @@ def get_directory(machine_index):
 scan_path, def_path = get_directory(0)
 sys.path.append(def_path)
 import home_defs
+import home_abs
+import home_stat
 
 NBL3_2 = {'Name': 'NBL3_2', 
           'XBIC_scans':     [422,423,424,  # 2019_03
@@ -77,9 +78,7 @@ elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']
     # XRF_quantification: fit or roi
 home_defs.import_maps(samples, 'XBIC', 2, elements, 'us_ic', 'fit')
 home_defs.import_maps(samples, 'XBIV', 2, elements, 'us_ic', 'fit')
-print(samples[0].keys())
-#%%
-import home_abs
+
 iio_layer = 'CdTe'
 iio_elements = ['Cu', 'Cd', 'Te'] # enter in same order as seen in 'elements'
 # in case you typed in the elements out of position
@@ -91,18 +90,18 @@ beam_settings0 = {'beamtime': '2019_03','beam_energy': 12.7, 'beam_theta':75, 'd
 home_abs.get_layer_iios(samples, iio_elements, beam_settings0, iio_layer) 
 # enter index of scans you want to correct for each sample
 sample_scan_idxs=[[0,1,2], [0,1,2], [0,1,2]] 
-home_abs.apply_iios(samples, 'XBIC', sample_scan_idxs, '2019_03_iios', ele_map_idxs, ele_iio_idxs) #--> correct current scans from 2019_03
+home_abs.apply_iios(samples, 'XBIC', sample_scan_idxs, '2019_03_iios', ele_map_idxs, ele_iio_idxs, 'XBIC2019_03_corr') #--> correct current scans from 2019_03
 sample_scan_idxs=[[0,1,2], [0,1,2], [0,1,2]] 
-home_abs.apply_iios(samples, 'XBIV', sample_scan_idxs, '2019_03_iios', ele_map_idxs, ele_iio_idxs) #--> correct voltage scans from 2019_03
+home_abs.apply_iios(samples, 'XBIV', sample_scan_idxs, '2019_03_iios', ele_map_idxs, ele_iio_idxs, 'XBIV2019_03_corr') #--> correct voltage scans from 2019_03
 
 ### 2017_12 beamtime
 beam_settings1 = {'beamtime': '2017_12','beam_energy': 8.99, 'beam_theta':90, 'detect_theta':43}
 home_abs.get_layer_iios(samples, iio_elements, beam_settings1, iio_layer)
 # enter index of scans you want to correct for each sample
 sample_scan_idxs=[[3,4,5], [3,4], [3,4,5]] 
-home_abs.apply_iios(samples, 'XBIC', sample_scan_idxs, '2017_12_iios', ele_map_idxs, ele_iio_idxs) #--> correct current scans from 2017_12
+home_abs.apply_iios(samples, 'XBIC', sample_scan_idxs, '2017_12_iios', ele_map_idxs, ele_iio_idxs, 'XBIC2017_12_corr') #--> correct current scans from 2017_12
 sample_scan_idxs=[[3], [3], [3]]
-home_abs.apply_iios(samples, 'XBIV', sample_scan_idxs, '2017_12_iios', ele_map_idxs, ele_iio_idxs) #--> correct voltage scans from 2017_12
+home_abs.apply_iios(samples, 'XBIV', sample_scan_idxs, '2017_12_iios', ele_map_idxs, ele_iio_idxs, 'XBIV2017_12_corr') #--> correct voltage scans from 2017_12
 
 # see dictionary growth; clean workspace
 del(sample_scan_idxs, ele_map_idxs, ele_iio_idxs)
@@ -118,33 +117,11 @@ home_abs.clean_dictionaries(samples, '2017_12_corr')
 
 home_defs.make_mol_maps(samples, elements, 'XBIC_corr', 'XBIC_mol')
 home_defs.make_mol_maps(samples, elements, 'XBIV_corr', 'XBIV_mol')
-print(samples[0].keys())
 
-import home_stat
+
 home_stat.stat_arrs(samples, 'XBIC_corr', 'XBIC_stat')
 home_stat.stat_arrs(samples, 'XBIV_corr', 'XBIV_stat')
-print(samples[0].keys())
 
 home_stat.stand_arrs(samples, 'XBIC_stat', 'XBIC_stand')
 home_stat.stand_arrs(samples, 'XBIV_stat', 'XBIV_stand')
 print(samples[0].keys())
-
-#%%
-bad_channel_idx = 1
-sigma = 3
-home_stat.remove_outliers(samples, 'XBIC_stat', bad_channel_idx, sigma, 'XBIC_slim')
-print(samples[0].keys())
-
-import d_clustering
-## clustering trials ##
-data_key = 'XBIC_slim'
-channel_for_mask = 0 # column index of channel within stat array of choice (the key used in kmeans_trials())
-number_of_clusters = 3
-number_of_kmeans_trials = 5
-# stores numpy array of 'n' kmeans clustering trials for each scan for each sample
-    # for a given scan, array will be 'n'x'len(redStand_arr)'
-    # example navigation use: sample_dict['c_kmeans_trials'][scan_num]
-d_clustering.kmeans_trials(samples, data_key, channel_for_mask, 
-                           number_of_clusters, number_of_kmeans_trials, 'kmeans_trials')
-print(samples[0].keys())
-#%%

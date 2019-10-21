@@ -3,10 +3,8 @@
 Trumann
 Wed Sep 11 11:47:57 2019
 """
-
 import samp_dict_grow
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
@@ -34,18 +32,3 @@ def get_corrmtx_plot(array, cols, f, axis):
     axis.title.set_text(f['plt_title'])
     return
 
-corrcoeff_formatting = {'color': 'coolwarm', 
-                      'cbar_format': {'ticks': list(list(np.linspace(-1,1,5))), 
-                                      'label': 'Spearman Coefficient'},
-                      'plt_title': 'Average Monotonicity',
-                      'v_range': [-1,1]}
-stdev_formatting = {'color': 'Greys', 
-                      'cbar_format': {'ticks': list(list(np.linspace(-1,1,5))), 
-                                      'label': 'Standard Error'},
-                      'plt_title': 'Average Error',
-                      'v_range': [0,1]}
-
-fig, (ax0, ax1) = plt.subplots(2,1)
-plt.tight_layout()
-get_corrmtx_plot(NBL3_3['avg_std_corr'][0], ['XBIC'] + elements, corrcoeff_formatting, ax0)
-get_corrmtx_plot(NBL3_3['avg_std_corr'][1], ['XBIC'] + elements, stdev_formatting, ax1)
