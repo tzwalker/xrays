@@ -53,7 +53,7 @@ NEW_KEYS = ['spear_stats', 'pval_stats']
 home_clustering.correlation_stats(SAMPLE, SCANS, DATA_KEY, CLUSTERS_KEY, 
                                CLUSTERS, FOCUS_CLUSTER, FOCUS_FEATURE, NEW_KEYS)
 #print(SAMPLE.keys())
-CHANNELS = ['XBIC'] + elements + [r'\frac{Cu}{Te}']
+CHANNELS = ['XBIC'] + elements + ['Cu/(Cu+Te)']
 SPEAR_FORMAT = {'color': 'coolwarm', 
                       'cbar_format': {'ticks': list(list(np.linspace(-1,1,5))), 
                                       'label': 'Spearman Coefficient'},
@@ -69,3 +69,8 @@ fig, (ax0, ax1) = plt.subplots(2,1)
 plt.tight_layout()
 plot_correlation_matrices.get_corrmtx_plot(SAMPLE['spear_stats'][0], CHANNELS, SPEAR_FORMAT, ax0)
 plot_correlation_matrices.get_corrmtx_plot(SAMPLE['spear_stats'][1], CHANNELS, STDEV_FORMAT, ax1)
+
+#%%
+for sample in samples:
+    for array in sample['XBIC_molStat']:
+        print(np.mean(array[:,5]))
