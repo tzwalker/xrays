@@ -79,24 +79,3 @@ def import_maps(samps, switch, scaler_ch, elements, flux_norm, fit_norm):
         samp_dict_grow.build_dict(samp, switch+'_maps', scan_maps)
     return 
 
-def make_mol_maps(samples, elements, dict_data, new_dict_data):
-    elements = [element[0:2] for element in elements]
-    mol_masses = [xl.AtomicWeight(xl.SymbolToAtomicNumber(element)) for element in elements]
-    #ug/cm2 * (g/ug) * (mol/g) == mol/cm2
-    conv_factors = [(1/1E6) / (1/mol_mass) for mol_mass in mol_masses]
-    for sample in samples:
-        mol_scans = []
-        for scan_raw_maps in sample[dict_data]:
-            mol_maps = scan_raw_maps.copy()
-            for ele_idx, factor in enumerate(conv_factors):
-                map_idx = ele_idx + 1
-                ele_map = scan_raw_maps[map_idx,:,:]
-                mol_map = ele_map * factor
-                mol_maps[map_idx,:,:] = mol_map
-            mol_scans.append(mol_maps)
-        samp_dict_grow.build_dict(sample, new_dict_data, mol_scans)
-    return
-
-if '__main__' == __name__:
-    home_defs.make_mol_maps(samples, elements, 'XBIC_corr', 'XBIC_mol')
-    print('success')

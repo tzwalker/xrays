@@ -16,7 +16,7 @@ scan_path, def_path = get_directory(0)
 sys.path.append(def_path)
 import home_import
 import home_abs
-import home_stat
+
 
 NBL3_2 = {'Name': 'NBL3_2', 
           'XBIC_scans':     [422,423,424,  # 2019_03
@@ -103,25 +103,15 @@ home_abs.apply_iios(samples, 'XBIC', sample_scan_idxs, '2017_12_iios', ele_map_i
 sample_scan_idxs=[[3], [3], [3]]
 home_abs.apply_iios(samples, 'XBIV', sample_scan_idxs, '2017_12_iios', ele_map_idxs, ele_iio_idxs, 'XBIV2017_12_corr') #--> correct voltage scans from 2017_12
 
-# see dictionary growth; clean workspace
-del(sample_scan_idxs, ele_map_idxs, ele_iio_idxs)
-
 # combine corrected maps
 home_abs.join_corrected_beamtimes(samples, ['XBIC2019_03_corr', 'XBIC2017_12_corr'], 'XBIC_corr')
 home_abs.join_corrected_beamtimes(samples, ['XBIV2019_03_corr', 'XBIV2017_12_corr'], 'XBIV_corr')
 #print(samples[0].keys())
 
-# clean dictionaries (optional)
+# optional functions specific to these samples
+# see dictionary growth; clean workspace
+del(sample_scan_idxs, ele_map_idxs, ele_iio_idxs)
+# clean dictionaries
 home_abs.clean_dictionaries(samples, '2019_03_corr')
 home_abs.clean_dictionaries(samples, '2017_12_corr')
 
-home_defs.make_mol_maps(samples, elements, 'XBIC_corr', 'XBIC_mol')
-home_defs.make_mol_maps(samples, elements, 'XBIV_corr', 'XBIV_mol')
-
-
-home_stat.stat_arrs(samples, 'XBIC_corr', 'XBIC_stat')
-home_stat.stat_arrs(samples, 'XBIV_corr', 'XBIV_stat')
-
-home_stat.stand_arrs(samples, 'XBIC_stat', 'XBIC_stand')
-home_stat.stand_arrs(samples, 'XBIV_stat', 'XBIV_stand')
-print(samples[0].keys())

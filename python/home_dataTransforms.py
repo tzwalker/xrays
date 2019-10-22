@@ -1,3 +1,7 @@
+import xraylib as xl
+import samp_dict_grow
+import numpy as np
+
 import numpy as np
 import sklearn.preprocessing as skpp
 import samp_dict_grow
@@ -44,10 +48,48 @@ def remove_outliers(samples, dict_data, bad_idx, sigma, new_dict_data):
             no_outlier = scan_arr[good_indices]
             no_outliers.append(no_outlier)
         samp_dict_grow.build_dict(sample, new_dict_data, no_outliers)
-        print('dummy_line')
+    return
+
+def make_mol_maps(samples, elements, dict_data, new_dict_data):
+    elements = [element[0:2] for element in elements]
+    mol_masses = [xl.AtomicWeight(xl.SymbolToAtomicNumber(element)) for element in elements]
+    #ug/cm2 * (g/ug) * (mol/g) == mol/cm2
+    conv_factors = [(1/1E6) / (1/mol_mass) for mol_mass in mol_masses]
+    for sample in samples:
+        mol_scans = []
+        for scan_raw_maps in sample[dict_data]:
+            mol_maps = scan_raw_maps.copy()
+            for ele_idx, factor in enumerate(conv_factors):
+                map_idx = ele_idx + 1
+                ele_map = scan_raw_maps[map_idx,:,:]
+                mol_map = ele_map * factor
+                mol_maps[map_idx,:,:] = mol_map
+            mol_scans.append(mol_maps)
+        samp_dict_grow.build_dict(sample, new_dict_data, mol_scans)
+    return
+
+def add_ratio_array(samples, dict_data, elem0_idx, elem1_idx):
+    for sample in samples:
+        scan_array_list = []
+        for array in sample[dict_data]:
+            if np.size(array.shape) == 2:
+                ratio = array[:,elem0_idx] / array[:,elem1_idx]
+                ratio = ratio.reshape(-1,1)
+                array = np.concatenate((array, ratio), axis=1)
+                scan_array_list.append(array)
+            elif np.size(array.shape == 3):
+                ratio = array[elem0_idx,:,:] / array[elem1_idx,:,:]
+                x = np.shape(ratio)[1]; y = np.shape(ratio)[2]
+                ratio = np.reshape(ratio, (1,x,y))
+                array = np.concatenate((array, ratio), axis=0)
+                scan_array_list.append(array)
+            else:
+                print('the scan array is neither 2d nor 3d; please try again')
+            sample[dict_data] = scan_array_list
     return
 
 if '__main__' == __name__:
+    element0_idx = 1
+    element1_idx = 3
+    add_ratio_array(samples, 'XBIC_molStat', element0_idx, element1_idx)
     print('success')
-
-
