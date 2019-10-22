@@ -53,7 +53,7 @@ NEW_KEYS = ['spear_stats', 'pval_stats']
 home_clustering.correlation_stats(SAMPLE, SCANS, DATA_KEY, CLUSTERS_KEY, 
                                CLUSTERS, FOCUS_CLUSTER, FOCUS_FEATURE, NEW_KEYS)
 #print(SAMPLE.keys())
-CHANNELS = ['XBIC'] + elements + ['Cu/Te']
+CHANNELS = ['XBIC'] + elements + [r'\frac{Cu}{Te}']
 SPEAR_FORMAT = {'color': 'coolwarm', 
                       'cbar_format': {'ticks': list(list(np.linspace(-1,1,5))), 
                                       'label': 'Spearman Coefficient'},
