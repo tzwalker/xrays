@@ -74,7 +74,7 @@ def import_maps(samps, switch, scaler_ch, elements, flux_norm, fit_norm):
                               scan_h5['/MAPS/scalers'][flxnorm_idx, :, :] / 
                               scan_h5[nav_keys[1]][flxnorm_idx, 0, ele_idx]) for ele_idx in scan_eles]
             norm_ele_maps = np.array(norm_ele_maps)
-            all_scan_maps = np.insert(norm_ele_maps, 0, scan_elect, axis=0)
+            all_scan_maps = np.insert(norm_ele_maps, 0, scan_elect, axis=0) # stack electrical on top of the element maps
             scan_maps.append(all_scan_maps)
         samp_dict_grow.build_dict(samp, switch+'_maps', scan_maps)
     return 

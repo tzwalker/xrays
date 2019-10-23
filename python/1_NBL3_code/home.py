@@ -73,7 +73,7 @@ samples = [NBL3_2, NBL3_3, TS58A]
 home_import.import_h5s(samples, scan_path)
 elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']
 # sample_list, scans_to_import, electrical_channel, element_list, XRF_normalization, XRF_quantification
-    # electrical_channel: 1=ds_ic, 2=us_ic, 3=SRCurrent
+    # electrical_channel: 0=SRCurrent, 1=us_ic, 2=ds_ic; h5_file['MAPS/scaler_names']
     # XRF_normalization: us_ic or ds_ic
     # XRF_quantification: fit or roi
 home_import.import_maps(samples, 'XBIC', 2, elements, 'us_ic', 'fit')
