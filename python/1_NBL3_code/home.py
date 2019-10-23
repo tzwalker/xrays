@@ -86,13 +86,18 @@ ele_map_idxs = [1,2,3] #--> index of element in 'elements'
 ele_iio_idxs = [0,1,2] #--> index of element in 'iio_elements'
 
 ### 2019_03 beamtime
-beam_settings0 = {'beamtime': '2019_03','beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
+beam_settings0 = {'beamtime': '2019_03',
+                  'beam_energy': 12.7, 
+                  'beam_theta':75, 
+                  'detect_theta':15}
 home_abs.get_layer_iios(samples, iio_elements, beam_settings0, iio_layer) 
 # enter index of scans you want to correct for each sample
 sample_scan_idxs=[[0,1,2], [0,1,2], [0,1,2]] 
-home_abs.apply_iios(samples, 'XBIC', sample_scan_idxs, '2019_03_iios', ele_map_idxs, ele_iio_idxs, 'XBIC2019_03_corr') #--> correct current scans from 2019_03
+home_abs.apply_iios(samples, 'XBIC', sample_scan_idxs, '2019_03_iios', 
+                    ele_map_idxs, ele_iio_idxs, 'XBIC2019_03_corr') #--> correct current scans from 2019_03
 sample_scan_idxs=[[0,1,2], [0,1,2], [0,1,2]] 
-home_abs.apply_iios(samples, 'XBIV', sample_scan_idxs, '2019_03_iios', ele_map_idxs, ele_iio_idxs, 'XBIV2019_03_corr') #--> correct voltage scans from 2019_03
+home_abs.apply_iios(samples, 'XBIV', sample_scan_idxs, '2019_03_iios', 
+                    ele_map_idxs, ele_iio_idxs, 'XBIV2019_03_corr') #--> correct voltage scans from 2019_03
 
 ### 2017_12 beamtime
 beam_settings1 = {'beamtime': '2017_12','beam_energy': 8.99, 'beam_theta':90, 'detect_theta':43}
