@@ -3,7 +3,7 @@
 Trumann
 Mon Oct 21 14:04:15 2019
 """
-### begin post processing ###
+### area density to molar density ###
 import home_dataTransforms as dtransform
 dtransform.make_mol_maps(samples, elements, 'XBIC_corr', 'XBIC_mol')
 #dtransform.make_mol_maps(samples, elements, 'XBIV_corr', 'XBIV_mol')
@@ -26,6 +26,7 @@ dtransform.add_ratio_array(samples, 'XBIC_molStat', element0_idx, element1_idx)
 #dtransform.stand_arrs(samples, 'XBIC_stat', 'XBIC_stand')
 #dtransform.stand_arrs(samples, 'XBIV_stat', 'XBIV_stand')
 #%%
+### kmeans clustering trials with arrays ###
 import home_clustering
 DATA_KEY = 'XBIC_molStat'
 BAD_CHANNEL_idx = 1; SIGMA = 3
@@ -53,7 +54,7 @@ NEW_KEYS = ['spear_stats', 'pval_stats']
 home_clustering.correlation_stats(SAMPLE, SCANS, DATA_KEY, CLUSTERS_KEY, 
                                CLUSTERS, FOCUS_CLUSTER, FOCUS_FEATURE, NEW_KEYS)
 #print(SAMPLE.keys())
-CHANNELS = ['XBIC'] + elements + ['Cu/(Cu+Te)']
+CHANNELS = [FOCUS_CLUSTER+' XBIC'] + elements + ['Cu/(Cu+Te)']
 SPEAR_FORMAT = {'color': 'coolwarm', 
                       'cbar_format': {'ticks': list(list(np.linspace(-1,1,5))), 
                                       'label': 'Spearman Coefficient'},

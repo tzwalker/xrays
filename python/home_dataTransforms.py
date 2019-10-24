@@ -73,12 +73,12 @@ def add_ratio_array(samples, dict_data, elem0_idx, elem1_idx):
         scan_array_list = []
         for array in sample[dict_data]:
             if np.size(array.shape) == 2:
-                ratio = array[:,elem0_idx] / array[:,elem1_idx]
+                ratio = array[:,elem0_idx] / (array[:,elem0_idx] + array[:,elem1_idx])
                 ratio = ratio.reshape(-1,1)
                 array = np.concatenate((array, ratio), axis=1)
                 scan_array_list.append(array)
             elif np.size(array.shape == 3):
-                ratio = array[elem0_idx,:,:] / array[elem1_idx,:,:]
+                ratio = array[elem0_idx,:,:] / (array[elem0_idx,:,:] + array[elem1_idx,:,:])
                 x = np.shape(ratio)[1]; y = np.shape(ratio)[2]
                 ratio = np.reshape(ratio, (1,x,y))
                 array = np.concatenate((array, ratio), axis=0)
