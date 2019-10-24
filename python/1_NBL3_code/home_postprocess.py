@@ -71,6 +71,18 @@ plot_correlation_matrices.get_corrmtx_plot(SAMPLE['spear_stats'][0], CHANNELS, S
 plot_correlation_matrices.get_corrmtx_plot(SAMPLE['spear_stats'][1], CHANNELS, STDEV_FORMAT, ax1)
 
 #%%
-for sample in samples:
-    for array in sample['XBIC_molStat']:
-        print(np.mean(array[:,5]))
+### superpixel segmentation https://www.pyimagesearch.com/2014/07/28/a-slic-superpixel-tutorial-using-python/
+from skimage.segmentation import slic
+from skimage.segmentation import mark_boundaries
+from skimage.util import img_as_float
+from skimage import io
+import matplotlib.pyplot as plt
+
+z = NBL3_2['XBIC_corr'][0][0,:,:]
+y = img_as_float(z)
+plt.imshow(z)
+segment_number = 200
+segments = slic(z, n_segments=segment_number, sigma=5)
+fig, ax = plt.subplots(1)
+ax.imshow(mark_boundaries(z, segments))
+plt.axis('off')
