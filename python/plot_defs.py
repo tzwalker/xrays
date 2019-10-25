@@ -132,10 +132,9 @@ def plot_nice_2Dmap(sample, data_channel, scan, feature_idx, label_list):
 
 def plot_cluster_map(scan_data, original_map, model, cnum):
     x = scan_data['/MAPS/x_axis'];      y = scan_data['/MAPS/y_axis']
-    x_real = get_real_coordinates(x)  
-    y_real = get_real_coordinates(y)
+    x_real = get_real_coordinates(x);   y_real = get_real_coordinates(y)
     
-    clust_map = model.labels_.reshape(np.shape(original_map))
+    clust_map = model.reshape(np.shape(original_map), order='F')
     clust_nan_map = put_nans_back_on(clust_map, y_real, x_real)
     df_map = pd.DataFrame(clust_nan_map, index=y_real, columns=x_real)
     

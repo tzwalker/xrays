@@ -3,17 +3,22 @@
 Trumann
 Mon Oct 21 14:04:15 2019
 """
-CV_switch = 'V'
-### area density to molar density ###
 import home_dataTransforms as dtransform
-dtransform.make_mol_maps(samples, elements, 'XBI'+CV_switch+'_corr', 'XBI'+CV_switch+'_mol')
-#dtransform.make_mol_maps(samples, elements, 'XBIV_corr', 'XBIV_mol')
+CV_switch = 'C'
+# area density maps to area density arrays 
+dtransform.stat_arrs(samples, 'XBI'+CV_switch+'_corr', 'XBI'+CV_switch+'_stat')
+# area density arrays to area density standardized
+dtransform.stand_arrs(samples, 'XBI'+CV_switch+'_stat', 'XBI'+CV_switch+'_stand')
 
-### mol maps to mol arrays ###
-#dtransform.stat_arrs(samples, 'XBIC_corr', 'XBIC_stat')
+### area density maps to mol maps ###
+dtransform.make_mol_maps(samples, elements, 'XBI'+CV_switch+'_corr', 'XBI'+CV_switch+'_mol')
+
+# mol maps to mol arrays
 dtransform.stat_arrs(samples, 'XBI'+CV_switch+'_mol', 'XBI'+CV_switch+'_molStat')
-#dtransform.stat_arrs(samples, 'XBIV_corr', 'XBIV_stat')
-#dtransform.stat_arrs(samples, 'XBIV_mol', 'XBIV_molStat')
+# mol arrays to mol standardized
+dtransform.stand_arrs(samples, 'XBI'+CV_switch+'_molStat', 'XBI'+CV_switch+'_molstand')
+
+
 # 1=Cu 2=Cd 3=Te 4=Mo 5=Zn 6=ratio
 element0_idx=1 # Cu
 element1_idx=3 # Te
@@ -22,13 +27,12 @@ element1_idx=3 # Te
     # to add 2d ratio maps, simply replace '_molStat' with '_mol'
     # this function can divide the normal area density data ('_stat' and '_corr')
         # but there is little physical justification for this (better to use stoichiometry)
-#dtransform.add_ratio_array(samples, 'XBIC_molStat', element0_idx, element1_idx)
+#dtransform.add_ratio_array(samples, 'XBI'+CV_switch+'_molStat', element0_idx, element1_idx)
 
 
-#dtransform.stand_arrs(samples, 'XBIC_stat', 'XBIC_stand')
-#dtransform.stand_arrs(samples, 'XBIV_stat', 'XBIV_stand')
+
 #%%
-### remove outliers ###
+### remove outliers, only use on Stat arrays ###
 import home_clustering
 DATA_KEY = 'XBI'+CV_switch+'_molStat'
 BAD_CHANNEL_idx = 1; SIGMA = 3
@@ -36,7 +40,8 @@ NEW_DATA_KEY = 'XBI'+CV_switch+'_slim'
 dtransform.remove_outliers(samples, DATA_KEY, BAD_CHANNEL_idx, SIGMA, NEW_DATA_KEY)
 
 ## kmeans clustering trials ##
-DATA_KEY = 'XBI'+CV_switch+'_slim'
+# change this to _molStat if you want to plot clusters; otherwise use _slim
+DATA_KEY = 'XBI'+CV_switch+'_molStat' 
 MASK_FEATURE = 0 # column index of channel within stat array
 CLUSTERS = 3; KTRIALS = 5
 # stores numpy array of 'n' kmeans clustering trials for each scan for each sample

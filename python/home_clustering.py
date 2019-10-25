@@ -8,10 +8,10 @@ from sklearn.cluster import KMeans
 import samp_dict_grow
 import numpy as np
 
-def kmeans_trials(samps, model_key, mask_chan, clust_num, iter_num, new_data_key):
+def kmeans_trials(samps, data_key, mask_chan, clust_num, iter_num, new_data_key):
     for samp in samps:
         scans_models = []
-        for i, scan_arr in enumerate(samp[model_key]):
+        for i, scan_arr in enumerate(samp[data_key]):
             model_data = scan_arr[:,mask_chan]
             model_data = model_data.reshape(-1,1)
             model =  KMeans(init='k-means++', n_clusters=clust_num, n_init=10)
