@@ -68,10 +68,10 @@ TS58A = {'Name': 'TS58A',
          'STACK': {'Mo':[10.2, 500E-7], 'ZnTe':[6.34, 375E-7], 'Cu':[8.96, 2.5E-7], 'CdTe':[5.85, 5.35E-4], 'CdS':[4.82, 80E-7], 'SnO2':[100E-7]}
          }
 
-samples = [NBL3_2]#, NBL3_3, TS58A]
+samples = [NBL3_2, NBL3_3, TS58A]
 
 home_import.import_h5s(samples, scan_path)
-elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']
+elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L', 'Zn']
 # sample_list, scans_to_import, electrical_channel, element_list, XRF_normalization, XRF_quantification
     # electrical_channel: 0=SRCurrent, 1=us_ic, 2=ds_ic; h5_file['MAPS/scaler_names']
     # XRF_normalization: us_ic or ds_ic
@@ -104,9 +104,11 @@ beam_settings1 = {'beamtime': '2017_12','beam_energy': 8.99, 'beam_theta':90, 'd
 home_abs.get_layer_iios(samples, iio_elements, beam_settings1, iio_layer)
 # enter index of scans you want to correct for each sample
 sample_scan_idxs=[[3,4,5], [3,4], [3,4,5]] 
-home_abs.apply_iios(samples, 'XBIC', sample_scan_idxs, '2017_12_iios', ele_map_idxs, ele_iio_idxs, 'XBIC2017_12_corr') #--> correct current scans from 2017_12
+home_abs.apply_iios(samples, 'XBIC', sample_scan_idxs, '2017_12_iios', 
+                    ele_map_idxs, ele_iio_idxs, 'XBIC2017_12_corr') #--> correct current scans from 2017_12
 sample_scan_idxs=[[3], [3], [3]]
-home_abs.apply_iios(samples, 'XBIV', sample_scan_idxs, '2017_12_iios', ele_map_idxs, ele_iio_idxs, 'XBIV2017_12_corr') #--> correct voltage scans from 2017_12
+home_abs.apply_iios(samples, 'XBIV', sample_scan_idxs, '2017_12_iios', 
+                    ele_map_idxs, ele_iio_idxs, 'XBIV2017_12_corr') #--> correct voltage scans from 2017_12
 
 # combine corrected maps
 home_abs.join_corrected_beamtimes(samples, ['XBIC2019_03_corr', 'XBIC2017_12_corr'], 'XBIC_corr')

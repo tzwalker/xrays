@@ -77,7 +77,7 @@ def get_avg_internal_attn(layer_info, layer, elements, beam_settings, cum_upstrm
         depth_idx_iio_bound = each_sublayer_iios[0] * (1/np.e)
         characteristic_depth = get_char_depth(each_sublayer_iios, depth_idx_iio_bound)
         ele_avg_iio = np.mean(each_sublayer_iios[:characteristic_depth])
-        print(ele_avg_iio)
+        #print(ele_avg_iio)
         ele_avg_iios.append(ele_avg_iio)
     ele_avg_iios = np.array(ele_avg_iios)
     return ele_avg_iios
