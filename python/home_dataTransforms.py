@@ -57,7 +57,7 @@ def make_mol_maps(samples, elements, dict_data, new_dict_data):
     conv_factors = [(1/1E6) / (1/mol_mass) for mol_mass in mol_masses]
     for sample in samples:
         mol_scans = []
-        for scan_raw_maps in sample[dict_data][0:3]: #CHANGE THIS BACK: FOCUSING ON ZN INCLUDED SCANS
+        for scan_raw_maps in sample[dict_data]: #CHANGE THIS BACK: FOCUSING ON ZN INCLUDED SCANS
             mol_maps = scan_raw_maps.copy()
             for ele_idx, factor in enumerate(conv_factors):
                 map_idx = ele_idx + 1

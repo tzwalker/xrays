@@ -4,13 +4,14 @@ Trumann
 Mon Oct 21 14:04:15 2019
 """
 import home_dataTransforms as dtransform
-CV_switch = 'C'
+CV_switch = 'V'
 # area density maps to area density arrays 
 dtransform.stat_arrs(samples, 'XBI'+CV_switch+'_corr', 'XBI'+CV_switch+'_stat')
 # area density arrays to area density standardized
 dtransform.stand_arrs(samples, 'XBI'+CV_switch+'_stat', 'XBI'+CV_switch+'_stand')
 
-### area density maps to mol maps ###
+### area density maps to mol maps ### 
+# NOTE THERE IS A DEPENDENCEY HERE ON HOW MANY ELEMENTS WERE INCLUDED IN THE ABSORPTION CORRECTION!!
 dtransform.make_mol_maps(samples, elements, 'XBI'+CV_switch+'_corr', 'XBI'+CV_switch+'_mol')
 
 # mol maps to mol arrays
@@ -41,7 +42,7 @@ dtransform.remove_outliers(samples, DATA_KEY, BAD_CHANNEL_idx, SIGMA, NEW_DATA_K
 
 ## kmeans clustering trials ##
 # change this to _molStat if you want to plot clusters; otherwise use _slim
-DATA_KEY = 'XBI'+CV_switch+'_molStat' 
+DATA_KEY = 'XBI'+CV_switch+'_slim' 
 MASK_FEATURE = 0 # column index of channel within stat array
 CLUSTERS = 3; KTRIALS = 5
 # stores numpy array of 'n' kmeans clustering trials for each scan for each sample
@@ -73,7 +74,7 @@ STDEV_FORMAT = {'color': 'Greys',
                       'plt_title': 'Average Error',
                       'v_range': [0,1]}
 
-fig, (ax0, ax1) = plt.subplots(2,1)
+fig, (ax0,ax1) = plt.subplots(2,1)
 plt.tight_layout()
 plot_correlation_matrices.get_corrmtx_plot(SAMPLE['spear_stats'][0], CHANNELS, SPEAR_FORMAT, ax0)
 plot_correlation_matrices.get_corrmtx_plot(SAMPLE['spear_stats'][1], CHANNELS, STDEV_FORMAT, ax1)
