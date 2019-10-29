@@ -78,3 +78,31 @@ sigma = 1
     # 'just_gauss' for smoothed maps w/o gradients 
     # 'filt_grad' for smoothed gradient maps (first smooth, then calc and plot gradient)
 make_plots(index1, index2, sigma, 'raw')
+#%%
+import matplotlib.pyplot as plt
+import numpy as np
+
+from skimage.data import astronaut
+from skimage.color import rgb2gray
+from skimage.filters import sobel
+from skimage.segmentation import felzenszwalb, slic, quickshift, watershed
+from skimage.segmentation import mark_boundaries
+from skimage.util import img_as_float
+
+#xbic = NBL3_2['XBIC_corr'][0][0,:,:]
+cu = NBL3_2['XBIC_corr'][0][1,:,:-2]
+#cd = NBL3_2['XBIC_corr'][0][2,:,:]
+
+cu = cu.astype('float64')
+segments_fz = felzenszwalb(cu, scale=100, sigma=1.5, min_size=50)
+segments_slic = slic(cu, n_segments=100, compactness=10, sigma=0.5)
+fig, (ax0,ax1) = plt.subplots(1,2,sharex=True, sharey=True)
+ax0.imshow(cu)
+ax0.imshow(mark_boundaries(cu, segments_fz))#, alpha=0.2)
+ax1.imshow(mark_boundaries(cu, segments_slic))
+
+for a in ax.ravel():
+    a.set_axis_off()
+
+plt.tight_layout()
+plt.show()

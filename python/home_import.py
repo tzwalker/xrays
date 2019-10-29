@@ -6,8 +6,6 @@ author: Trumann
 import h5py
 import numpy as np
 import samp_dict_grow
-import xraylib as xl
-
 # transform integers in scan list to strings
 def str_list(L):
     L = [str(v) for v in L]
