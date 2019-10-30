@@ -80,29 +80,31 @@ sigma = 1
 make_plots(index1, index2, sigma, 'raw')
 #%%
 import matplotlib.pyplot as plt
-import numpy as np
+#import numpy as np
 
-from skimage.data import astronaut
-from skimage.color import rgb2gray
+#from skimage.data import astronaut
+#from skimage.color import rgb2gray
 from skimage.filters import sobel
-from skimage.segmentation import felzenszwalb, slic, quickshift, watershed
+from skimage.segmentation import felzenszwalb, watershed
 from skimage.segmentation import mark_boundaries
-from skimage.util import img_as_float
+#from skimage.util import img_as_float
 
-#xbic = NBL3_2['XBIC_corr'][0][0,:,:]
+xbic = NBL3_2['XBIC_corr'][0][0,:,:-2]
+sxbic = sobel(xbic)
 cu = NBL3_2['XBIC_corr'][0][1,:,:-2]
+scu = sobel(cu)
 #cd = NBL3_2['XBIC_corr'][0][2,:,:]
 
 cu = cu.astype('float64')
-segments_fz = felzenszwalb(cu, scale=100, sigma=1.5, min_size=50)
-segments_slic = slic(cu, n_segments=100, compactness=10, sigma=0.5)
-fig, (ax0,ax1) = plt.subplots(1,2,sharex=True, sharey=True)
-ax0.imshow(cu)
-ax0.imshow(mark_boundaries(cu, segments_fz))#, alpha=0.2)
-ax1.imshow(mark_boundaries(cu, segments_slic))
-
-for a in ax.ravel():
-    a.set_axis_off()
-
+segments_cu0 = felzenszwalb(cu, scale=100, sigma=1.5, min_size=50)
+segments_cu1 = watershed(scu, markers=100, compactness=0.001)
+xbic=xbic.astype('float64')
+segments_xbic0 = felzenszwalb(xbic, scale=100, sigma=1.5, min_size=50)
+segments_xbic1 = watershed(sxbic, markers=100, compactness=0.001)
+#%%
+fig, ((ax0,ax1),(ax2,ax3)) = plt.subplots(nrows=2,ncols=2)
+ax0.imshow(cu); ax0.imshow(mark_boundaries(cu, segments_cu0))#, alpha=0.2)
+ax1.imshow(cu); ax1.imshow(mark_boundaries(cu, segments_cu1))#, alpha=0.2)
+ax2.imshow(xbic); ax2.imshow(mark_boundaries(xbic, segments_xbic0))#, alpha=0.2)
+ax3.imshow(xbic); ax3.imshow(mark_boundaries(xbic, segments_xbic1))#, alpha=0.2)
 plt.tight_layout()
-plt.show()
