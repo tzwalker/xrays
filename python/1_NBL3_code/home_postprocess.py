@@ -54,44 +54,32 @@ import home_clustering
 import plot_correlation_matrices
 import matplotlib.pyplot as plt
 import numpy as np
-SAMPLE = TS58A
-SCANS = [0,1,2]
+CV_switch = 'C'
+SAMPLE = NBL3_3
+SCANS = [3,4]
 DATA_KEY = 'XBI'+CV_switch+'_slim';     CLUSTERS_KEY = 'XBI'+CV_switch+'kmeans_trials'
 FOCUS_FEATURE = 0;          FOCUS_CLUSTER = 'low'; CLUSTERS = 3
 NEW_KEYS = ['spear_stats', 'pval_stats']
 home_clustering.correlation_stats(SAMPLE, SCANS, DATA_KEY, CLUSTERS_KEY, 
                                CLUSTERS, FOCUS_CLUSTER, FOCUS_FEATURE, NEW_KEYS)
-#print(SAMPLE.keys())
-CHANNELS = [FOCUS_CLUSTER+' XBI'+CV_switch] + elements# + ['Cu/(Cu+Te)']
+noXRF_line_elements = [e[0:2] for e in elements]
+CHANNELS = [FOCUS_CLUSTER+' XBI'+CV_switch] + noXRF_line_elements
 SPEAR_FORMAT = {'color': 'coolwarm', 
                       'cbar_format': {'ticks': list(list(np.linspace(-1,1,5))), 
                                       'label': 'Spearman Coefficient'},
                       'plt_title': 'Average Monotonicity',
-                      'v_range': [-1,1]}
+                      'v_range': [-1,1],
+                      'labs': 14}
 STDEV_FORMAT = {'color': 'Greys', 
                       'cbar_format': {'ticks': list(list(np.linspace(-1,1,5))), 
                                       'label': 'Standard Error'},
                       'plt_title': 'Average Error',
-                      'v_range': [0,1]}
+                      'v_range': [0,1],
+                      'labs': 8}
 
 fig, (ax0,ax1) = plt.subplots(2,1)
 plt.tight_layout()
-plot_correlation_matrices.get_corrmtx_plot(SAMPLE['spear_stats'][0], CHANNELS, SPEAR_FORMAT, ax0)
-plot_correlation_matrices.get_corrmtx_plot(SAMPLE['spear_stats'][1], CHANNELS, STDEV_FORMAT, ax1)
+# include True or None to turn numbers in cells on or off :)
+plot_correlation_matrices.get_corrmtx_plot(SAMPLE['spear_stats'][0], CHANNELS, SPEAR_FORMAT, ax0, None)
+plot_correlation_matrices.get_corrmtx_plot(SAMPLE['spear_stats'][1], CHANNELS, STDEV_FORMAT, ax1, None)
 
-#%%
-### superpixel segmentation https://www.pyimagesearch.com/2014/07/28/a-slic-superpixel-tutorial-using-python/
-from skimage.segmentation import slic
-from skimage.segmentation import mark_boundaries
-from skimage.util import img_as_float
-from skimage import io
-import matplotlib.pyplot as plt
-
-z = NBL3_2['XBIC_corr'][0][0,:,:]
-y = img_as_float(z)
-plt.imshow(z)
-segment_number = 200
-segments = slic(z, n_segments=segment_number, sigma=5)
-fig, ax = plt.subplots(1)
-ax.imshow(mark_boundaries(z, segments))
-plt.axis('off')

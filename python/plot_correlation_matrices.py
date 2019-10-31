@@ -22,13 +22,15 @@ def unmasked_mapcorr(samp, scans, data_key):
     return
 
 
-def get_corrmtx_plot(array, cols, f, axis):
+def get_corrmtx_plot(array, cols, f, axis, numbers):
     df = pd.DataFrame(array, columns=cols, index=cols)
     sns.set(style="white") # set style of seaborn objects
     mask = np.zeros_like(df, dtype=np.bool) # make mask of symmetric portion
     mask[np.triu_indices_from(mask)] = True # apply mask
     sns.heatmap(df, mask=mask, cbar_kws=f['cbar_format'], ax=axis,
-                     cmap=f['color'], annot=True, vmin=f['v_range'][0], vmax=f['v_range'][1])
-    axis.title.set_text(f['plt_title'])
+                     cmap=f['color'], annot=numbers, vmin=f['v_range'][0], vmax=f['v_range'][1],
+                     annot_kws={"fontsize":f['labs']})
+    #axis.title.set_text(f['plt_title'])
+    
     return
 

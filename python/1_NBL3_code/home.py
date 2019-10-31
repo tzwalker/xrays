@@ -53,7 +53,7 @@ NBL3_3 = {'Name': 'NBL3_3',
           }
 TS58A = {'Name': 'TS58A', 
          'XBIC_scans':     [385,386,387, 
-                            439,427,404],  
+                            439,427,408],  
          'beam_conv':       [2E5, 2E5, 2E5, 
                              1E5,1E5,1E5], #(cts/s /V)
          'c_stanford':      [5000,5000,5000, 
@@ -68,7 +68,7 @@ TS58A = {'Name': 'TS58A',
          'STACK': {'Mo':[10.2, 500E-7], 'ZnTe':[6.34, 375E-7], 'Cu':[8.96, 2.5E-7], 'CdTe':[5.85, 5.35E-4], 'CdS':[4.82, 80E-7], 'SnO2':[100E-7]}
          }
 
-samples = [NBL3_2]#, NBL3_3, TS58A]
+samples = [TS58A] #NBL3_2, NBL3_3, 
 
 home_import.import_h5s(samples, scan_path)
 elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']#, 'Zn']

@@ -89,22 +89,44 @@ from skimage.segmentation import felzenszwalb, watershed
 from skimage.segmentation import mark_boundaries
 #from skimage.util import img_as_float
 
-xbic = NBL3_2['XBIC_corr'][0][0,:,:-2]
-sxbic = sobel(xbic)
-cu = NBL3_2['XBIC_corr'][0][1,:,:-2]
+#xbic = NBL3_2['XBIC_corr'][0][0,:,:-2]
+#sxbic = sobel(xbic)
+cu = TS58A['XBIC_maps'][5][1,:,:-2]
 scu = sobel(cu)
-#cd = NBL3_2['XBIC_corr'][0][2,:,:]
+cd = TS58A['XBIC_maps'][5][2,:,:-2]
+scd = sobel(cd)
 
-cu = cu.astype('float64')
-segments_cu0 = felzenszwalb(cu, scale=100, sigma=1.5, min_size=50)
-segments_cu1 = watershed(scu, markers=100, compactness=0.001)
-xbic=xbic.astype('float64')
-segments_xbic0 = felzenszwalb(xbic, scale=100, sigma=1.5, min_size=50)
-segments_xbic1 = watershed(sxbic, markers=100, compactness=0.001)
+fig, (ax0,ax1) =plt.subplots(1,2)
+ax0.imshow(scu)
+ax1.imshow(scd)
 #%%
-fig, ((ax0,ax1),(ax2,ax3)) = plt.subplots(nrows=2,ncols=2)
-ax0.imshow(cu); ax0.imshow(mark_boundaries(cu, segments_cu0))#, alpha=0.2)
-ax1.imshow(cu); ax1.imshow(mark_boundaries(cu, segments_cu1))#, alpha=0.2)
-ax2.imshow(xbic); ax2.imshow(mark_boundaries(xbic, segments_xbic0))#, alpha=0.2)
-ax3.imshow(xbic); ax3.imshow(mark_boundaries(xbic, segments_xbic1))#, alpha=0.2)
+cu_dub = cu.astype('float64')
+segments_cu0 = felzenszwalb(cu_dub, scale=100, sigma=1.5, min_size=100)
+#segments_cu1 = watershed(scu, markers=100, compactness=0.001)
+cd_dub =cd.astype('float64')
+segments_xbic0 = felzenszwalb(cd_dub, scale=100, sigma=1.5, min_size=100)
+#segments_xbic1 = watershed(sxbic, markers=100, compactness=0.001)
+#%%
+fig, (ax0,ax1) = plt.subplots(1,2)
+ax0.imshow(cu); ax0.imshow(mark_boundaries(cu_dub, segments_cu0))#, alpha=0.2)
+ax1.imshow(cd); ax1.imshow(mark_boundaries(cd_dub, segments_xbic0))#, alpha=0.2)
+#ax2.imshow(xbic); ax2.imshow(mark_boundaries(xbic, segments_xbic0))#, alpha=0.2)
+#ax3.imshow(xbic); ax3.imshow(mark_boundaries(xbic, segments_xbic1))#, alpha=0.2)
 plt.tight_layout()
+
+#%%
+### superpixel segmentation https://www.pyimagesearch.com/2014/07/28/a-slic-superpixel-tutorial-using-python/
+from skimage.segmentation import slic
+from skimage.segmentation import mark_boundaries
+from skimage.util import img_as_float
+from skimage import io
+import matplotlib.pyplot as plt
+
+z = NBL3_2['XBIC_corr'][0][0,:,:]
+y = img_as_float(z)
+plt.imshow(z)
+segment_number = 200
+segments = slic(z, n_segments=segment_number, sigma=5)
+fig, ax = plt.subplots(1)
+ax.imshow(mark_boundaries(z, segments))
+plt.axis('off')
