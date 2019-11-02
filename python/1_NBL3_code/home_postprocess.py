@@ -4,7 +4,7 @@ Trumann
 Mon Oct 21 14:04:15 2019
 """
 import home_dataTransforms as dtransform
-CV_switch = 'V'
+CV_switch = 'C'
 # area density maps to area density arrays 
 dtransform.stat_arrs(samples, 'XBI'+CV_switch+'_corr', 'XBI'+CV_switch+'_stat')
 # area density arrays to area density standardized

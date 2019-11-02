@@ -1,3 +1,30 @@
+### export to imagej ###
+cu = TS58A['XBIC_mol'][5][1,:,:-2]
+cd = TS58A['XBIC_mol'][5][2,:,:-2]
+mo = TS58A['XBIC_mol'][5][4,:,:-2]
+
+#cu_ratio = cu/cd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+maps = [cu,cd,te,mo]
+name = ['Cu', 'Cd', 'Te', 'Mo']
+colors = ['viridis', 'Reds_r', 'Greys_r', 'YlGn_r']
+for plot,n,c in zip(maps,name,colors):
+    fig, ax = plt.subplots(1)
+    plt.imshow(plot, cmap=c)
+    ax.set_yticklabels([])
+    ax.set_xticklabels([])
+    plt.xticks([])
+    plt.yticks([])
+    plt.savefig(r"C:\Users\Trumann\Desktop" + "\scan408_" +n+ '_' +TS58A['Name'] + '.png')
+# =============================================================================
+# sns.jointplot(cu, cu_ratio, kind='hex')
+# plt.figure()
+# sns.jointplot(cu, cd, kind='hex')
+# =============================================================================
+#%%
+
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -92,26 +119,30 @@ from skimage.segmentation import mark_boundaries
 #xbic = NBL3_2['XBIC_corr'][0][0,:,:-2]
 #sxbic = sobel(xbic)
 cu = TS58A['XBIC_maps'][5][1,:,:-2]
-scu = sobel(cu)
-cd = TS58A['XBIC_maps'][5][2,:,:-2]
-scd = sobel(cd)
+te = TS58A['XBIC_maps'][5][3,:,:-2]
 
 fig, (ax0,ax1) =plt.subplots(1,2)
-ax0.imshow(scu)
-ax1.imshow(scd)
+ax0.imshow(cu)
+ax1.imshow(te)
 #%%
 cu_dub = cu.astype('float64')
-segments_cu0 = felzenszwalb(cu_dub, scale=100, sigma=1.5, min_size=100)
-#segments_cu1 = watershed(scu, markers=100, compactness=0.001)
-cd_dub =cd.astype('float64')
-segments_xbic0 = felzenszwalb(cd_dub, scale=100, sigma=1.5, min_size=100)
-#segments_xbic1 = watershed(sxbic, markers=100, compactness=0.001)
-#%%
+cd_dub = te.astype('float64')S
+
+segments_00 = felzenszwalb(cu_dub, scale=100, sigma=1.5, min_size=200)
+segments_01 = felzenszwalb(cd_dub, scale=100, sigma=1.5, min_size=100)
 fig, (ax0,ax1) = plt.subplots(1,2)
-ax0.imshow(cu); ax0.imshow(mark_boundaries(cu_dub, segments_cu0))#, alpha=0.2)
-ax1.imshow(cd); ax1.imshow(mark_boundaries(cd_dub, segments_xbic0))#, alpha=0.2)
-#ax2.imshow(xbic); ax2.imshow(mark_boundaries(xbic, segments_xbic0))#, alpha=0.2)
-#ax3.imshow(xbic); ax3.imshow(mark_boundaries(xbic, segments_xbic1))#, alpha=0.2)
+ax0.imshow(cu); ax0.imshow(mark_boundaries(cu_dub, segments_00), alpha=0.5)
+ax1.imshow(cd); ax1.imshow(mark_boundaries(cd_dub, segments_01), alpha=0.5)
+#%%
+scu = sobel(cu)
+scd = sobel(te)
+segments_02 = watershed(scu, markers=100, compactness=0.001)
+segments_03 = watershed(scd, markers=100, compactness=0.001)
+fig, (ax2,ax3) = plt.subplots(1,2)
+arr= mark_boundaries(scu, segments_02); arr1 = mark_boundaries(scd, segments_03)
+arr[arr==0] = np.nan; arr1[arr1==0] = np.nan
+ax2.imshow(arr)
+ax3.imshow(arr1)
 plt.tight_layout()
 
 #%%
