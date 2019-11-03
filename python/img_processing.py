@@ -1,103 +1,18 @@
-### export to imagej ###
-cu = TS58A['XBIC_mol'][5][1,:,:-2]
-cd = TS58A['XBIC_mol'][5][2,:,:-2]
-mo = TS58A['XBIC_mol'][5][4,:,:-2]
-
-#cu_ratio = cu/cd
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-maps = [cu,cd,te,mo]
-name = ['Cu', 'Cd', 'Te', 'Mo']
-colors = ['viridis', 'Reds_r', 'Greys_r', 'YlGn_r']
-for plot,n,c in zip(maps,name,colors):
-    fig, ax = plt.subplots(1)
-    plt.imshow(plot, cmap=c)
-    ax.set_yticklabels([])
-    ax.set_xticklabels([])
-    plt.xticks([])
-    plt.yticks([])
-    plt.savefig(r"C:\Users\Trumann\Desktop" + "\scan408_" +n+ '_' +TS58A['Name'] + '.png')
-# =============================================================================
-# sns.jointplot(cu, cu_ratio, kind='hex')
-# plt.figure()
-# sns.jointplot(cu, cd, kind='hex')
-# =============================================================================
-#%%
+### import image and experiment ###
+from skimage import io, filters
+from skimage.segmentation import watershed, mark_boundaries
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-from matplotlib.colors import colorConverter 
-from skimage.filters import sobel
-from scipy.ndimage import gaussian_filter as gaussf
-from scipy import stats
+image = TS58A['XBIC_maps'][5][2,:,:-2]
+#io.imshow(image, cmap='Greens_r')
+edges = filters.sobel(image)
+#io.imshow(edges, cmap='Greys_r')
+segments = watershed(edges, markers=100, compactness=0.001)
+boundaries = mark_boundaries(edges, segments, color=(1, 0, 0), mode='inner',  background_label=5,outline_color=None)
+io.imshow(boundaries)
+#nan_boundaries = boundaries.copy()
+#nan_boundaries[nan_boundaries==0] = np.nan
+#io.imshow(nan_boundaries)
 
-def make_plots(index1, index2, sig, switch):
-    ele_1 = samp['elXBIC'][scan][index1][:,:-2]
-    ele_2 = samp['elXBIC'][scan][index2][:,:-2]
-    
-    if switch == 'raw':
-        map_key = [ele_1, ele_2]
-        x = map_key[0].ravel() ; xlab = 'raw ' + elements[index1]
-        y = map_key[1].ravel() ; ylab = 'raw ' + elements[index2]
-    elif switch=='just_gauss':
-		# gaussian filter of original data
-		cu_gauss = gaussf(ele_1, sigma=sig)                 # maintains shape
-		zn_gauss = gaussf(ele_2, sigma=sig)
-        map_key = [cu_gauss, zn_gauss]
-        x = map_key[0].ravel() ; xlab = elements[index1] + ' gauss filt sig={s}'.format(s=str(sig))
-        y = map_key[1].ravel() ; ylab = elements[index2] + ' gauss filt sig={s}'.format(s=str(sig))
-    elif switch=='filt_grad':
-		# gradients of gaussian filtered image
-		cu_gradient = sobel(cu_gauss)    # maintains shape
-		zn_gradient = sobel(zn_gauss)
-		# gradients without trimmed 'zero 'edges; prepping to find percentiles
-		cu_gradient_no_edge = cu_gradient[np.nonzero(cu_gradient)] # returns raveled array
-		zn_gradient_no_edge = zn_gradient[np.nonzero(zn_gradient)]
-        map_key = [cu_gradient, zn_gradient]
-        scatter_key = [cu_gradient_no_edge, zn_gradient_no_edge]
-        x = scatter_key[0] ; xlab = elements[index1] + ' gradient filt sig={s}'.format(s=str(sig))
-        y = scatter_key[1] ; ylab = elements[index2] + ' gradient filt sig={s}'.format(s=str(sig))
-    
-	
-    color1 = colorConverter.to_rgba('c')
-    color2 = colorConverter.to_rgba('c')
-    # make the colormaps
-    cmap2 = matplotlib.colors.LinearSegmentedColormap.from_list('my_cmap2',[color1,color2])
-	# create the _lut array, with rgba values
-    cmap2._init() 
-    # create your alpha array and fill the colormap with them
-    alphas2 = np.linspace(0, 1.0, cmap2.N+3)
-    cmap2._lut[:,-1] = alphas2
-	
-	## original map 1, original map 2, overlaid map ##
-    fig, axs = plt.subplots(1,3)
-    plt.tight_layout()
-    axs[0].imshow(map_key[0], cmap='Oranges_r', origin='lower')
-    axs[1].imshow(map_key[1], cmap='Blues_r', origin='lower')
-    axs[2].imshow(map_key[0], cmap='Oranges_r', origin='lower')
-    axs[2].imshow(map_key[1], cmap=cmap2, origin='lower')
-    ## scatter plot bewteen overlapped maps ##
-    plt.figure()
-    plt.scatter(x, y, s=3, color='#6B8E23')
-    slope, intercept, r_squared, p_value, std_err = stats.linregress(x, y)
-    line = slope*x + intercept
-    plt.plot(x, line, color='#20B2AA') 
-    plt.xlabel(xlab)
-    plt.ylabel(ylab)
-    plt.text(max(x)*0.75, max(y)*0.50, "$R^2$ = {s}".format(s=str(round(r_squared,3))))
-    return
-
-samp = NBL3_2
-scan = 3
-idx1 = 0; idx2 = 1
-sigma = 1
-# for overlaying plots ; generate the colors for your colormap
-# strings used here: 
-    # 'raw': for raw, fitted data 
-    # 'just_gauss' for smoothed maps w/o gradients 
-    # 'filt_grad' for smoothed gradient maps (first smooth, then calc and plot gradient)
-make_plots(idx1, idx2, sigma, 'raw')
 #%%
 import matplotlib.pyplot as plt
 from skimage.filters import sobel
@@ -110,16 +25,16 @@ te = TS58A['XBIC_maps'][5][3,:,:-2]
 fig, (ax0,ax1) =plt.subplots(1,2)
 ax0.imshow(cu)
 ax1.imshow(te)
-#%%
-cu_dub = cu.astype('float64')
-cd_dub = te.astype('float64')S
 
+cu_dub = cu.astype('float64')
+cd_dub = te.astype('float64')
 segments_00 = felzenszwalb(cu_dub, scale=100, sigma=1.5, min_size=200)
 segments_01 = felzenszwalb(cd_dub, scale=100, sigma=1.5, min_size=100)
 fig, (ax0,ax1) = plt.subplots(1,2)
 ax0.imshow(cu); ax0.imshow(mark_boundaries(cu_dub, segments_00), alpha=0.5)
 ax1.imshow(cd); ax1.imshow(mark_boundaries(cd_dub, segments_01), alpha=0.5)
-#%%
+plt.tight_layout()
+
 scu = sobel(cu)
 scd = sobel(te)
 segments_02 = watershed(scu, markers=100, compactness=0.001)
@@ -130,20 +45,3 @@ arr[arr==0] = np.nan; arr1[arr1==0] = np.nan
 ax2.imshow(arr)
 ax3.imshow(arr1)
 plt.tight_layout()
-
-#%%
-### superpixel segmentation https://www.pyimagesearch.com/2014/07/28/a-slic-superpixel-tutorial-using-python/
-from skimage.segmentation import slic
-from skimage.segmentation import mark_boundaries
-from skimage.util import img_as_float
-from skimage import io
-import matplotlib.pyplot as plt
-
-z = NBL3_2['XBIC_corr'][0][0,:,:]
-y = img_as_float(z)
-plt.imshow(z)
-segment_number = 200
-segments = slic(z, n_segments=segment_number, sigma=5)
-fig, ax = plt.subplots(1)
-ax.imshow(mark_boundaries(z, segments))
-plt.axis('off')
