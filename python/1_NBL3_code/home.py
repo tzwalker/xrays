@@ -12,7 +12,7 @@ def get_directory(machine_index):
     return scan_path, def_path
 
 # 0=Dell work, 1=ASUS windows, 2=ASUS ubuntu
-scan_path, def_path = get_directory(1)
+scan_path, def_path = get_directory(0)
 sys.path.append(def_path)
 import home_import
 import home_abs
