@@ -68,7 +68,7 @@ TS58A = {'Name': 'TS58A',
          'STACK': {'Mo':[10.2, 500E-7], 'ZnTe':[6.34, 375E-7], 'Cu':[8.96, 2.5E-7], 'CdTe':[5.85, 5.35E-4], 'CdS':[4.82, 80E-7], 'SnO2':[100E-7]}
          }
 
-samples = [TS58A] #NBL3_2, NBL3_3, 
+samples = [NBL3_2, NBL3_3, TS58A] #
 
 home_import.import_h5s(samples, scan_path)
 elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']#, 'Zn']

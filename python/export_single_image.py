@@ -47,7 +47,7 @@ def rgb_to_gray(img):
            grayImage[:,:,i] = Avg
         return grayImage   
 
-def export_figure_matplotlib(path, sample,scan_idx, shaped_data,ch_idx,color, dpi=96, resize_fact=1, plt_show=False):
+def export_figure_matplotlib(path, sample,scan_idx, shaped_data,ch_idx,color, dpi, resize_fact, save):
     plot=sample[shaped_data][scan_idx][ch_idx,:,:-2]
     fig = plt.figure(frameon=False)
     fig.set_size_inches(plot.shape[1]/dpi, plot.shape[0]/dpi)
@@ -55,25 +55,28 @@ def export_figure_matplotlib(path, sample,scan_idx, shaped_data,ch_idx,color, dp
     ax.set_axis_off()
     fig.add_axes(ax)
     ax.imshow(plot, cmap=color)
-    name_idx = ch_idx - 1
-    fname = r'\{samp}_scan{num}_{ele}.png'.format(
-            samp=sample['Name'], 
-            num=str(sample['XBIC_scans'][scan_idx]), 
-            ele=elements[name_idx][0:2])
-    directory= path+fname
-    plt.savefig(directory, dpi=(dpi * resize_fact))
-    if plt_show: plt.show()
-    else: plt.close()
+    
+    if save == 1:
+        name_idx = ch_idx - 1
+        fname = r'\{samp}_scan{num}_{ele}.png'.format(
+                samp=sample['Name'], 
+                num=str(sample['XBIC_scans'][scan_idx]), 
+                ele=elements[name_idx][0:2])
+        directory= path+fname
+        plt.savefig(directory, dpi=(dpi * resize_fact))
+    else: pass
     return
+
+path = r'\\10.4.22.42\share\Trumann\XRF images'
+#export_img(path, TS58A, 5, 'XBIC_corr', 4, 'viridis')
+cmaps = ['magma', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r']
+scan = 0; chan = 3
+export_figure_matplotlib(path, TS58A, scan, 'XBIC_maps', chan, cmaps[chan],
+                         dpi=96, resize_fact=1, save=1)
 
 def overlay(image1, image2, alph):
     fig, ax = plt.subplots()
     ax.imshow(image1)
     ax.imshow(image2, alpha=alph)
     return
-
-path = r'\\10.4.22.42\share\Trumann\XRF images'
-#export_img(path, TS58A, 5, 'XBIC_corr', 4, 'viridis')
-export_figure_matplotlib(path, TS58A, 5, 'XBIC_corr', 1, 'Oranges_r',
-                         dpi=96, resize_fact=1, plt_show=False)
 #overlay(TS58A['XBIC_maps'][5][3,:,:], TS58A['XBIC_maps'][5][1,:,:], 0.5)
