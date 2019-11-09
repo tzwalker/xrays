@@ -70,8 +70,8 @@ def export_figure_matplotlib(path, sample,scan_idx, shaped_data,ch_idx,color, dp
 path = r'\\10.4.22.42\share\Trumann\XRF images'
 #export_img(path, TS58A, 5, 'XBIC_corr', 4, 'viridis')
 cmaps = ['magma', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r']
-scan = 0; chan = 3
-export_figure_matplotlib(path, TS58A, scan, 'XBIC_maps', chan, cmaps[chan],
+scan = 4; chan = 0
+export_figure_matplotlib(path, NBL3_2, scan, 'XBIC_maps', chan, cmaps[chan],
                          dpi=96, resize_fact=1, save=1)
 
 def overlay(image1, image2, alph):
