@@ -12,7 +12,7 @@ def get_directory(machine_index):
     return scan_path, def_path
 
 # 0=Dell work, 1=ASUS windows, 2=ASUS ubuntu
-scan_path, def_path = get_directory(1)
+scan_path, def_path = get_directory(0)
 sys.path.append(def_path)
 import home_import
 import home_abs
@@ -68,7 +68,7 @@ TS58A = {'Name': 'TS58A',
          'STACK': {'Mo':[10.2, 500E-7], 'ZnTe':[6.34, 375E-7], 'Cu':[8.96, 2.5E-7], 'CdTe':[5.85, 5.35E-4], 'CdS':[4.82, 80E-7], 'SnO2':[100E-7]}
          }
 
-samples = [TS58A] #NBL3_2, NBL3_3, 
+samples = [NBL3_2, NBL3_3, TS58A] #
 
 home_import.import_h5s(samples, scan_path)
 elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']#, 'Zn']

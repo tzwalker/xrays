@@ -58,5 +58,5 @@ def plot_nice_from_ascii(xrf_image_full_path):
     #cbar_ax.set_yticklabels('0.2f') --> debug
     return
 
-four_img = r'C:\Users\Trumann\Desktop\stage_data\combined_ASCII_2idd_0259.h5.csv'
+four_img = r'C:\Users\Trumann\Desktop\FS_data\FS3_2019_06_2IDD_stage\combined_ASCII_2idd_0259.h5.csv'
 plot_nice_from_ascii(four_img)

@@ -41,8 +41,8 @@ XRF_norm = 1 #us_ic
 elect_chan = 2 #ds_ic
 
 import_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s' 
-export_path = r'C:\Users\Trumann\Dropbox (ASU)\Internal Reports\Data sharing with Math\Trumann\mat_files_shaped'
+export_path = r'C:\Users\Trumann\Dropbox (ASU)\Internal Reports\Data sharing with Math\Trumann\mat_files_shaped\NBL3_1'
 
-XBIC = [550,551,575, 472,475,491, 427,439,440, 517,519]
+XBIC = [338,339,340, 517]#, , , ]
 
 h5_to_matlab(XBIC, import_path, export_path, elect_chan, XRF_norm)

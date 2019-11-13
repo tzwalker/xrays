@@ -56,3 +56,4 @@ arr[arr==0] = np.nan; arr1[arr1==0] = np.nan
 ax2.imshow(arr)
 ax3.imshow(arr1)
 plt.tight_layout()
+
