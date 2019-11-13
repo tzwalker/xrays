@@ -47,7 +47,7 @@ def rgb_to_gray(img):
            grayImage[:,:,i] = Avg
         return grayImage   
 
-def export_figure_matplotlib(path, sample,scan_idx, shaped_data,ch_idx,color, dpi, resize_fact, save):
+def export_figure_matplotlib(path, sample,scan_idx, shaped_data,ch_idx,color,n_idx, dpi, resize_fact, save):
     plot=sample[shaped_data][scan_idx][ch_idx,:,:-2]
     fig = plt.figure(frameon=False)
     fig.set_size_inches(plot.shape[1]/dpi, plot.shape[0]/dpi)
@@ -61,17 +61,17 @@ def export_figure_matplotlib(path, sample,scan_idx, shaped_data,ch_idx,color, dp
         fname = r'\{samp}_scan{num}_{ele}.png'.format(
                 samp=sample['Name'], 
                 num=str(sample['XBIC_scans'][scan_idx]), 
-                ele=elements[name_idx][0:2])
+                ele=n_idx[name_idx][0:2])
         directory= path+fname
         plt.savefig(directory, dpi=(dpi * resize_fact))
     else: pass
     return
 
 path = r'\\10.4.22.42\share\Trumann\XRF images'
-#export_img(path, TS58A, 5, 'XBIC_corr', 4, 'viridis')
+e = ['XBIC'] + elements
 cmaps = ['magma', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r']
-scan = 4; chan = 0
-export_figure_matplotlib(path, NBL3_2, scan, 'XBIC_maps', chan, cmaps[chan],
+scan = 3; chan = 2
+export_figure_matplotlib(path, TS58A, scan, 'XBIC_maps', chan, cmaps[chan], e[chan],
                          dpi=96, resize_fact=1, save=1)
 
 def overlay(image1, image2, alph):

@@ -1,10 +1,14 @@
-import defs_NBL3_xSect as xsect_defs
+import xSect_defs as xsect_defs
 import numpy as np
 
 path = r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs'
+defs = r'C:\Users\Trumann\xrays\python\1_NBL3_code'
+import sys
+sys.path.append(defs)
+
 sample = 'NBL33'
 scannum = 1
-channels = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
+channels = ['Cl_K', 'Cu_K', 'Cd_L3']
 meta_data = xsect_defs.get_scan_metadata(path, sample, scannum)
 rotation = 0
 
@@ -29,4 +33,4 @@ def export_integrated_dfs(imp_rot_dfs):
     return arrays
 
 arrays = export_integrated_dfs(imported_rotated_dataframes)
-np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3 data\py_' + sample +"_Scan"+ str(scannum) + '.csv', arrays, delimiter = ',')
+#np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3 data\py_' + sample +"_Scan"+ str(scannum) + '.csv', arrays, delimiter = ',')
