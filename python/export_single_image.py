@@ -61,16 +61,16 @@ def export_figure_matplotlib(path, sample,scan_idx, shaped_data,ch_idx,color,n_i
         fname = r'\{samp}_scan{num}_{ele}.png'.format(
                 samp=sample['Name'], 
                 num=str(sample['XBIC_scans'][scan_idx]), 
-                ele=n_idx[name_idx][0:2])
+                ele=n_idx[name_idx])
         directory= path+fname
         plt.savefig(directory, dpi=(dpi * resize_fact))
     else: pass
     return
 
-path = r'\\10.4.22.42\share\Trumann\XRF images'
-e = ['XBIC'] + elements
+path = r'Z:\Trumann\XRF images\py_exports_interface'
+e = ['XBIC'] + [ele[0:2] for ele in elements]
 cmaps = ['magma', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r']
-scan = 3; chan = 2
+scan = 1; chan = 1
 export_figure_matplotlib(path, TS58A, scan, 'XBIC_maps', chan, cmaps[chan], e[chan],
                          dpi=96, resize_fact=1, save=1)
 
