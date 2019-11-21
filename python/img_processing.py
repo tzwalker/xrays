@@ -38,3 +38,16 @@ plt.imshow(image, origin='lower')
 # ax0.imshow(blurred)
 # ax1.imshow(edges1, cmap=plt.cm.gray)
 # =============================================================================
+#%%
+# attempting to copy Math's result #
+img = TS58A['XBIC_maps'][5][3,:,:-2]
+
+from skimage.segmentation import slic, mark_boundaries
+import numpy as np; import matplotlib.pyplot as plt
+img = np.float64(img)
+edges = slic(img, n_segments=100, compactness=50, sigma=0)
+bm = mark_boundaries(img, edges, color=(1, 1, 0))
+fig, (ax0, ax1) = plt.subplots(1,2)
+ax0.imshow(img, origin='lower', cmap='viridis')
+ax1.imshow(bm[:,:,0], origin='lower', cmap='viridis')
+
