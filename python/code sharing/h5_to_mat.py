@@ -46,3 +46,13 @@ export_path = r'C:\Users\Trumann\Dropbox (ASU)\Internal Reports\Data sharing wit
 XBIC = [338,339,340, 517]#, , , ]
 
 h5_to_matlab(XBIC, import_path, export_path, elect_chan, XRF_norm)
+
+#%%
+path = r'C:\Users\Trumann\Dropbox (ASU)\Internal Reports\Data sharing with Math\Trumann\mat_files_shaped\TS58A'
+file = r'\h5scan_0382.mat'
+
+f = path + file
+
+from scipy.io import loadmat, whosmat
+
+z = loadmat(f)

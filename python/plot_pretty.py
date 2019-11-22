@@ -5,7 +5,7 @@ author: Trumann
 import plot_defs as PLT
 sample = TS58A
 data_key = 'XBIC_corr'
-scan_idx = 3; feature_idx = 2
+scan_idx = 3; feature_idx = 3
 label_list = [16,14, 
               20,20]
 

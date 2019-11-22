@@ -25,35 +25,29 @@ pic2show = kmeans.cluster_centers_[kmeans.labels_]
 cluster_pic = pic2show.reshape(pic.shape[0], pic.shape[1], pic.shape[2])
 plt.imshow(cluster_pic)
 #%%
+image = TS58A['XBIC_maps'][5][3,:,:-2]
+from scipy.ndimage.filters import gaussian_filter
 import matplotlib.pyplot as plt
-from skimage.filters import sobel
-from skimage.segmentation import felzenszwalb, watershed
-from skimage.segmentation import mark_boundaries
+from skimage import feature
+blurred = gaussian_filter(image, sigma=3)
+plt.imshow(image, origin='lower')
 
-cu = TS58A['XBIC_maps'][5][1,:,:-2]
-te = TS58A['XBIC_maps'][5][3,:,:-2]
+# =============================================================================
+# edges1 = feature.canny(blurred, sigma=2)
+# fig, (ax0,ax1) = plt.subplots(1,2)
+# ax0.imshow(blurred)
+# ax1.imshow(edges1, cmap=plt.cm.gray)
+# =============================================================================
+#%%
+# attempting to copy Math's result #
+img = TS58A['XBIC_maps'][5][3,:,:-2]
 
-fig, (ax0,ax1) =plt.subplots(1,2)
-ax0.imshow(cu)
-ax1.imshow(te)
-
-cu_dub = cu.astype('float64')
-cd_dub = te.astype('float64')
-segments_00 = felzenszwalb(cu_dub, scale=100, sigma=1.5, min_size=200)
-segments_01 = felzenszwalb(cd_dub, scale=100, sigma=1.5, min_size=100)
-fig, (ax0,ax1) = plt.subplots(1,2)
-ax0.imshow(cu); ax0.imshow(mark_boundaries(cu_dub, segments_00), alpha=0.5)
-ax1.imshow(cd); ax1.imshow(mark_boundaries(cd_dub, segments_01), alpha=0.5)
-plt.tight_layout()
-
-scu = sobel(cu)
-scd = sobel(te)
-segments_02 = watershed(scu, markers=100, compactness=0.001)
-segments_03 = watershed(scd, markers=100, compactness=0.001)
-fig, (ax2,ax3) = plt.subplots(1,2)
-arr= mark_boundaries(scu, segments_02); arr1 = mark_boundaries(scd, segments_03)
-arr[arr==0] = np.nan; arr1[arr1==0] = np.nan
-ax2.imshow(arr)
-ax3.imshow(arr1)
-plt.tight_layout()
+from skimage.segmentation import slic, mark_boundaries
+import numpy as np; import matplotlib.pyplot as plt
+img = np.float64(img)
+edges = slic(img, n_segments=100, compactness=50, sigma=0)
+bm = mark_boundaries(img, edges, color=(1, 1, 0))
+fig, (ax0, ax1) = plt.subplots(1,2)
+ax0.imshow(img, origin='lower', cmap='viridis')
+ax1.imshow(bm[:,:,0], origin='lower', cmap='viridis')
 

@@ -1,8 +1,6 @@
 import xraylib as xl
 import numpy as np
-import matplotlib.pyplot as plt
-
-from eleXRF_energy import get_Ele_XRF_Energy
+from home_abs import eleXRF_energy
 
 # values being compared in comments are for Cd_L
 def iio_vs_depth(ele, thickness_increments, dt):
@@ -12,7 +10,7 @@ def iio_vs_depth(ele, thickness_increments, dt):
     iio_in = iio_Mo * iio_ZnTe
     
     # percent outgoing Cd_L transmitted by external layers
-    ele_line = get_Ele_XRF_Energy(ele, beam_energy)
+    ele_line = eleXRF_energy(ele, beam_energy)
     mu_Mo_ele_line = xl.CS_Total_CP('Mo', ele_line)             #1800 vs. 1872 (matlab)
     mu_ZnTe_Cd_ele_line = xl.CS_Total_CP('ZnTe', ele_line)      #653 vs. 680 (matlab)
     c_1 = np.exp(- mu_Mo_ele_line * MO['LDensity'] * MO['Thick'] / detect_geometry)        # moly is a really good Cd_L and Te_L absorber, iio ~0.0287
@@ -62,7 +60,7 @@ def rough_iios(rough_ups, rough_downs):
     return ele_rough_iios_up, ele_rough_iios_down
 
 ## define settings and stack parameters ##
-beam_time = 'bad_geom'
+beam_time = 'good_geom'
 if beam_time == 'good_geom':
     beam_energy = 8.99
     beam_theta = 90
@@ -81,7 +79,7 @@ ZNTE =  {'Thick':0.0000375,  'LDensity': 6.34, 'capXsect': xl.CS_Total_CP('ZnTe'
 CDTE =  {'Thick':0.0012000,  'LDensity': 5.85, 'capXsect': xl.CS_Total_CP('CdTe', beam_energy)}
 
 # enter element for which you wish to see I/Io (will work on generatign plots for many elements at once)
-ele = 'Cu'
+
 # specify arbitrary depth of absorber
 dt = 1*10**-7                           # thickness increment (cm); 1nm = 1E-7cm
 no_rough = np.linspace(0, 12000, 12001) # thickness increment array (nm)
@@ -91,12 +89,13 @@ x_for_plotting = (no_rough/1000).reshape(-1,1) # convert x axis to um; format ar
 beam_attn = beamIn_vs_depth(no_rough, dt)
 beam_attn = beam_attn.reshape(-1,1)
 
+ele = 'Te'
 ## calc XRF reabsorption reference profile
 ref_iio = iio_vs_depth(ele, no_rough, dt) 
 ref_iio = ref_iio.reshape(-1,1)   # format array      
 
 ## calc roughness profiles
-deviations = np.linspace(0.05, 0.2, 3) # specfiy roughness parameters
+deviations = np.linspace(0.05, 0.2, 3) # specfiy roughness parameters e.g. 5%, 12%, 20%
 rough_ups, rough_downs = generate_deviated_thicknesses(deviations)
 rough_up, rough_down = rough_iios(rough_ups, rough_downs)
 
@@ -105,11 +104,9 @@ arr_for_plotting0 = np.concatenate((x_for_plotting, beam_attn, ref_iio,
                                     # first column for 12.5% roughness (from 'deviations')
                                     rough_up[:,1].reshape(-1,1), 
                                     rough_down[:,1].reshape(-1,1)), axis=1)
+np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\for Origin iio_sims\iio_sim_' + str(detect_theta) +'deg_ALL'+ ele +'.csv', arr_for_plotting0, delimiter=',')
 
 # =============================================================================
-# np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3 data\for Origin iio_sims\iio_sim_' + str(detect_theta) +'deg_ALL'+ ele +'.csv', arr_for_plotting0, delimiter=',')
-# 
-# 
 # # supplementary info plotting
 # plt.plot(x_for_plotting, beam_attn)
 # plt.plot(x_for_plotting, ref_iio)
@@ -128,6 +125,6 @@ arr_for_plotting0 = np.concatenate((x_for_plotting, beam_attn, ref_iio,
     # enter these factors somewhere into a_start.py, and apply them to Cu maps
 
 # get average iio for absorbers of different thicknesses
-absorbers = [8515, 10850, 5350]
-samp_iios = [np.mean(ref_iio[0:absorber_thick]) for absorber_thick in absorbers]
+#absorbers = [8515, 10850, 5350]
+#samp_iios = [np.mean(ref_iio[0:absorber_thick]) for absorber_thick in absorbers]
 
