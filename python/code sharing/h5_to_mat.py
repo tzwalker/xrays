@@ -40,16 +40,16 @@ def h5_to_matlab(scan_list, import_path, exprot_path, elect_chan, XRF_norm):
 XRF_norm = 1 #us_ic
 elect_chan = 2 #ds_ic
 
-import_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s' 
-export_path = r'C:\Users\Trumann\Dropbox (ASU)\Internal Reports\Data sharing with Math\Trumann\mat_files_shaped\NBL3_1'
+import_path = r'C:\Users\triton\Desktop\NBL3_data' 
+export_path = r'C:\Users\triton\Dropbox (ASU)\Internal Reports\Data sharing with Math\Trumann\mat_files_shaped\TS58A'
 
-XBIC = [338,339,340, 517]#, , , ]
+XBIC = [408]#, , , ]
 
 h5_to_matlab(XBIC, import_path, export_path, elect_chan, XRF_norm)
 
 #%%
-path = r'C:\Users\Trumann\Dropbox (ASU)\Internal Reports\Data sharing with Math\Trumann\mat_files_shaped\TS58A'
-file = r'\h5scan_0382.mat'
+path = r'C:\Users\triton\Dropbox (ASU)\Internal Reports\Data sharing with Math\Trumann\mat_files_shaped\TS58A'
+file = r'\h5scan_0408.mat'
 
 f = path + file
 
