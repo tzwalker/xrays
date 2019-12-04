@@ -48,7 +48,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import gaussian_filter as gfilt
 
-def mask_corr(map1, map2, mask_path, mask_type):
+def plot_mask(map1, map2, mask_path, mask_type):
     mask_txt = mask_path + r'\mask_{mtype}.txt'.format(mtype=mask_type)
     mask = np.loadtxt(mask_txt)
     mask1 = np.ma.masked_where(mask == 0, mask) # to plot transparent mask
@@ -69,4 +69,17 @@ img = TS58A['XBIC_maps'][1][3,:,:-2]
 xbic = TS58A['XBIC_maps'][1][0,:,:-2]
 path = r'Z:\Trumann\XRF images\py_exports_interface\TS58A\scan386'
 m =  mask_corr(img, xbic, path, 'cores')
+#%%
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.ndimage import gaussian_filter as gfilt
 
+file = r'Z:\Trumann\XRF images\py_exports_interface\TS58A\scan386\mask_boundaries.txt'
+mask = np.loadtxt(file)
+mask_plot = np.ma.masked_where(mask == 0, mask) # to plot transparent mask
+
+img = TS58A['XBIC_maps'][1][3,:,:-2]
+img_filt = gfilt(img, sigma=1)
+
+plt.imshow(img_filt, cmap='Greys_r')
+plt.imshow(mask_plot, cmap='cool')
