@@ -45,41 +45,76 @@ io.imshow(boundaries)
 
 #%%
 import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
 from scipy.ndimage import gaussian_filter as gfilt
-
-def plot_mask(map1, map2, mask_path, mask_type):
-    mask_txt = mask_path + r'\mask_{mtype}.txt'.format(mtype=mask_type)
-    mask = np.loadtxt(mask_txt)
-    mask1 = np.ma.masked_where(mask == 0, mask) # to plot transparent mask
-    selection_idxs = np.where(mask==0)
-    map1_filt = gfilt(map1, sigma=1)
-    vals1 = map1_filt[selection_idxs]
-    vals2 = map2[selection_idxs]
-    
-    fig, (ax0,ax1) = plt.subplots(1,2)
-    plt.tight_layout()
-    ax0.imshow(map1_filt); ax0.imshow(mask1)
-    ax1.imshow(map2); ax1.imshow(mask1)
-    plt.figure()
-    plt.hexbin(vals1, vals2, mincnt=1, cmap='Greys')
-    return mask
-
-img = TS58A['XBIC_maps'][1][3,:,:-2]
-xbic = TS58A['XBIC_maps'][1][0,:,:-2]
-path = r'Z:\Trumann\XRF images\py_exports_interface\TS58A\scan386'
-m =  mask_corr(img, xbic, path, 'cores')
-#%%
-import matplotlib.pyplot as plt
-import numpy as np
-from scipy.ndimage import gaussian_filter as gfilt
-
-file = r'Z:\Trumann\XRF images\py_exports_interface\TS58A\scan386\mask_boundaries.txt'
+from sklearn.linear_model import LinearRegression
+# =============================================================================
+# def plot_mask(map1, map2, mask_path, mask_type):
+#     mask_txt = mask_path + r'\mask_{mtype}.txt'.format(mtype=mask_type)
+#     mask = np.loadtxt(mask_txt)
+#     mask1 = np.ma.masked_where(mask == 0, mask) # to plot transparent mask
+#     selection_idxs = np.where(mask==0)
+#     map1_filt = gfilt(map1, sigma=1)
+#     vals1 = map1_filt[selection_idxs]
+#     vals2 = map2[selection_idxs]
+#     
+#     fig, (ax0,ax1) = plt.subplots(1,2)
+#     plt.tight_layout()
+#     ax0.imshow(map1_filt); ax0.imshow(mask1)
+#     ax1.imshow(map2); ax1.imshow(mask1)
+#     plt.figure()
+#     plt.hexbin(vals1, vals2, mincnt=1, cmap='Greys')
+#     return mask
+# 
+# img = TS58A['XBIC_maps'][1][3,:,:-2]
+# xbic = TS58A['XBIC_maps'][1][0,:,:-2]
+# path = r'Z:\Trumann\XRF images\py_exports_interface\TS58A\scan386'
+# m =  mask_corr(img, xbic, path, 'cores')
+# =============================================================================
+SAMP = TS58A; SCAN = 1; CHECK_MASK=0
+file = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}\boundaries_outer_1pix.txt'.format(
+        sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN])
 mask = np.loadtxt(file)
 mask_plot = np.ma.masked_where(mask == 0, mask) # to plot transparent mask
 
-img = TS58A['XBIC_maps'][1][3,:,:-2]
-img_filt = gfilt(img, sigma=1)
+# check mask #
+if CHECK_MASK == 1:
+    img = SAMP['XBIC_maps'][SCAN][3,:,:-2]
+    img_filt = gfilt(img, sigma=1)
+    plt.imshow(img_filt, cmap='Greys_r')
+    plt.imshow(mask_plot, cmap='cool')
+else: pass
 
-plt.imshow(img_filt, cmap='Greys_r')
-plt.imshow(mask_plot, cmap='cool')
+xchan = SAMP['XBIC_maps'][SCAN][3,:,:-2] 
+ychan = SAMP['XBIC_maps'][SCAN][1,:,:-2] 
+
+PLOT_SWITCH=0
+# raw, pix-by-pix correlation #
+if PLOT_SWITCH == 0:
+    x = xchan.ravel().reshape(-1,1)
+    y = ychan.ravel().reshape(-1,1)
+    # manual regression #
+    MODELR = LinearRegression()
+    model = MODELR.fit(x, y)
+    ypred = model.predict(x)
+    
+    fig = plt.figure(figsize=(5,5))
+    grid = plt.GridSpec(4, 4, hspace=0.2, wspace=0.2)
+    main_ax = fig.add_subplot(grid[-3:, :-1])
+    y_hist = fig.add_subplot(grid[-3:, 3], yticklabels=[])
+    x_hist = fig.add_subplot(grid[0, :-1], xticklabels=[])
+    
+    main_ax.hexbin(x,y, mincnt=1, cmap='Greys', gridsize=(50,20))
+    main_ax.plot(x, ypred, color='red', linestyle='--', linewidth=3)
+    x_hist.hist(x, 40, orientation='vertical', color='gray'); #x_hist.invert_yaxis()
+    y_hist.hist(x, 40, orientation='horizontal', color='gray');# y_hist.invert_xaxis()
+    
+# gaussian filtered, pix-by-pix correlation #
+if PLOT_SWITCH == 1:
+    x = xchan.ravel().reshape(-1,1)
+    y = ychan.ravel().reshape(-1,1)
+    plt.figure()
+    g = sns.jointplot(x, y, kind="hex", color="#5d5d60")
+    sns.regplot(x, y, ax=g.ax_joint, scatter=False)
+
