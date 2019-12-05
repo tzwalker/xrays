@@ -72,8 +72,8 @@ from sklearn.linear_model import LinearRegression
 # path = r'Z:\Trumann\XRF images\py_exports_interface\TS58A\scan386'
 # m =  mask_corr(img, xbic, path, 'cores')
 # =============================================================================
-SAMP = TS58A; SCAN = 1; CHECK_MASK=0
-file = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}\boundaries_outer_1pix.txt'.format(
+SAMP = NBL3_2; SCAN = 0; CHECK_MASK=1
+file = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}\boundaries_outer_thick.txt'.format(
         sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN])
 mask = np.loadtxt(file)
 mask_plot = np.ma.masked_where(mask == 0, mask) # to plot transparent mask
@@ -85,36 +85,46 @@ if CHECK_MASK == 1:
     plt.imshow(img_filt, cmap='Greys_r')
     plt.imshow(mask_plot, cmap='cool')
 else: pass
+#%%
+xchan = SAMP['XBIC_maps'][SCAN][2,:,:-2] 
+ychan = SAMP['XBIC_maps'][SCAN][0,:,:-2] 
 
-xchan = SAMP['XBIC_maps'][SCAN][3,:,:-2] 
-ychan = SAMP['XBIC_maps'][SCAN][1,:,:-2] 
+PLOT_SWITCH=2
 
-PLOT_SWITCH=0
 # raw, pix-by-pix correlation #
 if PLOT_SWITCH == 0:
     x = xchan.ravel().reshape(-1,1)
     y = ychan.ravel().reshape(-1,1)
-    # manual regression #
-    MODELR = LinearRegression()
-    model = MODELR.fit(x, y)
-    ypred = model.predict(x)
-    
-    fig = plt.figure(figsize=(5,5))
-    grid = plt.GridSpec(4, 4, hspace=0.2, wspace=0.2)
-    main_ax = fig.add_subplot(grid[-3:, :-1])
-    y_hist = fig.add_subplot(grid[-3:, 3], yticklabels=[])
-    x_hist = fig.add_subplot(grid[0, :-1], xticklabels=[])
-    
-    main_ax.hexbin(x,y, mincnt=1, cmap='Greys', gridsize=(50,20))
-    main_ax.plot(x, ypred, color='red', linestyle='--', linewidth=3)
-    x_hist.hist(x, 40, orientation='vertical', color='gray'); #x_hist.invert_yaxis()
-    y_hist.hist(x, 40, orientation='horizontal', color='gray');# y_hist.invert_xaxis()
-    
+
 # gaussian filtered, pix-by-pix correlation #
 if PLOT_SWITCH == 1:
-    x = xchan.ravel().reshape(-1,1)
-    y = ychan.ravel().reshape(-1,1)
-    plt.figure()
-    g = sns.jointplot(x, y, kind="hex", color="#5d5d60")
-    sns.regplot(x, y, ax=g.ax_joint, scatter=False)
-
+    xfilt = gfilt(xchan, sigma=1)
+    yfilt = gfilt(ychan, sigma=1)
+    x = xfilt.ravel().reshape(-1,1)
+    y = yfilt.ravel().reshape(-1,1)
+if PLOT_SWITCH == 2:
+    xfilt = gfilt(xchan, sigma=1)
+    yfilt = gfilt(ychan, sigma=1)
+    xboundaries = xfilt[np.where(mask!=0)]
+    yboundaries = yfilt[np.where(mask!=0)]
+    x = xboundaries.reshape(-1,1)
+    y = yboundaries.reshape(-1,1)
+    
+# manual regression #
+MODELR = LinearRegression()
+model = MODELR.fit(x, y)
+ypred = model.predict(x)
+# plot setup #
+fig = plt.figure(figsize=(5,5))
+grid = plt.GridSpec(4, 4, hspace=0.2, wspace=0.2)
+main_ax = fig.add_subplot(grid[-3:, :-1])
+x_hist = fig.add_subplot(grid[0, :-1], xticklabels=[], xticks=[])
+y_hist = fig.add_subplot(grid[-3:, 3], yticklabels=[], yticks=[])
+# plot #
+main_ax.hexbin(x,y, mincnt=1, cmap='Greys', gridsize=(50,20))
+main_ax.plot(x, ypred, color='#0f0f0f', linestyle='--', linewidth=3)
+main_ax.set_xlim([np.min(x), np.max(x)])
+main_ax.set_ylim([np.min(y), np.max(y)])
+x_hist.hist(x, 40, orientation='vertical', color='gray')
+y_hist.hist(y, 40, orientation='horizontal', color='gray')
+main_ax.text(0.35*np.max(x), 0.97*np.max(y), "m={0:.3g}, b={1:.3g}".format(model.coef_[0][0],model.intercept_[0]))
