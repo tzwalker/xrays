@@ -12,8 +12,8 @@ def get_directory(machine_index):
     return scan_path, def_path
 
 # 0=Dell work, 1=ASUS windows, 2=ASUS ubuntu
-scan_path, def_path = get_directory(0)
-sys.path.append(def_path)
+SCAN_PATH, DEF_PATH = get_directory(0)
+sys.path.append(DEF_PATH)
 import home_import
 import home_abs
 
@@ -70,7 +70,7 @@ TS58A = {'Name': 'TS58A',
 
 samples = [NBL3_2, NBL3_3, TS58A] #
 
-home_import.import_h5s(samples, scan_path)
+home_import.import_h5s(samples, SCAN_PATH)
 elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L', 'Zn']
 # sample_list, scans_to_import, electrical_channel, element_list, XRF_normalization, XRF_quantification
     # electrical_channel: 0=SRCurrent, 1=us_ic, 2=ds_ic; h5_file['MAPS/scaler_names']
@@ -79,7 +79,7 @@ elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L', 'Zn']
 home_import.import_maps(samples, 'XBIC', 2, elements, 'us_ic', 'fit')
 home_import.import_maps(samples, 'XBIV', 2, elements, 'us_ic', 'fit')
 
-iio_layer = 'CdTe'
+IIO_LAYER = 'CdTe'
 iio_elements = ['Cu', 'Cd', 'Te'] # enter in same order as seen in 'elements'
 # in case you typed in the elements out of position
 ele_map_idxs = [1,2,3] #--> index of element in 'elements'
@@ -90,7 +90,7 @@ beam_settings0 = {'beamtime': '2019_03',
                   'beam_energy': 12.7, 
                   'beam_theta':75, 
                   'detect_theta':15}
-home_abs.get_layer_iios(samples, iio_elements, beam_settings0, iio_layer) 
+home_abs.get_layer_iios(samples, iio_elements, beam_settings0, IIO_LAYER) 
 # enter index of scans you want to correct for each sample
 sample_scan_idxs=[[0,1,2], [0,1,2], [0,1,2]] 
 home_abs.apply_iios(samples, 'XBIC', sample_scan_idxs, '2019_03_iios', 
@@ -101,7 +101,7 @@ home_abs.apply_iios(samples, 'XBIV', sample_scan_idxs, '2019_03_iios',
 
 ### 2017_12 beamtime
 beam_settings1 = {'beamtime': '2017_12','beam_energy': 8.99, 'beam_theta':90, 'detect_theta':43}
-home_abs.get_layer_iios(samples, iio_elements, beam_settings1, iio_layer)
+home_abs.get_layer_iios(samples, iio_elements, beam_settings1, IIO_LAYER)
 # enter index of scans you want to correct for each sample
 sample_scan_idxs=[[3,4,5], [3,4], [3,4,5]] 
 home_abs.apply_iios(samples, 'XBIC', sample_scan_idxs, '2017_12_iios', 

@@ -49,47 +49,32 @@ import seaborn as sns
 import numpy as np
 from scipy.ndimage import gaussian_filter as gfilt
 from sklearn.linear_model import LinearRegression
-# =============================================================================
-# def plot_mask(map1, map2, mask_path, mask_type):
-#     mask_txt = mask_path + r'\mask_{mtype}.txt'.format(mtype=mask_type)
-#     mask = np.loadtxt(mask_txt)
-#     mask1 = np.ma.masked_where(mask == 0, mask) # to plot transparent mask
-#     selection_idxs = np.where(mask==0)
-#     map1_filt = gfilt(map1, sigma=1)
-#     vals1 = map1_filt[selection_idxs]
-#     vals2 = map2[selection_idxs]
-#     
-#     fig, (ax0,ax1) = plt.subplots(1,2)
-#     plt.tight_layout()
-#     ax0.imshow(map1_filt); ax0.imshow(mask1)
-#     ax1.imshow(map2); ax1.imshow(mask1)
-#     plt.figure()
-#     plt.hexbin(vals1, vals2, mincnt=1, cmap='Greys')
-#     return mask
-# 
-# img = TS58A['XBIC_maps'][1][3,:,:-2]
-# xbic = TS58A['XBIC_maps'][1][0,:,:-2]
-# path = r'Z:\Trumann\XRF images\py_exports_interface\TS58A\scan386'
-# m =  mask_corr(img, xbic, path, 'cores')
-# =============================================================================
-SAMP = NBL3_2; SCAN = 0; CHECK_MASK=1
-file = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}\boundaries_outer_thick.txt'.format(
+import sklearn.preprocessing as sklp
+from skimage import io
+# this dictionary contains the sample (interface) scan idx that was analyzed in ImageJ #
+# for fast reference, but may be useful later #
+#IMG_J_GROUPS = {"base": [TS58A, 1], "hiT": [NBL3_2, 0], "hiCu": [NBL3_3, 0]}
+
+SAMP = NBL3_3; SCAN = 0; CHAN=0; CHECK_MASK=1
+file = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}\bound_0in_4out_mask.txt'.format(
         sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN])
 mask = np.loadtxt(file)
 mask_plot = np.ma.masked_where(mask == 0, mask) # to plot transparent mask
 
+NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
+CMAPS = ['magma', 'Oranges_r', 'Greens_r', 'Blues_r', 'Reds_r', 'Greys_r']
 # check mask #
 if CHECK_MASK == 1:
-    img = SAMP['XBIC_maps'][SCAN][3,:,:-2]
+    img = SAMP['XBIC_maps'][SCAN][CHAN,:,:-2]
     img_filt = gfilt(img, sigma=1)
-    plt.imshow(img_filt, cmap='Greys_r')
+    plt.imshow(img_filt, cmap=CMAPS[CHAN])
     plt.imshow(mask_plot, cmap='cool')
 else: pass
 #%%
-xchan = SAMP['XBIC_maps'][SCAN][2,:,:-2] 
+xchan = SAMP['XBIC_maps'][SCAN][1,:,:-2] 
 ychan = SAMP['XBIC_maps'][SCAN][0,:,:-2] 
 
-PLOT_SWITCH=2
+PLOT_SWITCH=3
 
 # raw, pix-by-pix correlation #
 if PLOT_SWITCH == 0:
@@ -102,14 +87,35 @@ if PLOT_SWITCH == 1:
     yfilt = gfilt(ychan, sigma=1)
     x = xfilt.ravel().reshape(-1,1)
     y = yfilt.ravel().reshape(-1,1)
+# gaussian filtered, masked pix-pix correlation #
 if PLOT_SWITCH == 2:
+    xfilt = gfilt(xchan, sigma=1); yfilt = gfilt(ychan, sigma=1)
+    xmasked = xfilt[np.where(mask!=0)]; ymasked = yfilt[np.where(mask!=0)]
+    x = xmasked.reshape(-1,1); y = ymasked.reshape(-1,1)
+TXT_PLACE=[0.35*np.max(x), 0.97*np.max(y)]
+# for XBIC vs. XRF comparisons #
+if PLOT_SWITCH==3:
     xfilt = gfilt(xchan, sigma=1)
-    yfilt = gfilt(ychan, sigma=1)
-    xboundaries = xfilt[np.where(mask!=0)]
-    yboundaries = yfilt[np.where(mask!=0)]
-    x = xboundaries.reshape(-1,1)
-    y = yboundaries.reshape(-1,1)
-    
+    xmasked = xfilt[np.where(mask!=0)]; ymasked = yfilt[np.where(mask!=0)]
+    xshaped = xmasked.reshape(-1,1); yshaped = ymasked.reshape(-1,1)
+    scaler = sklp.StandardScaler()
+    x = scaler.fit_transform(xshaped); y=scaler.fit_transform(yshaped)
+    TXT_PLACE = [-1,2]
+#%%
+# use enhanced image from IMageJ #
+XCHAN = 1; YCHAN = 0
+XIMG_FILE = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}\{channel}.tif'.format(
+        sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN], channel=NAMES[XCHAN])
+ximg = io.imread(XIMG_FILE)
+
+YIMG_FILE = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}\{channel}.tif'.format(
+        sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN], channel=NAMES[YCHAN])
+yimg= io.imread(YIMG_FILE)
+
+XMASKED = ximg[np.where(mask!=0)]; YMASKED = yimg[np.where(mask!=0)]
+XSHAPED = XMASKED.reshape(-1,1); YSHAPED = YMASKED.reshape(-1,1)
+x = scaler.fit_transform(XSHAPED); y=scaler.fit_transform(YSHAPED)
+
 # manual regression #
 MODELR = LinearRegression()
 model = MODELR.fit(x, y)
@@ -127,4 +133,4 @@ main_ax.set_xlim([np.min(x), np.max(x)])
 main_ax.set_ylim([np.min(y), np.max(y)])
 x_hist.hist(x, 40, orientation='vertical', color='gray')
 y_hist.hist(y, 40, orientation='horizontal', color='gray')
-main_ax.text(0.35*np.max(x), 0.97*np.max(y), "m={0:.3g}, b={1:.3g}".format(model.coef_[0][0],model.intercept_[0]))
+main_ax.text(TXT_PLACE[0], TXT_PLACE[1], "m={0:.3g}, b={1:.3g}".format(model.coef_[0][0],model.intercept_[0]))
