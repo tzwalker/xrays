@@ -55,8 +55,8 @@ from skimage import io
 # for fast reference, but may be useful later #
 #IMG_J_GROUPS = {"base": [TS58A, 1], "hiT": [NBL3_2, 0], "hiCu": [NBL3_3, 0]}
 
-SAMP = NBL3_3; SCAN = 0; CHAN=0; CHECK_MASK=1
-file = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}\bound_0in_4out_mask.txt'.format(
+SAMP = NBL3_3; SCAN = 0; CHAN=2; CHECK_MASK=1
+file = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}\bound_1in_1out_mask.txt'.format(
         sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN])
 mask = np.loadtxt(file)
 mask_plot = np.ma.masked_where(mask == 0, mask) # to plot transparent mask
@@ -111,10 +111,19 @@ ximg = io.imread(XIMG_FILE)
 YIMG_FILE = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}\{channel}.tif'.format(
         sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN], channel=NAMES[YCHAN])
 yimg= io.imread(YIMG_FILE)
+CHECK_ENHANCED_MASK = 1
+# check mask #
+if CHECK_ENHANCED_MASK == 1:
+    fig, (ax0, ax1) = plt.subplots(1,2)
+    ax0.imshow(ximg, cmap=CMAPS[XCHAN])
+    ax0.imshow(mask_plot, cmap='cool')
+    ax1.imshow(yimg, cmap=CMAPS[YCHAN])
+    ax1.imshow(mask_plot, cmap='cool')
+else: pass
 
 XMASKED = ximg[np.where(mask!=0)]; YMASKED = yimg[np.where(mask!=0)]
-XSHAPED = XMASKED.reshape(-1,1); YSHAPED = YMASKED.reshape(-1,1)
-x = scaler.fit_transform(XSHAPED); y=scaler.fit_transform(YSHAPED)
+xshaped = XMASKED.reshape(-1,1); yshaped = YMASKED.reshape(-1,1)
+x = scaler.fit_transform(xshaped); y=scaler.fit_transform(yshaped)
 
 # manual regression #
 MODELR = LinearRegression()
