@@ -12,7 +12,7 @@ def get_directory(machine_index):
     return scan_path, def_path
 
 # 0=Dell work, 1=ASUS windows, 2=ASUS ubuntu
-SCAN_PATH, DEF_PATH = get_directory(1)
+SCAN_PATH, DEF_PATH = get_directory(0)
 sys.path.append(DEF_PATH)
 import home_import
 import home_abs
@@ -71,7 +71,7 @@ TS58A = {'Name': 'TS58A',
 samples = [NBL3_2, NBL3_3, TS58A] #
 
 home_import.import_h5s(samples, SCAN_PATH)
-elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L', 'Zn']
+elements = ['Cu', 'Cd_L', 'Te_L', 'Zn']
 # sample_list, scans_to_import, electrical_channel, element_list, XRF_normalization, XRF_quantification
     # electrical_channel: 0=SRCurrent, 1=us_ic, 2=ds_ic; h5_file['MAPS/scaler_names']
     # XRF_normalization: us_ic or ds_ic

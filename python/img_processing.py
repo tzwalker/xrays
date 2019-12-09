@@ -56,10 +56,10 @@ scaler = sklp.StandardScaler()
 # for fast reference, but may be useful later #
 #IMG_J_GROUPS = {"base": [TS58A, 1], "hiT": [NBL3_2, 0], "hiCu": [NBL3_3, 0]}
 
-SAMP = NBL3_3; SCAN = 0; CHAN=2; CHECK_MASK=1
-file = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}\cores_1in_mask.txt'.format(
-        sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN])
-mask = np.loadtxt(file)
+SAMP = NBL3_3; SCAN = 0; CHAN=0; CHECK_MASK=1
+IMG_PATH = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}'.format(sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN])
+MASKFILE = IMG_PATH + r'\bound_0in_3out_mask.txt' # <-- CORES OR BOUNDARIES 
+mask = np.loadtxt(MASKFILE)
 mask_plot = np.ma.masked_where(mask == 0, mask) # to plot transparent mask
 
 NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
@@ -144,3 +144,28 @@ x_hist.hist(x, 40, orientation='vertical', color='gray')
 y_hist.hist(y, 40, orientation='horizontal', color='gray')
 TXT_PLACE = [0,2]
 main_ax.text(TXT_PLACE[0], TXT_PLACE[1], "m={0:.3g}, b={1:.3g}".format(model.coef_[0][0],model.intercept_[0]))
+
+#%%
+# comparing background substractions: ImageJ vs. python
+from skimage import io
+import scipy.ndimage as scim
+from skimage.morphology import ball
+import matplotlib.pyplot as plt
+
+# comparison before python correction #
+imgj = io.imread(r'Z:\Trumann\XRF images\py_exports_interface\NBL3_2\scan422\XBIC.tif')
+imgp = NBL3_2['XBIC_maps'][0][0,:,:-2]
+fig, (ax0,ax1) = plt.subplots(1,2)
+ax0.imshow(imgp)
+ax1.imshow(imgj)
+
+# python correction# 
+s = ball(15) # Create 3D ball structure
+h = int((s.shape[1] + 1) / 2) # Take only the upper half of the ball
+s = s[:h, :, :].sum(axis=0) # Flat the 3D ball to a weighted 2D disc
+s = (1 * (s - s.min())) / (s.max()- s.min()) # Rescale weights into 0-1
+# Use im-opening(im,ball) (i.e. white tophat transform) (see original publication)
+imgp_corr = scim.white_tophat(imgp, structure=s)
+fig, (ax0,ax1) = plt.subplots(1,2)
+ax0.imshow(imgp)
+ax1.imshow(imgp_corr)

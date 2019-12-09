@@ -22,7 +22,7 @@ def unmasked_mapcorr(samp, scans, data_key):
     return
 
 
-def get_corrmtx_plot(array, cols, f, axis, numbers):
+def plot_spearman(array, cols, f, axis, numbers):
     df = pd.DataFrame(array, columns=cols, index=cols)
     sns.set(style="white") # set style of seaborn objects
     mask = np.zeros_like(df, dtype=np.bool) # make mask of symmetric portion
@@ -31,6 +31,7 @@ def get_corrmtx_plot(array, cols, f, axis, numbers):
                      cmap=f['color'], annot=numbers, vmin=f['v_range'][0], vmax=f['v_range'][1],
                      annot_kws={"fontsize":f['labs']})
     #axis.title.set_text(f['plt_title'])
-    
     return
 
+format_dict = {'cbar_format': 'Spearman Corr. Coeff.', 'color': 'coolwarm', 'vrange': [-1,1], 'labels': 12}
+plot_spearman(array, cols, f, axis, numbers)
