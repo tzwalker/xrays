@@ -56,9 +56,9 @@ scaler = sklp.StandardScaler()
 # for fast reference, but may be useful later #
 #IMG_J_GROUPS = {"base": [TS58A, 1], "hiT": [NBL3_2, 0], "hiCu": [NBL3_3, 0]}
 
-SAMP = NBL3_3; SCAN = 0; CHAN=0; CHECK_MASK=1
+SAMP = TS58A; SCAN = 1; CHAN=1; CHECK_MASK=1
 IMG_PATH = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}'.format(sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN])
-MASKFILE = IMG_PATH + r'\bound_0in_3out_mask.txt' # <-- CORES OR BOUNDARIES 
+MASKFILE = IMG_PATH + r'\bound_0in_2out_mask.txt' # <-- CORES OR BOUNDARIES 
 mask = np.loadtxt(MASKFILE)
 mask_plot = np.ma.masked_where(mask == 0, mask) # to plot transparent mask
 
@@ -68,7 +68,7 @@ CMAPS = ['magma', 'Oranges_r', 'Greens_r', 'Blues_r', 'Reds_r', 'Greys_r']
 if CHECK_MASK == 1:
     img = SAMP['XBIC_maps'][SCAN][CHAN,:,:-2]
     img_filt = gfilt(img, sigma=1)
-    plt.imshow(img_filt, cmap=CMAPS[CHAN])
+    plt.imshow(img, cmap=CMAPS[CHAN])
     plt.imshow(mask_plot, cmap='cool')
 else: pass
 #%%

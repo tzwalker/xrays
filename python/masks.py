@@ -8,7 +8,7 @@ from scipy.stats import spearmanr
 import numpy as np; import pandas as pd
 import seaborn as sns; import matplotlib.pyplot as plt
 
-SAMP = NBL3_2; SCAN = 0
+SAMP = TS58A; SCAN = 1
 NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Zn']
 # bound_0in_2out_mask
 # cores_0in_mask
@@ -24,7 +24,6 @@ if USE_TIFS ==1:
         img = io.imread(img_name)
         IMGS.append(img)
     enh_maps = np.array(IMGS)
-    
     pre_l = []
     for z in range(np.shape(enh_maps)[0]):
         enh_map = enh_maps[z,:,:]
@@ -56,5 +55,5 @@ fig, (ax0,ax1) = plt.subplots(2,1)
 plt.tight_layout()
 format_dict0 = {'color': 'coolwarm', 'vs':[-1,1], 'cbar_title': 'Spearman Coeff.'}
 format_dict1 = {'color': 'Greys', 'vs':[0,1], 'cbar_title': 'p-value'}
-plot_spearman(corr[0], NAMES, format_dict0, ax0)
-plot_spearman(corr[1], NAMES, format_dict1, ax1)
+#plot_spearman(corr[0], NAMES, format_dict0, ax0)
+#plot_spearman(corr[1], NAMES, format_dict1, ax1)
