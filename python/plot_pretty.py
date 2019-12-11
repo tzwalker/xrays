@@ -3,24 +3,29 @@ created: Fri Aug 16 14:49:13 2019
 author: Trumann
 '''
 import plot_defs as PLT
-sample = TS58A
-data_key = 'XBIC_corr'
-scan_idx = 3; feature_idx = 3
-label_list = [16,14, 
-              20,20]
+from matplotlib.colors import LinearSegmentedColormap
+import matplotlib.pyplot as plt
+SAMP = TS58A; SCAN = 1; CHAN = 1
+DATA_KEY = 'XBIC_corr'
+LABELS = [16,14, 20,20]
 
+colors = [(0, 0, 0), (0.5, 0, 0), (1, 0, 0)]  # R -> G -> B
+cmap_name = 'imgj_reds'
+# Create the colormap
+cm = LinearSegmentedColormap.from_list(cmap_name, colors, N=255)
 # use this function to plot area-density, corrected elemental maps
     # feature integer equals the index of the elmenent as seen in 'elements'
-PLT.plot_nice_2Dmap(sample, data_key, scan_idx, feature_idx, label_list) 
+PLT.plot_nice_2Dmap(SAMP, DATA_KEY, SCAN, CHAN, LABELS, cm) 
+
 
 #%%
-sample = NBL3_3
-data_key = 'XBIC_stand'
-scan_idx = 0; feature_idx = 2
+SAMP = TS58A; SCAN = 1; CHAN = 0
+DATA_KEY = 'XBIC_maps'
 # use this function to plot standardized maps for cross-sample comparison
+# NOTE: run data transformation before this funciton to get the right dict keys
     # (adds nan columns)
     # feature_idx
-PLT.from_stand_to_stand_map(sample, scan_idx, data_key, feature_idx)
+PLT.from_stand_to_stand_map(SAMP, SCAN, DATA_KEY, CHAN)
 
 #PLT.map_to_hist(samp, scan, axis_label_sizes, 'elXBIC_corr', 1, 50)
 #%%

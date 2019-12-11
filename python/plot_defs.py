@@ -45,11 +45,11 @@ def channel_formatting(index):
     elif index == 1:
         data_formatting = ['Oranges_r', '\u03BCg/cm'+ r'$^{2}$']
     elif index == 2:
-        data_formatting = ['viridis', '\u03BCg/cm'+ r'$^{2}$']
+        data_formatting = ['Blues_r', '\u03BCg/cm'+ r'$^{2}$']
     elif index == 3:
-        data_formatting = ['Greys_r', '\u03BCg/cm'+ r'$^{2}$']
+        data_formatting = ['Greens_r', '\u03BCg/cm'+ r'$^{2}$']
     elif index == 4:
-        data_formatting = ['cividis', '\u03BCg/cm'+ r'$^{2}$']
+        data_formatting = ['Yellows_r', '\u03BCg/cm'+ r'$^{2}$']
     return data_formatting
 
 def from_stand_to_stand_map(samp, scan, data, channel):
@@ -90,34 +90,31 @@ def from_stand_to_stand_map(samp, scan, data, channel):
     #cbar_ax.set_yticklabels(custom_format_ticks(cbar_ax.get_yticklabels(), '{:.2f}'))
     return
 
-def plot_nice_2Dmap(sample, data_channel, scan, feature_idx, label_list):
+def plot_nice_2Dmap(sample, data_channel, scan, feature_idx, label_list, cm):
     file = sample['XBIC_h5s'][scan]  # h5 always has coordinates
-    x_axis = file['/MAPS/x_axis']  # x position of pixels  [position in um]
-    y_axis = file['/MAPS/y_axis']  # y position of pixels  [position in um]
-    x_real = get_real_coordinates(x_axis)
-    y_real = get_real_coordinates(y_axis)
+    x_axis = file['/MAPS/x_axis']; y_axis = file['/MAPS/y_axis']  # position of pixels  [position in um] 
+    x_real = get_real_coordinates(x_axis); y_real = get_real_coordinates(y_axis)
     
     data_map = sample[data_channel][scan][feature_idx,:,:]
     format_list = channel_formatting(feature_idx); 
     colors = format_list[0]; units = format_list[1]
     
     lower,upper = get_colorbar_axis(data_map, 3) # int here sets num_of_std to include
-    df_map = pd.DataFrame(data_map, index = y_real, columns = x_real)
+    df_map = pd.DataFrame(data_map, index = x_real, columns = y_real)
     fig, ax0 = plt.subplots()
-    ax0 = sns.heatmap(df_map, square = True, cmap = colors,
+    ax0 = sns.heatmap(df_map, square = True, cmap = cm,
                       xticklabels = label_list[2], yticklabels = label_list[3],
                       cbar_kws={"shrink": 1.0, 'format': '%.2f'}, vmin=lower, vmax=upper)
     # figure level
     plt.xlabel('X (\u03BCm)', fontsize=label_list[0])
     plt.ylabel('Y (\u03BCm)', fontsize=label_list[0])
-    #plt.title(samp['Name'], fontsize=axis_label_sizes)
     # axis level
     ax0.tick_params(labelsize = label_list[1])                     #formats size of ticklabels
     x_labls = custom_format_ticks(ax0.get_xticklabels(), '{:g}')
     y_labls = custom_format_ticks(ax0.get_yticklabels(), '{:g}')         #formats tick label strings without ".0"
     ax0.set_xticklabels(x_labls)                        #set the tick labels
+    y_labls.reverse()                                   # NOTE just inverting labels, not the matrix itself
     ax0.set_yticklabels(y_labls, rotation = 0)          #set the ticklabels and rotate (if needed)
-    ax0.invert_yaxis()                                  #invert the yaxis after formatting is complete
     
     #fig.colorbar(ax0).ax0 <--> plt.gcf().axes[-1]
     cbar_ax = plt.gcf().axes[-1]                        #gets colorbar of current figure object, behaves as second y axes object
