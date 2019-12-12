@@ -60,7 +60,7 @@ def rough_iios(rough_ups, rough_downs):
     return ele_rough_iios_up, ele_rough_iios_down
 
 ## define settings and stack parameters ##
-beam_time = 'good_geom'
+beam_time = 'bad_geom'
 if beam_time == 'good_geom':
     beam_energy = 8.99
     beam_theta = 90
@@ -101,7 +101,7 @@ rough_up, rough_down = rough_iios(rough_ups, rough_downs)
 
 ## save x and y for plotting in Origin
 arr_for_plotting0 = np.concatenate((x_for_plotting, beam_attn, ref_iio, 
-                                    # first column for 12.5% roughness (from 'deviations')
+                                    # first column for 12.5% roughness (from 'deviations') <-- GRABS UP/DOWN of only ONE ROUGHNESS
                                     rough_up[:,1].reshape(-1,1), 
                                     rough_down[:,1].reshape(-1,1)), axis=1)
 np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\for Origin iio_sims\iio_sim_' + str(detect_theta) +'deg_ALL'+ ele +'.csv', arr_for_plotting0, delimiter=',')
