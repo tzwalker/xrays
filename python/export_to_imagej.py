@@ -71,6 +71,7 @@ PATH = r'Z:\Trumann\XRF images\py_exports_interface'
 NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
 CMAPS = ['magma', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r', 'Greys_r']
 SAMPLE= NBL3_3; SCAN = 4; CHAN = 1
+# export to imagej #
 export_figure_matplotlib(PATH, SAMPLE, SCAN, 'XBIC_maps', CHAN, CMAPS[CHAN], NAMES[CHAN],
                          dpi=96, resize_fact=0.5, save=0)
 

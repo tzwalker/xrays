@@ -44,19 +44,17 @@ boundaries = mark_boundaries(edges, segments, color=(1, 0, 0), mode='inner',  ba
 io.imshow(boundaries)
 
 #%%
+# prelim - plot imagej mask on top of gaussian filtered XRF map
+    # used for checking if proper mask was imported
 import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
 from scipy.ndimage import gaussian_filter as gfilt
-from sklearn.linear_model import LinearRegression
-import sklearn.preprocessing as sklp
-from skimage import io
-scaler = sklp.StandardScaler()
+
 # this dictionary contains the sample (interface) scan idx that was analyzed in ImageJ #
 # for fast reference, but may be useful later #
-#IMG_J_GROUPS = {"base": [TS58A, 1], "hiT": [NBL3_2, 0], "hiCu": [NBL3_3, 0]}
+#sample scan idxs used in imagej = {"base": [TS58A, 1], "hiT": [NBL3_2, 0], "hiCu": [NBL3_3, 0]}
 
-SAMP = TS58A; SCAN = 1; CHAN=1; CHECK_MASK=1
+SAMP = NBL3_2; SCAN = 0; CHAN=1; CHECK_MASK=1
 IMG_PATH = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}'.format(sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN])
 MASKFILE = IMG_PATH + r'\bound_0in_2out_mask.txt' # <-- CORES OR BOUNDARIES 
 mask = np.loadtxt(MASKFILE)
@@ -72,6 +70,13 @@ if CHECK_MASK == 1:
     plt.imshow(mask_plot, cmap='cool')
 else: pass
 #%%
+# transformations in python using mask from imagej
+# section also performs linear correlation of the trasnsformed data
+from sklearn.linear_model import LinearRegression
+import sklearn.preprocessing as sklp
+from skimage import io
+scaler = sklp.StandardScaler()
+
 PLOT_SWITCH=4
 XCHAN = 2; YCHAN = 0
 # raw, pix-by-pix correlation #
@@ -144,28 +149,3 @@ x_hist.hist(x, 40, orientation='vertical', color='gray')
 y_hist.hist(y, 40, orientation='horizontal', color='gray')
 TXT_PLACE = [0,2]
 main_ax.text(TXT_PLACE[0], TXT_PLACE[1], "m={0:.3g}, b={1:.3g}".format(model.coef_[0][0],model.intercept_[0]))
-
-#%%
-# comparing background substractions: ImageJ vs. python
-from skimage import io
-import scipy.ndimage as scim
-from skimage.morphology import ball
-import matplotlib.pyplot as plt
-
-# comparison before python correction #
-imgj = io.imread(r'Z:\Trumann\XRF images\py_exports_interface\NBL3_2\scan422\XBIC.tif')
-imgp = NBL3_2['XBIC_maps'][0][0,:,:-2]
-fig, (ax0,ax1) = plt.subplots(1,2)
-ax0.imshow(imgp)
-ax1.imshow(imgj)
-
-# python correction# 
-s = ball(15) # Create 3D ball structure
-h = int((s.shape[1] + 1) / 2) # Take only the upper half of the ball
-s = s[:h, :, :].sum(axis=0) # Flat the 3D ball to a weighted 2D disc
-s = (1 * (s - s.min())) / (s.max()- s.min()) # Rescale weights into 0-1
-# Use im-opening(im,ball) (i.e. white tophat transform) (see original publication)
-imgp_corr = scim.white_tophat(imgp, structure=s)
-fig, (ax0,ax1) = plt.subplots(1,2)
-ax0.imshow(imgp)
-ax1.imshow(imgp_corr)
