@@ -30,18 +30,24 @@ ax1.imshow(edges1, cmap=plt.cm.gray)
 
 #%%
 # attempting to copy Math's result #
-img = TS58A['XBIC_maps'][5][3,:,:-2]
+#(remember origin='lower' in plots to compare to MAPS images,
+#delete to compare to data in imageJ)
+from skimage.segmentation import slic, mark_boundaries
+import numpy as np
+import matplotlib.pyplot as plt
+#%%
+img = TS58A['XBIC_maps'][1][3,:,:-2]
 img = np.float64(img)
-edges = slic(img, n_segments=100, compactness=50, sigma=0)
+edges = slic(img, n_segments=100, compactness=5, sigma=2)
 bm = mark_boundaries(img, edges, color=(1, 1, 0))
 fig, (ax0, ax1) = plt.subplots(1,2)
-ax0.imshow(img, origin='lower', cmap='viridis')
-ax1.imshow(bm[:,:,0], origin='lower', cmap='viridis')
+ax0.imshow(img, cmap='viridis')
+ax1.imshow(bm[:,:,0], cmap='viridis')
 
-edges = filters.sobel(img)
-segments = watershed(edges, markers=100, compactness=0.001)
-boundaries = mark_boundaries(edges, segments, color=(1, 0, 0), mode='inner',  background_label=5,outline_color=None)
-io.imshow(boundaries)
+#edges = filters.sobel(img)
+#segments = watershed(edges, markers=100, compactness=0.001)
+#boundaries = mark_boundaries(edges, segments, color=(1, 0, 0), mode='inner',  background_label=5,outline_color=None)
+#io.imshow(boundaries)
 
 #%%
 # prelim - plot imagej mask on top of gaussian filtered XRF map
