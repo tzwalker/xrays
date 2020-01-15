@@ -95,16 +95,16 @@ ref_iio = iio_vs_depth(ele, no_rough, dt)
 ref_iio = ref_iio.reshape(-1,1)   # format array      
 
 ## calc roughness profiles
-deviations = np.linspace(0.05, 0.2, 3) # specfiy roughness parameters e.g. 5%, 12%, 20%
-rough_ups, rough_downs = generate_deviated_thicknesses(deviations)
-rough_up, rough_down = rough_iios(rough_ups, rough_downs)
+#deviations = np.linspace(0.05, 0.2, 3) # specfiy roughness parameters e.g. 5%, 12%, 20%
+#rough_ups, rough_downs = generate_deviated_thicknesses(deviations)
+#rough_up, rough_down = rough_iios(rough_ups, rough_downs)
 
 ## save x and y for plotting in Origin
-arr_for_plotting0 = np.concatenate((x_for_plotting, beam_attn, ref_iio, 
+#arr_for_plotting0 = np.concatenate((x_for_plotting, beam_attn, ref_iio, 
                                     # first column for 12.5% roughness (from 'deviations') <-- GRABS UP/DOWN of only ONE ROUGHNESS
-                                    rough_up[:,1].reshape(-1,1), 
-                                    rough_down[:,1].reshape(-1,1)), axis=1)
-np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\for Origin iio_sims\iio_sim_' + str(detect_theta) +'deg_ALL'+ ele +'.csv', arr_for_plotting0, delimiter=',')
+                                    #rough_up[:,1].reshape(-1,1), 
+                                    #rough_down[:,1].reshape(-1,1)), axis=1)
+#np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\for Origin iio_sims\iio_sim_' + str(detect_theta) +'deg_ALL'+ ele +'.csv', arr_for_plotting0, delimiter=',')
 
 # =============================================================================
 # # supplementary info plotting

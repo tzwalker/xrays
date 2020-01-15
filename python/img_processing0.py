@@ -35,7 +35,7 @@ ax1.imshow(edges1, cmap=plt.cm.gray)
 from skimage.segmentation import slic, mark_boundaries
 import numpy as np
 import matplotlib.pyplot as plt
-#%%
+
 img = TS58A['XBIC_maps'][1][3,:,:-2]
 img = np.float64(img)
 edges = slic(img, n_segments=100, compactness=5, sigma=2)
