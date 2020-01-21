@@ -88,3 +88,31 @@ imgp_corr = scim.white_tophat(imgp, structure=s)
 fig, (ax0,ax1) = plt.subplots(1,2)
 ax0.imshow(imgp)
 ax1.imshow(imgp_corr)
+
+#%%
+### exploring current/voltage maps ###
+import matplotlib.pyplot as plt
+import numpy as np
+
+i = NBL3_2['XBIC_maps'][0][0,:,:-2]
+v = NBL3_2['XBIV_maps'][0][0,:,:-2]
+
+i_low = i<np.mean(i)
+fig, (ax0,ax1) = plt.subplots(1,2)
+ax0.imshow(i)
+ax1.imshow(i_low)
+
+# =============================================================================
+# plt.figure()
+# plt.hexbin(i,v)
+# plt.xlim([np.min(i),np.max(i)])
+# plt.ylim([np.min(v), np.max(v)])
+# =============================================================================
+#%%
+SAMP = NBL3_2; SCAN = 0
+NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Zn']
+# bound_0in_2out_mask
+# cores_0in_mask
+IMG_PATH = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}'.format(sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN])
+MASKFILE = IMG_PATH + r'\\bound_0in_1out_mask.txt' # <-- CORES OR BOUNDARIES \bound_0in_1out_mask
+mask_core = np.loadtxt(MASKFILE)
