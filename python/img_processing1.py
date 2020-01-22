@@ -93,21 +93,21 @@ ax1.imshow(imgp_corr)
 ### exploring current/voltage maps ###
 import matplotlib.pyplot as plt
 import numpy as np
+from home_dataTransforms import ug_to_mol
+from scipy.ndimage import gaussian_filter as gfilt
+samp = NBL3_2; scan_idx = 3
+i = samp['XBIC_maps'][scan_idx][0,:,:-2]
+v = samp['XBIV_maps'][scan_idx][0,:,:-2]
 
-i = NBL3_2['XBIC_maps'][0][0,:,:-2]
-v = NBL3_2['XBIV_maps'][0][0,:,:-2]
+mol_cu = ug_to_mol(samp, 'XBIV_maps', scan_idx, elements, 1); molfilt_cu = gfilt(mol_cu,sigma=1)
+mol_te = ug_to_mol(samp, 'XBIV_maps', scan_idx, elements, 2); molfilt_te = gfilt(mol_te,sigma=1)
+mol_cute = molfilt_cu / molfilt_te
 
-i_low = i<np.mean(i)
-fig, (ax0,ax1) = plt.subplots(1,2)
-ax0.imshow(i)
-ax1.imshow(i_low)
+fig, (ax0, ax1) = plt.subplots(1,2)
+ax0.imshow(v); ax1.imshow(mol_cute)
+plt.figure()
+plt.hexbin(i, v, mincnt=1)
 
-# =============================================================================
-# plt.figure()
-# plt.hexbin(i,v)
-# plt.xlim([np.min(i),np.max(i)])
-# plt.ylim([np.min(v), np.max(v)])
-# =============================================================================
 #%%
 SAMP = NBL3_2; SCAN = 0
 NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Zn']

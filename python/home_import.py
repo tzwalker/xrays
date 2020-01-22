@@ -61,13 +61,13 @@ def import_maps(samps, switch, scaler_ch, elements, flux_norm, fit_norm):
             elect_maps = [ds_ic * scale for ds_ic, scale in zip(raw_maps, scale_factors)]
         ## element deal
         # get element indices for each scan inside the scan h5
-        ele_indices = [get_ele_idxs(elements, file['/MAPS/channel_names']) for file in samp['XBIC_h5s']]
+        ele_indices = [get_ele_idxs(elements, file['/MAPS/channel_names']) for file in samp[switch+'_h5s']]
         # get normalization keys inside h5
         flxnorm_idx, nav_keys = get_normalization_keys(flux_norm, fit_norm)
         # initialize map storage
         scan_maps = []
         # normalize each element map (cts/s to ug/cm2)
-        for scan_h5, scan_elect, scan_eles in zip(samp['XBIC_h5s'], elect_maps, ele_indices):
+        for scan_h5, scan_elect, scan_eles in zip(samp[switch+'_h5s'], elect_maps, ele_indices):
             norm_ele_maps = [(scan_h5[nav_keys[0]][ele_idx, :, :] / 
                               scan_h5['/MAPS/scalers'][flxnorm_idx, :, :] / 
                               scan_h5[nav_keys[1]][flxnorm_idx, 0, ele_idx]) for ele_idx in scan_eles]

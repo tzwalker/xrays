@@ -50,6 +50,17 @@ def remove_outliers(samples, dict_data, bad_idx, sigma, new_dict_data):
         samp_dict_grow.build_dict(sample, new_dict_data, no_outliers)
     return
 
+# generic function to change one element map from ug to mol # 
+def ug_to_mol(samp, map_key, scan_idx, eles, e_idx):
+    e_list_idx = e_idx-1
+    e = eles[e_list_idx]
+    if len(e) > 2: e = e[:-2]
+    else: pass
+    z = xl.SymbolToAtomicNumber(e)
+    factor = (1/1E6) * (1/xl.AtomicWeight(z)) #(1g/1E6ug) * (1mol/g)
+    mol_map = samp[map_key][scan_idx][e_idx,:,:-2] * factor
+    return mol_map
+
 def make_mol_maps(samples, elements, dict_data, new_dict_data):
     elements = [element[0:2] for element in elements]
     mol_masses = [xl.AtomicWeight(xl.SymbolToAtomicNumber(element)) for element in elements]
