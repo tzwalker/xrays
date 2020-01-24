@@ -1,3 +1,25 @@
+"""
+tzwalker
+Sun Dec  1 20:38:13 2019
+coding: utf-8
+
+#xy points in each bulk scan
+#3:151, 4:201, 5:201 --> TS58A
+#3:151, 4:151 --> NBL3_3
+#3:151, 4:151, 5:201 --> NBL3_2
+
+#bulk selected:
+    #scan538 (4) for NBL3_2
+    #scan491 (4) for NBL3_3
+    #scan439 (3) of TS58A
+    
+#interface selected:
+    #scan422 (0) for NBL3_2
+    #scan264 (0) for NBL3_3
+    #scan386 (1) of TS58A
+"""
+
+
 from sklearn.cluster import KMeans
 from scipy.ndimage.filters import gaussian_filter
 import matplotlib.pyplot as plt
@@ -55,10 +77,6 @@ ax1.imshow(bm[:,:,0], cmap='viridis')
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import gaussian_filter as gfilt
-
-# this dictionary contains the sample (interface) scan idx that was analyzed in ImageJ #
-# for fast reference, but may be useful later #
-#sample scan idxs used in imagej = {"base": [TS58A, 1], "hiT": [NBL3_2, 0], "hiCu": [NBL3_3, 0]}
 
 SAMP = NBL3_2; SCAN = 0; CHAN=1; CHECK_MASK=1
 IMG_PATH = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}'.format(sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN])
@@ -139,7 +157,7 @@ if PLOT_SWITCH==4:
 MODELR = LinearRegression()
 model = MODELR.fit(x, y)
 ypred = model.predict(x)
-# plot setup #
+# NICE HEXBIN PLOT WITH HISTOGRAMS: SETUP #
 fig = plt.figure(figsize=(5,5))
 grid = plt.GridSpec(4, 4, hspace=0.2, wspace=0.2)
 main_ax = fig.add_subplot(grid[-3:, :-1])
