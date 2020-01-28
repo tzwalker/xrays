@@ -11,7 +11,8 @@ dtransform.stat_arrs(samples, 'XBI'+CV_SWITCH+'_corr', 'XBI'+CV_SWITCH+'_stat')
 dtransform.stand_arrs(samples, 'XBI'+CV_SWITCH+'_stat', 'XBI'+CV_SWITCH+'_stand')
 
 ### area density maps to mol maps ### 
-eles = ['Cu', 'Cd_L', "Te_L"]
+eles = ['Cu', 'Cd_L', "Te_L"] # -> if scans to plot are bulk (good geom.), then Zn channel is not present
+    # change line 62
 dtransform.make_mol_maps(samples, eles, 'XBI'+CV_SWITCH+'_corr', 'XBI'+CV_SWITCH+'_mol')
 
 # mol maps to mol arrays
@@ -53,24 +54,24 @@ import home_clustering; import plot_defs
 import matplotlib.pyplot as plt
 import numpy as np
 CV_SWITCH = 'C'
-SAMPLE = NBL3_2; SCANS = [0,1,2]
+SAMPLE = NBL3_3; SCANS = [0,1,2]
 DATA_KEY = 'XBI'+CV_SWITCH+'_slim';     CLUSTERS_KEY = 'XBI'+CV_SWITCH+'kmeans_trials'
 FOCUS_FEATURE = 0;          FOCUS_CLUSTER = 'low'; CLUSTERS = 3
 NEW_KEYS = ['spear_stats', 'pval_stats']
 home_clustering.correlation_stats(SAMPLE, SCANS, DATA_KEY, CLUSTERS_KEY, 
                                CLUSTERS, FOCUS_CLUSTER, FOCUS_FEATURE, NEW_KEYS)
-ELE_NAMES = [e[0:2] for e in elements]
+ELE_NAMES = [e[0:2] for e in elements] # -> change this from 'elements' to 'eles' if doing bulk scans (idx -->3,4,5)
 CHANNELS = [FOCUS_CLUSTER+' XBI'+CV_SWITCH] + ELE_NAMES
 SPEAR_FORMAT = {'color': 'coolwarm', 
                       'cbar_format': {'ticks': list(list(np.linspace(-1,1,5))), 
                                       'label': 'Spearman Coeff.'},
-                      'plt_title': 'Average Monotonicity',
+                      'plt_title': None,
                       'v_range': [-1,1],
                       'labs': 14}
 STDEV_FORMAT = {'color': 'Greys', 
                       'cbar_format': {'ticks': list(list(np.linspace(-1,1,5))), 
                                       'label': 'Standard Error'},
-                      'plt_title': 'Average Error',
+                      'plt_title': None,
                       'v_range': [0,1],
                       'labs': 8}
 
