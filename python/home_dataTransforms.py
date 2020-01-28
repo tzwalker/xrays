@@ -100,7 +100,6 @@ def add_ratio_array(samples, dict_data, elem0_idx, elem1_idx):
     return
 
 if '__main__' == __name__:
-    element0_idx = 1
-    element1_idx = 3
-    add_ratio_array(samples, 'XBIC_molStat', element0_idx, element1_idx)
+    eles = ['Cu', 'Cd_L', "Te_L"]
+    make_mol_maps(samples, eles, 'XBIC_corr', 'XBIC_mol')
     print('success')
