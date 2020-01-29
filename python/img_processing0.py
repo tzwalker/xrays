@@ -55,16 +55,36 @@ ax1.imshow(edges1, cmap=plt.cm.gray)
 #(remember origin='lower' in plots to compare to MAPS images,
 #delete to compare to data in imageJ)
 from skimage.segmentation import slic, mark_boundaries
+import sklearn.preprocessing
 import numpy as np
 import matplotlib.pyplot as plt
+import plot_defs as PLT
 
-img = TS58A['XBIC_maps'][1][3,:,:-2]
-img = np.float64(img)
-edges = slic(img, n_segments=100, compactness=5, sigma=2)
-bm = mark_boundaries(img, edges, color=(1, 1, 0))
+def standardize_map(map_of_sample):
+    scaler = sklearn.preprocessing.StandardScaler()
+    array_of_map = map_of_sample.reshape(-1,1)
+    standarized_array = scaler.fit_transform(array_of_map)
+    standarized_map = standarized_array.reshape(np.shape(map_of_sample))
+    return standarized_map
+
+img_raw = NBL3_3['XBIC_maps'][0][0,:,:-2]
+img_stand = standardize_map(img_raw)
+img = np.float64(img_stand)
+edges = slic(img, n_segments=50, compactness=1, sigma=1)
+
 fig, (ax0, ax1) = plt.subplots(1,2)
-ax0.imshow(img, cmap='viridis')
-ax1.imshow(bm[:,:,0], cmap='viridis')
+ax0.imshow(img, cmap='inferno', origin='lower')
+# for some reason the boundaries from SLIC are not changing color
+# initiate RGB channel to act as boundary mask
+bm = mark_boundaries(img, edges, color=(1,0,0)) #-> color is RGB
+# make boolean mask
+bm_edit = bm[:,:,0] == 1
+#everywhere where bm_edit is True, convert to nan
+img_copy = img.copy(); img_copy[bm_edit] = np.nan
+# plot image with boundary data "missing"
+ax1.imshow(img_copy, cmap='inferno', origin='lower') #bm[:,:,0]
+
+PLT.plot_nice_superpixels(NBL3_3, 0, img_copy, 'magma')
 
 #edges = filters.sobel(img)
 #segments = watershed(edges, markers=100, compactness=0.001)

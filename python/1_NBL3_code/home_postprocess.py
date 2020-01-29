@@ -2,6 +2,9 @@
 """
 Trumann
 Mon Oct 21 14:04:15 2019
+
+# this files does the data transformations necessary to plot pearman matrices
+that are averaged over multiple kmeans trials of multiple scan areas
 """
 import home_dataTransforms as dtransform
 CV_SWITCH = 'C'
