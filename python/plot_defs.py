@@ -163,7 +163,7 @@ def map_to_hist(samp,scan,label_sizes, data_channel, ele_index, bins):
     return
 
 # only used with standardized data (both XRF and XBIC)
-def plot_nice_superpixels(samp, scan, img, colormap):
+def plot_nice_superpixels_from_h5(samp, scan, img, colormap):
     c_scan = samp['XBIC_h5s'][scan]  # h5 always has coordinates
     x_axis = c_scan['/MAPS/x_axis']  # x position of pixels  [position in um]
     y_axis = c_scan['/MAPS/y_axis']  # y position of pixels  [position in um]

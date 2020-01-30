@@ -84,7 +84,7 @@ img_copy = img.copy(); img_copy[bm_edit] = np.nan
 # plot image with boundary data "missing"
 ax1.imshow(img_copy, cmap='inferno', origin='lower') #bm[:,:,0]
 
-PLT.plot_nice_superpixels(NBL3_3, 0, img_copy, 'magma')
+PLT.plot_nice_superpixels_from_h5(NBL3_3, 0, img_copy, 'magma')
 
 #edges = filters.sobel(img)
 #segments = watershed(edges, markers=100, compactness=0.001)

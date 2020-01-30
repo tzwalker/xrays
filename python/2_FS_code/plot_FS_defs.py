@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.ticker as tkr
+from skimage.transform import rotate
 
 #IMPORT AND SHIRNK DATAFRAME: imports and shrinks ASCII according to what elements are specified and the sector the scan was taken
 def shrinkASCII(path, large_ASCII_files, elect_scaler):
@@ -47,6 +48,13 @@ def collect_XBIC(dataframes_as_array, sl):
         df.rename(columns = {'ds_ic': 'XBIC'}, inplace = True)              #renames column from "ds_ic" to "XBIC" for convenience          
     return 
 
+def custom_format_ticks(axes_object):
+    x_txt_labs = [label.get_text() for label in axes_object.get_xticklabels()]
+    x_ticking = ['{:g}'.format(float(x)) for x in x_txt_labs]
+    y_txt_labs = [label.get_text() for label in axes_object.get_yticklabels()]
+    y_ticking = ['{:g}'.format(float(y)) for y in y_txt_labs]
+    return x_ticking, y_ticking
+
 #CALCULATE CDTE RATIOS
 def CdTe_ratio(dataframes_as_arrays):
     for df in dataframes_as_arrays:
@@ -55,7 +63,6 @@ def CdTe_ratio(dataframes_as_arrays):
         df["Cd_CdTe"] = (df["Cd_L"] / Cd_plus_Te) * 100                         #CREATE Cd/(Cd+Te) column
         df["Te_CdTe"] = (df["Te_L"] / Cd_plus_Te) * 100                         #CREATE Te/(Cd+Te) column
     return
-
 
 #PLOTTING FUNCTIONS
 def mapConvertAxes(dataframes, scans):
@@ -68,8 +75,6 @@ def mapConvertAxes(dataframes, scans):
         #print(height_factor, scan["Name"])        
     return
 
-from skimage.transform import rotate
-import numpy as np
 def rotate_integrate_normalize(list_of_imported_dfs):
     rot_arrs = [rotate(df, 25) for df in list_of_imported_dfs]
     integrated_arrs = [matrix.sum(axis = 0) for matrix in rot_arrs]
@@ -94,9 +99,6 @@ def make_line_plots(x_range, y_vars, labels):
         plt.title('FS2_2 '+ lab)
         
     return
-
-
-
 
 def make_2d_plots(dataframe_as_array, scan_list, ele_plt_list, ele_plt_lab, plt_t):
     for df, scan in zip(dataframe_as_array, scan_list):
@@ -157,10 +159,42 @@ def make_2d_plots(dataframe_as_array, scan_list, ele_plt_list, ele_plt_lab, plt_
             #fig.savefig(r"C:\Users\Trumann\Desktop\Plot Directory\FS\20190326 FS Set 2_Se edge_normalized pic size\{s}, {e}.jpg".format(e = ele, s = scan["Name"]))
     return 
 
+def plot_nice2d_from_ascii(xrf_image_full_path, channel, colormap):
+    df = pd.read_csv(xrf_image_full_path, skiprows = 1)
+    df = noColNameSpaces(df)
+    resolution = abs(df['y position'][0] - df['y position'][1]) * 1000
+    df['x pixel no'] = df['x pixel no'] * resolution
+    df['x pixel no'] = round(df['x pixel no'], 1)
+    df['y pixel no'] = df['y pixel no'] * resolution
+    df['y pixel no'] = round(df['y pixel no'], 1)
+    map_df = df.pivot(index = 'y pixel no', columns = 'x pixel no', values = channel)
+    
+    fig, ax0 = plt.subplots()
+    ax0 = sns.heatmap(map_df, square = True, cmap = colormap, 
+                      xticklabels = 40, yticklabels = 40, vmin=100000)
+    # figure level
+    plt.xlabel('X (\u03BCm)', fontsize=16)
+    plt.ylabel('Y (\u03BCm)', fontsize=16)
+    # axis level
+    ax0.tick_params(labelsize = 14)                     #formats size of ticklabels
+    x_labls, y_labls = custom_format_ticks(ax0)         #formats tick label strings without ".0"
+    ax0.set_xticklabels(x_labls)                        #set the tick labels
+    ax0.set_yticklabels(y_labls, rotation = 0)   
+    ax0.invert_yaxis()
+    
+    cbar_ax = plt.gcf().axes[-1]                        #gets colorbar of current figure object, behaves as second y object
+    # colorbar label settings
+    cbar_ax.set_ylabel('cts/s', fontsize = 16, #\u03BCg/cm'+ r'$^{2}$
+                       rotation = 90, labelpad = 10)   #label formatting
+    cbar_ax.tick_params(labelsize=12)                   #tick label formatting
+    cbar_ax.yaxis.set_offset_position('left')           #scale at top of colorbar (i.e. 'offset') position
+    cbar_ax.yaxis.get_offset_text().set(size=12)        #format colorbar offset text
+    #cbar_ax.set_yticklabels('0.2f') --> debug
+    return
 
 #FOR summed concntration of species as a function of depth
 #want to create sum of concentrations for a given "stack depth (x)" and plot vs. x
-# converts array of csv into nxm matrix 
+# converts array of csv into NxM matrix 
 def MapsAsMatrices(scan_list, dataframe_as_array, el):
     plotList = []                                                         #initializes list to contain the shaped channels of interest
     for scan, df in zip(scan_list, dataframe_as_array):
@@ -171,7 +205,6 @@ def MapsAsMatrices(scan_list, dataframe_as_array, el):
             plotList.append(df2)
     return plotList
 
-
 def integrateStackDepth(imported_shaped_dict):
     for df in imported_shaped_dict:
         column_sum = df.sum(axis = 0, skipna = True)
@@ -180,59 +213,3 @@ def integrateStackDepth(imported_shaped_dict):
     return
 
 
-
-### below was used as testing for generating rotated lineplots
-    ## need a better way handle removal of noise in FS2_2 (imported_scan_dfs[1])
-    ## right now i've set an arbitrary threshold at 7e-12 based on looking in the df;
-    ## tried using means and std of columns etc. of shaped and rotated dfs
-    ## to defin the threshold value, but without luck    
-    
-# =============================================================================
-# import numpy as np
-# import seaborn as sns
-# import matplotlib.pyplot as plt
-# from scipy.ndimage.interpolation import rotate
-# 
-# test_df = imported_scan_dfs[1]
-# 
-# shaped_df = test_df.pivot(index = 'y pixel no', columns = 'x pixel no', values = 'XBIC')
-# 
-# a = np.array(shaped_df.values)
-# df1 = np.where(a < 7e-12, 0, a)
-# 
-# rot_df = rotate(df1, 25)
-# #fig_obj = sns.heatmap(rot_df, square =True)
-# #fig_obj.invert_yaxis()
-# column_sum = rot_df.sum(axis=0)
-# fig = plt.figure()
-# plt.plot(column_sum)
-# 
-# 
-# test_df = imported_scan_dfs[0]
-# 
-# shaped_df = test_df.pivot(index = 'y pixel no', columns = 'x pixel no', values = 'XBIC')
-# 
-# # =============================================================================
-# # a = np.array(shaped_df.values)
-# # df1 = np.where(a < 7e-12, 0, a)
-# # =============================================================================
-# fig = plt.figure()
-# #rot_df = rotate(df1, 0)
-# #fig_obj = sns.heatmap(rot_df, square =True)
-# #fig_obj.invert_yaxis()
-# column_sum = shaped_df.sum(axis=0)
-# 
-# plt.plot(column_sum)
-# 
-# # =============================================================================
-# # plt.plot(column_sum)
-# # 
-# # fig = plt.figure() #figsize = scan["figure_size"], dpi = 250
-# # 
-# # fig_obj = sns.heatmap(shaped_df, square =True)
-# # 
-# #         
-# # #PLOT SETTINGS
-# # #fig_obj.invert_yaxis()                     
-# # =============================================================================
-# =============================================================================
