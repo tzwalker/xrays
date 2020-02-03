@@ -5,9 +5,9 @@ author: Trumann
 import plot_defs as PLT
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
-SAMP = TS58A; SCAN = 1; CHAN = 1
+SAMP = NBL3_3; SCAN = 4; CHAN = 1
 DATA_KEY = 'XBIC_corr'
-LABELS = [16,14, 20,20]
+LABELS = [24,22,18, 30,30] #[axis_title, axis_ticks, Xaxis_tick_interval, Yaxis_tick_interval]
 
 colors = [(0, 0, 0), (0.5, 0, 0), (1, 0, 0)]  # R -> G -> B
 cmap_name = 'imgj_reds'
@@ -15,7 +15,7 @@ cmap_name = 'imgj_reds'
 cm = LinearSegmentedColormap.from_list(cmap_name, colors, N=255)
 # use this function to plot area-density, corrected elemental maps
     # feature integer equals the index of the elmenent as seen in 'elements'
-PLT.plot_nice_2Dmap(SAMP, DATA_KEY, SCAN, CHAN, LABELS, cm) 
+PLT.plot_nice_2Dmap(SAMP, DATA_KEY, SCAN, CHAN, LABELS, 'Oranges_r', '\u03BCg/cm'+ r'$^{2}$') 
 
 
 #%%
@@ -25,7 +25,7 @@ DATA_KEY = 'XBIC_maps'
 # NOTE: run data transformation before this funciton to get the right dict keys
     # (adds nan columns)
     # feature_idx
-PLT.from_stand_to_stand_map(SAMP, SCAN, DATA_KEY, CHAN)
+PLT.from_stand_to_stand_map(SAMP, SCAN, DATA_KEY, CHAN, 'magma', 'Stand. XBIC')
 
 #PLT.map_to_hist(samp, scan, axis_label_sizes, 'elXBIC_corr', 1, 50)
 #%%
