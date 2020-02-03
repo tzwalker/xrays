@@ -61,6 +61,7 @@ print(np.sqrt(mean_squared_error(x,y)))
 
 #%%
 # NICE HEXBIN PLOT WITH HISTOGRAMS: SETUP #
+# overlay simple linear regression line #
 fig = plt.figure(figsize=(5,5))
 grid = plt.GridSpec(4, 4, hspace=0.2, wspace=0.2)
 main_ax = fig.add_subplot(grid[-3:, :-1])
