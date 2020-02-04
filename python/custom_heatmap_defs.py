@@ -14,23 +14,13 @@ def heatmap(data, row_labels, col_labels, mask,
             ax=None,
             cbar_kw={}, cbarlabel="", **kwargs):
     """
-    Create a heatmap from a numpy array and two lists of labels.
-
-    Parameters
-    ----------
     data
-        A 2D numpy array of shape (N, M).
-    row_labels
-        A list or array of length N with the labels for the rows.
-    col_labels
-        A list or array of length M with the labels for the columns.
+        A 2D numpy array of shape (N, M)
     ax
         A `matplotlib.axes.Axes` instance to which the heatmap is plotted.  If
         not provided, use current axes or create a new one.  Optional.
     cbar_kw
         A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
-    cbarlabel
-        The label for the colorbar.  Optional.
     **kwargs
         All other arguments are forwarded to `imshow`.
     """
@@ -50,6 +40,7 @@ def heatmap(data, row_labels, col_labels, mask,
     cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
     cbar.ax.set_ylabel(cbarlabel, rotation=90, va="bottom", 
                        size=cbar_labsize, labelpad=cbarpad)
+    #remove colorbar outline
     cbar.outline.set_visible(False)
     cbar.ax.tick_params(labelsize=cbar_ticksize) 
 
@@ -60,7 +51,7 @@ def heatmap(data, row_labels, col_labels, mask,
     ax.set_xticklabels(col_labels, size=xylabelsizes[0])
     ax.set_yticklabels(row_labels, size=xylabelsizes[1])
 
-    # Adjust axes that will have tick labels
+    # Adjust axes that will show tick labels
     ax.tick_params(top=False, bottom=False,
                    labeltop=False, labelbottom=True)
 
@@ -75,10 +66,6 @@ def annotate_heatmap(im, data=None, valfmt="{x:.2f}",
                      textcolors=["black", "white"],
                      threshold=None, **textkw):
     """
-    A function to annotate a heatmap.
-
-    Parameters
-    ----------
     im
         The AxesImage to be labeled.
     data
@@ -130,34 +117,7 @@ def annotate_heatmap(im, data=None, valfmt="{x:.2f}",
             else: kw.update(color=textcolors[0])
             text = im.axes.text(j, i, valfmt(data[i, j], None), **kw)
             texts.append(text)
-
+    # turn zeros of txt annotations to blanks!
+    for text in texts:
+        if text._text == '0': text._text = ""
     return texts
-
-
-# plot spearman using custom (not seaborn) heatmap #
-from scipy.stats import spearmanr
-
-# convert stacked maps of a scan into array that can be Spearman correlated #
-np.shape(ht43)[0]; np.shape(ht43)[1]*np.shape(ht43)[2]
-ht43_unstacked = ht43.reshape(4, (151*149))
-
-ht_spear = spearmanr(ht43_unstacked.T)
-axis_names = ['XBIC', 'Cu','Cd', 'Te']
-
-fig, ax0 = plt.subplots()
-plt.tight_layout()
-im, cbar = heatmap(ht_spear[0], axis_names, axis_names, mask=True,
-                   cmap="coolwarm", xylabelsizes=[16,16],
-                   cbarlabel="Monotonicity", 
-                   cbarpad=20, cbar_labsize=16, cbar_ticksize=16,
-                   ax=ax0, vmin=-1, vmax=1)
-
-#texts = annotate_heatmap(im, valfmt="{x:.2g}", fontsize=10, threshold=[-0.5,0.5])
-# =============================================================================
-# im, cbar = heatmap(ht_spear[1], axis_names, axis_names, cmap="Greys",
-#                    xylabelsizes=[16,16],
-#                    cbarlabel="Monotonicity", 
-#                    cbarpad=20, cbar_labsize=16, cbar_ticksize=14,
-#                    ax=ax1, vmin=0, vmax=1)
-# texts = annotate_heatmap(im, valfmt="{x:.2g}", fontsize=10, threshold=[-1,.75])
-# =============================================================================

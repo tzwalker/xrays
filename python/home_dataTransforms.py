@@ -1,7 +1,4 @@
 import xraylib as xl
-import samp_dict_grow
-import numpy as np
-
 import numpy as np
 import sklearn.preprocessing as skpp
 import samp_dict_grow
