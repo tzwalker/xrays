@@ -1,4 +1,4 @@
-import plot_FS_xSect_defs as FSdefs
+import plot_FS_defs as FSdefs
 
 ASCII_path = r'C:\Users\Trumann\Desktop\FS_data\FS2_2019_03_2IDD'
 
