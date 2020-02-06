@@ -3,11 +3,6 @@
 Trumann
 Tue Feb  4 11:26:59 2020
 
-split high resolution map and low resolution map into two files
-"angle data.py" and "angle data_lowRes.py"
-different shift settings are needed for each
-scans given here for convenience:
-
 want to get at data taken at two different angles
 2016_07_2IDD - miasole 'large grain' sample 5
 Area 1 0  deg - scan130
@@ -36,30 +31,35 @@ def import_scan(path, scan, channels):
 path = r'C:\Users\Trumann\Desktop\angle_data\output'
 CHANNELS = ['ds_ic', 'Cu', 'In_L', 'Ga', 'Se', 'Zn', 'Ca']
 
-deg15 = import_scan(path,122,CHANNELS)
-deg0 = import_scan(path,130, CHANNELS)
+deg15 = import_scan(path,119,CHANNELS)
+deg0 = import_scan(path,127, CHANNELS)
 # if "dx" is (-) --> index like "dx:" ; # if "dx" is (+) --> index like ":dx"
 # for high res scans 130 and 122, dx,dy = -10,10
-
+# for low res scans 127 and 119, need to zoom in on one region for both... 
 dx,dy = -10,10
-deg0 = np.roll(deg0,dx,axis=1)
-deg0 = np.roll(deg0,dy, axis=2)
-deg0_roi = deg0[:,:dx,dy:] #get only the shifted area
+deg15 = np.roll(deg15,dx,axis=1); deg15[:,dx:,:] = np.nan
+deg15 = np.roll(deg15,dy, axis=2); deg15[:,:,:dy]= np.nan
+deg15_roi = deg15[:,:dx,dy:] #get only the shifted area
 
-fig, (ax0,ax1) = plt.subplots(1,2)
-ax0.imshow(deg15[5,:,:])
-ax1.imshow(deg0_roi[5,:,:])
+dx,dy = 20,-15
+deg0 = np.roll(deg0,dx,axis=1); deg0[:,:dx,:] = np.nan
+deg0 = np.roll(deg0,dy, axis=2); deg0[:,:,dy:]= np.nan
+deg0_roi = deg0[:,dx:,:dy] #get only the shifted area
+
+deg15_roi_test = deg15_roi[:,:,:] # chop off low vals of rolled image
+deg0_roi_test = deg0_roi[:,:,:-5] # chop off low vals of rolled image
 
 #delta maps
 #delta_map = deg15/deg0_roi
-
+fig, (ax0,ax1) = plt.subplots(1,2)
+ax0.imshow(deg15_roi_test[5,:,:])
+ax1.imshow(deg0_roi_test[5,:,:])
 #ax2.imshow(delta_map[5,:,:])
 #%%
 #check correlations between two geometries (of same area)
 from scipy.stats import spearmanr
 import custom_heatmap_defs
-
-data = deg0[[1,3,4,5],:,:]
+data = deg15_roi_test[[1,3,4,5],:,:]
 data_prep = data.reshape(np.shape(data)[0], (np.shape(data)[1]*np.shape(data)[2]))
 spear = spearmanr(data_prep.T)
 AXIS_NAMES = ['Cu', 'Ga', 'Se', 'Zn']

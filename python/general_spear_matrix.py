@@ -80,3 +80,41 @@ texts = custom_heatmap_defs.annotate_heatmap(im, valfmt="{x:.2g}", fontsize=12,
 #                    ax=ax1, vmin=0, vmax=1)
 # texts = annotate_heatmap(im, valfmt="{x:.2g}", fontsize=10, threshold=[-1,.75])
 # =============================================================================
+
+#%%
+# averaging over multipple spearman matrices (e.g. nbl32 in each geometry) #
+from scipy.stats import spearmanr
+import custom_heatmap_defs
+import numpy as np
+#check correlations between two geometries of different areas of CdTe
+deg15 = NBL3_2['XBIC_maps'][3:6] #access CdTe data
+deg15 = [arr[:,:,:-2] for arr in deg15] # remove nan columns
+
+spear_stack = []
+for scan in deg15:
+    data = scan[[1,2,3],:,:]
+    data_prep = data.reshape(np.shape(data)[0], (np.shape(data)[1]*np.shape(data)[2]))
+    spear = spearmanr(data_prep.T)
+    spear_stack.append(spear[0])
+spear_stack1 = np.array(spear_stack)
+
+deg15_avg = np.average(spear_stack1,axis=0)
+deg15_std = np.std(spear_stack1,axis=0)
+
+AXIS_NAMES = ['Cu', 'Cd', 'Te']
+fig, (ax0,ax1) = plt.subplots(2,1, figsize=(4,4))
+plt.tight_layout()
+IM, CBAR = custom_heatmap_defs.heatmap(deg15_avg, AXIS_NAMES, AXIS_NAMES, mask=True,
+                   cmap="coolwarm", xylabelsizes=[16,16],
+                   cbarlabel="Monotonicity", 
+                   cbarpad=20, cbar_labsize=16, cbar_ticksize=16,
+                   ax=ax0, vmin=-1, vmax=1)
+TEXTS = custom_heatmap_defs.annotate_heatmap(IM, valfmt="{x:.2g}", fontsize=10, 
+                                             threshold=[-0.5,0.5])
+IM, CBAR = custom_heatmap_defs.heatmap(deg15_std, AXIS_NAMES, AXIS_NAMES, mask=True,
+                   cmap="Greys", xylabelsizes=[16,16],
+                   cbarlabel="Std. Err.", 
+                   cbarpad=20, cbar_labsize=16, cbar_ticksize=16,
+                   ax=ax1, vmin=0, vmax=1)
+TEXTS = custom_heatmap_defs.annotate_heatmap(IM, valfmt="{x:.2g}", fontsize=10, 
+                                             threshold=[-0.5,0.5])
