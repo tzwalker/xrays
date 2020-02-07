@@ -1,24 +1,24 @@
-import xSect_defs as xsect_defs
-import numpy as np
-
 path = r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs'
 defs = r'C:\Users\Trumann\xrays\python\1_NBL3_code'
 import sys
 sys.path.append(defs)
+import xSect_defs as xsect_defs
+import numpy as np
+
 
 sample = 'NBL33'
-scannum = 1
-channels = ['Cl_K', 'Cu_K', 'Cd_L3']
+scannum = 17
+channels = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
 meta_data = xsect_defs.get_scan_metadata(path, sample, scannum)
-rotation = 0
+rotation = 10
 
-imported_rotated_dataframes = xsect_defs.import_xSect_csvs(path, sample, scannum, channels, meta_data, rotation)
-
+dfs_rotated = xsect_defs.import_xSect_csvs(path, sample, scannum, channels, meta_data, rotation)
+#%%
 # there should be as many entries in these lists as channels imported
-ch_units = ['A', '\u03BCg/cm'+ r'$^{2}$', '\u03BCg/cm'+ r'$^{2}$']
-heat_colors = ['magma', 'Oranges_r', 'viridis']
-xsect_defs.plot_2D_xSect(imported_rotated_dataframes, ch_units, heat_colors)
-
+ch_units = ['A', '\u03BCg/cm'+ r'$^{2}$','\u03BCg/cm'+ r'$^{2}$', '\u03BCg/cm'+ r'$^{2}$']
+heat_colors = ['magma','Oranges_r', 'viridis']
+xsect_defs.plot_2D_xSect(dfs_rotated, ch_units, heat_colors)
+#%%
 def export_integrated_dfs(imp_rot_dfs):
     integrated_arrays_of_each_channel = []
     x = imp_rot_dfs[0].columns.values

@@ -20,6 +20,19 @@ def get_scan_metadata(path, sample, scannum):
     df.rename(columns = {old:new for old, new in zip(df.columns.values, new_names)}, inplace=True) # rename column headers with short names
     return df
 
+def import_xSect_csvs(path, sample, scannum, channels, meta, rot):
+    rot_dfs = []
+    for chan in channels:
+        file_string = '\CdTe_X_' + sample + '_Scan_' + str(scannum) + '_' + chan + '_data.csv'
+        file = path + file_string
+        df = pd.read_csv(file, header=None)  # import scan
+        rot_nparray = rotate(df, rot) # rotate image
+        rot_df = pd.DataFrame(rot_nparray) # cast from numpy array to df
+        get_axes_from_metadata(rot_df, meta) # set column/row(index) headers to real units
+        rot_dfs.append(rot_df) # build imported list
+    #sns.heatmap(rot_dfs[0]) # print map to check rotation
+    return rot_dfs
+
 def get_axes_from_metadata(data_df, units_df):
     old_x = data_df.columns.values                      # get column labels in data df (type: numpy array)
     # scale indices according to axis step 
@@ -67,18 +80,7 @@ def plot_2D_xSect(imp_rot_dfs, ch_units, colors):
     fig.tight_layout(pad=0, h_pad=0.25, w_pad=0)
     return
 
-def import_xSect_csvs(path, sample, scannum, channels, meta, rot):
-    rot_dfs = []
-    for chan in channels:
-        file_string = '\CdTe_X_' + sample + '_Scan_' + str(scannum) + '_' + chan + '_data.csv'
-        file = path + file_string
-        df = pd.read_csv(file, header=None)  # import scan
-        rot_nparray = rotate(df, rot) # rotate image
-        rot_df = pd.DataFrame(rot_nparray) # cast from numpy array to df
-        get_axes_from_metadata(rot_df, meta) # set column/row(index) headers to real units
-        rot_dfs.append(rot_df) # build imported list
-    #sns.heatmap(rot_dfs[0]) # print map to check rotation
-    return rot_dfs
+
 
 # =============================================================================
 # def plot_integrated_line_scans(imp_rot_dfs, colors):
