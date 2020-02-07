@@ -41,19 +41,42 @@ deg0 = import_scan(path,130, CHANNELS)
 # if "dx" is (-) --> index like "dx:" ; # if "dx" is (+) --> index like ":dx"
 # for high res scans 130 and 122, dx,dy = -10,10
 
-dx,dy = -10,10
-deg0 = np.roll(deg0,dx,axis=1)
-deg0 = np.roll(deg0,dy, axis=2)
-deg0_roi = deg0[:,:dx,dy:] #get only the shifted area
+dx,dy = 2,12
+deg0_roll = np.roll(deg0,dx,axis=1)
+deg0_roll = np.roll(deg0,dy, axis=2)
+deg0_roi = deg0_roll[:,:-dx,dy:] #get only the shifted area
 
-fig, (ax0,ax1) = plt.subplots(1,2)
-ax0.imshow(deg15[5,:,:])
-ax1.imshow(deg0_roi[5,:,:])
+deg0_shift2 = deg0_roi[5,8:,:]
+deg15_shift2 = deg15[5,:,2:]
 
-#delta maps
-#delta_map = deg15/deg0_roi
+fig, (ax0,ax1,ax2) = plt.subplots(1,3, figsize=(10,5))
+ax0.imshow(deg15_shift2)
+ax1.imshow(deg0_shift2)
+# delta maps #
+#delta_map = deg15-deg0_roi; ax2.imshow(delta_map[5,:,:])
 
-#ax2.imshow(delta_map[5,:,:])
+#%%
+xrange = 5; yrange = 5
+xstep = 0.1; ystep = 0.1
+import numpy as np
+import seaborn as sns
+np.arange(0,xrange+xstep,xstep)
+
+fig, ax0 = plt.subplots()
+sns.heatmap(deg15[5,:,:], xticklabels = 20, yticklabels = 20, ax=ax0, cmap='viridis',
+                 annot= None, square = True, cbar_kws={'label': '\u03BCg/cm$^2$'})   #plot heatmap using seaborn
+#PLOT SETTINGS
+ax0.figure.axes[-1].yaxis.label.set_size(18)                             #changes colorbar text label size
+
+#changes colorbar numeric label size
+cbar = plt.gcf().axes[-1]
+cbar.tick_params(labelsize = 15)
+
+plt.xlabel('X (\u03BCm)', fontsize = 18)
+plt.xticks(rotation = 0)
+plt.ylabel('Y (\u03BCm)', fontsize = 18)
+plt.yticks(rotation = 0)
+plt.tick_params(axis="both", labelsize = 15)
 #%%
 #check correlations between two geometries (of same area)
 from scipy.stats import spearmanr
