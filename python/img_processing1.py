@@ -66,38 +66,6 @@ plot_spearman(corr[0], NAMES, format_dict0, ax0, False)
 #plot_spearman(corr[1], NAMES, format_dict1, ax1)
 
 #%%
-# attempt to mimic ImageJ rolling-ball background substraction #
-
-xbic = NBL3_3['XBIC_maps'][0][3,:,:-2]
-import sklearn.preprocessing as sklp
-import numpy as np
-
-scaler = sklp.StandardScaler()
-
-def standardize_map(array):
-    map_dimensions = np.shape(array)
-    array = array.reshape(-1,1) # standardization requires one column
-    array = scaler.fit_transform(array) # transform
-    array = array.reshape(map_dimensions) # shape back into map
-    return array
-
-xbic1 = standardize_map(xbic)
-
-import scipy.ndimage as scim
-from skimage.morphology import ball
-
-# Create 3D ball structure
-s = ball(30) 
-# Take only the upper half of the ball
-h = int((s.shape[1] + 1) / 2)
-# Flat the 3D ball to a weighted 2D disc
-s = s[:h, :, :].sum(axis=0)
-# Rescale weights into 0-1
-s = (1 * (s - s.min())) / (s.max()- s.min()) 
-# Use "white tophat" transform 
-xbicbk = scim.white_tophat(xbic1, structure=s)
-
-#%%
 ### exploring current/voltage maps ###
 import matplotlib.pyplot as plt
 import numpy as np
