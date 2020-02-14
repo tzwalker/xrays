@@ -1,4 +1,4 @@
-import plot_FS_defs as FSdefs
+import definitions ASCII as FSdefs
 
 ASCII_path = r'C:\Users\Trumann\Desktop\FS_data\FS2_2019_03_2IDD'
 
@@ -26,17 +26,12 @@ FSdefs.mapConvertAxes(imported_scan_dfs, scan_list)
 #CdTe_ratio(imported_scan_dfs)
 #FSdefs.make_2d_plots(imported_scan_dfs, scan_list, element_plot_list, element_plot_labels, plot_titles)
 
-
 shaped_dfs = FSdefs.MapsAsMatrices(scan_list, imported_scan_dfs, element_plot_list)
-
-
 rotated_dfs = FSdefs.rotate_integrate_normalize(shaped_dfs)
-
 
 x = list(np.linspace(0,15,151))
 label_list = ['XBIC'] + plot_titles
 FSdefs.make_line_plots(x,rotated_dfs, label_list)
-
 
 #FSdefs.integrateStackDepth(shaped_dfs)
 
