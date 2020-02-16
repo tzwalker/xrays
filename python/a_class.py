@@ -3,19 +3,20 @@
 kineticcross
 Sun Feb  9 19:47:25 2020
 
-each sample has a set of scans
-each scan has an h5 and a set electrical settings
+these functions import electrical and XRF data from two types of files:
+    csv file containing the lockin settings of each scan
+    h5 file containing the XRF data of each scan
+each sample object has data related to that sample
 """
 
 import h5py
 import pandas as pd
-
-
+import numpy as np
 
 class Sample():
     def __init__(self):
-        self.scans = []; self.h5data = []; self.lockin = []
-        self.maps = []; self.stack = {}
+        self.scans = []; self.h5data = []; self.lockin = []; self.maps = []
+        self.stack = {}
     def import_scan_data(self, data_path):
         str_list = [str(scan_number) for scan_number in self.scans]
         filenames = [data_path+'/2idd_0'+scan+'.h5' for scan in str_list]
@@ -39,15 +40,35 @@ class Sample():
                 lockin = settings['lockin'].values[0]
                 scaler_factor = 1 / (V2F*lockin)
             self.lockin.append(scaler_factor)
-    def import_maps(self, electrical_scaler, elements, ):
+    def import_maps(self, eh_scaler, elements, norm_scaler, fit_access_key):
+        # order of scaler channels in h5: '/MAPS/scalers'
         scaler_chs = ['SRCurrent', 'us_ic', 'ds_ic']
-        scaler_idx = scaler_chs.index(electrical_scaler)
+        # to find electrical map, set scaler index
+        scaler_idx = scaler_chs.index(eh_scaler)
+        # to find channel to normalize, set normalization index
+        norm_idx = scaler_chs.index(norm_scaler)
+        # set-up to find correct normalization scalers
+        if fit_access_key == 'roi':
+            fit_keys = ['/MAPS/XRF_roi', '/MAPS/XRF_roi_quant']
+        elif fit_access_key == 'fit':  
+            fit_keys = ['/MAPS/XRF_fits','/MAPS/XRF_fits_quant']
+        # for each scan, convert and add electrical and element maps
         for h5, factor in zip(self.h5data, self.lockin):
             maps_for_scan = []
+            # to find element, decode h5 element strings
+            dcoded_chs = [ele_str.decode('utf-8') for ele_str in h5['/MAPS/channel_names']]
             electrical_map = h5['/MAPS/scalers'][scaler_idx]
             electrical_map = electrical_map * factor
             maps_for_scan.append(electrical_map)
-            print('okay...')
+            for element in elements:
+                ele_idx = dcoded_chs.index(element)
+                ele_map = h5[fit_keys[0]][ele_idx,:,:]
+                nrmlize_map = h5['/MAPS/scalers'][norm_idx, :, :] 
+                quant_map = h5[fit_keys[1]][norm_idx, 0, ele_idx]
+                fit_map = ele_map / nrmlize_map / quant_map # --> fitted map
+                maps_for_scan.append(fit_map)
+            maps_ = np.array(maps_for_scan)
+            self.maps.append(maps_)
             
             
 data_path = '/home/kineticcross/Desktop/data'
@@ -90,10 +111,20 @@ NBL32.get_lockin(data_path+'/a_class_electrical.csv')
 NBL33.get_lockin(data_path+'/a_class_electrical.csv')
 TS58A.get_lockin(data_path+'/a_class_electrical.csv')
 # "sample.lockin" now exists: holds scaler factors
-# these factors line up exactly with the file positions in "sample.h5data"
 
 # import maps:
 # arg1: electrical scaler channel
 # arg2: element maps to extract
-# arg3:  
-NBL32.import_maps('ds_ic')
+# arg3: scaler channel to normalize elemental signal
+# arg4: use 'fit' on fitted h5s, or 'roi' for unfitted h5s
+elements = ['Cu', 'Cd_L', 'Te_L']
+NBL32.import_maps('ds_ic', elements, 'us_ic', 'fit')
+NBL33.import_maps('ds_ic', elements, 'us_ic', 'fit')
+TS58A.import_maps('ds_ic', elements, 'us_ic', 'fit')
+# "sample.maps" now exists: holds electrical and XRF for each scan
+# each scan is accessed by index, e.g. "NBL32.maps[2]" --> scan 424
+# to access a specific map of a given scan:
+#   "NBL32.maps[2][0,:,:]" --> electrical map for scan 424
+#   "NBL32.maps[2][1,:,:]" --> Cu map for scan 424
+
+# clean up plotting functions... and learn how to import the class as a module
