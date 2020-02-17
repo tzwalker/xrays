@@ -17,7 +17,7 @@ import pandas as pd
 class Sample():
     def __init__(self):
         self.scans = []; self.h5data = []; self.lockin = []; self.maps = []
-        self.stack = {}
+        self.stack = {}; self.maps_ = []
     def import_scan_data(self, data_path):
         str_list = [str(scan_number) for scan_number in self.scans]
         filenames = [data_path+'/2idd_0'+scan+'.h5' for scan in str_list]
@@ -68,5 +68,20 @@ class Sample():
                 quant_map = h5[fit_keys[1]][norm_idx, 0, ele_idx]
                 fit_map = ele_map / nrmlize_map / quant_map # --> fitted map
                 maps_for_scan.append(fit_map)
-            maps_ = np.array(maps_for_scan)
-            self.maps.append(maps_)
+            maps_to_array = np.array(maps_for_scan)
+            self.maps.append(maps_to_array)
+    def apply_iios(self, user_scans, iios_array):    
+        # find scan indexes
+        scan_idxs = [i for i, s in enumerate(self.scans) if s in user_scans]
+        for scan_idx in scan_idxs:
+            scan_raw_maps = self.maps[scan_idx]
+            correct_maps = scan_raw_maps.copy() # create copy to overwrite
+            for ele_idx, iio in enumerate(iios_array):
+                ele_idx = ele_idx+1 # skip electrical map
+                # extract XRF map
+                map_to_correct = scan_raw_maps[ele_idx,:,:]
+                # correct XRF map
+                correct_map = map_to_correct / iio
+                # replace XRF map
+                correct_maps[ele_idx,:,:] = correct_map
+            self.maps_.append(correct_maps)

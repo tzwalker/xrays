@@ -1,11 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Trumann
-Mon Oct 14 10:43:17 2019
-"""
 import numpy as np
 import xraylib as xl
-import samp_dict_grow
 
 def get_upstream_iioIN(layers_before, beam_settings):
     # convert to radians
@@ -59,7 +53,9 @@ def get_avg_internal_attn(layer_info, layer, elements, beam_settings, cum_upstrm
     beam_rad = np.sin(beam_settings['beam_theta']*np.pi/180)
     det_rad = np.sin(beam_settings['detect_theta']*np.pi/180)
     
-    density=layer_info[0];    thickness=layer_info[1];      step_size=1*10**-7  # 1nm steps
+    density=layer_info[0]
+    thickness=layer_info[1]
+    step_size=1*10**-7  # 1nm steps
     
     XRF_lines = [eleXRF_energy(element, beam_energy) for element in elements]
     thickness_nm = int(thickness * 1E7)
@@ -82,61 +78,24 @@ def get_avg_internal_attn(layer_info, layer, elements, beam_settings, cum_upstrm
     ele_avg_iios = np.array(ele_avg_iios)
     return ele_avg_iios
 
-def get_layer_iios(samples, elements, beam_settings, layer):
-    for sample in samples:
-        STACK = sample['STACK']
-        layer_idx=list(STACK.keys()).index(layer)
-        if layer_idx != 0:
-            # retrieve info of upstream layers
-            layers_before = {k:v for idx,(k,v) in enumerate(STACK.items()) if idx < layer_idx}
-            # percent incoming beam transmitted to layer
-            upstream_attn_in = get_upstream_iioIN(layers_before, beam_settings)
-            # percent outgoing XRF transmitted by upstream layers
-            upstream_attn_out = get_upstream_iioOUT(layers_before, elements, beam_settings)
-            cumulative_upstream_attenuation = upstream_attn_in * upstream_attn_out
-            # percent outgoing XRF transmitted
-            ele_avg_iios = get_avg_internal_attn(STACK[layer], layer, elements, 
-                                                 beam_settings, cumulative_upstream_attenuation)
-            samp_dict_grow.build_dict(sample, beam_settings['beamtime']+'_iios', ele_avg_iios)
-        else:
-            print('you have chosen the first layer of the stack.')
-            print('this program is not currently configured to calculate element iios for the first layer.')
-            print('please either enter another layer, or look into modifying this function')
-    return 
-
-def apply_iios(samples, electrical_key, sample_scan_idxs, iio_arr_key, ele_map_idxs, ele_iio_idxs, new_dict_key):    
-    for sample, scan_idxs in zip(samples, sample_scan_idxs):
-        correct_scans = []
-        iio_arr = sample[iio_arr_key]
-        for scan_idx in scan_idxs:
-            scan_raw_maps = sample[electrical_key+'_maps'][scan_idx]
-            correct_maps = scan_raw_maps.copy() # create copy to overwrite
-            for ele_idx, iio_idx in zip(ele_map_idxs, ele_iio_idxs):
-                map_to_correct = scan_raw_maps[ele_idx,:,:] # extract map
-                correct_map = map_to_correct / iio_arr[iio_idx] # correct map
-                correct_maps[ele_idx,:,:] = correct_map # store map
-            correct_scans.append(correct_maps)
-        samp_dict_grow.build_dict(
-                sample, 
-                new_dict_key, #'{e_key}{date_key}corr'.format(e_key=electrical_key, date_key=iio_arr_key[0:8]) 
-                correct_scans)
-    return 
-
-def join_corrected_beamtimes(samples, keys, new_key):
-    for sample in samples:
-        all_corr = [sample[key] for key in keys]
-        flatten = lambda l: [item for sublist in l for item in sublist]
-        all_corr = flatten(all_corr)
-        samp_dict_grow.build_dict(sample, new_key, all_corr)
-    return
-
-def clean_dictionaries(samples, del_key):
-    for sample in samples:
-        del_keys = [key for key in sample.keys() if del_key in key]
-        for key in del_keys:
-            del(sample[key])
-    return
-
-if '__main__' == __name__:
-    join_corrected_beamtimes(samples, ['XBIC_corr0', 'XBIC_corr1'], 'XBIC_corr')
-    print('success')
+def get_iios(beam_settings, elements, STACK, end_layer):
+    # clip XRF line for xraylib
+    elements = [element[0:2] for element in elements]
+    # check if first layer was chosen
+    layer_idx=list(STACK.keys()).index(end_layer)
+    if layer_idx != 0:
+        # retrieve info of upstream layers
+        layers_before = {k:v for idx,(k,v) in enumerate(STACK.items()) if idx < layer_idx}
+        # percent incoming beam transmitted to layer
+        upstream_attn_in = get_upstream_iioIN(layers_before, beam_settings)
+        # percent outgoing XRF transmitted by upstream layers
+        upstream_attn_out = get_upstream_iioOUT(layers_before, elements, beam_settings)
+        cumulative_upstream_attenuation = upstream_attn_in * upstream_attn_out
+        # percent outgoing XRF transmitted
+        ele_avg_iios = get_avg_internal_attn(STACK[end_layer], end_layer, elements, 
+                                             beam_settings, cumulative_upstream_attenuation)
+    else:
+        print('you have chosen the first layer of the stack')
+        print('this program cannot correct XRF for the first layer')
+        print('please enter another layer')
+    return ele_avg_iios

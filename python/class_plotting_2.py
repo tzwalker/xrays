@@ -41,11 +41,12 @@ def plot_2D_data(data, h5data, user_cmap,
                  xy_lbl_sizes, xy_ticklbl_sizes, xy_intervals, 
                  sci_notation, ax=None,
                  cbar_kw={}, **kwargs):
-    
+    # retrieve physcial axis scale from h5
     xreal = get_real_coordinates(h5data['/MAPS/x_axis'])
     yreal = get_real_coordinates(h5data['/MAPS/y_axis'])
+    # make dataframe with physical-value xy coordinates
     df_map = pd.DataFrame(data, index = yreal, columns = xreal)
-    
+    # apply format to scale of color bar
     formatter = tkr.ScalarFormatter(useMathText=True)
     formatter.set_scientific(sci_notation)
     formatter.set_powerlimits((-2, 2))
@@ -81,6 +82,6 @@ scan_idx = 5
 plot_2D_data(NBL33.maps[scan_idx][1,:,:], NBL33.h5data[scan_idx], 
              user_cmap='Oranges_r',
              xy_intervals=[20,20], xy_ticklbl_sizes=14, xy_lbl_sizes=16,
-             cbarlabel="$\u03BCg/cm{^2}$", cbar_lblsize=14, cbarpad=25, 
+             cbarlabel="$\mathrm{\u03BCg/cm{^2}}$", cbar_lblsize=14, cbarpad=25, 
              cbar_ticklbl_size=12,
              sci_notation=True)

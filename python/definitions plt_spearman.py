@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-def heatmap(data, row_labels, col_labels, mask,
+def spearman_matrix(data, row_labels, col_labels, mask,
             cbarpad, cbar_labsize, cbar_ticksize, 
             xylabelsizes,
             ax=None,
@@ -62,7 +62,7 @@ def heatmap(data, row_labels, col_labels, mask,
     return im, cbar
 
 
-def annotate_heatmap(im, data=None, valfmt="{x:.2f}",
+def annotate_spearman(im, data=None, valfmt="{x:.2f}",
                      textcolors=["black", "white"],
                      threshold=None, **textkw):
     """

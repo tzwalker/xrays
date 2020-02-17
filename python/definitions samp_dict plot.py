@@ -7,7 +7,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-import matplotlib
 
 def custom_format_ticks(axes_object_labels, string_type):
     txt_labs = [label.get_text() for label in axes_object_labels]
@@ -24,9 +23,12 @@ def get_real_coordinates(axis_list):
 # usefeul function for visualizing standardized data as a map
 # puts two nan columns back on standardized arrays
 def put_nans_back_on(array, y_coord, x_coord):
-    slim_map = np.reshape(array, (len(y_coord), len(x_coord)-2), order='F') # minus 2cols (chopped off nans in e_statistics.py)
-    nans_to_attach = np.full((np.size(slim_map, axis=0),2), np.nan) # get 2cols of nan
-    nan_map = np.append(slim_map, nans_to_attach, 1)                 # attach nan
+    # reshape standardized array with two missing nan columns
+    slim_map = np.reshape(array, (len(y_coord), len(x_coord)-2), order='F') 
+    # make two nan columns matching the size of the standardized array
+    nans_to_attach = np.full((np.size(slim_map, axis=0),2), np.nan)
+    # attach the nan columns to the standardized array
+    nan_map = np.append(slim_map, nans_to_attach, 1)
     return nan_map
 
 def get_colorbar_axis(c_map, num_of_std):
@@ -39,78 +41,24 @@ def get_colorbar_axis(c_map, num_of_std):
         #heatmap_max = 1
     return heatmap_min, heatmap_max
 
-
 def from_stand_to_stand_map(samp, scan, data, channel,colormap, units):
     c_scan = samp['XBIC_h5s'][scan]  # h5 always has coordinates
     x_axis = c_scan['/MAPS/x_axis']  # x position of pixels  [position in um]
     y_axis = c_scan['/MAPS/y_axis']  # y position of pixels  [position in um]
+    # retrieve physcial axis scale from h5
     x_real = get_real_coordinates(x_axis)
     y_real = get_real_coordinates(y_axis)
     c_map = samp[data][scan][:,channel]
+    
+    # replace nan columns
     c_map = put_nans_back_on(c_map, y_real, x_real)
     
     df_map = pd.DataFrame(c_map, index = y_real, columns = x_real)
     fig, ax0 = plt.subplots()
+    # vmin and vmax only need to go to +/-3 for standardized maps...
     ax0 = sns.heatmap(df_map, square = True, cmap = colormap,
-                      xticklabels = 20, yticklabels = 20,
-                      cbar_kws={"shrink": 1.0, 'format': '%.2f'}, vmin=-3, vmax=3)
-    # figure level
-    plt.xlabel('X (\u03BCm)', fontsize=16)
-    plt.ylabel('Y (\u03BCm)', fontsize=16)
-    #plt.title(samp['Name'], fontsize=axis_label_sizes)
-    # axis level
-    ax0.tick_params(labelsize = 14)                     #formats size of ticklabels
-    x_labls = custom_format_ticks(ax0.get_xticklabels(), '{:g}')
-    y_labls = custom_format_ticks(ax0.get_yticklabels(), '{:g}')         #formats tick label strings without ".0"
-    ax0.set_xticklabels(x_labls)                        #set the tick labels
-    ax0.set_yticklabels(y_labls, rotation = 0)          #set the ticklabels and rotate (if needed)
-    ax0.invert_yaxis()                                  #invert the yaxis after formatting is complete
-    
-    #fig.colorbar(ax0).ax0 <--> plt.gcf().axes[-1]
-    cbar_ax = plt.gcf().axes[-1]                        #gets colorbar of current figure object, behaves as second y axes object
-    # colorbar label settings
-    cbar_ax.set_ylabel(units, fontsize =16, 
-                       rotation = 90, labelpad = 10)   #label formatting
-    cbar_ax.tick_params(labelsize=12)                   #tick label formatting
-    cbar_ax.yaxis.get_offset_text().set(size=12)        #format colorbar offset text
-    cbar_ax.yaxis.set_offset_position('left')           #scale at top of colorbar (i.e. 'offset') position
-    #cbar_ax.set_yticklabels(custom_format_ticks(cbar_ax.get_yticklabels(), '{:.2f}'))
+                      xticklabels = 20, yticklabels = 20, vmin=-3, vmax=3)
     return
-
-def plot_nice_2Dmap(sample, data_channel, scan, feature_idx, label_list, colormap, units):
-    file = sample['XBIC_h5s'][scan]  # h5 always has coordinates
-    x_axis = file['/MAPS/x_axis']; y_axis = file['/MAPS/y_axis']  # position of pixels  [position in um] 
-    x_real = get_real_coordinates(x_axis); y_real = get_real_coordinates(y_axis)
-    
-    data_map = sample[data_channel][scan][feature_idx,:,:]
-    
-    lower,upper = get_colorbar_axis(data_map, 3) # int here sets num_of_std to include
-    df_map = pd.DataFrame(data_map, index = x_real, columns = y_real)
-    fig, ax0 = plt.subplots()
-    ax0 = sns.heatmap(df_map, square = True, cmap = colormap,
-                      xticklabels = label_list[3], yticklabels = label_list[4],
-                      cbar_kws={"shrink": 1.0, 'format': '%.2f'}, vmin=lower, vmax=upper)
-    # figure level
-    plt.xlabel('X (\u03BCm)', fontsize=label_list[0])
-    plt.ylabel('Y (\u03BCm)', fontsize=label_list[0])
-    # axis level
-    ax0.tick_params(labelsize = label_list[1])                     #formats size of ticklabels
-    x_labls = custom_format_ticks(ax0.get_xticklabels(), '{:g}')
-    y_labls = custom_format_ticks(ax0.get_yticklabels(), '{:g}')         #formats tick label strings without ".0"
-    ax0.set_xticklabels(x_labls)                        #set the tick labels
-    y_labls.reverse()                                   # NOTE just inverting labels, not the matrix itself
-    ax0.set_yticklabels(y_labls, rotation = 0)          #set the ticklabels and rotate (if needed)
-    
-    #fig.colorbar(ax0).ax0 <--> plt.gcf().axes[-1]
-    cbar_ax = plt.gcf().axes[-1]                        #gets colorbar of current figure object, behaves as second y axes object
-    # colorbar label settings
-    cbar_ax.set_ylabel(units, fontsize = label_list[0], 
-                       rotation = 90, labelpad = 10)   #label formatting
-    cbar_ax.tick_params(labelsize=label_list[2])                   #tick label formatting
-    cbar_ax.yaxis.get_offset_text().set(size=label_list[2])        #format colorbar offset text
-    cbar_ax.yaxis.set_offset_position('left')           #scale at top of colorbar (i.e. 'offset') position
-    #cbar_ax.set_yticklabels(custom_format_ticks(cbar_ax.get_yticklabels(), '{:.2f}'))
-    return 
 
 def plot_cluster_map(scan_data, original_map, model, cnum):
     x = scan_data['/MAPS/x_axis'];      y = scan_data['/MAPS/y_axis']
