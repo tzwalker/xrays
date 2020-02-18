@@ -66,31 +66,6 @@ plot_spearman(corr[0], NAMES, format_dict0, ax0, False)
 #plot_spearman(corr[1], NAMES, format_dict1, ax1)
 
 #%%
-# comparing background substractions: ImageJ vs. python
-from skimage import io
-import scipy.ndimage as scim
-from skimage.morphology import ball
-import matplotlib.pyplot as plt
-
-# comparison before python correction #
-imgj = io.imread(r'Z:\Trumann\XRF images\py_exports_interface\NBL3_2\scan422\XBIC.tif')
-imgp = NBL3_2['XBIC_maps'][0][0,:,:-2]
-fig, (ax0,ax1) = plt.subplots(1,2)
-ax0.imshow(imgp)
-ax1.imshow(imgj)
-
-# python correction# 
-s = ball(15) # Create 3D ball structure
-h = int((s.shape[1] + 1) / 2) # Take only the upper half of the ball
-s = s[:h, :, :].sum(axis=0) # Flat the 3D ball to a weighted 2D disc
-s = (1 * (s - s.min())) / (s.max()- s.min()) # Rescale weights into 0-1
-# Use im-opening(im,ball) (i.e. white tophat transform) (see original publication)
-imgp_corr = scim.white_tophat(imgp, structure=s)
-fig, (ax0,ax1) = plt.subplots(1,2)
-ax0.imshow(imgp)
-ax1.imshow(imgp_corr)
-
-#%%
 ### exploring current/voltage maps ###
 import matplotlib.pyplot as plt
 import numpy as np
