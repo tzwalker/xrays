@@ -19,7 +19,7 @@ import sklearn.preprocessing as sklp
 from skimage.segmentation import slic, mark_boundaries
 from skimage.measure import regionprops
 
-aMAP = NBL3_3['XBIC_maps'][0][3,:,:-2]
+aMAP = NBL33.maps[4][1,:,:-2]
 scaler = sklp.StandardScaler()
 
 def rollball_bkgnd_subtraction(array, ball_radius):
@@ -43,14 +43,14 @@ def rollball_bkgnd_subtraction(array, ball_radius):
     nobkgnd_array = scim.white_tophat(array, structure=s)
     return nobkgnd_array
 
-# this image is of standardized data
-aMAPbk=rollball_bkgnd_subtraction(aMAP, 25)
+# this image is of background-subtracted standardized data
+aMAPbk=rollball_bkgnd_subtraction(aMAP, 15)
 
 # simple linear iterative clustering (SLIC) #
 aMAPbk = np.float64(aMAPbk)
-edges = slic(aMAPbk, n_segments=50, compactness=1, sigma=1)
+edges = slic(aMAPbk, n_segments=50, compactness=1, sigma=1) #50,1,1 for Te_L map
 
-def plot_superpixels(img, edges):
+def mark_superpixels(img, edges, colormap):
     # initiate RGB image; color=(i,j,k) corresponds to bm[:,:,(i,j,k)] 
     bm = mark_boundaries(img, edges, color=(1,0,0)) #-> color is RGB
     # make boolean mask where color channel==1 above (e.g. 1,0,0 --> red)
@@ -60,20 +60,34 @@ def plot_superpixels(img, edges):
     # in copy image, where bm_mask is True, convert to nan
     img_copy[bm_mask] = np.nan #--> could make function to convert to a color
     # plot image with boundary data "missing"
-    plt.imshow(img_copy, cmap='viridis')
+    fig, ax = plt.subplots()
+    ax.imshow(img_copy, cmap=colormap, vmin=0.5, vmax=3)
+    plt.tick_params(
+    axis='both',          # changes apply to the x-axis
+    which='both',      # both major and minor ticks are affected
+    bottom=False, labelbottom=False,
+    left=False, labelleft=False)
     return
+# define RBG colorspace:
+# [(R_strt,G_strt,B_strt),(R_mid,G_mid,B_mid),(R_end,G_end,B_end)]
+colors = [(0, 0, 0), (0.5, 0, 0), (1, 0, 0)]; cmap_name = 'imgj_reds'
+from matplotlib.colors import LinearSegmentedColormap
+# Create the colormap
+colormap = LinearSegmentedColormap.from_list(cmap_name, colors, N=255)
+mark_superpixels(aMAPbk, edges, colormap)
 
-plot_superpixels(aMAPbk, edges)
 
-# what to do once i can get to data in pixels...??? #
+
 #%%
 # access superpixel data
+
 for edge in np.unique(edges):
    mask = np.zeros(img.shape, dtype='uint8') #make empty mask
    mask[edges == edge] = True #make binary mask according to selected superpixel
    superpixel = img[np.where(mask==1)] #get (1d) array of data within superpixel
    
    print()
-
+   
+# what to do once i can get to data in pixels...??? #
 #import plot_defs as PLT
 #PLT.plot_nice_superpixels_from_h5(NBL3_3, 0, img_copy, 'magma')
