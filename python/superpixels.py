@@ -16,10 +16,8 @@ import matplotlib.pyplot as plt
 import scipy.ndimage as scim
 from skimage.morphology import ball
 import sklearn.preprocessing as sklp
-from skimage.segmentation import slic, mark_boundaries
-from skimage.measure import regionprops
+from skimage.segmentation import slic, mark_boundaries#, join_segmentations
 
-aMAP = NBL33.maps[4][1,:,:-2]
 scaler = sklp.StandardScaler()
 
 def rollball_bkgnd_subtraction(array, ball_radius):
@@ -43,13 +41,6 @@ def rollball_bkgnd_subtraction(array, ball_radius):
     nobkgnd_array = scim.white_tophat(array, structure=s)
     return nobkgnd_array
 
-# this image is of background-subtracted standardized data
-aMAPbk=rollball_bkgnd_subtraction(aMAP, 15)
-
-# simple linear iterative clustering (SLIC) #
-aMAPbk = np.float64(aMAPbk)
-edges = slic(aMAPbk, n_segments=50, compactness=1, sigma=1) #50,1,1 for Te_L map
-
 def mark_superpixels(img, edges, colormap):
     # initiate RGB image; color=(i,j,k) corresponds to bm[:,:,(i,j,k)] 
     bm = mark_boundaries(img, edges, color=(1,0,0)) #-> color is RGB
@@ -59,22 +50,35 @@ def mark_superpixels(img, edges, colormap):
     img_copy = img.copy()
     # in copy image, where bm_mask is True, convert to nan
     img_copy[bm_mask] = np.nan #--> could make function to convert to a color
-    # plot image with boundary data "missing"
-    fig, ax = plt.subplots()
-    ax.imshow(img_copy, cmap=colormap, vmin=0.5, vmax=3)
-    plt.tick_params(
-    axis='both',          # changes apply to the x-axis
-    which='both',      # both major and minor ticks are affected
-    bottom=False, labelbottom=False,
-    left=False, labelleft=False)
-    return
-# define RBG colorspace:
-# [(R_strt,G_strt,B_strt),(R_mid,G_mid,B_mid),(R_end,G_end,B_end)]
-colors = [(0, 0, 0), (0.5, 0, 0), (1, 0, 0)]; cmap_name = 'imgj_reds'
-from matplotlib.colors import LinearSegmentedColormap
-# Create the colormap
-colormap = LinearSegmentedColormap.from_list(cmap_name, colors, N=255)
-mark_superpixels(aMAPbk, edges, colormap)
+    return img_copy
+
+# fitted data
+img1 = NBL33.maps_[0][2,:,:-2] # Cd map
+img2 = NBL33.maps_[0][3,:,:-2] # Te map
+
+# background-subtracted, standardized data
+
+#%%
+img2 = rollball_bkgnd_subtraction(img2, 25) # Te map
+
+# prepare for SLIC segmentation; float32 to float64
+img1 = np.float64(img1); img2 = np.float64(img2)
+
+img_joint = np.stack((img1,img2), axis=2)
+#%%
+# simple linear iterative clustering (SLIC)
+labels = slic(img_joint, n_segments=16, compactness=1, sigma=1, enforce_connectivity=False)
+plt.imshow(mark_superpixels(img1, labels, 'viridis'))
+#%%
+# replacing with average #
+# non-zero labels for regionprops
+labels = labels + 1  
+from skimage import color
+# replace each segment with its average
+label_rgb = color.label2rgb(labels, img2, kind='avg')
+plt.imshow(label_rgb)
+
+regions = regionprops(labels)
 
 
 
@@ -91,3 +95,42 @@ for edge in np.unique(edges):
 # what to do once i can get to data in pixels...??? #
 #import plot_defs as PLT
 #PLT.plot_nice_superpixels_from_h5(NBL3_3, 0, img_copy, 'magma')
+   
+# =============================================================================
+# """
+# used to plot segmented Cu map in ImageJ colors  
+# for SETO2020 poster
+# """
+# # define RBG colorspace:
+# # [(R_strt,G_strt,B_strt),(R_mid,G_mid,B_mid),(R_end,G_end,B_end)]
+# colors = [(0, 0, 0), (0.5, 0, 0), (1, 0, 0)]; cmap_name = 'imgj_reds'
+# from matplotlib.colors import LinearSegmentedColormap
+# # Create the colormap
+# colormap = LinearSegmentedColormap.from_list(cmap_name, colors, N=255)
+# # plot image with boundary data "missing"
+# fig, ax = plt.subplots()
+# ax.imshow(img_copy, cmap=colormap, vmin=0.5, vmax=3)
+# plt.tick_params(
+# axis='both',          # changes apply to the x-axis
+# which='both',      # both major and minor ticks are affected
+# bottom=False, labelbottom=False,
+# left=False, labelleft=False)
+# =============================================================================
+
+# =============================================================================
+# """
+# was used to plot background subtraction iterations (unsuccessfully)
+# the for loop kept plotting the same background subtracted map in each subplot
+# if you want to use it, this will have to be fixed
+# """
+# col_num = np.arange(5)
+# fig, axs = plt.subplots(nrows=3,ncols=5)
+# #plt.tight_layout()
+# for ax in axs:
+#     for col in ax:
+#         img1 = rollball_bkgnd_subtraction(img1, 25) # Cd map
+#         col.imshow(img1)
+# for i in list(range(15)):
+#     img1 = rollball_bkgnd_subtraction(img1, 25) # Cd map
+#     print(np.median(img1))
+# =============================================================================

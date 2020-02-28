@@ -12,7 +12,8 @@ each sample object has data related to that sample
 from class_Sample import Sample
 import class_absorb_correct as XRFcorr
             
-data_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s' #'/home/kineticcross/Desktop/data' 
+ #'/home/kineticcross/Desktop/data'
+data_path = r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s' 
 # create sample objects
 NBL32 = Sample(); NBL33 = Sample(); TS58A = Sample()
 
@@ -23,7 +24,7 @@ NBL32.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-NBL32.scans =  [422,423,424,550,538,575, 419,420,421,551]
+NBL32.scans =  [422, 538, 423,424, 419,420,421, 550,575,551]
 
 NBL33.stack = {'Mo':   [10.2, 500E-7], 
                  'ZnTe': [6.34, 375E-7], 
@@ -31,7 +32,7 @@ NBL33.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-NBL33.scans =  [261,262,263,472, 264,265,266, 475,491]
+NBL33.scans =  [264, 491, 265,266, 261,262,263, 472,475]
 
 TS58A.stack = {'Mo':   [10.2, 500E-7], 
                  'ZnTe': [6.34, 375E-7], 
@@ -39,7 +40,7 @@ TS58A.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-TS58A.scans =  [385,386,387, 439,427,408, 382,383,384, 440]
+TS58A.scans =  [386, 439, 385,387, 382,383,384, 408,427,440]
 
 # import h5 data for each sample
 NBL32.import_scan_data(data_path)
