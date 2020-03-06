@@ -14,6 +14,11 @@ import h5py
 import numpy as np
 import pandas as pd
 
+# =============================================================================
+# # tree for IndexError exceptions:
+# # object:baseexception:exception:lookuperror:indexerror
+# =============================================================================
+
 class Sample():
     def __init__(self):
         self.scans = []; self.h5data = []; self.lockin = []; self.maps = []
@@ -29,7 +34,7 @@ class Sample():
             # if 'index out of bounds error', check if scan in datafile
             settings = data.loc[data['scan']==scan]
             # check if scan is XBIC or XBIV
-            bic_or_biv = settings['XBIC/V'].values[0]
+            bic_or_biv = settings['XBIC/V'].values[0] 
             # then calc factor (cts-->ampere) for XBIC channel in h5
             if bic_or_biv == 'C':
                 stanford = settings['stanford'].values[0]
