@@ -12,12 +12,18 @@ from skimage.transform import rotate
 def get_scan_metadata(path, sample, scannum):
     metafile_string = '\CdTe_X_' + sample + '_Scan_' + str(scannum) + '_Metadata.csv'
     metafile = path + metafile_string
-    df = pd.read_csv(metafile, header=None) # import metadata
-    new_names = [name[0:6] for name in df[0]] # make new names from labels in 1st column
-    df = df.T                           # transpose df to make labels in first row
-    df.columns = df.iloc[0]             # rename df column headers as labels in first row
-    df = df.reindex(df.index.drop(0))   # remove first row
-    df.rename(columns = {old:new for old, new in zip(df.columns.values, new_names)}, inplace=True) # rename column headers with short names
+    # import metadata
+    df = pd.read_csv(metafile, header=None)
+    # make new names from labels in 1st column
+    new_names = [name[0:6] for name in df[0]] 
+    # to put labels in first row, transpose df 
+    df = df.T
+    # using labels in 1st row, make column headers                     
+    df.columns = df.iloc[0]
+    # remove first row         
+    df = df.reindex(df.index.drop(0))   
+    # rename column headers with short names
+    df.rename(columns = {old:new for old, new in zip(df.columns.values, new_names)}, inplace=True) 
     return df
 
 def get_axes_from_metadata(data_df, units_df):
@@ -41,12 +47,16 @@ def import_xSect_csvs(path, sample, scannum, channels, meta, rot):
     for chan in channels:
         file_string = '\CdTe_X_' + sample + '_Scan_' + str(scannum) + '_' + chan + '_data.csv'
         file = path + file_string
-        df = pd.read_csv(file, header=None)  # import scan
-        rot_nparray = rotate(df, rot) # rotate image
-        rot_df = pd.DataFrame(rot_nparray) # cast from numpy array to df
-        get_axes_from_metadata(rot_df, meta) # set column/row(index) headers to real units
-        rot_dfs.append(rot_df) # build imported list
-    #sns.heatmap(rot_dfs[0]) # print map to check rotation
+        # import scan
+        df = pd.read_csv(file, header=None)  
+        # rotate image
+        rot_nparray = rotate(df, rot) 
+        # numpy array to df
+        rot_df = pd.DataFrame(rot_nparray) 
+        #set column/row(index) headers to real units
+        get_axes_from_metadata(rot_df, meta) 
+        # build imported list
+        rot_dfs.append(rot_df) 
     return rot_dfs
 
 def custom_format_ticks(axes_object_labels, string_type):
@@ -80,23 +90,21 @@ def plot_2D_xSect(imp_rot_dfs, ch_units, colors):
     fig.tight_layout(pad=0, h_pad=0.25, w_pad=0)
     return
 
-# =============================================================================
-# def plot_integrated_line_scans(imp_rot_dfs, colors):
-#     fig, ax0 = plt.subplots()
-#     for index, (df,color) in enumerate(zip(imp_rot_dfs, colors)):
-#         if index == 0:
-#             ax0.plot(x_position, y_integrate, color=color)
-#             plt.ylim([0, max(y_integrate)*1.1])
-#             #y_labls = custom_format_ticks(ax0.get_yticklabels(), '{:.1e}')
-#             #ax0.set_yticklabels(y_labls)
-#         else:
-#             pass
-#             #ax1=ax0.twinx()
-#             #ax1.plot(x_position, y_integrate, color=color)
-#             #plt.ylim([0,1e7])
-#         plt.xlim([0, max(df.columns.values)])
-#         ax0.grid()
-#     return
-# line_colors = ['tab:blue', 'tab:orange', 'tab:green']
-# plot_integrated_line_scans(imported_rotated_dataframes, line_colors)
-# =============================================================================
+def plot_integrated_line_scans(imp_rot_dfs, colors):
+    fig, ax0 = plt.subplots()
+    for index, (df,color) in enumerate(zip(imp_rot_dfs, colors)):
+        if index == 0:
+            ax0.plot(x_position, y_integrate, color=color)
+            plt.ylim([0, max(y_integrate)*1.1])
+            #y_labls = custom_format_ticks(ax0.get_yticklabels(), '{:.1e}')
+            #ax0.set_yticklabels(y_labls)
+        else:
+            pass
+            #ax1=ax0.twinx()
+            #ax1.plot(x_position, y_integrate, color=color)
+            #plt.ylim([0,1e7])
+        plt.xlim([0, max(df.columns.values)])
+        ax0.grid()
+    return
+line_colors = ['tab:blue', 'tab:orange', 'tab:green']
+plot_integrated_line_scans(imported_rotated_dataframes, line_colors)

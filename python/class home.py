@@ -11,9 +11,15 @@ each sample object has data related to that sample
 
 from class_Sample import Sample
 import class_absorb_correct as XRFcorr
-            
- #'/home/kineticcross/Desktop/data'
-data_path =  r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s' #r'C:\Users\triton\Desktop\NBL3_data\plan_view'
+
+path = 1       
+if path == 0:
+    data_path =  r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
+elif path == 1:
+    data_path = r'C:\Users\triton\Desktop\NBL3_data\plan_view'
+elif path == 2:
+    data_path = '/home/kineticcross/Desktop/data'
+    
 # create sample objects
 NBL31 = Sample(); NBL32 = Sample(); NBL33 = Sample(); TS58A = Sample()
 
