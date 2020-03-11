@@ -46,6 +46,35 @@ export_to_ImgJ_samp_dict(PATH, SAMPLE, SCAN, 'XBIC_maps', CHAN, CMAPS[CHAN], NAM
                          dpi=96, resize_fact=0.5, save=0)
 
 #%%
+import matplotlib.pyplot as plt  
+
+def export_to_ImgJ_samp_dict(path, shaped_data, color, name, 
+                             dpi, resize_fact, save):
+    fig, ax = plt.subplots()
+    #plt.figure(frameon=False)
+    fig.set_size_inches(shaped_data.shape[1]/(dpi*resize_fact), shaped_data.shape[0]/(dpi*resize_fact))    
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.set_axis_off()
+    ax.imshow(shaped_data, cmap=color)
+    if save == 1:
+        fname = r'\{ele}.png'.format(ele=name)
+        directory= path+fname
+        plt.savefig(directory, dpi=(dpi * resize_fact))
+    else: pass
+    return
+
+PATH = r'Z:\Trumann\XRF images\py_exports_interface\NBL3_1\scan343'
+
+SAMPLE= NBL31; SCAN = 6; CHAN = 3
+MAP_OUT = SAMPLE.maps[SCAN][CHAN,:,:-2]
+
+NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
+CMAPS = ['magma', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r', 'Greys_r']
+# export to imagej #
+export_to_ImgJ_samp_dict(PATH, MAP_OUT, CMAPS[CHAN], NAMES[CHAN],
+                         dpi=96, resize_fact=1, save=1)
+
+#%%
 # old definitions #
 
 def overlay(image1, image2, alph):
