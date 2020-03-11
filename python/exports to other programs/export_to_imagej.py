@@ -18,7 +18,7 @@ in export_figure_matplotlib:
 import matplotlib.pyplot as plt
 import numpy as np  
 
-def export_to_ImgJ(path, sample, scan_idx, shaped_data, ch_idx, color, name, 
+def export_to_ImgJ_samp_dict(path, sample, scan_idx, shaped_data, ch_idx, color, name, 
                              dpi, resize_fact, save):
     plot=sample[shaped_data][scan_idx][ch_idx,:,:-2]
     fig = plt.figure(frameon=False)
@@ -42,8 +42,8 @@ NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
 CMAPS = ['magma', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r', 'Greys_r']
 SAMPLE= NBL3_3; SCAN = 4; CHAN = 0
 # export to imagej #
-export_to_ImgJ(PATH, SAMPLE, SCAN, 'XBIC_maps', CHAN, CMAPS[CHAN], NAMES[CHAN],
-                         dpi=96, resize_fact=0.5, save=1)
+export_to_ImgJ_samp_dict(PATH, SAMPLE, SCAN, 'XBIC_maps', CHAN, CMAPS[CHAN], NAMES[CHAN],
+                         dpi=96, resize_fact=0.5, save=0)
 
 #%%
 # old definitions #

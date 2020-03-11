@@ -11,22 +11,14 @@ parameters can be specified
 perpendicular to the x-axis) for future comparison to SIMS profiles
 """
 
-PATH = r'C:\Users\triton\Desktop\NBL3_data\cross_section_MS'
-DEFS = r'C:\Users\triton\xrays\python\NBL3xsect'
+PATH = r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs' #'C:\Users\triton\Desktop\NBL3_data\cross_section_MS'
+DEFS = r'C:\Users\Trumann\xrays\python\NBL3xsect' #'C:\Users\triton\xrays\python\NBL3xsect'
 import sys
 sys.path.append(DEFS)
 from definitions_NBLxSect import import_xSect_csvs, get_scan_metadata
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-SAMPLE = 'TS58A'
-SCAN = 5
-CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
-META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)
-ROTATION = 0
-
-dfs = import_xSect_csvs(PATH, SAMPLE, SCAN, CHANNELS, META_DATA, ROTATION)
 
 def plot_NBL3_xsect(df, fig_size, color, cbar_bounds,
                     xyinterval,ticksize,
@@ -46,7 +38,7 @@ def plot_NBL3_xsect(df, fig_size, color, cbar_bounds,
                visible=True, fontsize=ticksize, rotation=xlab_roatation)
     # set the first and last tick labels according to known map size
     ax.set_xticklabels(xtick_bounds)     
-    plt.xlabel('X (\u03BCm)', fontsize=xlabelsize, rotation=180)                   
+    plt.xlabel('X (\u03BCm)', fontsize=xlabelsize, rotation=0)                   
     # same for yticks
     my_yticks = ax.get_yticks()  
     plt.yticks([my_yticks[0], my_yticks[-1]], 
@@ -68,11 +60,19 @@ def plot_NBL3_xsect(df, fig_size, color, cbar_bounds,
     cbar_ax.yaxis.set_offset_position('left')           
     return
 
+SAMPLE = 'NBL33'
+SCAN = 13
+CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
+META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)
+ROTATION = 0
+
+dfs = import_xSect_csvs(PATH, SAMPLE, SCAN, CHANNELS, META_DATA, ROTATION)
+
 PLOT_CHANNEL_IDX = 1
-plot_NBL3_xsect(dfs[PLOT_CHANNEL_IDX], (2,5), 'Oranges_r', [0,3000],
-                40, 14,
-                [0,12], 14, 90, 
-                [0,24], 14, 90,
+plot_NBL3_xsect(dfs[PLOT_CHANNEL_IDX], (2,5), 'Oranges_r', [0,40000],
+                50, 14,
+                [0,15], 14, 90, 
+                [0,30], 14, 90,
                 '$\u03BCg/cm^{2}$', 16,14, 0)
 
 #%%

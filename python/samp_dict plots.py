@@ -67,3 +67,29 @@ TXT_PLACE = [0,2]
 main_ax.text(TXT_PLACE[0], TXT_PLACE[1], "m={0:.3g}, b={1:.3g}".format(
         FITTING.coef_[0][0], FITTING.intercept_[0]))
 
+def export_to_ImgJ(path, sample, scan_idx, shaped_data, ch_idx, color, name, 
+                             dpi, resize_fact, save):
+    plot=sample[shaped_data][scan_idx][ch_idx,:,:-2]
+    fig = plt.figure(frameon=False)
+    fig.set_size_inches(plot.shape[1]/(dpi*resize_fact), plot.shape[0]/(dpi*resize_fact))
+    ax = plt.Axes(fig, [0., 0., 1., 1.])
+    ax.set_axis_off()
+    fig.add_axes(ax)
+    ax.imshow(plot, cmap=color)
+    if save == 1:
+        fname = r'\{samp}_scan{num}_{ele}.png'.format(
+                samp=sample['Name'], 
+                num=str(sample['XBIC_scans'][scan_idx]), 
+                ele=name)
+        directory= path+fname
+        plt.savefig(directory, dpi=(dpi * resize_fact))
+    else: pass
+    return
+
+PATH = r'Z:\Trumann\XRF images\py_exports_bulk\NBL3_3\scan491'
+NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
+CMAPS = ['magma', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r', 'Greys_r']
+SAMPLE= NBL3_3; SCAN = 4; CHAN = 0
+# export to imagej #
+export_to_ImgJ(PATH, SAMPLE, SCAN, 'XBIC_maps', CHAN, CMAPS[CHAN], NAMES[CHAN],
+                         dpi=96, resize_fact=0.5, save=0)

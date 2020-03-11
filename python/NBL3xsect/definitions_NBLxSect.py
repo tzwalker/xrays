@@ -106,5 +106,5 @@ def plot_integrated_line_scans(imp_rot_dfs, colors):
         plt.xlim([0, max(df.columns.values)])
         ax0.grid()
     return
-line_colors = ['tab:blue', 'tab:orange', 'tab:green']
-plot_integrated_line_scans(imported_rotated_dataframes, line_colors)
+#line_colors = ['tab:blue', 'tab:orange', 'tab:green']
+#plot_integrated_line_scans(imported_rotated_dataframes, line_colors)
