@@ -104,7 +104,6 @@ NBL33.apply_iios(scans_for_correction, iios2019)
 iios2019 = XRFcorr.get_iios(beam_settings, elements, TS58A.stack, end_layer='CdTe')
 scans_for_correction = [385,386,387, 382,383,384]
 TS58A.apply_iios(scans_for_correction, iios2019)
-iios2019 = XRFcorr.get_iios(beam_settings, elements, TS58A.stack, end_layer='CdTe')
 
 beam_settings = {'beam_energy': 8.99, 'beam_theta':90, 'detect_theta':43}
 ### NBL32 ###

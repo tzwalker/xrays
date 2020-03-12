@@ -9,7 +9,7 @@ then apply superpixels
 Note: origin='lower' in plots to compare to MAPS images,
 #delete to compare to data in imageJ
 """
-# mimic ImageJ rolling-ball background substraction #
+
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -41,7 +41,7 @@ def rollball_bkgnd_subtraction(array, ball_radius):
     nobkgnd_array = scim.white_tophat(array, structure=s)
     return nobkgnd_array
 
-def mark_superpixels(img, edges, colormap):
+def mark_superpixels(img, edges):
     # initiate RGB image; color=(i,j,k) corresponds to bm[:,:,(i,j,k)] 
     bm = mark_boundaries(img, edges, color=(1,0,0)) #-> color is RGB
     # make boolean mask where color channel==1 above (e.g. 1,0,0 --> red)
@@ -53,23 +53,38 @@ def mark_superpixels(img, edges, colormap):
     return img_copy
 
 # fitted data
-img1 = NBL33.maps_[0][2,:,:-2] # Cd map
-img2 = NBL33.maps_[0][3,:,:-2] # Te map
+#img1 = NBL33.maps[6][3,:,:-2] #scan idx in scans
+img2 = NBL33.maps_[3][3,:,:-2] #scan idx in scans_for_correction
 
 # background-subtracted, standardized data
+#img1 = rollball_bkgnd_subtraction(img1, 10) # Cu map
+img2b = rollball_bkgnd_subtraction(img2, 25) # Te map
+# more closely copy whole ImageJ procedure (i.e. filter, bksubtract again) #
+from scipy.ndimage import gaussian_filter
+img2c = gaussian_filter(img2b, sigma=1)
+img2d = rollball_bkgnd_subtraction(img2c, 25) # Te map
+def standardize_map(array):
+    # maintain map dimensions
+    map_dimensions = np.shape(array)
+    # standardization requires one column
+    array = array.reshape(-1,1) 
+    # standardize
+    array = scaler.fit_transform(array) 
+    # shape standardized data back into map
+    array = array.reshape(map_dimensions) 
+    return array
 
-#%%
-img2 = rollball_bkgnd_subtraction(img2, 25) # Te map
-
+img2a = standardize_map(img2)
 # prepare for SLIC segmentation; float32 to float64
-img1 = np.float64(img1); img2 = np.float64(img2)
+img2a = np.float64(img2a)
 
-img_joint = np.stack((img1,img2), axis=2)
-#%%
 # simple linear iterative clustering (SLIC)
-labels = slic(img_joint, n_segments=16, compactness=1, sigma=1, enforce_connectivity=False)
-plt.imshow(mark_superpixels(img1, labels, 'viridis'))
+labels = slic(img2a, n_segments=50, compactness=1,sigma=1)
+plt.imshow(mark_superpixels(img2a, labels))
+
+
 #%%
+img_joint = np.stack((img1,img2), axis=2)
 # replacing with average #
 # non-zero labels for regionprops
 labels = labels + 1  
