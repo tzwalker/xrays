@@ -65,11 +65,11 @@ def export_to_ImgJ_samp_dict(path, shaped_data, color, name,
 
 PATH = r'Z:\Trumann\XRF images\py_exports_interface\NBL3_1\scan343'
 
-SAMPLE= NBL31; SCAN = 6; CHAN = 3
+SAMPLE= NBL31; SCAN = 8; CHAN = 3
 MAP_OUT = SAMPLE.maps[SCAN][CHAN,:,:-2]
 
 NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
-CMAPS = ['magma', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r', 'Greys_r']
+CMAPS = ['inferno', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r', 'Greys_r']
 # export to imagej #
 export_to_ImgJ_samp_dict(PATH, MAP_OUT, CMAPS[CHAN], NAMES[CHAN],
                          dpi=96, resize_fact=1, save=1)
