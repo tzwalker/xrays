@@ -12,7 +12,7 @@ each sample object has data related to that sample
 from class_Sample import Sample
 import class_absorb_correct as XRFcorr
 
-path = 1       
+path = 0
 if path == 0:
     data_path =  r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
 elif path == 1:

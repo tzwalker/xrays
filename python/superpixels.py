@@ -63,16 +63,6 @@ img2b = rollball_bkgnd_subtraction(img2, 25) # Te map
 from scipy.ndimage import gaussian_filter
 img2c = gaussian_filter(img2b, sigma=1)
 img2d = rollball_bkgnd_subtraction(img2c, 25) # Te map
-def standardize_map(array):
-    # maintain map dimensions
-    map_dimensions = np.shape(array)
-    # standardization requires one column
-    array = array.reshape(-1,1) 
-    # standardize
-    array = scaler.fit_transform(array) 
-    # shape standardized data back into map
-    array = array.reshape(map_dimensions) 
-    return array
 
 img2a = standardize_map(img2)
 # prepare for SLIC segmentation; float32 to float64
