@@ -10,37 +10,34 @@ Note: origin='lower' in plots to compare to MAPS images,
 #delete to compare to data in imageJ
 """
 
-
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.ndimage as scim
-from skimage.morphology import ball
-import sklearn.preprocessing as sklp
+from scipy.ndimage import gaussian_filter
+from background_subtraction import rollball_bkgnd_subtraction
+from standardize_map import standardize_map
 from skimage.segmentation import slic, mark_boundaries#, join_segmentations
 
-scaler = sklp.StandardScaler()
+# imitate image process in ImageJ #
 
-def rollball_bkgnd_subtraction(array, ball_radius):
-    # maintain map dimensions
-    map_dimensions = np.shape(array)
-    # standardization requires one column
-    array = array.reshape(-1,1) 
-    # standardize
-    array = scaler.fit_transform(array) 
-    # shape standardized data back into map
-    array = array.reshape(map_dimensions) 
-    # Create 3D ball structure
-    s = ball(ball_radius) 
-    # Take only the upper half of the ball
-    h = int((s.shape[1] + 1) / 2)
-    # Flat the 3D ball to a weighted 2D disc
-    s = s[:h, :, :].sum(axis=0)
-    # Rescale weights into 0-1
-    s = (1 * (s - s.min())) / (s.max()- s.min()) 
-    # Use "white tophat" transform 
-    nobkgnd_array = scim.white_tophat(array, structure=s)
-    return nobkgnd_array
+# fitted data
+img2 = NBL33.maps[6][3,:,:-2] #scan idx in scans
+# standardize map
+img2a = standardize_map(img2)
+# background-subtracted, standardized data
+img2b = rollball_bkgnd_subtraction(img2a, 25)
+# apply gaussian filter
+img2c = gaussian_filter(img2b, sigma=1)
+# background subtract image with gaussian filter
+img2d = rollball_bkgnd_subtraction(img2c, 25)
 
+
+# get values below the average of the adjusted map (returns array)
+mask_data = img2d[img2d<np.mean(img2d)]
+# find these values in the most recent map (returns shaped boolean)
+mask_img = np.isin(img2d, mask_data)
+# apply masked data to the processed image
+img2e = np.ma.masked_array(img2d,mask_img)
+#%%
 def mark_superpixels(img, edges):
     # initiate RGB image; color=(i,j,k) corresponds to bm[:,:,(i,j,k)] 
     bm = mark_boundaries(img, edges, color=(1,0,0)) #-> color is RGB
@@ -51,20 +48,8 @@ def mark_superpixels(img, edges):
     # in copy image, where bm_mask is True, convert to nan
     img_copy[bm_mask] = np.nan #--> could make function to convert to a color
     return img_copy
+#img2 = NBL33.maps_[3][3,:,:-2] #scan idx in scans_for_correction
 
-# fitted data
-#img1 = NBL33.maps[6][3,:,:-2] #scan idx in scans
-img2 = NBL33.maps_[3][3,:,:-2] #scan idx in scans_for_correction
-
-# background-subtracted, standardized data
-#img1 = rollball_bkgnd_subtraction(img1, 10) # Cu map
-img2b = rollball_bkgnd_subtraction(img2, 25) # Te map
-# more closely copy whole ImageJ procedure (i.e. filter, bksubtract again) #
-from scipy.ndimage import gaussian_filter
-img2c = gaussian_filter(img2b, sigma=1)
-img2d = rollball_bkgnd_subtraction(img2c, 25) # Te map
-
-img2a = standardize_map(img2)
 # prepare for SLIC segmentation; float32 to float64
 img2a = np.float64(img2a)
 
@@ -72,8 +57,6 @@ img2a = np.float64(img2a)
 labels = slic(img2a, n_segments=50, compactness=1,sigma=1)
 plt.imshow(mark_superpixels(img2a, labels))
 
-
-#%%
 img_joint = np.stack((img1,img2), axis=2)
 # replacing with average #
 # non-zero labels for regionprops
