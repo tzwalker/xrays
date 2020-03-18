@@ -54,7 +54,7 @@ SCAN_IDX = 6; SCAN_NUM = str(SAMP.scans[SCAN_IDX])
 # retireve mask made in ImageJ #
 SYS_PATH = r'Z:\Trumann\XRF images\py_exports_interface'
 # change mask: "bound_0in_1out_mask" | "cores_0in_mask"
-MASK_PATH = r'\{sam}\scan{scn}\cores_0in_mask.txt'.format(sam=SAMP_NAME, 
+MASK_PATH = r'\{sam}\scan{scn}\bound_0in_2out_mask.txt'.format(sam=SAMP_NAME, 
                scn=SCAN_NUM)
 FULL_PATH = SYS_PATH + MASK_PATH
 mask = np.loadtxt(FULL_PATH)
@@ -62,9 +62,6 @@ mask = np.loadtxt(FULL_PATH)
 # input images #
 X = SAMP.maps[SCAN_IDX][1,:,:-2]
 Y = SAMP.maps[SCAN_IDX][2,:,:-2]
-# check the mask on map of data in X #
-mask_plot = np.ma.masked_where(mask == 0, mask) 
-check_mask(X, mask_plot)
 
 # standardized maps if X and Y are fitted data#
 #X1 = standardize_map(X)
@@ -74,7 +71,11 @@ check_mask(X, mask_plot)
 X1 = emulate_ImgJ(X, 10, 1)
 Y1 = emulate_ImgJ(Y, 25, 1)
 
-# standardized data points in the mask pixels
+# check the mask on map of data in X #
+mask_plot = np.ma.masked_where(mask == 0, mask) 
+check_mask(Y1, mask_plot)
+
+# get data in mask pixels
 Xmask=X1[np.where(mask!=0)]
 Ymask=Y1[np.where(mask!=0)]
 

@@ -3,10 +3,11 @@ tzwalker
 Sun Dec  8 20:38:13 2019
 coding: utf-8
 
+imports the relevant mask 
+calculates spearman correlation from data in the mask pixels
+plots spearman correlation of data within that
 """
-# imports the relevant mask and plots spearman correlation of data within that
-    # mask / mask filename determiens whether cores or boundaries are considered
-    # mask made in imagej and saved on the server
+
 from skimage import io
 from scipy.stats import spearmanr
 import numpy as np; import pandas as pd
@@ -83,12 +84,3 @@ fig, (ax0, ax1) = plt.subplots(1,2)
 ax0.imshow(v); ax1.imshow(mol_cute)
 plt.figure()
 plt.hexbin(i, v, mincnt=1)
-
-#%%
-SAMP = NBL3_2; SCAN = 0
-NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Zn']
-# bound_0in_2out_mask
-# cores_0in_mask
-IMG_PATH = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}'.format(sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN])
-MASKFILE = IMG_PATH + r'\\bound_0in_1out_mask.txt' # <-- CORES OR BOUNDARIES \bound_0in_1out_mask
-mask_core = np.loadtxt(MASKFILE)

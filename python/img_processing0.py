@@ -166,7 +166,7 @@ from skimage.filters import sobel
 from scipy.ndimage import gaussian_filter as gaussf
 from scipy import stats
 
-def overlay_plots(index1, index2, sig, switch):
+def complicated_overlay_plots(index1, index2, sig, switch):
     ele_1 = samp['elXBIC'][scan][index1][:,:-2]
     ele_2 = samp['elXBIC'][scan][index2][:,:-2]
     
@@ -222,13 +222,14 @@ def overlay_plots(index1, index2, sig, switch):
     plt.text(max(x)*0.75, max(y)*0.50, "$R^2$ = {s}".format(s=str(round(r_squared,3))))
     return
 
-samp = NBL3_2
-scan = 3
-idx1 = 0; idx2 = 1
-sigma = 1
+#samp = NBL3_2
+#scan = 3
+#idx1 = 0; idx2 = 1
+#sigma = 1
 # for overlaying plots ; generate the colors for your colormap
 # strings used here: 
     # 'raw': for raw, fitted data 
     # 'just_gauss' for smoothed maps w/o gradients 
     # 'filt_grad' for smoothed gradient maps (first smooth, then calc and plot gradient)
-overlay_plots(idx1, idx2, sigma, 'raw')
+#overlay_plots(idx1, idx2, sigma, 'raw')
+
