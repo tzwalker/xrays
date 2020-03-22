@@ -46,24 +46,24 @@ def emulate_ImgJ(img, ball_radius, gauss_filt_sigma):
 
 def check_mask(map_from_a_scan, mask__of_scan):
     plt.imshow(map_from_a_scan)
-    plt.imshow(mask_plot, cmap='Greys')
+    plt.imshow(mask__of_scan, cmap='Greys')
     return
 
 # define sample and scan; NAME and NUM for navigation to mask #
-SAMP = NBL31; SAMP_NAME = 'NBL31'
+SAMP = NBL33; SAMP_NAME = 'NBL33'
 SCAN_IDX = 6; SCAN_NUM = str(SAMP.scans[SCAN_IDX])
 
 # retireve mask made in ImageJ #
 SYS_PATH = r'Z:\Trumann\XRF images\py_exports_interface'
 # change mask: "bound_0in_1out_mask" | "cores_0in_mask"
-MASK_PATH = r'\{sam}\scan{scn}\bound_0in_1out_mask.txt'.format(sam=SAMP_NAME, 
+MASK_PATH = r'\{sam}\scan{scn}\cores_0in_mask.txt'.format(sam=SAMP_NAME, 
                scn=SCAN_NUM)
 FULL_PATH = SYS_PATH + MASK_PATH
 mask = np.loadtxt(FULL_PATH)
 
 # input images #
 X = SAMP.maps[SCAN_IDX][1,:,:-2]
-Y = SAMP.maps[SCAN_IDX][2,:,:-2]
+Y = SAMP.maps[SCAN_IDX][3,:,:-2]
 
 # standardized maps if X and Y are fitted data#
 X1 = standardize_map(X)
@@ -90,13 +90,13 @@ FITTING = MODELR.fit(x, y)
 ypred = FITTING.predict(x)
 
 #output fit slope
-print(FITTING.coef_[0][0], FITTING.intercept_[0])
+#print(FITTING.coef_[0][0], FITTING.intercept_[0])
 #output slope error
-print(np.sqrt(mean_squared_error(x,y)))
+#print(np.sqrt(mean_squared_error(x,y)))
 #convert average of data within mask (standardized) to concentration
-A = np.mean(X)
-B = np.std(X)
-C = np.mean(Xmask)
+A = np.mean(Y)
+B = np.std(Y)
+C = np.mean(Ymask)
 data_in_mask_avg_in_ug = C*B + A
 print(data_in_mask_avg_in_ug)
 #%%
