@@ -1,6 +1,14 @@
 import xraylib as xl
 import numpy as np
-from home_abs import eleXRF_energy
+
+def eleXRF_energy(ele, energy):
+    Z = xl.SymbolToAtomicNumber(ele); F =  xl.LineEnergy(Z, xl.KA1_LINE)
+    if   xl.EdgeEnergy(Z, xl.K_SHELL) > energy: F = xl.LineEnergy(Z, xl.LA1_LINE)
+    elif xl.EdgeEnergy(Z, xl.L1_SHELL) > energy: F = xl.LineEnergy(Z, xl.LB1_LINE)
+    elif xl.EdgeEnergy(Z, xl.L2_SHELL) > energy: F = xl.LineEnergy(Z, xl.LB1_LINE)
+    elif xl.EdgeEnergy(Z, xl.L3_SHELL) > energy: F = xl.LineEnergy(Z, xl.LG1_LINE)
+    elif xl.EdgeEnergy(Z, xl.M1_SHELL) > energy: F = xl.LineEnergy(Z, xl.MA1_LINE) 
+    return F
 
 # values being compared in comments are for Cd_L
 def iio_vs_depth(ele, thickness_increments, dt):
@@ -46,85 +54,84 @@ def generate_deviated_thicknesses(roughness_deviations):
     rough_ups = []
     rough_downs = []
     for roughness in roughness_deviations:
-        rough_up = no_rough * (1+roughness)
-        rough_down = no_rough * (1-roughness)
+        rough_up = DEPTH_STEPS * (1+roughness)
+        rough_down = DEPTH_STEPS * (1-roughness)
         rough_ups.append(rough_up)
         rough_downs.append(rough_down)
     return rough_ups, rough_downs
 
 def rough_iios(rough_ups, rough_downs):
-    ele_rough_iios_up =     [iio_vs_depth(ele, roughness, dt) for roughness in rough_ups]
+    ele_rough_iios_up =     [iio_vs_depth(ele, roughness, DT) for roughness in rough_ups]
     ele_rough_iios_up = np.stack(ele_rough_iios_up, axis=1)
-    ele_rough_iios_down =   [iio_vs_depth(ele, roughness, dt) for roughness in rough_downs]
+    ele_rough_iios_down =   [iio_vs_depth(ele, roughness, DT) for roughness in rough_downs]
     ele_rough_iios_down = np.stack(ele_rough_iios_down, axis=1)
     return ele_rough_iios_up, ele_rough_iios_down
 
-## define settings and stack parameters ##
+# SYCNHROTRON SETTINGS
 beam_time = 'bad_geom'
 if beam_time == 'good_geom':
     beam_energy = 8.99
     beam_theta = 90
-    detect_theta = 43
+    detect_theta = 47
 elif beam_time == 'bad_geom':
     beam_energy = 12.7
     beam_theta = 75
     detect_theta = 15
-
-beam_geometry = np.sin(beam_theta*np.pi/180)                        #convert to radians
-detect_geometry = np.sin(detect_theta*np.pi/180)                    #convert to radians
-# enter thickness of layer in cm
-# only upstream layers are of interest
+#deg to radians
+beam_geometry = np.sin(beam_theta*np.pi/180)
+detect_geometry = np.sin(detect_theta*np.pi/180)                    
+# layer thicknesses in cm
+# only enter layer dictionary for upstream layers
 MO =    {'Thick':0.00005,    'LDensity': 10.2, 'capXsect': xl.CS_Total_CP('Mo', beam_energy)}
 ZNTE =  {'Thick':0.0000375,  'LDensity': 6.34, 'capXsect': xl.CS_Total_CP('ZnTe', beam_energy)}
 CDTE =  {'Thick':0.0012000,  'LDensity': 5.85, 'capXsect': xl.CS_Total_CP('CdTe', beam_energy)}
 
-# enter element for which you wish to see I/Io (will work on generatign plots for many elements at once)
-
+# enter element 
+ele = 'Cu'
 # specify arbitrary depth of absorber
-dt = 1*10**-7                           # thickness increment (cm); 1nm = 1E-7cm
-no_rough = np.linspace(0, 12000, 12001) # thickness increment array (nm)
-x_for_plotting = (no_rough/1000).reshape(-1,1) # convert x axis to um; format arr
+# thickness increment (cm); 1nm = 1E-7cm
+DT = 1*10**-7
+# thickness increment array (nm)                   
+DEPTH_STEPS = np.linspace(0, 12000, 12001) 
 
-#calc incicent beam attenuation profile
-beam_attn = beamIn_vs_depth(no_rough, dt)
-beam_attn = beam_attn.reshape(-1,1)
+# calc incicent beam attenuation profile
+iio_beam = beamIn_vs_depth(DEPTH_STEPS, DT)
 
-ele = 'Te'
-## calc XRF reabsorption reference profile
-ref_iio = iio_vs_depth(ele, no_rough, dt) 
-ref_iio = ref_iio.reshape(-1,1)   # format array      
-
-## calc roughness profiles
-#deviations = np.linspace(0.05, 0.2, 3) # specfiy roughness parameters e.g. 5%, 12%, 20%
-#rough_ups, rough_downs = generate_deviated_thicknesses(deviations)
-#rough_up, rough_down = rough_iios(rough_ups, rough_downs)
-
-## save x and y for plotting in Origin
-#arr_for_plotting0 = np.concatenate((x_for_plotting, beam_attn, ref_iio, 
-                                    # first column for 12.5% roughness (from 'deviations') <-- GRABS UP/DOWN of only ONE ROUGHNESS
-                                    #rough_up[:,1].reshape(-1,1), 
-                                    #rough_down[:,1].reshape(-1,1)), axis=1)
-#np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\for Origin iio_sims\iio_sim_' + str(detect_theta) +'deg_ALL'+ ele +'.csv', arr_for_plotting0, delimiter=',')
+# calc XRF reabsorption reference profile
+iio_ele = iio_vs_depth(ele, DEPTH_STEPS, DT) 
 
 # =============================================================================
-# # supplementary info plotting
-# plt.plot(x_for_plotting, beam_attn)
-# plt.plot(x_for_plotting, ref_iio)
-# plt.plot(x_for_plotting, rough_up[:,1])
-# plt.plot(x_for_plotting, rough_down[:,1])
-# plt.grid()
-# plt.ylabel('% attenuation')
-# plt.xlabel('CdTe thickness')
+# # calc XRF error dure to roughness
+# # specfiy percentage of roughness
+#     # e.g np.linspace(0.05, 0.2, 3) --> 5%, 12%, 20% 
+# deviations = np.linspace(0.05, 0.2, 3) 
+# rough_ups, rough_downs = generate_deviated_thicknesses(deviations)
+# rough_up, rough_down = rough_iios(rough_ups, rough_downs)
+# 
+# ## save x and y for plotting in Origin
+# # convert x axis to um; format arr
+# DEPTH_UM = (DEPTH_STEPS/1000).reshape(-1,1)
+# # format arrays
+# iio_ele = iio_ele.reshape(-1,1)        
+# iio_beam = iio_beam.reshape(-1,1)
+# roughup = rough_up[:,1].reshape(-1,1)
+# roughdown = rough_down[:,1].reshape(-1,1)
+# arr = np.concatenate((DEPTH_UM, iio_beam, iio_ele, roughup, roughdown), axis=1)
+# SYSPATH = r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\for Origin iio_sims\iio_sim_'
+# #np.savetxt(SYSPATH+str(detect_theta) +'deg_ALL'+ ele +'.csv', arr, delimiter=',')
 # =============================================================================
 
-# iio vs. depth() is essentially the same as the calculation seen in absorb_matlib_v_xraylib
-# only dependency iio_vs_depth() has on CdTe thickness is seen in the "no_rough" variable
-    # an arbitrarily large 12um thickness was chosen to calculate iio through the entirety of a thick cdte layer
-    # slicing iio to thickness found from SIMS (slide 60 in "NBL3 consolidated notes.ppt"), then averaging will
-    # yield mean iio correction factor for Cu in all samples
-    # enter these factors somewhere into a_start.py, and apply them to Cu maps
-
-# get average iio for absorbers of different thicknesses
-#absorbers = [8515, 10850, 5350]
-#samp_iios = [np.mean(ref_iio[0:absorber_thick]) for absorber_thick in absorbers]
-
+# finding attenuation length (length at which iio decays to 1/e)
+# the initial intensity fraction is that fraction of XRF at the beginning
+# of the CdTe layer (after penetrating the capping layers):
+BEAM_ATTN_VAL = iio_beam[0]*(1/np.e)
+ELE_ATTN_VAL = iio_ele[0]*(1/np.e)
+# from 
+#https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
+def find_nearest(array, value):
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    print(idx)
+    return array[idx]
+print(find_nearest(iio_beam, BEAM_ATTN_VAL))
+print(find_nearest(iio_ele, ELE_ATTN_VAL))
