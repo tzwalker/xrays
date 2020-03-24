@@ -12,7 +12,8 @@ in export_figure_matplotlib:
     :param resize_fact: resize facter wrt shape of arr, in (0, np.infty)
     :param dpi: dpi of your screen
     :param plt_show: show plot or not
-    
+
+works for plan-view and cross-section data
 """
 
 import matplotlib.pyplot as plt
@@ -48,7 +49,7 @@ export_to_ImgJ_samp_dict(PATH, SAMPLE, SCAN, 'XBIC_maps', CHAN, CMAPS[CHAN], NAM
 #%%
 import matplotlib.pyplot as plt  
 
-def export_to_ImgJ_samp_dict(path, shaped_data, color, name, 
+def export_to_ImgJ_planview(path, shaped_data, color, name, 
                              dpi, resize_fact, save):
     fig, ax = plt.subplots()
     #plt.figure(frameon=False)
@@ -71,8 +72,41 @@ MAP_OUT = SAMPLE.maps[SCAN][CHAN,:,:-2]
 NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
 CMAPS = ['inferno', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r', 'Greys_r']
 # export to imagej #
-export_to_ImgJ_samp_dict(PATH, MAP_OUT, CMAPS[CHAN], NAMES[CHAN],
+export_to_ImgJ_planview(PATH, MAP_OUT, CMAPS[CHAN], NAMES[CHAN],
                          dpi=96, resize_fact=1, save=1)
+
+#%%
+import matplotlib.pyplot as plt  
+
+def export_to_ImgJ_crosssection(path, data, color, name, 
+                             dpi, save):
+    shape=np.shape(data)[0:2][::-1]
+    size = [float(i)/dpi for i in shape]
+
+    fig = plt.figure()
+    fig.set_size_inches(size)
+    ax = plt.Axes(fig,[0,0,1,1])
+    ax.set_axis_off()
+    fig.add_axes(ax)
+    ax.imshow(data, extent=(0,100,0,200))
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    ax.set_frame_on(False)
+    if save == 1:
+        fname = r'\{ele}.png'.format(ele=name)
+        directory= path+fname
+        plt.savefig("data.png",bbox_inches='tight', pad_inches=0, dpi=dpi)
+    else: pass
+    return
+
+PATH = r'Z:\Trumann\XRF images\py_exports_interface\NBL3_1\scan343'
+
+MAP_OUT = dfs[0]
+NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
+CMAPS = ['inferno', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r', 'Greys_r']
+# export to imagej #
+export_to_ImgJ_crosssection(PATH, MAP_OUT, 'inferno', 'XBIC',
+                         dpi=96, save=1)
 
 #%%
 # old definitions #

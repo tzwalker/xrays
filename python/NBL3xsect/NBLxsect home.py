@@ -2,7 +2,7 @@
 this is the most recent program used to plot xsect NBL3 data (20200308)
 -the program relies on custom functions in "definitions_NBLxSect.py" 
 -first the metadata is retrieved for the relevant scan
--then the indicated channels are imported; not the XRF line needs to be added
+-then the indicated channels are imported; the XRF line needs to be added
 -the program rotates each map by the same number of degrees, and the final dfs
 are these rotated maps
 -a plotting function is used to plot the map; many formatting 
@@ -11,7 +11,7 @@ parameters can be specified
 perpendicular to the x-axis) for future comparison to SIMS profiles
 """
 
-PATH = r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs' #'C:\Users\triton\Desktop\NBL3_data\cross_section_MS'
+PATH = r'C:\Users\triton\Desktop\NBL3_data\cross_section_MS' #r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs' #'C:\Users\triton\Desktop\NBL3_data\cross_section_MS'
 DEFS = r'C:\Users\Trumann\xrays\python\NBL3xsect' #'C:\Users\triton\xrays\python\NBL3xsect'
 import sys
 sys.path.append(DEFS)
@@ -60,8 +60,8 @@ def plot_NBL3_xsect(df, fig_size, color, cbar_bounds,
     cbar_ax.yaxis.set_offset_position('left')           
     return
 
-SAMPLE = 'NBL33'
-SCAN = 13
+SAMPLE = 'NBL31'
+SCAN = 8
 CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
 META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)
 ROTATION = 0
@@ -69,11 +69,13 @@ ROTATION = 0
 dfs = import_xSect_csvs(PATH, SAMPLE, SCAN, CHANNELS, META_DATA, ROTATION)
 
 PLOT_CHANNEL_IDX = 1
-plot_NBL3_xsect(dfs[PLOT_CHANNEL_IDX], (2,5), 'Oranges_r', [0,40000],
+PLOT_CHANNEL = dfs[PLOT_CHANNEL_IDX]
+FULL_YRANGE = np.max(np.max(PLOT_CHANNEL))
+plot_NBL3_xsect(PLOT_CHANNEL, (2,5), 'Oranges_r', [0,3000],
                 50, 14,
-                [0,15], 14, 90, 
+                [0,17], 14, 90, 
                 [0,30], 14, 90,
-                '$\u03BCg/cm^{2}$', 16,14, 0)
+                '(a.u.)', 16,14, 0)
 
 #%%
 def export_integrated_dfs(imp_rot_dfs):
