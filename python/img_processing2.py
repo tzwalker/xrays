@@ -48,22 +48,23 @@ def check_mask(map_from_a_scan, mask__of_scan):
     plt.imshow(map_from_a_scan)
     plt.imshow(mask__of_scan, cmap='Greys')
     return
-
+# slowly grab averages of masked data #
+# extract linear fit values (from standardized data)
 # define sample and scan; NAME and NUM for navigation to mask #
-SAMP = NBL33; SAMP_NAME = 'NBL33'
+SAMP = NBL31; SAMP_NAME = 'NBL31'
 SCAN_IDX = 6; SCAN_NUM = str(SAMP.scans[SCAN_IDX])
 
 # retireve mask made in ImageJ #
 SYS_PATH = r'Z:\Trumann\XRF images\py_exports_interface'
 # change mask: "bound_0in_1out_mask" | "cores_0in_mask"
-MASK_PATH = r'\{sam}\scan{scn}\cores_0in_mask.txt'.format(sam=SAMP_NAME, 
+MASK_PATH = r'\{sam}\scan{scn}\bound_0in_1out_mask.txt'.format(sam=SAMP_NAME, 
                scn=SCAN_NUM)
 FULL_PATH = SYS_PATH + MASK_PATH
 mask = np.loadtxt(FULL_PATH)
 
 # input images #
 X = SAMP.maps[SCAN_IDX][1,:,:-2]
-Y = SAMP.maps[SCAN_IDX][3,:,:-2]
+Y = SAMP.maps[SCAN_IDX][1,:,:-2]
 
 # standardized maps if X and Y are fitted data#
 X1 = standardize_map(X)
@@ -74,10 +75,10 @@ Y1 = standardize_map(Y)
 #Y1 = emulate_ImgJ(Y, 25, 1)
 
 # check the mask on map of data in X #
-#mask_plot = np.ma.masked_where(mask == 0, mask) 
-#check_mask(Y1, mask_plot)
+mask_plot = np.ma.masked_where(mask == 0, mask) 
+check_mask(Y, mask_plot)
 
-# get data in mask pixels
+
 Xmask=X1[np.where(mask!=0)]
 Ymask=Y1[np.where(mask!=0)]
 
@@ -90,35 +91,65 @@ FITTING = MODELR.fit(x, y)
 ypred = FITTING.predict(x)
 
 #output fit slope
-#print(FITTING.coef_[0][0], FITTING.intercept_[0])
+print(FITTING.coef_[0][0], FITTING.intercept_[0])
 #output slope error
-#print(np.sqrt(mean_squared_error(x,y)))
-#convert average of data within mask (standardized) to concentration
+print(np.sqrt(mean_squared_error(x,y)))
+
+
 A = np.mean(Y)
 B = np.std(Y)
 C = np.mean(Ymask)
 data_in_mask_avg_in_ug = C*B + A
 print(data_in_mask_avg_in_ug)
 #%%
-### make scatter plot ###
-# consider output the arrays to csv to plot in Origin
 
-# to get better dashed line fit #
-a = np.concatenate((x,y), axis=1)
-a = np.array(sorted(a, key=lambda x:x[0]))
-fit = np.polyfit(a[:,0], a[:,1], 1)
-fit_sort = [i*fit[0] + fit[1] for i in a[:,0]]
+# quickly grab averages of masked data #
 
-fig, ax = plt.subplots(figsize=(5,5))
-#ax.hexbin(x,y,mincnt=1,cmap='Greys',gridsize=(50,20))
-ax.plot(a[:,0], fit_sort, 'k-', dashes=[5,5], linewidth=3)
-ax.scatter(x,y,s=3, color='gray')
+SAMPS = [NBL31, NBL32, NBL33, TS58A]
+NAMES = ['NBL31', 'NBL32', 'NBL33', 'TS58A']
+SCAN_IDXS = [6,6,6,7]
+REGIONS = ['cores_0in_mask', 'bound_0in_1out_mask']
+CHANNELS= [1,2,3]
 
-# nice plot with regression line #
-plt.axis('square')
-plt.xlim([-3,3]); plt.ylim([-3,3])
-ax.tick_params(axis='both', direction='in', which='major', labelsize=14, length=7, width=1)
-ax.yaxis.set_ticks_position('both')
-ax.xaxis.set_ticks_position('both')  
-plt.xlabel('Stand. Copper (a.u.)', fontsize=18)
-plt.ylabel('Stand. XBIC (a.u.)', fontsize=18)
+# each item is a sample:
+    # each subitem is a region: core 1st, boundary 2nd
+    # each subsubitem is ug/cm2 of an element;
+    # subsubitem order follows list 'elements'
+all_list = []
+for samp,name,scan_idx in zip(SAMPS,NAMES,SCAN_IDXS):
+    SAMP_LIST = []
+    SCAN_NUM = str(samp.scans[scan_idx])
+    for region in REGIONS:
+        REGION_LIST = []
+    # load mask
+        MASK_PATH = r'\{sam}\scan{scn}\{REG}.txt'.format(sam=name, 
+                   scn=SCAN_NUM, REG=region)
+        FULL_PATH = SYS_PATH + MASK_PATH
+        mask = np.loadtxt(FULL_PATH)
+        for chan in CHANNELS:
+        # grab data from a given channel
+            X = samp.maps[scan_idx][chan,:,:-2]
+        #standardize data 
+        #(not necessary as its just undone in a few lines)
+        #kept here to be consistent; may change later
+            X1 = standardize_map(X)
+        # get data in mask pixels
+            Xmask=X1[np.where(mask!=0)]
+        #convert average of (standardized) data within mask to ug/cm2
+            UG_DATA_MEAN = np.mean(X)
+            UG_DATA_STD = np.std(X)
+            STAND_MASKDATA_MEAN = np.mean(Xmask)
+            UG_MASKDATA_MEAN = STAND_MASKDATA_MEAN*UG_DATA_STD + UG_DATA_MEAN
+        #construct averages found in region
+            REGION_LIST.append(UG_MASKDATA_MEAN)
+        SAMP_LIST.append(REGION_LIST)
+    all_list.append(SAMP_LIST)
+
+# convert extracted averages to array 
+all_arr = [np.array(item) for item in all_list]
+# make 3d array out of listed 2d arrays
+all_arr_3d = np.array(all_arr)
+# reshape 3d array to be consistent with origin format
+dim1 = all_arr_3d.shape[0]*all_arr_3d.shape[1]
+dim2 = all_arr_3d.shape[2]
+all_arr_ravel = all_arr_3d.reshape(dim1, dim2)
