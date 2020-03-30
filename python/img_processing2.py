@@ -103,7 +103,7 @@ data_in_mask_avg_in_ug = C*B + A
 print(data_in_mask_avg_in_ug)
 #%%
 
-# quickly grab averages of masked data #
+# quickly grab AVERAGE of masked data #
 
 SAMPS = [NBL31, NBL32, NBL33, TS58A]
 NAMES = ['NBL31', 'NBL32', 'NBL33', 'TS58A']
@@ -132,16 +132,63 @@ for samp,name,scan_idx in zip(SAMPS,NAMES,SCAN_IDXS):
         #standardize data 
         #(not necessary as its just undone in a few lines)
         #kept here to be consistent; may change later
-            X1 = standardize_map(X)
+            #X1 = standardize_map(X)
         # get data in mask pixels
-            Xmask=X1[np.where(mask!=0)]
+            Xmask=X[np.where(mask!=0)]
         #convert average of (standardized) data within mask to ug/cm2
-            UG_DATA_MEAN = np.mean(X)
-            UG_DATA_STD = np.std(X)
-            STAND_MASKDATA_MEAN = np.mean(Xmask)
-            UG_MASKDATA_MEAN = STAND_MASKDATA_MEAN*UG_DATA_STD + UG_DATA_MEAN
+            #UG_DATA_MEAN = np.mean(X)
+            #UG_DATA_STD = np.std(X)
+            #STAND_MASKDATA_MEAN = np.mean(Xmask)
+            #UG_MASKDATA_MEAN = STAND_MASKDATA_MEAN*UG_DATA_STD + UG_DATA_MEAN
+            UG_MASKDATA_MEAN = np.mean(Xmask)
         #construct averages found in region
             REGION_LIST.append(UG_MASKDATA_MEAN)
+        SAMP_LIST.append(REGION_LIST)
+    all_list.append(SAMP_LIST)
+
+# convert extracted averages to array 
+all_arr = [np.array(item) for item in all_list]
+# make 3d array out of listed 2d arrays
+all_arr_3d = np.array(all_arr)
+# reshape 3d array to be consistent with origin format
+dim1 = all_arr_3d.shape[0]*all_arr_3d.shape[1]
+dim2 = all_arr_3d.shape[2]
+all_arr_ravel = all_arr_3d.reshape(dim1, dim2)
+
+#%%
+# quickly grab TOTALS of masked data #
+
+SAMPS = [NBL31, NBL32, NBL33, TS58A]
+NAMES = ['NBL31', 'NBL32', 'NBL33', 'TS58A']
+SCAN_IDXS = [6,6,6,7]
+REGIONS = ['cores_0in_mask', 'bound_0in_1out_mask']
+CHANNELS= [1,2,3]
+SYS_PATH = r'Z:\Trumann\XRF images\py_exports_interface'
+
+# each item is a sample:
+    # each subitem is a region: core 1st, boundary 2nd
+    # each subsubitem is ug/cm2 of an element;
+    # subsubitem order follows list 'elements'
+all_list = []
+for samp,name,scan_idx in zip(SAMPS,NAMES,SCAN_IDXS):
+    SAMP_LIST = []
+    SCAN_NUM = str(samp.scans[scan_idx])
+    for region in REGIONS:
+        REGION_LIST = []
+    # load mask
+        MASK_PATH = r'\{sam}\scan{scn}\{REG}.txt'.format(sam=name, 
+                   scn=SCAN_NUM, REG=region)
+        FULL_PATH = SYS_PATH + MASK_PATH
+        mask = np.loadtxt(FULL_PATH)
+        for chan in CHANNELS:
+        # grab data from a given channel
+            X = samp.maps[scan_idx][chan,:,:-2]
+        # get data in mask pixels
+            Xmask=X[np.where(mask!=0)]
+        #find total ug/cm2 in masked region
+            UG_MASKDATA_TOT = np.sum(Xmask)
+        #construct averages found in region
+            REGION_LIST.append(UG_MASKDATA_TOT)
         SAMP_LIST.append(REGION_LIST)
     all_list.append(SAMP_LIST)
 
