@@ -88,61 +88,47 @@ def export_to_ImgJ_crosssection(path, data, color, name,
     ax = plt.Axes(fig,[0,0,1,1])
     ax.set_axis_off()
     fig.add_axes(ax)
-    ax.imshow(data, extent=(0,100,0,200))
+    ax.imshow(data, extent=(0,100,0,200), cmap=color)
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     ax.set_frame_on(False)
     if save == 1:
         fname = r'\{ele}.png'.format(ele=name)
         directory= path+fname
-        plt.savefig("data.png",bbox_inches='tight', pad_inches=0, dpi=dpi)
+        plt.savefig(directory,bbox_inches='tight', pad_inches=0, dpi=dpi)
     else: pass
     return
 
-PATH = r'Z:\Trumann\XRF images\py_exports_interface\NBL3_1\scan343'
+PATH = r'Z:\Trumann\XRF images\cross section'
 
 MAP_OUT = dfs[0]
 NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
 CMAPS = ['inferno', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r', 'Greys_r']
 # export to imagej #
-export_to_ImgJ_crosssection(PATH, MAP_OUT, 'inferno', 'XBIC',
+export_to_ImgJ_crosssection(PATH, MAP_OUT, 'inferno', 'NBL31_scan8_XBIC',
                          dpi=96, save=1)
 
 #%%
-# old definitions #
+# trying to plot XBIC and Cu cross sections
+# with same dimensions as the Origin figure of
+# integrate ddepth profiles
 
-def overlay(image1, image2, alph):
-    fig, ax = plt.subplots()
-    ax.imshow(image1)
-    ax.imshow(image2, alpha=alph)
-    return
-#overlay(TS58A['XBIC_maps'][5][3,:,:], TS58A['XBIC_maps'][5][1,:,:], 0.5)
+# note run 'NBLxsect home.py' before running this code
+# [dfs[0].columns[:-45]] is to chop off columns of the map
+def cm2inch(*tupl):
+    inch = 2.54
+    if isinstance(tupl[0], tuple):
+        return tuple(i/inch for i in tupl[0])
+    else:
+        return tuple(i/inch for i in tupl)
 
-def rgb_to_gray(img):
-        grayImage = np.zeros(img.shape)
-        #ITU-R 601-2 luma transform
-        R = np.array(img[:, :, 0]); R = (R *.299)
-        G = np.array(img[:, :, 1]); G = (G *.587)
-        B = np.array(img[:, :, 2]); B = (B *.114)
-        
-        grayImage = img
-        Avg = (R+G+B)
-        for i in range(3):
-           grayImage[:,:,i] = Avg
-        return grayImage 
-    
-def export_img(path, sample,scan_idx, shaped_data,ch_idx,colors):
-    plot=sample[shaped_data][scan_idx][ch_idx,:,:-2]
-    fig, ax = plt.subplots(1)
-    plt.subplots_adjust(0,0,1,1,0,0)
-    for ax in fig.axes:
-        ax.axis('off')
-        ax.margins(0,0)
-        ax.xaxis.set_major_locator(plt.NullLocator())
-        ax.yaxis.set_major_locator(plt.NullLocator())
-    name_idx = ch_idx - 1
-    fname = r'\{samp}_scan{num}_{ele}.png'.format(samp=sample['Name'], num=str(sample['XBIC_scans'][scan_idx]), ele=elements[name_idx][0:2])
-    directory= path+fname
-    plt.imshow(plot, cmap=colors)
-    plt.savefig(directory, bbox_inches = 'tight', pad_inches = 0, dpi=96)
-    return
+fig, axs = plt.subplots(2,1, figsize=(cm2inch(3.5,3.5)))
+plt.tight_layout(pad=-10)
+XBIC = dfs[0][dfs[0].columns[:-45]]
+axs[0].imshow(XBIC, cmap='inferno',extent=(0,300,0,100))
+axs[0].axis('off')
+Cu = dfs[1][dfs[1].columns[:-45]]
+axs[1].imshow(Cu, cmap='Greys_r', extent=(0,300,0,100), vmax=3000)
+axs[1].axis('off')
+plt.savefig(r'C:\Users\triton\Desktop\NBL3xsect eps figures\NBL31scan8.eps', format='eps', bbox_inches='tight')
+

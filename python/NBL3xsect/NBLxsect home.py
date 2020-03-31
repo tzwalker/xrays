@@ -12,7 +12,7 @@ perpendicular to the x-axis) for future comparison to SIMS profiles
 """
 
 PATH = r'C:\Users\triton\Desktop\NBL3_data\cross_section_MS' #r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs' #'C:\Users\triton\Desktop\NBL3_data\cross_section_MS'
-DEFS = r'C:\Users\Trumann\xrays\python\NBL3xsect' #'C:\Users\triton\xrays\python\NBL3xsect'
+DEFS = r'C:\Users\triton\xrays\python\NBL3xsect' #'C:\Users\triton\xrays\python\NBL3xsect' C:\Users\Trumann\xrays\python\NBL3xsect
 import sys
 sys.path.append(DEFS)
 from definitions_NBLxSect import import_xSect_csvs, get_scan_metadata
@@ -60,8 +60,8 @@ def plot_NBL3_xsect(df, fig_size, color, cbar_bounds,
     cbar_ax.yaxis.set_offset_position('left')           
     return
 
-SAMPLE = 'NBL31'
-SCAN = 8
+SAMPLE = 'NBL33'
+SCAN = 1
 CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
 META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)
 ROTATION = 0
@@ -71,7 +71,7 @@ dfs = import_xSect_csvs(PATH, SAMPLE, SCAN, CHANNELS, META_DATA, ROTATION)
 PLOT_CHANNEL_IDX = 1
 PLOT_CHANNEL = dfs[PLOT_CHANNEL_IDX]
 FULL_YRANGE = np.max(np.max(PLOT_CHANNEL))
-plot_NBL3_xsect(PLOT_CHANNEL, (2,5), 'Oranges_r', [0,3000],
+plot_NBL3_xsect(PLOT_CHANNEL, (2,2), 'Oranges_r', [0,30000],
                 50, 14,
                 [0,17], 14, 90, 
                 [0,30], 14, 90,
