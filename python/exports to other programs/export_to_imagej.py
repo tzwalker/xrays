@@ -124,11 +124,11 @@ def cm2inch(*tupl):
 
 fig, axs = plt.subplots(2,1, figsize=(cm2inch(3.5,3.5)))
 plt.tight_layout(pad=-10)
-XBIC = dfs[0][dfs[0].columns[:-45]]
+XBIC = dfs[0]#[dfs[0].columns[:-45]]
 axs[0].imshow(XBIC, cmap='inferno',extent=(0,300,0,100))
 axs[0].axis('off')
-Cu = dfs[1][dfs[1].columns[:-45]]
+Cu = dfs[1]#[dfs[1].columns[:-45]]
 axs[1].imshow(Cu, cmap='Greys_r', extent=(0,300,0,100), vmax=3000)
 axs[1].axis('off')
-plt.savefig(r'C:\Users\triton\Desktop\NBL3xsect eps figures\NBL31scan8.eps', format='eps', bbox_inches='tight')
+plt.savefig(r'C:\Users\triton\Dropbox (ASU)\1_NBL3\vector graphics and figures\NBL31scan8_full.eps', format='eps', bbox_inches='tight')
 

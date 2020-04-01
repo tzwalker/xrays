@@ -60,8 +60,8 @@ def plot_NBL3_xsect(df, fig_size, color, cbar_bounds,
     cbar_ax.yaxis.set_offset_position('left')           
     return
 
-SAMPLE = 'NBL33'
-SCAN = 1
+SAMPLE = 'NBL31'
+SCAN = 8
 CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
 META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)
 ROTATION = 0
