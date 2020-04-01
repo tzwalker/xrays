@@ -2,9 +2,13 @@
 """
 Trumann
 Wed Dec  4 10:28:09 2019
+
+this program produces plots similar to seaborn hexbin
+the main plot is inserted in the center, then
+histograms of two variables are plotted in the margins
 """
 
-# inner worksings of seaborn hexbin plot; how to manually get histgrams on margins #
+
 mean = [0, 0]
 cov = [[1, 1], [1, 2]]
 x, y = np.random.multivariate_normal(mean, cov, 3000).T
