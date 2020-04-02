@@ -12,7 +12,7 @@ each sample object has data related to that sample
 from class_Sample import Sample
 import class_absorb_correct as XRFcorr
 
-path = 1
+path = 0
 if path == 0:
     data_path =  r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
 elif path == 1:
@@ -76,10 +76,10 @@ TS58A.get_lockin(data_path+'/a_class_electrical.csv')
 # arg3: scaler channel to normalize elemental signal
 # arg4: use 'fit' on fitted h5s, or 'roi' for unfitted h5s
 elements = ['Cu', 'Cd_L', 'Te_L']
-NBL31.import_maps('ds_ic', elements, 'us_ic', 'roi')
-NBL32.import_maps('ds_ic', elements, 'us_ic', 'roi')
-NBL33.import_maps('ds_ic', elements, 'us_ic', 'roi')
-TS58A.import_maps('ds_ic', elements, 'us_ic', 'roi')
+NBL31.import_maps('ds_ic', elements, 'us_ic', 'fit')
+NBL32.import_maps('ds_ic', elements, 'us_ic', 'fit')
+NBL33.import_maps('ds_ic', elements, 'us_ic', 'fit')
+TS58A.import_maps('ds_ic', elements, 'us_ic', 'fit')
 # "sample.maps" now exists: holds electrical and XRF for each scan
 # each scan is accessed by index, e.g. "NBL32.maps[2]" --> scan 424
 # to access a specific map of a given scan:

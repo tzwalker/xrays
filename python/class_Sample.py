@@ -59,7 +59,7 @@ class Sample():
         elif fit_access_key == 'fit':  
             fit_keys = ['/MAPS/XRF_fits','/MAPS/XRF_fits_quant']
         # for each scan, convert and add electrical and element maps
-        for h5, factor in zip(self.h5data, self.lockin):
+        for h5, factor, scannum in zip(self.h5data, self.lockin, self.scans):
             maps_for_scan = []
             # to find element, decode h5 element strings
             dcoded_chs = [ele_str.decode('utf-8') for ele_str in h5['/MAPS/channel_names']]
@@ -74,7 +74,9 @@ class Sample():
                 fit_map = ele_map / nrmlize_map / quant_map # --> fitted map
                 maps_for_scan.append(fit_map)
             maps_to_array = np.array(maps_for_scan)
-            self.maps.append(maps_to_array)
+            name = 'scan' + str(scannum)
+            setattr(self, name, maps_to_array) # useful for plotting & reference
+            self.maps.append(maps_to_array) #useful w/ code before 20200402
     def apply_iios(self, user_scans, iios_array):    
         # find scan indexes
         scan_idxs = [i for i, s in enumerate(self.scans) if s in user_scans]
