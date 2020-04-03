@@ -20,13 +20,15 @@ XBIV
 100C: scan0342
 """
 
+from skimage.segmentation import slic, mark_boundaries
+import numpy as np
+
 img = r'C:\Users\Trumann\Desktop\FS_data\FS3_2019_06_2IDD_stage\output\combined_ASCII_2idd_0344.h5.csv'
 df = pd.read_csv(img, skiprows = 1)
 map_df = df.pivot(index = ' y pixel no', columns = 'x pixel no', values = ' us_ic')
 map_np = map_df.to_numpy()
 #plt.imshow(map_np, vmin=100000)
-from skimage.segmentation import slic, mark_boundaries
-import numpy as np
+
 
 edges = slic(map_np, n_segments=100, compactness=5000, sigma=1)
 
