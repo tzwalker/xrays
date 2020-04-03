@@ -3,12 +3,6 @@
 tzwalker
 Thu Apr  2 17:12:40 2020
 coding: utf-8
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Trumann
-Wed Jan 29 13:34:11 2020
 
 BEGIN OPERANDO ANALYSES:
 Sample FS3_3: 2019_06_2IDD
@@ -27,17 +21,16 @@ XBIV
 80C: scan0337
 100C: scan0342
 
-note these data are fractured because Barry had to do a separate fitting
-need to combine the electrical data i processed "TW_fit"
-with the XRF data Barry processed "BL_fit"
 """
 
-from class_Sample import Sample
+from class_FS3Sample import Sample
 import class_absorb_correct as XRFcorr
 
-path = 1
+path = 0
 if path == 0:
-    data_path =  r'C:\Users\Trumann\Desktop\FS'
+    PATH_XBIC =  r'C:\Users\Trumann\FS3_2019_06_2IDD_stage\TW_fit_201906'
+    PATH_XRF = r'C:\Users\Trumann\FS3_2019_06_2IDD_stage\BL_fit_202002'
+    PATH_LOCKIN = r'C:\Users\Trumann\xrays\python\_first_solar'
 elif path == 1:
     data_path = r'C:\Users\triton\Desktop\FS_operando\BL_fit_202002'
 elif path == 2:
@@ -48,15 +41,17 @@ FS3 = Sample()
 
 # define stack and scans of each sample
 FS3.stack = {'Au':   [19.3, 100E-7], 
-                 'Se_grad': [4.82, 375E-7], 
-                 'CdTe': [5.85, 5E-4], 
+                 'CdTe': [5.85, 5E-4],
+                 'Se_grad': [4.82, 500E-7],
                  'SnO2': [100E-7]}
 FS3.scans = [321,322,323,324,325,326,327,328,329,330,331,332,333,
              337,338,339,340,341,342,343, 344, 345]
 
 
 # import h5 data for each sample
-FS3.import_scan_data(data_path)
+# think about splitting the XBIC import and the XRF import
+FS3.import_scan_data(PATH_XBIC, 'us_ic', PATH_LOCKIN, 
+                     PATH_XRF)
 # "sample.h5data" now exists: holds h5 files
 
 # calc factor (cts-->ampere) for XBIC channel in each h5
@@ -84,7 +79,7 @@ FS3.import_maps('us_ic', elements, 'us_ic', 'fit')
 
 beam_settings = {'beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
 
-FS3iios = XRFcorr.get_iios(beam_settings, elements, FS3.stack, end_layer='CdTe')
+FS3iios = XRFcorr.get_iios(beam_settings, elements, FS3.stack, end_layer='Se_grad')
 scans_for_correction = FS3.scans
 FS3.apply_iios(scans_for_correction, FS3iios)
 
