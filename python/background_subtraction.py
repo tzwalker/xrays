@@ -18,7 +18,7 @@ should not be smaller than the LARGEST feature size in the image (in pixels)
 from scipy.ndimage import white_tophat
 from skimage.morphology import ball
 
-def rollball_bkgnd_subtraction(array, ball_radius):
+def background_subtraction(array, ball_radius):
     # Create 3D ball structure
     s = ball(ball_radius) 
     # Take only the upper half of the ball
