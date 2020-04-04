@@ -20,7 +20,7 @@ import pandas as pd
 
 class Sample():
     def __init__(self):
-        self.scans = []; self.h5data = []; self.lockin = []; self.maps = []
+        self.scans = []; self.h5data = []; self.eh_maps = []; self.maps = []
         self.stack = {}; self.maps_ = []
     def get_lockin(scan, data_path):
         data = pd.read_csv(data_path)
@@ -41,8 +41,7 @@ class Sample():
             scaler_factor = 1 / (V2F*lockin)
         return scaler_factor
 
-    def import_scan_data(self, path_xbic, eh_scaler, path_lockin,
-                         path_xrf):
+    def import_eh_data(self, path_xbic, eh_scaler, path_lockin):
         # order of scaler channels in h5: '/MAPS/scalers'
         scaler_chs = ['SRCurrent', 'us_ic', 'ds_ic']
         # to find electrical map, set scaler index
@@ -57,7 +56,11 @@ class Sample():
             
             electrical_map = xbic_h5['/MAPS/scalers'][scaler_idx]
             electrical_map = electrical_map * factor
-            # think about splitting the XBIC import frmo the XRF import
+            self.eh_maps.append(electrical_map)
+    def import_xrf_data(self, path_xrf):
+        for scan in self.scans:
+            scan_str = str(scan)
+            # think about splitting the XBIC import from the XRF import
             xrf_fname = path_xrf+'/2idd_0'+scan_str+'.h5'
             
     def import_maps(self, eh_scaler, elements, norm_scaler, fit_access_key):
