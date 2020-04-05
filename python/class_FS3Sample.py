@@ -11,7 +11,8 @@ instead, each h5 is treated separately,
 and the pertinent data is extracted:
     XBIC from an H5 file in one path
     merge with XRF from H5 in different path
-
+here h5s and the lockin data are NOT stored as an atribute of the class
+and are erased from memory once the program imports the maps of each scan 
 """
 
 import h5py
@@ -39,75 +40,66 @@ def get_lockin(scan, data_path):
 
 class Sample():
     def __init__(self):
-        self.scans = []; self.h5data = []; self.eh_maps = []; self.maps = []
+        self.scans = []; self.maps = []
         self.stack = {}; self.maps_ = []
-    def import_eh_data(self, path_xbic, eh_scaler, path_lockin):
+
+    def import_maps(self, path_xbic, eh_scaler, lockin_file, path_xrf, elements, xrfnorm_scaler, fit_access_key):
         # order of scaler channels in h5: '/MAPS/scalers'
         scaler_chs = ['SRCurrent', 'us_ic', 'ds_ic']
         # to find electrical map, set scaler index
         scaler_idx = scaler_chs.index(eh_scaler)
+        # store scan data
+        maps_for_scan = []
         for scan in self.scans:
             scan_str = str(scan)
-            xbic_fname = path_xbic+'/2idd_0'+scan_str+'.h5'
-            # get xbic h5
-            xbic_h5 = h5py.File(xbic_fname, 'r')
             # get electrical factor for xbic h5
-            factor = get_lockin(scan, path_lockin)
-            
+            factor = get_lockin(scan, lockin_file)
+            # get electrical map
+            xbic_fname = path_xbic+'/2idd_0'+scan_str+'.h5'
+            xbic_h5 = h5py.File(xbic_fname, 'r')
             electrical_map = xbic_h5['/MAPS/scalers'][scaler_idx]
+            # apply scale factor
             electrical_map = electrical_map * factor
-            self.eh_maps.append(electrical_map)
-# =============================================================================
-#     def import_xrf_data(self, path_xrf):
-#         for scan in self.scans:
-#             scan_str = str(scan)
-#             # think about splitting the XBIC import from the XRF import
-#             xrf_fname = path_xrf+'/2idd_0'+scan_str+'.h5'
-#             
-#     def import_maps(self, eh_scaler, elements, norm_scaler, fit_access_key):
-#         # order of scaler channels in h5: '/MAPS/scalers'
-#         scaler_chs = ['SRCurrent', 'us_ic', 'ds_ic']
-#         # to find electrical map, set scaler index
-#         scaler_idx = scaler_chs.index(eh_scaler)
-#         # to find channel to normalize, set normalization index
-#         norm_idx = scaler_chs.index(norm_scaler)
-#         # set-up to find correct normalization scalers
-#         if fit_access_key == 'roi':
-#             fit_keys = ['/MAPS/XRF_roi', '/MAPS/XRF_roi_quant']
-#         elif fit_access_key == 'fit':  
-#             fit_keys = ['/MAPS/XRF_fits','/MAPS/XRF_fits_quant']
-#         # for each scan, convert and add electrical and element maps
-#         for h5, factor, scannum in zip(self.h5data, self.lockin, self.scans):
-#             maps_for_scan = []
-#             # to find element, decode h5 element strings
-#             dcoded_chs = [ele_str.decode('utf-8') for ele_str in h5['/MAPS/channel_names']]
-#             electrical_map = h5['/MAPS/scalers'][scaler_idx]
-#             electrical_map = electrical_map * factor
-#             maps_for_scan.append(electrical_map)
-#             for element in elements:
-#                 ele_idx = dcoded_chs.index(element)
-#                 ele_map = h5[fit_keys[0]][ele_idx,:,:]
-#                 nrmlize_map = h5['/MAPS/scalers'][norm_idx, :, :] 
-#                 quant_map = h5[fit_keys[1]][norm_idx, 0, ele_idx]
-#                 fit_map = ele_map / nrmlize_map / quant_map # --> fitted map
-#                 maps_for_scan.append(fit_map)
-#             maps_to_array = np.array(maps_for_scan)
-#             name = 'scan' + str(scannum)
-#             setattr(self, name, maps_to_array) # useful for plotting & reference
-#             self.maps.append(maps_to_array) #useful w/ code before 20200402
-#     def apply_iios(self, user_scans, iios_array):    
-#         # find scan indexes
-#         scan_idxs = [i for i, s in enumerate(self.scans) if s in user_scans]
-#         for scan_idx in scan_idxs:
-#             scan_raw_maps = self.maps[scan_idx]
-#             correct_maps = scan_raw_maps.copy() # create copy to overwrite
-#             for ele_idx, iio in enumerate(iios_array):
-#                 ele_idx = ele_idx+1 # skip electrical map
-#                 # extract XRF map
-#                 map_to_correct = scan_raw_maps[ele_idx,:,:]
-#                 # correct XRF map
-#                 correct_map = map_to_correct / iio
-#                 # replace XRF map
-#                 correct_maps[ele_idx,:,:] = correct_map
-#             self.maps_.append(correct_maps)
-# =============================================================================
+            maps_for_scan.append(electrical_map)
+            
+            # setup XRF import
+            xrf_fname = path_xrf+'/2idd_0'+scan_str+'.h5'
+            xrf_h5 = h5py.File(xrf_fname, 'r')
+            # normalize xrf according to this channel, set normalization index
+            norm_idx = scaler_chs.index(xrfnorm_scaler)
+            # set-up to find correct normalization scalers
+            if fit_access_key == 'roi':
+                fit_keys = ['/MAPS/XRF_roi', '/MAPS/XRF_roi_quant']
+            elif fit_access_key == 'fit':  
+                fit_keys = ['/MAPS/XRF_fits','/MAPS/XRF_fits_quant']
+            # to find element, decode h5 element strings
+            dcoded_chs = [ele_str.decode('utf-8') for ele_str in xrf_h5['/MAPS/channel_names']]
+            for element in elements:
+                ele_idx = dcoded_chs.index(element)
+                ele_map = xrf_h5[fit_keys[0]][ele_idx,:,:]
+                nrmlize_map = xrf_h5['/MAPS/scalers'][norm_idx, :, :] 
+                quant_map = xrf_h5[fit_keys[1]][norm_idx, 0, ele_idx]
+                fit_map = ele_map / nrmlize_map / quant_map # --> fitted map
+                maps_for_scan.append(fit_map)
+            maps_to_array = np.array(maps_for_scan)
+            name = 'scan' + scan_str
+            setattr(self, name, maps_to_array) # useful for plotting & reference
+            self.maps.append(maps_to_array) #useful w/ code before 20200402
+
+    def apply_iios(self, user_scans, iios_array):    
+        # find scan indexes
+        scan_idxs = [i for i, s in enumerate(self.scans) if s in user_scans]
+        for scan_idx in scan_idxs:
+            scan_raw_maps = self.maps[scan_idx]
+            correct_maps = scan_raw_maps.copy() # create copy to overwrite
+            for ele_idx, iio in enumerate(iios_array):
+                ele_idx = ele_idx+1 # skip electrical map
+                # extract XRF map
+                map_to_correct = scan_raw_maps[ele_idx,:,:]
+                # correct XRF map
+                correct_map = map_to_correct / iio
+                # replace XRF map
+                correct_maps[ele_idx,:,:] = correct_map
+            self.maps_.append(correct_maps)
+
+

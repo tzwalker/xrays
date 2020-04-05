@@ -7,6 +7,8 @@ two files are needed for this class:
 the data file (h5) containing XRF data of a desired scan
 the data file (csv) containing electrical settings for all scans
 
+here h5s and the lockin data are stored as an atribute of the class
+in case the factors want to be reviewed at a later date
 can only import data from Sector 2 (for now)
 """
 
