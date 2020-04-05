@@ -26,13 +26,15 @@ XBIV
 from class_FS3Sample import Sample
 import class_absorb_correct as XRFcorr
 
-path = 0
+path = 1
 if path == 0:
     PATH_XBIC =  r'C:\Users\Trumann\FS3_2019_06_2IDD_stage\TW_fit_201906'
     PATH_XRF = r'C:\Users\Trumann\FS3_2019_06_2IDD_stage\BL_fit_202002'
     PATH_LOCKIN = r'C:\Users\Trumann\xrays\python\_first_solar'
 elif path == 1:
-    data_path = r'C:\Users\triton\Desktop\FS_operando\BL_fit_202002'
+    PATH_XBIC =  r'C:\Users\triton\Desktop\FS_operando\TW_fit_201907'
+    PATH_XRF = r'C:\Users\triton\Desktop\FS_operando\BL_fit_202002'
+    PATH_LOCKIN = r'C:\Users\triton\Desktop\FS_operando'
 elif path == 2:
     data_path = '/home/kineticcross/Desktop/data'
     
@@ -50,10 +52,9 @@ FS3.scans = [321,322,323,324,325,326,327,328,329,330,331,332,333,
 
 # import h5 data for each sample
 # think about splitting the XBIC import and the XRF import
-FS3.import_scan_data(PATH_XBIC, 'us_ic', PATH_LOCKIN, 
-                     PATH_XRF)
+FS3.import_eh_data(PATH_XBIC, 'us_ic', PATH_LOCKIN)
 # "sample.h5data" now exists: holds h5 files
-
+#%%
 # calc factor (cts-->ampere) for XBIC channel in each h5
 FS3.get_lockin(data_path+'/a_class_electrical.csv')
 # "sample.lockin" now exists: holds scaler factors
