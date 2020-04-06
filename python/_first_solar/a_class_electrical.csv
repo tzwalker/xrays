@@ -5,7 +5,7 @@ scan,XBIC/V,V2F,stanford,lockin,sample,electrical settings saved as 20190629xbiv
 324,C,200000,10000,100,,stanford,10uA/V,,,
 325,V,200000,,100,,lockin,100,8,100.2,1V input range
 326,V,200000,,100,,direct,10,8,466700,2.5V offset
-327,C,200000,10000,100,,,,,,
+327,C,200000,10000,100,,,,order,BW,other
 328,C,200000,10000,100,,,,,,
 329,C,200000,10000,100,,,,,,
 330,V,200000,,100,,,,,,

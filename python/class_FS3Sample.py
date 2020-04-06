@@ -13,6 +13,11 @@ and the pertinent data is extracted:
     merge with XRF from H5 in different path
 here h5s and the lockin data are NOT stored as an atribute of the class
 and are erased from memory once the program imports the maps of each scan 
+
+20200405 --> thinking it might be easier to handle these data as csvs:
+there are too many unknown differences between the h5 structure
+fit by TW and the h5 structure fit by BL (in a different MAPS version)
+
 """
 
 import h5py
@@ -44,7 +49,7 @@ class Sample():
         self.stack = {}; self.maps_ = []
 
     def import_maps(self, path_xbic, eh_scaler, lockin_file, path_xrf, elements, xrfnorm_scaler, fit_access_key):
-        # order of scaler channels in h5: '/MAPS/scalers'
+        # order of scaler channels in OLD h5: '/MAPS/scalers' TW_fit
         scaler_chs = ['SRCurrent', 'us_ic', 'ds_ic']
         # to find electrical map, set scaler index
         scaler_idx = scaler_chs.index(eh_scaler)
@@ -58,11 +63,15 @@ class Sample():
             xbic_fname = path_xbic+'/2idd_0'+scan_str+'.h5'
             xbic_h5 = h5py.File(xbic_fname, 'r')
             electrical_map = xbic_h5['/MAPS/scalers'][scaler_idx]
+            # remove nan columns; make shape compatible with xrf maps' shapes
+            electrical_map = electrical_map[:,:-2]
             # apply scale factor
             electrical_map = electrical_map * factor
             maps_for_scan.append(electrical_map)
             
             # setup XRF import
+            # order of scaler channels in NEW h5: '/MAPS/scalers' BL_fit
+            scaler_chs = ['ds_ic', 'SRCurrent', 'us_ic']
             xrf_fname = path_xrf+'/2idd_0'+scan_str+'.h5'
             xrf_h5 = h5py.File(xrf_fname, 'r')
             # normalize xrf according to this channel, set normalization index
@@ -76,8 +85,8 @@ class Sample():
             dcoded_chs = [ele_str.decode('utf-8') for ele_str in xrf_h5['/MAPS/channel_names']]
             for element in elements:
                 ele_idx = dcoded_chs.index(element)
-                ele_map = xrf_h5[fit_keys[0]][ele_idx,:,:]
-                nrmlize_map = xrf_h5['/MAPS/scalers'][norm_idx, :, :] 
+                ele_map = xrf_h5[fit_keys[0]][ele_idx,:,:-2]
+                nrmlize_map = xrf_h5['/MAPS/scalers'][norm_idx, :, :-2] 
                 quant_map = xrf_h5[fit_keys[1]][norm_idx, 0, ele_idx]
                 fit_map = ele_map / nrmlize_map / quant_map # --> fitted map
                 maps_for_scan.append(fit_map)
@@ -101,5 +110,3 @@ class Sample():
                 # replace XRF map
                 correct_maps[ele_idx,:,:] = correct_map
             self.maps_.append(correct_maps)
-
-
