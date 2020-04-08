@@ -57,7 +57,7 @@ SCAN_IDX = 6; SCAN_NUM = str(SAMP.scans[SCAN_IDX])
 # retireve mask made in ImageJ #
 SYS_PATH = r'Z:\Trumann\XRF images\py_exports_interface'
 # change mask: "bound_0in_1out_mask" | "cores_0in_mask"
-MASK_PATH = r'\{sam}\scan{scn}\cores_0in_mask.txt'.format(sam=SAMP_NAME, 
+MASK_PATH = r'\{sam}\scan{scn}\bound_core\cores_0in_mask.txt'.format(sam=SAMP_NAME, 
                scn=SCAN_NUM)
 FULL_PATH = SYS_PATH + MASK_PATH
 mask = np.loadtxt(FULL_PATH)

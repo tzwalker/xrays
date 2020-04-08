@@ -102,9 +102,9 @@ C = np.mean(Ymask)
 data_in_mask_avg_in_ug = C*B + A
 print(data_in_mask_avg_in_ug)
 #%%
-
+import numpy as np
 # quickly grab AVERAGE of masked data #
-
+SYS_PATH = r'Z:\Trumann\XRF images\py_exports_interface'
 SAMPS = [NBL31, NBL32, NBL33, TS58A]
 NAMES = ['NBL31', 'NBL32', 'NBL33', 'TS58A']
 SCAN_IDXS = [6,6,6,7]
@@ -122,7 +122,7 @@ for samp,name,scan_idx in zip(SAMPS,NAMES,SCAN_IDXS):
     for region in REGIONS:
         REGION_LIST = []
     # load mask
-        MASK_PATH = r'\{sam}\scan{scn}\{REG}.txt'.format(sam=name, 
+        MASK_PATH = r'\{sam}\scan{scn}\bound_core\{REG}.txt'.format(sam=name, 
                    scn=SCAN_NUM, REG=region)
         FULL_PATH = SYS_PATH + MASK_PATH
         mask = np.loadtxt(FULL_PATH)
