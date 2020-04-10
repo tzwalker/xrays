@@ -9,10 +9,17 @@ are these rotated maps
 parameters can be specified
 -rotation is done to integrate along the vertical axis (the data must be
 perpendicular to the x-axis) for future comparison to SIMS profiles
+
+note for the analyses in origin
+NLB31_scan8 had no rotation, and 
+NBL33_scan1 had no rotation
+NBL33_scan17 rotation could not be determined,
+but based off the plots, it is likley to be around 10-15
+    sticking with 15 to be used in average investigations
 """
 
 PATH = r'C:\Users\triton\Desktop\NBL3_data\cross_section_MS' #r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs' #'C:\Users\triton\Desktop\NBL3_data\cross_section_MS'
-DEFS = r'C:\Users\triton\xrays\python\NBL3xsect' #'C:\Users\triton\xrays\python\NBL3xsect' C:\Users\Trumann\xrays\python\NBL3xsect
+DEFS = r'C:\Users\triton\xrays\python\_NBL3' #'C:\Users\triton\xrays\python\NBL3xsect' C:\Users\Trumann\xrays\python\NBL3xsect
 import sys
 sys.path.append(DEFS)
 from definitions_NBLxSect import import_xSect_csvs, get_scan_metadata
@@ -60,24 +67,25 @@ def plot_NBL3_xsect(df, fig_size, color, cbar_bounds,
     cbar_ax.yaxis.set_offset_position('left')           
     return
 
-SAMPLE = 'NBL31'
-SCAN = 8
+SAMPLE = 'TS58A'
+SCAN = 2
 CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
 META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)
 ROTATION = 0
 
+
 dfs = import_xSect_csvs(PATH, SAMPLE, SCAN, CHANNELS, META_DATA, ROTATION)
 
-PLOT_CHANNEL_IDX = 1
+PLOT_CHANNEL_IDX = 0
 PLOT_CHANNEL = dfs[PLOT_CHANNEL_IDX]
 FULL_YRANGE = np.max(np.max(PLOT_CHANNEL))
-plot_NBL3_xsect(PLOT_CHANNEL, (2,2), 'Oranges_r', [0,30000],
+plot_NBL3_xsect(PLOT_CHANNEL, (2,2), 'magma', [0,FULL_YRANGE],
                 50, 14,
                 [0,17], 14, 90, 
                 [0,30], 14, 90,
                 '(a.u.)', 16,14, 0)
 
-#%%
+
 def export_integrated_dfs(imp_rot_dfs):
     integrated_arrays_of_each_channel = []
     x = imp_rot_dfs[0].columns.values
@@ -92,4 +100,6 @@ def export_integrated_dfs(imp_rot_dfs):
     return arrays
 
 arrays = export_integrated_dfs(dfs)
-#np.savetxt(r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3 data\py_' + sample +"_Scan"+ str(scannum) + '.csv', arrays, delimiter = ',')
+#SYS_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\xsectMS'
+#np.savetxt(SYS_PATH + r'\py_' + sample +"_Scan"+ str(scannum) + '.csv', arrays, delimiter = ',')
+print(arrays[0,1], 'v', arrays[0,2])

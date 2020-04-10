@@ -45,7 +45,10 @@ def get_axes_from_metadata(data_df, units_df):
 def import_xSect_csvs(path, sample, scannum, channels, meta, rot):
     rot_dfs = []
     for chan in channels:
-        file_string = '\CdTe_X_' + sample + '_Scan_' + str(scannum) + '_' + chan + '_data.csv'
+        str_scannum = str(scannum)
+        file_string = '\CdTe_X_{s}_Scan_{n}_{c}_data.csv'.format(s=sample,
+                                                                 n=str_scannum,
+                                                                 c=chan)
         file = path + file_string
         # import scan
         df = pd.read_csv(file, header=None)  
