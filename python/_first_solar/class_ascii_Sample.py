@@ -5,18 +5,9 @@ because the scaler data was stored haphazardly at the beam
 --> the XBIC data is found in one H5 file (fitted by T Walker)
 and the XRF data is found in another h5 file (fitted by B Lai)
 
-the class does not store the h5 data because two of each h5 would
-take too much memory space;
-instead, each h5 is treated separately, 
-and the pertinent data is extracted:
-    XBIC from an H5 file in one path
-    merge with XRF from H5 in different path
-here h5s and the lockin data are NOT stored as an atribute of the class
-and are erased from memory once the program imports the maps of each scan 
-
-20200405 --> thinking it might be easier to handle these data as csvs:
-there are too many unknown differences between the h5 structure
-fit by TW and the h5 structure fit by BL (in a different MAPS version)
+the data were exported from the h5 files to csv using MAPS
+this class handles those csvs by importing them from two different
+directories, one where the XBIC data is stored,
 
 """
 
@@ -45,8 +36,7 @@ def get_lockin(scan, data_path):
 
 class Sample():
     def __init__(self):
-        self.scans = []; self.maps = []
-        self.stack = {}; self.maps_ = []
+        self.scans = []; self.scans={}; 
 
     def import_maps(self, path_xbic, eh_scaler, lockin_file, path_xrf, elements, xrfnorm_scaler, fit_access_key):
         # order of scaler channels in OLD h5: '/MAPS/scalers' TW_fit

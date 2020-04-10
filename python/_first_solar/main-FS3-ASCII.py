@@ -26,8 +26,11 @@ XBIV
 100C: scan0342
 
 """
+from class_ascii_Sample import Sample
 
 SYS_PATH = r'C:\Users\Trumann\Desktop\FS_data\FS3_2019_06_2IDD'
+XRF_ASCII = SYS_PATH + r'\BL_fit_202002\output'
+XBICV_ASCII = SYS_PATH + r'\TW_fit_201907\output'
 
 # create sample objects
 FS3 = Sample()
