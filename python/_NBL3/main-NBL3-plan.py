@@ -9,10 +9,10 @@ these functions import electrical and XRF data from two types of files:
 each sample object has data related to that sample
 """
 
-from class_Sample import Sample
-import class_absorb_correct as XRFcorr
+from classh5_Sample import Sample
+from class_absorb_correct import get_iios
 
-path = 1
+path = 0
 if path == 0:
     data_path =  r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
 elif path == 1:
@@ -90,32 +90,32 @@ TS58A.import_maps('ds_ic', elements, 'us_ic', 'fit')
 # in apply_iios():
 # arg3: sample stack
 # arg4: layer at which to cease correction
-
+#%%
 beam_settings = {'beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
 ### NBL32 ###
-iios2019 = XRFcorr.get_iios(beam_settings, elements, NBL32.stack, end_layer='CdTe')
+iios2019 = get_iios(beam_settings, elements, NBL32.stack, end_layer='CdTe')
 scans_for_correction = [422,423,424, 419,420,421]
 #NBL32.apply_iios(scans_for_correction, iios2019)
 ### NBL33 ###
-iios2019 = XRFcorr.get_iios(beam_settings, elements, NBL33.stack, end_layer='CdTe')
+iios2019 = get_iios(beam_settings, elements, NBL33.stack, end_layer='CdTe')
 scans_for_correction = [261,262,263, 264,265,266]
 #NBL33.apply_iios(scans_for_correction, iios2019)
 ### TS58A ###
-iios2019 = XRFcorr.get_iios(beam_settings, elements, TS58A.stack, end_layer='CdTe')
+iios2019 = get_iios(beam_settings, elements, TS58A.stack, end_layer='CdTe')
 scans_for_correction = [385,386,387, 382,383,384]
 #TS58A.apply_iios(scans_for_correction, iios2019)
 
 beam_settings = {'beam_energy': 8.99, 'beam_theta':90, 'detect_theta':43}
 ### NBL32 ###
-iios2017 = XRFcorr.get_iios(beam_settings, elements, NBL32.stack, end_layer='CdTe')
+iios2017 = get_iios(beam_settings, elements, NBL32.stack, end_layer='CdTe')
 scans_for_correction = [550,538,575,551]
 #NBL32.apply_iios(scans_for_correction, iios2017)
 ### NBL33 ###
-iios2017 = XRFcorr.get_iios(beam_settings, elements, NBL33.stack, end_layer='CdTe')
+iios2017 = get_iios(beam_settings, elements, NBL33.stack, end_layer='CdTe')
 scans_for_correction = [472,475,491]
 #NBL33.apply_iios(scans_for_correction, iios2017)
 ### TS58A ###
-iios2017 = XRFcorr.get_iios(beam_settings, elements, TS58A.stack, end_layer='CdTe')
+iios2017 = get_iios(beam_settings, elements, TS58A.stack, end_layer='CdTe')
 scans_for_correction = [439,427,408,440]
 #TS58A.apply_iios(scans_for_correction, iios2017)
 
