@@ -12,7 +12,7 @@ each sample object has data related to that sample
 from classh5_Sample import Sample
 from class_absorb_correct import get_iios
 
-path = 0
+path = 1
 if path == 0:
     data_path =  r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
 elif path == 1:
@@ -75,7 +75,7 @@ TS58A.get_lockin(data_path+'/a_class_electrical.csv')
 # arg2: element maps to extract
 # arg3: scaler channel to normalize elemental signal
 # arg4: use 'fit' on fitted h5s, or 'roi' for unfitted h5s
-elements = ['Cu', 'Cd_L', 'Te_L']
+elements = ['Cu', 'Cd_L', 'Te_L', 'Cl']
 NBL31.import_maps('ds_ic', elements, 'us_ic', 'fit')
 NBL32.import_maps('ds_ic', elements, 'us_ic', 'fit')
 NBL33.import_maps('ds_ic', elements, 'us_ic', 'fit')

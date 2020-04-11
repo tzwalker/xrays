@@ -84,3 +84,11 @@ fig, (ax0, ax1) = plt.subplots(1,2)
 ax0.imshow(v); ax1.imshow(mol_cute)
 plt.figure()
 plt.hexbin(i, v, mincnt=1)
+
+#%%
+# copy the color space in ImageJ, e.g. make a red colormap
+from matplotlib.colors import LinearSegmentedColormap
+colors = [(0, 0, 0), (0.5, 0, 0), (1, 0, 0)]  # R -> G -> B
+cmap_name = 'imgj_reds'
+# Create the colormap
+cm = LinearSegmentedColormap.from_list(cmap_name, colors, N=255)
