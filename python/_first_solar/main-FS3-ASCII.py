@@ -26,11 +26,11 @@ XBIV
 100C: scan0342
 
 """
+
 from class_ascii_Sample import Sample
 
-SYS_PATH = r'C:\Users\Trumann\Desktop\FS_data\FS3_2019_06_2IDD'
-XRF_ASCII = SYS_PATH + r'\BL_fit_202002\output'
-XBICV_ASCII = SYS_PATH + r'\TW_fit_201907\output'
+ASCII_PATH = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL'
+PATH_LOCKIN = r'C:\Users\triton\FS3_2019_06_operando\a_class_electrical.csv'
 
 # create sample objects
 FS3 = Sample()
@@ -44,34 +44,14 @@ FS3.scans = [321,322,323,324,325,326,327,328,329,330,331,332,333,
              337,338,339,340,341,342,343, 344, 345]
 
 
-# import h5 data for each sample
-# think about splitting the XBIC import and the XRF import
-lockin_file = PATH_LOCKIN+r'\a_class_electrical.csv'
-elements = ['Se', 'Cd_L', 'Te_L', 'Au_L']
+# channels to import from ASCII
+channels = ['us_ic', 'Se', 'Cd_L', 'Te_L', 'Au_L']
 
-FS3.import_maps(PATH_XBIC, 'us_ic', lockin_file, PATH_XRF, elements, 'us_ic', 'fit')
-# "sample.eh_maps" now exists: destined to merge with xrf maps
+FS3.import_maps(ASCII_PATH, PATH_LOCKIN, channels)
+# these data are stored more like the matlab code
+    # i.e. each scan is an attribute of the Sample object
 
 # =============================================================================
-# 
-# # calc factor (cts-->ampere) for XBIC channel in each h5
-# FS3.get_lockin(data_path+'/a_class_electrical.csv')
-# # "sample.lockin" now exists: holds scaler factors
-# 
-# # import maps:
-# # arg1: electrical scaler channel
-# # arg2: element maps to extract
-# # arg3: scaler channel to normalize elemental signal
-# # arg4: use 'fit' on fitted h5s, or 'roi' for unfitted h5s
-# elements = ['Se', 'Cd_L', 'Te_L', 'Cu']
-# FS3.import_maps('us_ic', elements, 'us_ic', 'fit')
-# # "sample.maps" now exists: holds electrical and XRF for each scan
-# # each scan can be accessed by index, e.g. 
-# #   "NBL32.maps[2]" --> scan 424
-# #   "NBL32.maps[2][0,:,:]" --> electrical map for scan 424
-# #   "NBL32.maps[2][1,:,:]" --> Cu map for scan 424
-# # OR by scan number, e.g. "NBL32.scan424[0,:,:-2]" --> electrical map for 424
-# 
 # # enter beamtime settings
 # # in apply_iios():
 # # arg3: sample stack
