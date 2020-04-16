@@ -14,9 +14,9 @@ from class_absorb_correct import get_iios
 
 path = 1
 if path == 0:
-    data_path =  r'C:\Users\Trumann\Desktop\NBL3_data\all_H5s'
+    data_path =  r'C:\Users\Trumann\NBL3_data\all_H5s'
 elif path == 1:
-    data_path = r'C:\Users\triton\Desktop\NBL3_data\plan_view'
+    data_path = r'C:\Users\triton\NBL3_data\plan_view'
 elif path == 2:
     data_path = '/home/kineticcross/Desktop/data'
     
@@ -87,40 +87,42 @@ TS58A.import_maps('ds_ic', elements, 'us_ic', 'fit')
 #   "NBL32.maps[2][1,:,:]" --> Cu map for scan 424
 
 # enter beamtime settings
-# in apply_iios():
-# arg3: sample stack
-# arg4: layer at which to cease correction
-#%%
-beam_settings = {'beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
-### NBL32 ###
-iios2019 = get_iios(beam_settings, elements, NBL32.stack, end_layer='CdTe')
-scans_for_correction = [422,423,424, 419,420,421]
-#NBL32.apply_iios(scans_for_correction, iios2019)
-### NBL33 ###
-iios2019 = get_iios(beam_settings, elements, NBL33.stack, end_layer='CdTe')
-scans_for_correction = [261,262,263, 264,265,266]
-#NBL33.apply_iios(scans_for_correction, iios2019)
-### TS58A ###
-iios2019 = get_iios(beam_settings, elements, TS58A.stack, end_layer='CdTe')
-scans_for_correction = [385,386,387, 382,383,384]
-#TS58A.apply_iios(scans_for_correction, iios2019)
-
-beam_settings = {'beam_energy': 8.99, 'beam_theta':90, 'detect_theta':43}
-### NBL32 ###
-iios2017 = get_iios(beam_settings, elements, NBL32.stack, end_layer='CdTe')
-scans_for_correction = [550,538,575,551]
-#NBL32.apply_iios(scans_for_correction, iios2017)
-### NBL33 ###
-iios2017 = get_iios(beam_settings, elements, NBL33.stack, end_layer='CdTe')
-scans_for_correction = [472,475,491]
-#NBL33.apply_iios(scans_for_correction, iios2017)
-### TS58A ###
-iios2017 = get_iios(beam_settings, elements, TS58A.stack, end_layer='CdTe')
-scans_for_correction = [439,427,408,440]
-#TS58A.apply_iios(scans_for_correction, iios2017)
-
-# "sample.maps_" now exists: holds electrical and corrected XRF of select scans
-# scan accessed by index in "scans_for_correction", NOT original scan list
-# e.g. "NBL32.maps_[4]" --> scan 419, "NBL32.maps[4]" --> scan 538)
+# =============================================================================
+# # in apply_iios():
+# # arg3: sample stack
+# # arg4: layer at which to cease correction
+# 
+# beam_settings = {'beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
+# ### NBL32 ###
+# iios2019 = get_iios(beam_settings, elements, NBL32.stack, end_layer='CdTe')
+# scans_for_correction = [422,423,424, 419,420,421]
+# #NBL32.apply_iios(scans_for_correction, iios2019)
+# ### NBL33 ###
+# iios2019 = get_iios(beam_settings, elements, NBL33.stack, end_layer='CdTe')
+# scans_for_correction = [261,262,263, 264,265,266]
+# #NBL33.apply_iios(scans_for_correction, iios2019)
+# ### TS58A ###
+# iios2019 = get_iios(beam_settings, elements, TS58A.stack, end_layer='CdTe')
+# scans_for_correction = [385,386,387, 382,383,384]
+# #TS58A.apply_iios(scans_for_correction, iios2019)
+# 
+# beam_settings = {'beam_energy': 8.99, 'beam_theta':90, 'detect_theta':43}
+# ### NBL32 ###
+# iios2017 = get_iios(beam_settings, elements, NBL32.stack, end_layer='CdTe')
+# scans_for_correction = [550,538,575,551]
+# #NBL32.apply_iios(scans_for_correction, iios2017)
+# ### NBL33 ###
+# iios2017 = get_iios(beam_settings, elements, NBL33.stack, end_layer='CdTe')
+# scans_for_correction = [472,475,491]
+# #NBL33.apply_iios(scans_for_correction, iios2017)
+# ### TS58A ###
+# iios2017 = get_iios(beam_settings, elements, TS58A.stack, end_layer='CdTe')
+# scans_for_correction = [439,427,408,440]
+# #TS58A.apply_iios(scans_for_correction, iios2017)
+# 
+# # "sample.maps_" now exists: holds electrical and corrected XRF of select scans
+# # scan accessed by index in "scans_for_correction", NOT original scan list
+# # e.g. "NBL32.maps_[4]" --> scan 419, "NBL32.maps[4]" --> scan 538)
+# =============================================================================
 
 
