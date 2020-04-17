@@ -32,7 +32,8 @@ for l = 1:length(thickness(1,:))
 %         grad_down = 1-grad_up;
 %         mid = round(length(depth)/2);
 %         V = 0:1/(mid-1):1;
-%         gradV(1:mid) = 1-V; gradV(mid:length(depth)) = V;
+%         gradV(1:mid) = 1-V; 
+% 	      gradV(mid:length(depth)) = V;
 %         gradN = 1-gradV;
         
         grad = grad_flat;
