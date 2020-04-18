@@ -67,11 +67,20 @@ class Sample():
             self.maps.append(data_stack) #useful w/ code before 20200402
     
     def ug_to_mol(self, elements):
+        # get the XRF maps from each scan
         XRF_maps = [scan[-1:,:,:-2] for scan in self.maps]
+        # get atomic number for xraylib reference
         z_list = [xl.SymbolToAtomicNumber(e) for e in elements]
+        # calculate mol for each atomic number (1g/1E6ug)*(1mol/g)
         factors = [(1/1E6) * (1/xl.AtomicWeight(z)) for z in z_list]
-        XRF_mol = [factors[:, None, None] * XRF_map for XRF_map in XRF_maps]
-        setattr(self.maps, 'mol', XRF_mol)
+        # convert factor list to array for easy matrix math
+        factor_arr = np.array(factors)
+        # 1D fact arr * 3D xrf arr along depth axis for each set of XRF maps
+        XRF_mol = [factor_arr[:, None, None] * XRF_map for XRF_map in XRF_maps]
+        # assign empty attribute to store mol maps
+        self.mol = lambda:None
+        # store mol maps; note these do not have electical map!
+        self.mol = XRF_mol
         return
     
     def apply_iios(self, user_scans, iios_array):    

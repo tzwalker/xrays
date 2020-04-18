@@ -15,7 +15,7 @@ XBIC
 20C: scan0323
 40C: scan0327
 60C: scan0332
-80C: scan0344
+80C: scan0339
 100C: scan344
 
 XBIV
@@ -24,7 +24,8 @@ XBIV
 60C: scan0330
 80C: scan0337
 100C: scan0342
-
+322,323,324,325,326,327,328,329,330,331,332,333,
+             337,338,339,340,341,342,343, 344, 345]
 """
 
 from class_ascii_Sample import Sample
@@ -40,8 +41,7 @@ FS3.stack = {'Au':   [19.3, 100E-7],
                  'CdTe': [5.85, 5E-4],
                  'Se': [4.82, 100E-7],
                  'SnO2': [100E-7]}
-FS3.scans = [321,322,323,324,325,326,327,328,329,330,331,332,333,
-             337,338,339,340,341,342,343, 344, 345]
+FS3.scans = [323,327,332,339,344]
 
 
 # channels to import from ASCII
@@ -49,8 +49,13 @@ channels = ['us_ic', 'Se', 'Cd_L', 'Te_L', 'Au_L']
 
 FS3.import_maps(ASCII_PATH, PATH_LOCKIN, channels)
 
-#elements = [ele[0:2] for ele in channels[1:]]
-#FS3.ug_to_mol(elements)
+elements = [ele[0:2] for ele in channels[1:]]
+
+FS3.ug_to_mol(elements)
+
+# i think first ot will be good to look at superpixel application to:
+    # identify 'good' and 'bad' areas
+    # if bimodal distribution, look into 'Osu' threshold (see Turaga notes)
 
 # =============================================================================
 # #i want to apply a Se grading correction based off a function 

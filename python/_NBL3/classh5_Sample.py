@@ -15,7 +15,7 @@ can only import data from Sector 2 (for now)
 import h5py
 import numpy as np
 import pandas as pd
-
+import xraylib as xl
 # =============================================================================
 # # tree for IndexError exceptions:
 # # object:baseexception:exception:lookuperror:indexerror
@@ -79,7 +79,8 @@ class Sample():
             name = 'scan' + str(scannum)
             setattr(self, name, maps_to_array) # useful for plotting & reference
             self.maps.append(maps_to_array) #useful w/ code before 20200402
-    def apply_iios(self, user_scans, iios_array):    
+    
+	def apply_iios(self, user_scans, iios_array):    
         # find scan indexes
         scan_idxs = [i for i, s in enumerate(self.scans) if s in user_scans]
         for scan_idx in scan_idxs:
@@ -94,3 +95,20 @@ class Sample():
                 # replace XRF map
                 correct_maps[ele_idx,:,:] = correct_map
             self.maps_.append(correct_maps)
+    
+	def ug_to_mol(self, elements):
+        # get the XRF maps from each scan
+        XRF_maps = [scan[-1:,:,:-2] for scan in self.maps]
+        # get atomic number for xraylib reference
+        z_list = [xl.SymbolToAtomicNumber(e) for e in elements]
+        # calculate mol for each atomic number (1g/1E6ug)*(1mol/g)
+        factors = [(1/1E6) * (1/xl.AtomicWeight(z)) for z in z_list]
+        # convert factor list to array for easy matrix math
+        factor_arr = np.array(factors)
+        # 1D fact arr * 3D xrf arr along depth axis for each set of XRF maps
+        XRF_mol = [factor_arr[:, None, None] * XRF_map for XRF_map in XRF_maps]
+        # assign empty attribute to store mol maps
+        self.mol = lambda:None
+        # store mol maps; note these do not have electical map!
+        self.mol = XRF_mol
+        return
