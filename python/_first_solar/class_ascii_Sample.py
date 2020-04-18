@@ -15,6 +15,7 @@ separate directories
 
 import numpy as np
 import pandas as pd
+import xraylib as xl
 
 def get_lockin(scan, data_path):
     data = pd.read_csv(data_path)
@@ -64,7 +65,15 @@ class Sample():
             name = 'scan' + scan_str
             setattr(self, name, data_stack) # useful for plotting & reference
             self.maps.append(data_stack) #useful w/ code before 20200402
-
+    
+    def ug_to_mol(self, elements):
+        XRF_maps = [scan[-1:,:,:-2] for scan in self.maps]
+        z_list = [xl.SymbolToAtomicNumber(e) for e in elements]
+        factors = [(1/1E6) * (1/xl.AtomicWeight(z)) for z in z_list]
+        XRF_mol = [factors[:, None, None] * XRF_map for XRF_map in XRF_maps]
+        setattr(self.maps, 'mol', XRF_mol)
+        return
+    
     def apply_iios(self, user_scans, iios_array):    
         # find scan indexes
         scan_idxs = [i for i, s in enumerate(self.scans) if s in user_scans]
