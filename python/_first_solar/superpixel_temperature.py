@@ -15,9 +15,16 @@ originally made for XBIC maps of FS3
 HOME_PATH = r'C:\Users\triton\xrays\python'
 import sys
 sys.path.append(HOME_PATH)
-import numpy as np
+from background_subtraction import background_subtraction as bksb
+from standardize_map import standardize_map as stmap
+#import numpy as np
 from skimage.segmentation import slic, mark_boundaries
-edges = slic(map_np, n_segments=100, compactness=5000, sigma=1)
+
+img = FS3.scan323[0,:,:-2]
+img1 = stmap(img)
+img2 = bksb(img1,15)
+
+edges = slic(img2, n_segments=100, compactness=5000, sigma=1)
 
 # for some reason the boundaries from SLIC are not changing color
 # initiate RGB channel to act as boundary mask
