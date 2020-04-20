@@ -3,33 +3,20 @@
 Trumann
 Wed Jan 29 13:34:11 2020
 
-segmentation for XBIC maps as a function of temperature
-Sample FS3_3: 2019_06_2IDD
-XBIC
-20C: scan0323
-40C: scan0327
-60C: scan0332
-80C: scan0344
-100C: scan344
-
-XBIV
-20C: scan0321
-40C: scan0325
-60C: scan0330
-80C: scan0337
-100C: scan0342
+originally made for XBIC maps of FS3
 """
 
-from skimage.segmentation import slic, mark_boundaries
+# standardize map
+# segment
+# average segements
+# apply Otsu threshold
+# stats on pixels below the threshold
+# stats on pixels above the threshold
+HOME_PATH = r'C:\Users\triton\xrays\python'
+import sys
+sys.path.append(HOME_PATH)
 import numpy as np
-
-img = r'C:\Users\Trumann\Desktop\FS_data\FS3_2019_06_2IDD_stage\output\combined_ASCII_2idd_0344.h5.csv'
-df = pd.read_csv(img, skiprows = 1)
-map_df = df.pivot(index = ' y pixel no', columns = 'x pixel no', values = ' us_ic')
-map_np = map_df.to_numpy()
-#plt.imshow(map_np, vmin=100000)
-
-
+from skimage.segmentation import slic, mark_boundaries
 edges = slic(map_np, n_segments=100, compactness=5000, sigma=1)
 
 # for some reason the boundaries from SLIC are not changing color
@@ -40,6 +27,28 @@ bm_mask = bm[:,:,0] == 1
 #everywhere where bm_edit is True, convert to nan
 img_masked = map_np.copy(); img_masked[bm_mask] = np.nan
 bm = mark_boundaries(map_np, edges, color=(1,0,0)) #-> color is RGB
+
+# replacing with average #
+# non-zero labels for regionprops
+labels = labels + 1  
+from skimage import color
+# replace each segment with its average
+label_rgb = color.label2rgb(labels, img2, kind='avg')
+plt.imshow(label_rgb)
+
+regions = regionprops(labels)
+# access superpixel data
+
+for edge in np.unique(edges):
+   mask = np.zeros(img.shape, dtype='uint8') #make empty mask
+   mask[edges == edge] = True #make binary mask according to selected superpixel
+   superpixel = img[np.where(mask==1)] #get (1d) array of data within superpixel
+   
+   print()
+   
+# what to do once i can get to data in pixels...??? #
+#import plot_defs as PLT
+#PLT.plot_nice_superpixels_from_h5(NBL3_3, 0, img_copy, 'magma')
 
 # plot somehwat nicely
 fig, ax1 = plt.subplots()
