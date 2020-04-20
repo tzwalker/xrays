@@ -58,32 +58,8 @@ labels = slic(img2a, n_segments=50, compactness=1,sigma=1)
 plt.imshow(mark_superpixels(img2a, labels))
 
 img_joint = np.stack((img1,img2), axis=2)
-# replacing with average #
-# non-zero labels for regionprops
-labels = labels + 1  
-from skimage import color
-# replace each segment with its average
-label_rgb = color.label2rgb(labels, img2, kind='avg')
-plt.imshow(label_rgb)
-
-regions = regionprops(labels)
 
 
-
-#%%
-# access superpixel data
-
-for edge in np.unique(edges):
-   mask = np.zeros(img.shape, dtype='uint8') #make empty mask
-   mask[edges == edge] = True #make binary mask according to selected superpixel
-   superpixel = img[np.where(mask==1)] #get (1d) array of data within superpixel
-   
-   print()
-   
-# what to do once i can get to data in pixels...??? #
-#import plot_defs as PLT
-#PLT.plot_nice_superpixels_from_h5(NBL3_3, 0, img_copy, 'magma')
-   
 # =============================================================================
 # """
 # used to plot segmented Cu map in ImageJ colors  
