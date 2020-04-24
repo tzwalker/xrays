@@ -54,10 +54,6 @@ elements = [ele[0:2] for ele in channels[1:]]
 FS3.ug_to_mol(elements)
 # attribute Sample.mol now exists; contains XRF maps as mol/cm2
 
-# i think first ot will be good to look at superpixel application to:
-    # identify 'good' and 'bad' areas
-    # if bimodal distribution, look into 'Osu' threshold (see Turaga notes)
-
 # =============================================================================
 # #i want to apply a Se grading correction based off a function 
 # # from the cross-section integrated XRF profiles
@@ -80,4 +76,6 @@ FS3.ug_to_mol(elements)
 # # e.g. "NBL32.maps_[4]" --> scan 419, "NBL32.maps[4]" --> scan 538)
 # =============================================================================
 
-
+# i think first ot will be good to look at superpixel application to:
+    # identify 'good' and 'bad' areas
+    # if bimodal distribution, look into 'Osu' threshold (see Turaga notes)
