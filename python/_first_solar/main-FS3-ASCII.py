@@ -52,6 +52,7 @@ FS3.import_maps(ASCII_PATH, PATH_LOCKIN, channels)
 elements = [ele[0:2] for ele in channels[1:]]
 
 FS3.ug_to_mol(elements)
+# attribute Sample.mol now exists; contains XRF maps as mol/cm2
 
 # i think first ot will be good to look at superpixel application to:
     # identify 'good' and 'bad' areas

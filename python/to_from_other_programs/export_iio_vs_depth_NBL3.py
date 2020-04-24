@@ -100,26 +100,24 @@ iio_beam = beamIn_vs_depth(DEPTH_STEPS, DT)
 # calc XRF reabsorption reference profile
 iio_ele = iio_vs_depth(ele, DEPTH_STEPS, DT) 
 
-# =============================================================================
-# # calc XRF error dure to roughness
-# # specfiy percentage of roughness
-#     # e.g np.linspace(0.05, 0.2, 3) --> 5%, 12%, 20% 
-# deviations = np.linspace(0.05, 0.2, 3) 
-# rough_ups, rough_downs = generate_deviated_thicknesses(deviations)
-# rough_up, rough_down = rough_iios(rough_ups, rough_downs)
-# 
-# ## save x and y for plotting in Origin
-# # convert x axis to um; format arr
-# DEPTH_UM = (DEPTH_STEPS/1000).reshape(-1,1)
-# # format arrays
-# iio_ele = iio_ele.reshape(-1,1)        
-# iio_beam = iio_beam.reshape(-1,1)
-# roughup = rough_up[:,1].reshape(-1,1)
-# roughdown = rough_down[:,1].reshape(-1,1)
-# arr = np.concatenate((DEPTH_UM, iio_beam, iio_ele, roughup, roughdown), axis=1)
-# SYSPATH = r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\for Origin iio_sims\iio_sim_'
-# #np.savetxt(SYSPATH+str(detect_theta) +'deg_ALL'+ ele +'.csv', arr, delimiter=',')
-# =============================================================================
+# calc XRF error dure to roughness
+# specfiy percentage of roughness
+    # e.g np.linspace(0.05, 0.2, 3) --> 5%, 12%, 20% 
+deviations = np.linspace(0.05, 0.2, 3) 
+rough_ups, rough_downs = generate_deviated_thicknesses(deviations)
+rough_up, rough_down = rough_iios(rough_ups, rough_downs)
+
+## save x and y for plotting in Origin
+# convert x axis to um; format arr
+DEPTH_UM = (DEPTH_STEPS/1000).reshape(-1,1)
+# format arrays
+iio_ele = iio_ele.reshape(-1,1)        
+iio_beam = iio_beam.reshape(-1,1)
+roughup = rough_up[:,1].reshape(-1,1)
+roughdown = rough_down[:,1].reshape(-1,1)
+arr = np.concatenate((DEPTH_UM, iio_beam, iio_ele, roughup, roughdown), axis=1)
+SYSPATH = r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\for Origin iio_sims\iio_sim_'
+#np.savetxt(SYSPATH+str(detect_theta) +'deg_ALL'+ ele +'.csv', arr, delimiter=',')
 
 # finding attenuation length (length at which iio decays to 1/e)
 # the initial intensity fraction is that fraction of XRF at the beginning
