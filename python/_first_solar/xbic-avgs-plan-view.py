@@ -9,21 +9,50 @@ the XBIV/C vs Temp data of the FS3 2019_06_2IDD
 see docstring of each sub-script for purpose
 """
 
-"""parsing,reading,andextracting SIFT translation from ImageJ"""
-import xml.etree.ElementTree as ET
-XML_PATH = r'C:\Users\triton\FS3_2019_06_operando\for_imageJ\output'
-XML_FILE = r'\scan325_XBIV.xml'
-XML = XML_PATH + XML_FILE
+"""
+translating shift XBIV images
+scans 321,325,330,337,342
+"""
+import pandas as pd
+from skimage.transform import SimilarityTransform, warp
+import matplotlib.pyplot as plt
+PATH = r'C:\Users\triton\FS3_2019_06_operando'
+FILE = r'\for_ImageJ_output_xml_delx_dely.csv'
+FSTRING = PATH+FILE
+shifts = pd.read_csv(FSTRING)
 
-doc = ET.parse(XML)
-root = doc.getroot()
+image_ref = FS3.scan321[0,:,:-2]
 
-# get xy translation from XML file exported
-# using ImageJ plugin Register Virtual Stack Slices
-print(root[0].attrib['data']) 
+image = FS3.scan325[0,:,:-2]
+tform = SimilarityTransform(translation=(-25, -41))
+image_shift = warp(image, tform)
 
 
-        
+
+fig, (ax0,ax1) = plt.subplots(1,2)
+ax0.imshow(image_ref)
+ax1.imshow(image_shift, vmin=0.005,vmax=0.0060475)
+
+# =============================================================================
+# """
+# parsing,reading,andextracting SIFT translation from ImageJ
+# decided it was better just to do it by hand (only 5 images);
+# opened each xml, entered the delx and dely into
+# 'for_ImageJ_output_xml_delx_dely.csv'
+# """
+# import xml.etree.ElementTree as ET
+# XML_PATH = r'C:\Users\triton\FS3_2019_06_operando\for_imageJ\output'
+# XML_FILE = r'\scan325_XBIV.xml'
+# XML = XML_PATH + XML_FILE
+# 
+# doc = ET.parse(XML)
+# root = doc.getroot()
+# 
+# # get xy translation from XML file exported
+# # using ImageJ plugin Register Virtual Stack Slices
+# print(root[0].attrib['data']) 
+# =============================================================================
+    
 # =============================================================================
 # # note: voltage is primarily affected by temperature, not current
 #     # for DoE report, want to plot voltage histogram of same area from 25-100C
