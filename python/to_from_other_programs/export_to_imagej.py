@@ -50,30 +50,31 @@ export_to_ImgJ_samp_dict(PATH, SAMPLE, SCAN, 'XBIC_maps', CHAN, CMAPS[CHAN], NAM
 import matplotlib.pyplot as plt  
 
 def export_to_ImgJ_planview(path, shaped_data, color, name, 
-                             dpi, resize_fact, save):
+                             scan,dpi, save):
     fig, ax = plt.subplots()
     #plt.figure(frameon=False)
-    fig.set_size_inches(shaped_data.shape[1]/(dpi*resize_fact), shaped_data.shape[0]/(dpi*resize_fact))    
+    x_dim = shaped_data.shape[1] ; y_dim = shaped_data.shape[0]
+    fig.set_size_inches(x_dim/dpi, y_dim/dpi)    
     ax = fig.add_axes([0, 0, 1, 1])
     ax.set_axis_off()
     ax.imshow(shaped_data, cmap=color)
     if save == 1:
-        fname = r'\{ele}.png'.format(ele=name)
+        fname = r'\scan{s}_{ele}.png'.format(s=scan,ele=name)
         directory= path+fname
-        plt.savefig(directory, dpi=(dpi * resize_fact))
+        plt.savefig(directory, dpi=dpi)
     else: pass
     return
 
-PATH = r'Z:\Trumann\XRF images\py_exports_interface\NBL3_1\scan343'
+PATH = r'C:\Users\triton\FS3_2019_06_operando\for_imageJ'
 
-SAMPLE= NBL31; SCAN = 8; CHAN = 3
+SAMPLE= FS3; SCAN = 4; CHAN = 0
 MAP_OUT = SAMPLE.maps[SCAN][CHAN,:,:-2]
-
-NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
+scanstr = str(SAMPLE.scans[SCAN])
+NAMES = ['XBIV', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
 CMAPS = ['inferno', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r', 'Greys_r']
 # export to imagej #
 export_to_ImgJ_planview(PATH, MAP_OUT, CMAPS[CHAN], NAMES[CHAN],
-                         dpi=96, resize_fact=1, save=1)
+                         scan=scanstr,dpi=96, save=1)
 
 #%%
 import matplotlib.pyplot as plt  

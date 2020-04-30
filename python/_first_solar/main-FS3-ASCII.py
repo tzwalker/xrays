@@ -41,7 +41,7 @@ FS3.stack = {'Au':   [19.3, 100E-7],
                  'CdTe': [5.85, 5E-4],
                  'Se': [4.82, 100E-7],
                  'SnO2': [100E-7]}
-FS3.scans = [323,327,332,339,344]
+FS3.scans = [321,325,330,337,342] #[323,327,332,339,344]
 
 
 # channels to import from ASCII
@@ -51,7 +51,7 @@ FS3.import_maps(ASCII_PATH, PATH_LOCKIN, channels)
 
 elements = [ele[0:2] for ele in channels[1:]]
 
-FS3.ug_to_mol(elements)
+#FS3.ug_to_mol(elements)
 # attribute Sample.mol now exists; contains XRF maps as mol/cm2
 
 # =============================================================================
