@@ -12,26 +12,40 @@ see docstring of each sub-script for purpose
 """
 translating shift XBIV images
 scans 321,325,330,337,342
+trimming for delta maps
 """
-import pandas as pd
 from skimage.transform import SimilarityTransform, warp
 import matplotlib.pyplot as plt
-PATH = r'C:\Users\triton\FS3_2019_06_operando'
-FILE = r'\for_ImageJ_output_xml_delx_dely.csv'
-FSTRING = PATH+FILE
-shifts = pd.read_csv(FSTRING)
+import numpy as np
 
-image_ref = FS3.scan321[0,:,:-2]
+img0 = FS3.scan321[0,:,:-2]
+img1 = FS3.scan325[0,:,:-2]
+img2 = FS3.scan330[0,:,:-2]
+img3 = FS3.scan337[0,:,:-2]
+img4 = FS3.scan342[0,:,:-2]
 
-image = FS3.scan325[0,:,:-2]
-tform = SimilarityTransform(translation=(-25, -41))
-image_shift = warp(image, tform)
+shft1 = SimilarityTransform(translation=(-25, -41))
+shft2 = SimilarityTransform(translation=(-62, -45))
+shft3 = SimilarityTransform(translation=(-32, -44))
+shft4 = SimilarityTransform(translation=(-38, -39))
 
+img1_shift = warp(img1, shft1)
+img2_shift = warp(img2, shft2)
+img3_shift = warp(img3, shft3)
+img4_shift = warp(img4, shft4)
 
+# mask according to map with largest offset (img3)
+mask = img2_shift!=0
+mask = mask.astype(int)
 
-fig, (ax0,ax1) = plt.subplots(1,2)
-ax0.imshow(image_ref)
-ax1.imshow(image_shift, vmin=0.005,vmax=0.0060475)
+# multiply values to keep by 1, and values to rid by 0
+img0_only = img0*mask
+img1_only = img1_shift*mask
+img3_only = img3_shift*mask
+img4_only = img4_shift*mask
+
+# subtract maps to get deltas
+
 
 # =============================================================================
 # """
