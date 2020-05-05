@@ -24,17 +24,20 @@ img2 = FS3.scan330[0,:,:-2]
 img3 = FS3.scan337[0,:,:-2]
 img4 = FS3.scan342[0,:,:-2]
 
-shft1 = SimilarityTransform(translation=(-25, -41))
-shft2 = SimilarityTransform(translation=(-62, -45))
-shft3 = SimilarityTransform(translation=(-32, -44))
-shft4 = SimilarityTransform(translation=(-38, -39))
+# translate coordinates read from xml files exportde by ImageJ
+    # Plugins --> Registration --> Register Virtual Stack Slices
+SHFT1 = SimilarityTransform(translation=(-25, -41))
+SHFT2 = SimilarityTransform(translation=(-62, -45))
+SHFT3 = SimilarityTransform(translation=(-32, -44))
+SHFT4 = SimilarityTransform(translation=(-38, -39))
 
-img1_shift = warp(img1, shft1)
-img2_shift = warp(img2, shft2)
-img3_shift = warp(img3, shft3)
-img4_shift = warp(img4, shft4)
+# apply translations
+img1_shift = warp(img1, SHFT1)
+img2_shift = warp(img2, SHFT2)
+img3_shift = warp(img3, SHFT3)
+img4_shift = warp(img4, SHFT4)
 
-# mask according to map with largest offset (img3)
+# mask according to map with largest offset (img2 (scan330))
 mask = img2_shift!=0
 mask = mask.astype(int)
 
@@ -43,8 +46,19 @@ img0_only = img0*mask
 img1_only = img1_shift*mask
 img3_only = img3_shift*mask
 img4_only = img4_shift*mask
+aligned = [img0_only,img1_only,img2_shift,img3_only,img4_only]
 
-# subtract maps to get deltas
+# remove zeros
+aligned_crop = [arr[45:,62:] for arr in aligned]
+
+# save to folder using "export to imageJ.py"
+
+# make delta maps
+DEL0 = aligned_crop[1]-aligned_crop[0]
+DEL1 = aligned_crop[2]-aligned_crop[1]
+DEL2 = aligned_crop[3]-aligned_crop[2]
+DEL3 = aligned_crop[4]-aligned_crop[3]
+deltas = [DEL0,DEL1,DEL2,DEL3]
 
 
 # =============================================================================

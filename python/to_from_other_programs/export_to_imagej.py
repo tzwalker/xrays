@@ -14,6 +14,8 @@ in export_figure_matplotlib:
     :param plt_show: show plot or not
 
 works for plan-view and cross-section data
+
+used for both First Solar and NBL3 images
 """
 
 import matplotlib.pyplot as plt
@@ -122,6 +124,9 @@ def cm2inch(*tupl):
         return tuple(i/inch for i in tupl[0])
     else:
         return tuple(i/inch for i in tupl)
+PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\vector graphics and figures'
+FNAME = r'\NBL31scan8_full.eps'
+PATH_OUT = PATH +FNAME 
 
 fig, axs = plt.subplots(2,1, figsize=(cm2inch(3.5,3.5)))
 plt.tight_layout(pad=-10)
@@ -131,5 +136,26 @@ axs[0].axis('off')
 Cu = dfs[1]#[dfs[1].columns[:-45]]
 axs[1].imshow(Cu, cmap='Greys_r', extent=(0,300,0,100), vmax=3000)
 axs[1].axis('off')
-plt.savefig(r'C:\Users\triton\Dropbox (ASU)\1_NBL3\vector graphics and figures\NBL31scan8_full.eps', format='eps', bbox_inches='tight')
+plt.savefig(PATH_OUT, format='eps', bbox_inches='tight')
 
+#%%
+
+# save FS3 operando XBIV vs. Temp
+# this code will show axes in spyder, but the exported image
+# will have no axes in the image
+# and will ahve the same pixels as the original array
+# i.e. this code WORKS despite what is shown in the spyder plot window
+
+PATH = r'C:\Users\triton\FS3_2019_06_operando\for_imageJ\from_python\aligned_XBIV'
+FNAME = r'\delta4_XBIV.png'
+PATH_OUT = PATH + FNAME
+ARR_OUT = deltas[4]
+DPI=96
+
+fig, ax = plt.subplots()
+XDIM = ARR_OUT.shape[1] ; YDIM = ARR_OUT.shape[0]
+fig.set_size_inches(XDIM/DPI, YDIM/DPI)    
+ax = fig.add_axes([0, 0, 1, 1])
+ax.set_axis_off()
+ax.imshow(ARR_OUT, cmap='Greys_r')
+#plt.savefig(PATH_OUT, dpi=DPI)
