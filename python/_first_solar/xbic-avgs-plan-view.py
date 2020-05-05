@@ -32,23 +32,23 @@ SHFT3 = SimilarityTransform(translation=(-32, -44))
 SHFT4 = SimilarityTransform(translation=(-38, -39))
 
 # apply translations
-img1_shift = warp(img1, SHFT1)
-img2_shift = warp(img2, SHFT2)
-img3_shift = warp(img3, SHFT3)
-img4_shift = warp(img4, SHFT4)
+IMG1_SHIFT = warp(img1, SHFT1)
+IMG2_SHIFT = warp(img2, SHFT2)
+IMG3_SHIFT = warp(img3, SHFT3)
+IMG4_SHIFT = warp(img4, SHFT4)
 
 # mask according to map with largest offset (img2 (scan330))
-mask = img2_shift!=0
+mask = IMG2_SHIFT!=0
 mask = mask.astype(int)
 
 # multiply values to keep by 1, and values to rid by 0
-img0_only = img0*mask
-img1_only = img1_shift*mask
-img3_only = img3_shift*mask
-img4_only = img4_shift*mask
-aligned = [img0_only,img1_only,img2_shift,img3_only,img4_only]
+IMG0_MSK = img0*mask
+IMG1_MSK = IMG1_SHIFT*mask
+IMG3_MSK = IMG3_SHIFT*mask
+IMG4_MSK = IMG4_SHIFT*mask
+aligned = [IMG0_MSK,IMG1_MSK,IMG2_SHIFT,IMG3_MSK,IMG4_MSK]
 
-# remove zeros
+# remove zeros using indices of image with largest offset (img2)
 aligned_crop = [arr[45:,62:] for arr in aligned]
 
 # save to folder using "export to imageJ.py"
@@ -60,6 +60,21 @@ DEL2 = aligned_crop[3]-aligned_crop[2]
 DEL3 = aligned_crop[4]-aligned_crop[3]
 deltas = [DEL0,DEL1,DEL2,DEL3]
 
+# =============================================================================
+# '''used to make same scale delta maps for DoE Q10 presentation'''
+# from mpl_toolkits.axes_grid1 import make_axes_locatable
+# 
+# for array in deltas:
+#     plt.figure()
+#     
+#     fig, ax = plt.subplots()
+#     divider = make_axes_locatable(ax)
+#     cax = divider.append_axes('right', size='5%', pad=0.1)
+#     
+#     im = ax.imshow(array, cmap='Greys', vmin=-0.00280, vmax=0)
+#     ax.axis('off')
+#     fig.colorbar(im, cax=cax, orientation='vertical')
+# =============================================================================
 
 # =============================================================================
 # """

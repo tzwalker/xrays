@@ -10,7 +10,7 @@ each sample object has data related to that sample
 """
 
 from classh5_Sample import Sample
-from class_absorb_correct import get_iios
+from absorb_correct import get_iios
 
 path = 1
 if path == 0:

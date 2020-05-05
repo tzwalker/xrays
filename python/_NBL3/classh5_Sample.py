@@ -79,8 +79,8 @@ class Sample():
             name = 'scan' + str(scannum)
             setattr(self, name, maps_to_array) # useful for plotting & reference
             self.maps.append(maps_to_array) #useful w/ code before 20200402
-    
-	def apply_iios(self, user_scans, iios_array):    
+            
+    def apply_iios(self, user_scans, iios_array):
         # find scan indexes
         scan_idxs = [i for i, s in enumerate(self.scans) if s in user_scans]
         for scan_idx in scan_idxs:
@@ -96,7 +96,7 @@ class Sample():
                 correct_maps[ele_idx,:,:] = correct_map
             self.maps_.append(correct_maps)
     
-	def ug_to_mol(self, elements):
+    def ug_to_mol(self, elements):
         # get the XRF maps from each scan
         XRF_maps = [scan[-1:,:,:-2] for scan in self.maps]
         # get atomic number for xraylib reference
@@ -112,3 +112,4 @@ class Sample():
         # store mol maps; note these do not have electical map!
         self.mol = XRF_mol
         return
+    

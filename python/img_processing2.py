@@ -140,9 +140,10 @@ for samp,name,scan_idx in zip(SAMPS,NAMES,SCAN_IDXS):
             #UG_DATA_STD = np.std(X)
             #STAND_MASKDATA_MEAN = np.mean(Xmask)
             #UG_MASKDATA_MEAN = STAND_MASKDATA_MEAN*UG_DATA_STD + UG_DATA_MEAN
-            UG_MASKDATA_MEAN = np.mean(Xmask)
+            #UG_MASKDATA_MEAN = np.mean(Xmask)
+            UG_MASKDATA_STD = np.std(Xmask)
         #construct averages found in region
-            REGION_LIST.append(UG_MASKDATA_MEAN)
+            REGION_LIST.append(UG_MASKDATA_STD)
         SAMP_LIST.append(REGION_LIST)
     all_list.append(SAMP_LIST)
 

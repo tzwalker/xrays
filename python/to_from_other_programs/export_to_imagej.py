@@ -147,7 +147,7 @@ plt.savefig(PATH_OUT, format='eps', bbox_inches='tight')
 # i.e. this code WORKS despite what is shown in the spyder plot window
 
 PATH = r'C:\Users\triton\FS3_2019_06_operando\for_imageJ\from_python\aligned_XBIV'
-FNAME = r'\delta4_XBIV.png'
+FNAME = r'\delta4_XBIV_actual.png'
 PATH_OUT = PATH + FNAME
 ARR_OUT = deltas[4]
 DPI=96
@@ -157,5 +157,5 @@ XDIM = ARR_OUT.shape[1] ; YDIM = ARR_OUT.shape[0]
 fig.set_size_inches(XDIM/DPI, YDIM/DPI)    
 ax = fig.add_axes([0, 0, 1, 1])
 ax.set_axis_off()
-ax.imshow(ARR_OUT, cmap='Greys_r')
+ax.imshow(ARR_OUT, cmap='Greys')
 #plt.savefig(PATH_OUT, dpi=DPI)
