@@ -95,8 +95,6 @@ import matplotlib.ticker as tkr
 
 import old_ASCII_defs as old_ascii
 
-# this files takes asciis of the scans below and integrates them
-
 def CdTe_ratio(dataframes_as_arrays):
     for df in dataframes_as_arrays:
         Cd_and_Te = pd.concat([df["Cd_L"], df["Te_L"]], axis=1, sort=False)     #isolate and make Cd and Te matrix
