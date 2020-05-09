@@ -60,21 +60,52 @@ DEL2 = aligned_crop[3]-aligned_crop[2]
 DEL3 = aligned_crop[4]-aligned_crop[3]
 deltas = [DEL0,DEL1,DEL2,DEL3]
 
-# =============================================================================
-# '''used to make same scale delta maps for DoE Q10 presentation'''
-# from mpl_toolkits.axes_grid1 import make_axes_locatable
-# 
-# for array in deltas:
-#     plt.figure()
-#     
-#     fig, ax = plt.subplots()
-#     divider = make_axes_locatable(ax)
-#     cax = divider.append_axes('right', size='5%', pad=0.1)
-#     
-#     im = ax.imshow(array, cmap='Greys', vmin=-0.00280, vmax=0)
-#     ax.axis('off')
-#     fig.colorbar(im, cax=cax, orientation='vertical')
-# =============================================================================
+'''used to make same scale delta maps for DoE Q10 presentation'''
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+import matplotlib.offsetbox as offbox
+from matplotlib.lines import Line2D
+
+class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
+    """ size: length of bar in pixels
+        extent : height of bar ends in axes units """
+    def __init__(self, size=1, extent = 0.03, label="", loc=2, ax=None,
+                 pad=0.4, borderpad=0.5, ppad = 0, sep=2, prop=None, 
+                 frameon=True, linekw={}, **kwargs):
+        if not ax:
+            ax = plt.gca()
+        trans = ax.get_xaxis_transform()
+        size_bar = offbox.AuxTransformBox(trans)
+        line = Line2D([0,size],[0,0], **linekw)
+        vline1 = Line2D([0,0],[-extent/2.,extent/2.], **linekw)
+        vline2 = Line2D([size,size],[-extent/2.,extent/2.], **linekw)
+        size_bar.add_artist(line)
+        size_bar.add_artist(vline1)
+        size_bar.add_artist(vline2)
+        txt = offbox.TextArea(label, minimumdescent=False, 
+                              textprops=dict(color="black"))
+        self.vpac = offbox.VPacker(children=[size_bar,txt],  
+                                 align="center", pad=ppad, sep=sep) 
+        offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
+                 borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
+                 **kwargs)
+
+for data in aligned_crop:
+    data1 = 1000*data
+    plt.figure()
+    
+    fig, ax = plt.subplots()
+    im = ax.imshow(data1, cmap='magma', vmax=7.90255, vmin=1.245)
+    ax.axis('off')
+    
+    ob = AnchoredHScaleBar(size=100, label="10 um", loc=4, frameon=False,
+                           pad=0.6,sep=4, 
+                           linekw=dict(color="black"))
+    ax.add_artist(ob)
+    
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad=0.1)
+    fig.colorbar(im, cax=cax, orientation='vertical')
+
 
 # =============================================================================
 # """
@@ -96,10 +127,11 @@ deltas = [DEL0,DEL1,DEL2,DEL3]
 # print(root[0].attrib['data']) 
 # =============================================================================
     
+
 # =============================================================================
+# """export plan-view maps as arrays for histograms in OriginLab"""
 # # note: voltage is primarily affected by temperature, not current
 #     # for DoE report, want to plot voltage histogram of same area from 25-100C
-# """export plan-view maps as arrays for histograms in OriginLab"""
 # import numpy as np
 # 
 # eh_maps = [scan[0,:,:-2] for scan in FS3.maps]
@@ -109,8 +141,8 @@ deltas = [DEL0,DEL1,DEL2,DEL3]
 # path = r'C:\Users\triton\FS3_2019_06_operando'
 # out = path + fname
 # np.savetxt(out, arrs, delimiter=",")
-# 
 # =============================================================================
+
 # =============================================================================
 # """checking normal stats of xbic maps"""
 # #xbic_maxs = [np.max(array[0,:,:-2]) for array in xbicscans]
