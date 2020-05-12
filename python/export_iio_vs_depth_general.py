@@ -14,6 +14,7 @@ def get_upstream_iioIN(layers_before, beam_settings):
         iio = np.exp(- sigma * density * thickness / beam_rad) # layer transmission
         iios.append(iio)
     upstream_iio = np.prod(iios) # cumulative transmission of upstream layers
+    print("incoming beam attenuation @ start of layer: {s}".format(s=str(upstream_iio)))
     return upstream_iio
 
 def eleXRF_energy(ele, energy):
@@ -41,6 +42,7 @@ def get_upstream_iioOUT(layers_before, elements, beam_settings):
         upstream_ele_iio = np.prod(tmp_iios) 
         upstream_iios_out.append(upstream_ele_iio)
     upstream_iios_out = np.array(upstream_iios_out)
+    print("outgoing XRF attenuation of upstream layers: {s}".format(s=str(upstream_iios_out)))
     return upstream_iios_out
 
 def get_char_depth(array, value):
@@ -73,7 +75,9 @@ def get_avg_internal_attn(layer_info, layer, elements, beam_settings, cum_upstrm
         depth_idx_iio_bound = each_sublayer_iios[0] * (1/np.e)
         characteristic_depth = get_char_depth(each_sublayer_iios, depth_idx_iio_bound)
         ele_avg_iio = np.mean(each_sublayer_iios[:characteristic_depth])
-        #print(ele_avg_iio)
+        print("{element} ({energy}keV) attenuation length: {s}nm".format(s=str(characteristic_depth),
+                                                         element=elements[ele_idx],
+                                                         energy=XRF_line))
         ele_avg_iios.append(ele_avg_iio)
     ele_avg_iios = np.array(ele_avg_iios)
     return ele_avg_iios
@@ -84,6 +88,7 @@ def get_iios(beam_settings, elements, STACK, end_layer):
     # check if first layer was chosen
     layer_idx=list(STACK.keys()).index(end_layer)
     if layer_idx != 0:
+        print("layer of interest: {s}".format(s=end_layer))
         # retrieve info of upstream layers
         layers_before = {k:v for idx,(k,v) in enumerate(STACK.items()) if idx < layer_idx}
         # percent incoming beam transmitted to layer
@@ -94,6 +99,7 @@ def get_iios(beam_settings, elements, STACK, end_layer):
         # percent outgoing XRF transmitted
         ele_avg_iios = get_avg_internal_attn(STACK[end_layer], end_layer, elements, 
                                              beam_settings, cumulative_upstream_attenuation)
+        
     else:
         print('you have chosen the first layer of the stack')
         print('this program cannot correct XRF for the first layer')
@@ -103,13 +109,12 @@ def get_iios(beam_settings, elements, STACK, end_layer):
 
 stack = {'Mo':   [10.2, 500E-7], 
                  'ZnTe': [6.34, 375E-7], 
-                 'Cu':   [8.96, 10E-7], 
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
 
-elements = ['Cu', 'Cd_L', 'Te_L', 'Cl']
+elements = ['Cu', 'Cd_L', 'Te_L']
 
 beam_settings = {'beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
 
-iios2019 = get_iios(beam_settings, elements, stack, end_layer='ZnTe')
+iios2019 = get_iios(beam_settings, elements, stack, end_layer='CdTe')
