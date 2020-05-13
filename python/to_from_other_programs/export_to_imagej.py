@@ -18,37 +18,6 @@ works for plan-view and cross-section data
 used for both First Solar and NBL3 images
 """
 
-import matplotlib.pyplot as plt
-import numpy as np  
-
-def export_to_ImgJ_samp_dict(path, sample, scan_idx, shaped_data, ch_idx, color, name, 
-                             dpi, resize_fact, save):
-    plot=sample[shaped_data][scan_idx][ch_idx,:,:-2]
-    fig = plt.figure(frameon=False)
-    fig.set_size_inches(plot.shape[1]/(dpi*resize_fact), plot.shape[0]/(dpi*resize_fact))
-    ax = plt.Axes(fig, [0., 0., 1., 1.])
-    ax.set_axis_off()
-    fig.add_axes(ax)
-    ax.imshow(plot, cmap=color)
-    if save == 1:
-        fname = r'\{samp}_scan{num}_{ele}.png'.format(
-                samp=sample['Name'], 
-                num=str(sample['XBIC_scans'][scan_idx]), 
-                ele=name)
-        directory= path+fname
-        plt.savefig(directory, dpi=(dpi * resize_fact))
-    else: pass
-    return
-
-PATH = r'Z:\Trumann\XRF images\py_exports_bulk\NBL3_3\scan491'
-NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
-CMAPS = ['magma', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r', 'Greys_r']
-SAMPLE= NBL3_3; SCAN = 4; CHAN = 0
-# export to imagej #
-export_to_ImgJ_samp_dict(PATH, SAMPLE, SCAN, 'XBIC_maps', CHAN, CMAPS[CHAN], NAMES[CHAN],
-                         dpi=96, resize_fact=0.5, save=0)
-
-#%%
 import matplotlib.pyplot as plt  
 
 def export_to_ImgJ_planview(path, shaped_data, color, name, 
@@ -67,9 +36,9 @@ def export_to_ImgJ_planview(path, shaped_data, color, name,
     else: pass
     return
 
-PATH = r'C:\Users\triton\FS3_2019_06_operando\for_imageJ'
+PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\for_imagej'
 
-SAMPLE= FS3; SCAN = 4; CHAN = 0
+SAMPLE= NBL33; SCAN = 4; CHAN = 0
 MAP_OUT = SAMPLE.maps[SCAN][CHAN,:,:-2]
 scanstr = str(SAMPLE.scans[SCAN])
 NAMES = ['XBIV', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
@@ -146,10 +115,10 @@ plt.savefig(PATH_OUT, format='eps', bbox_inches='tight')
 # and will ahve the same pixels as the original array
 # i.e. this code WORKS despite what is shown in the spyder plot window
 
-PATH = r'C:\Users\triton\FS3_2019_06_operando\for_imageJ\from_python\aligned_XBIV'
-FNAME = r'\delta4_XBIV_actual.png'
+PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\for_imagej'
+FNAME = r'\NBL33scan263.png'
 PATH_OUT = PATH + FNAME
-ARR_OUT = deltas[4]
+ARR_OUT = NBL33.scan263[0,:,:-2]
 DPI=96
 
 fig, ax = plt.subplots()
@@ -157,5 +126,39 @@ XDIM = ARR_OUT.shape[1] ; YDIM = ARR_OUT.shape[0]
 fig.set_size_inches(XDIM/DPI, YDIM/DPI)    
 ax = fig.add_axes([0, 0, 1, 1])
 ax.set_axis_off()
-ax.imshow(ARR_OUT, cmap='Greys')
-#plt.savefig(PATH_OUT, dpi=DPI)
+ax.imshow(ARR_OUT, cmap='inferno')
+plt.savefig(PATH_OUT, dpi=DPI)
+
+
+
+# =============================================================================
+# import matplotlib.pyplot as plt
+# import numpy as np  
+# 
+# def export_to_ImgJ_samp_dict(path, sample, scan_idx, shaped_data, ch_idx, color, name, 
+#                              dpi, resize_fact, save):
+#     plot=sample[shaped_data][scan_idx][ch_idx,:,:-2]
+#     fig = plt.figure(frameon=False)
+#     fig.set_size_inches(plot.shape[1]/(dpi*resize_fact), plot.shape[0]/(dpi*resize_fact))
+#     ax = plt.Axes(fig, [0., 0., 1., 1.])
+#     ax.set_axis_off()
+#     fig.add_axes(ax)
+#     ax.imshow(plot, cmap=color)
+#     if save == 1:
+#         fname = r'\{samp}_scan{num}_{ele}.png'.format(
+#                 samp=sample['Name'], 
+#                 num=str(sample['XBIC_scans'][scan_idx]), 
+#                 ele=name)
+#         directory= path+fname
+#         plt.savefig(directory, dpi=(dpi * resize_fact))
+#     else: pass
+#     return
+# 
+# PATH = r'Z:\Trumann\XRF images\py_exports_bulk\NBL3_3\scan491'
+# NAMES = ['XBIC', 'Cu', 'Cd', 'Te', 'Mo', 'Zn']
+# CMAPS = ['inferno', 'Oranges_r', 'Blues_r', 'Greens_r', 'Reds_r', 'Greys_r']
+# SAMPLE= NBL3_3; SCAN = 4; CHAN = 0
+# # export to imagej #
+# export_to_ImgJ_samp_dict(PATH, SAMPLE, SCAN, 'XBIC_maps', CHAN, CMAPS[CHAN], NAMES[CHAN],
+#                          dpi=96, resize_fact=0.5, save=0)
+# =============================================================================

@@ -12,7 +12,7 @@ each sample object has data related to that sample
 from classh5_Sample import Sample
 from absorb_correct import get_iios
 
-path = 0
+path = 1
 if path == 0:
     data_path =  r'C:\Users\Trumann\data_NBL3\all_H5s'
 elif path == 1:

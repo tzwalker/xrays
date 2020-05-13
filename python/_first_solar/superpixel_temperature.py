@@ -15,14 +15,14 @@ originally made for XBIC maps of FS3
 HOME_PATH = r'C:\Users\triton\xrays\python'
 import sys
 sys.path.append(HOME_PATH)
-from background_subtraction import background_subtraction as bksb
-from standardize_map import standardize_map as stmap
+from background_subtraction import background_subtraction
+from standardize_map import standardize_map
 #import numpy as np
 from skimage.segmentation import slic, mark_boundaries
 
 img = FS3.scan323[0,:,:-2]
-img1 = stmap(img)
-img2 = bksb(img1,15)
+img1 = standardize_map(img)
+img2 = background_subtraction(img1,15)
 
 edges = slic(img2, n_segments=100, compactness=5000, sigma=1)
 
@@ -45,12 +45,10 @@ plt.imshow(label_rgb)
 
 regions = regionprops(labels)
 # access superpixel data
-
 for edge in np.unique(edges):
    mask = np.zeros(img.shape, dtype='uint8') #make empty mask
-   mask[edges == edge] = True #make binary mask according to selected superpixel
-   superpixel = img[np.where(mask==1)] #get (1d) array of data within superpixel
-   
+   mask[edges == edge] = True # make binary mask according to selected superpixel
+   superpixel = img[np.where(mask==1)] # get (1d) array of data within superpixel
    print()
    
 # what to do once i can get to data in pixels...??? #

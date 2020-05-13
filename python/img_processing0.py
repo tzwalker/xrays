@@ -19,44 +19,14 @@ coding: utf-8
     #scan386 (1) of TS58A
 """
 
-
-from sklearn.cluster import KMeans
 from scipy.ndimage.filters import gaussian_filter
-import matplotlib.pyplot as plt
 from skimage import io, filters, feature
 from skimage.segmentation import slic, mark_boundaries, watershed
-import numpy as np
-# kmeans clustering 5-dimensional image (x,y, R,G,B); see online bookmarks #
-pic = plt.imread('1.jpeg')/255  # dividing by 255 to bring the pixel values between 0 and 1
-print(pic.shape)
-plt.imshow(pic)
-pic_n = pic.reshape(pic.shape[0]*pic.shape[1], pic.shape[2])
-pic_n.shape
-
-kmeans = KMeans(n_clusters=5, random_state=0).fit(pic_n)
-pic2show = kmeans.cluster_centers_[kmeans.labels_]
-cluster_pic = pic2show.reshape(pic.shape[0], pic.shape[1], pic.shape[2])
-plt.imshow(cluster_pic)
-
-#%%
-# simple img processing tests #
-image = TS58A['XBIC_maps'][5][3,:,:-2]
-
-blurred = gaussian_filter(image, sigma=3)
-plt.imshow(image, origin='lower')
-
-edges1 = feature.canny(blurred, sigma=2)
-fig, (ax0,ax1) = plt.subplots(1,2)
-ax0.imshow(blurred)
-ax1.imshow(edges1, cmap=plt.cm.gray)
-
-
-#%%
-# prelim - plot imagej mask on top of gaussian filtered XRF map
-    # used for checking if proper mask was imported
-import matplotlib.pyplot as plt
-import numpy as np
-from scipy.ndimage import gaussian_filter as gfilt
+from sklearn.linear_model import LinearRegression
+import sklearn.preprocessing as sklp
+from matplotlib.colors import colorConverter, LinearSegmentedColormap
+from skimage.filters import sobel
+from scipy import stats
 
 SAMP = NBL3_2; SCAN = 0; CHAN=1; CHECK_MASK=1
 IMG_PATH = r'Z:\Trumann\XRF images\py_exports_interface\{sample}\scan{scan_idx}'.format(sample=SAMP['Name'], scan_idx=SAMP['XBIC_scans'][SCAN])
@@ -69,16 +39,11 @@ CMAPS = ['magma', 'Oranges_r', 'Greens_r', 'Blues_r', 'Reds_r', 'Greys_r']
 # check mask #
 if CHECK_MASK == 1:
     img = SAMP['XBIC_maps'][SCAN][CHAN,:,:-2]
-    img_filt = gfilt(img, sigma=1)
+    img_filt = gaussian_filter(img, sigma=1)
     plt.imshow(img, cmap=CMAPS[CHAN])
     plt.imshow(mask_plot, cmap='cool')
 else: pass
-#%%
-# transformations in python using mask from imagej
-# section also performs linear correlation of the trasnsformed data
-from sklearn.linear_model import LinearRegression
-import sklearn.preprocessing as sklp
-from skimage import io
+
 scaler = sklp.StandardScaler()
 
 PLOT_SWITCH=4
@@ -91,19 +56,22 @@ if PLOT_SWITCH == 0:
 # gaussian filtered, pix-by-pix correlation #
 if PLOT_SWITCH == 1:
     xchan = SAMP['XBIC_maps'][SCAN][XCHAN,:,:-2]; ychan = SAMP['XBIC_maps'][SCAN][YCHAN,:,:-2] 
-    xfilt = gfilt(xchan, sigma=1); yfilt = gfilt(ychan, sigma=1)
+    xfilt = gaussian_filter(xchan, sigma=1)
+    yfilt = gaussian_filter(ychan, sigma=1)
     x = xfilt.ravel().reshape(-1,1); y = yfilt.ravel().reshape(-1,1)
 # gaussian filtered, masked pix-pix correlation #
 if PLOT_SWITCH == 2:
     xchan = SAMP['XBIC_maps'][SCAN][XCHAN,:,:-2]; ychan = SAMP['XBIC_maps'][SCAN][YCHAN,:,:-2] 
-    xfilt = gfilt(xchan, sigma=1); yfilt = gfilt(ychan, sigma=1)
-    xmasked = xfilt[np.where(mask!=0)]; ymasked = yfilt[np.where(mask!=0)]
+    xfilt = gaussian_filter(xchan, sigma=1)
+    yfilt = gaussian_filter(ychan, sigma=1)
+    xmasked = xfilt[np.where(mask!=0)]
+    ymasked = yfilt[np.where(mask!=0)]
     x = xmasked.reshape(-1,1); y = ymasked.reshape(-1,1)
 TXT_PLACE=[0.35*np.max(x), 0.97*np.max(y)]
 # for XBIC vs. XRF comparisons #
 if PLOT_SWITCH==3:
     xchan = SAMP['XBIC_maps'][SCAN][XCHAN,:,:-2]; ychan = SAMP['XBIC_maps'][SCAN][YCHAN,:,:-2] 
-    xfilt = gfilt(xchan, sigma=1)
+    xfilt = gaussian_filter(xchan, sigma=1)
     xmasked = xfilt[np.where(mask!=0)]; ymasked = yfilt[np.where(mask!=0)]
     xshaped = xmasked.reshape(-1,1); yshaped = ymasked.reshape(-1,1)
     scaler = sklp.StandardScaler()
@@ -154,18 +122,6 @@ y_hist.hist(y, 40, orientation='horizontal', color='gray')
 TXT_PLACE = [0,2]
 main_ax.text(TXT_PLACE[0], TXT_PLACE[1], "m={0:.3g}, b={1:.3g}".format(model.coef_[0][0],model.intercept_[0]))
 
-"""
-tzwalker
-Sat Nov  2 18:31:29 2019
-coding: utf-8
-"""
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.colors import colorConverter, LinearSegmentedColormap
-from skimage.filters import sobel
-from scipy.ndimage import gaussian_filter as gaussf
-from scipy import stats
-
 def complicated_overlay_plots(index1, index2, sig, switch):
     ele_1 = samp['elXBIC'][scan][index1][:,:-2]
     ele_2 = samp['elXBIC'][scan][index2][:,:-2]
@@ -176,8 +132,8 @@ def complicated_overlay_plots(index1, index2, sig, switch):
         y = map_key[1].ravel() ; ylab = 'raw ' + elements[index2]
     elif switch=='just_gauss':
 		# gaussian filter of original data
-		cu_gauss = gaussf(ele_1, sigma=sig)                 # maintains shape
-		zn_gauss = gaussf(ele_2, sigma=sig)
+		cu_gauss = gaussian_filter(ele_1, sigma=sig)   # maintains shape
+		zn_gauss = gaussian_filter(ele_2, sigma=sig)
         map_key = [cu_gauss, zn_gauss]
         x = map_key[0].ravel() ; xlab = elements[index1] + ' gauss filt sig={s}'.format(s=str(sig))
         y = map_key[1].ravel() ; ylab = elements[index2] + ' gauss filt sig={s}'.format(s=str(sig))
