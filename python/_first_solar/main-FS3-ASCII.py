@@ -29,9 +29,10 @@ XBIV
 """
 
 from class_ascii_Sample import Sample
-
-ASCII_PATH = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL'
-PATH_LOCKIN = r'C:\Users\triton\FS3_2019_06_operando\FS_plan_electrical.csv'
+#r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL'
+#r'C:\Users\triton\FS3_2019_06_operando\FS_plan_electrical.csv'
+ASCII_PATH =  r'C:\Users\Trumann\data_First Solar\FS3_2019_06_2IDD\ASCIIS_TW_BL' 
+PATH_LOCKIN = r'C:\Users\Trumann\data_First Solar\FS3_2019_06_2IDD\ASCIIS_TW_BL\FS_plan_electrical.csv'
 
 # create sample objects
 FS3 = Sample()

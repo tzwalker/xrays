@@ -30,7 +30,7 @@ NBL31.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-NBL31.scans = [335,336,337, 338,339,340, 341,342,343,344, 517,519]
+NBL31.scans = [335,336,337, 338,339,340, 341,342,343,344]#, 517,519]
 
 NBL32.stack = {'Mo':   [10.2, 500E-7], 
                  'ZnTe': [6.34, 375E-7], 
@@ -38,7 +38,7 @@ NBL32.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-NBL32.scans =  [416,417,418, 419,420,421, 422,423,424,426, 538,550,575,551]
+NBL32.scans =  [416,417,418, 419,420,421, 422,423,424,426]#, 538,550,575,551]
 
 NBL33.stack = {'Mo':   [10.2, 500E-7], 
                  'ZnTe': [6.34, 375E-7], 
@@ -46,7 +46,7 @@ NBL33.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-NBL33.scans =  [258,259,260, 261,262,263, 264,265,266,267, 491,472,475]
+NBL33.scans =  [258,259,260, 261,262,263, 264,265,266,267]#, 491,472,475]
 
 TS58A.stack = {'Mo':   [10.2, 500E-7], 
                  'ZnTe': [6.34, 375E-7], 
@@ -54,7 +54,7 @@ TS58A.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-TS58A.scans =  [378,379,380, 382,383,384, 385,386,387,388,  439,408,427,440]
+TS58A.scans =  [378,379,380, 382,383,384, 385,386,387,388]#,  439,408,427,440]
 
 # import h5 data for each sample
 NBL31.import_scan_data(data_path)
@@ -75,7 +75,7 @@ TS58A.get_lockin(data_path+'/a_class_electrical.csv')
 # arg2: element maps to extract
 # arg3: scaler channel to normalize elemental signal
 # arg4: use 'fit' on fitted h5s, or 'roi' for unfitted h5s
-elements = ['Cu', 'Cd_L', 'Te_L', 'Cl']
+elements = ['Cu', 'Cd_L', 'Te_L', 'Zn']
 NBL31.import_maps('ds_ic', elements, 'us_ic', 'fit')
 NBL32.import_maps('ds_ic', elements, 'us_ic', 'fit')
 NBL33.import_maps('ds_ic', elements, 'us_ic', 'fit')
@@ -123,4 +123,14 @@ scans_for_correction = [439,427,408,440]
 # scan accessed by index in "scans_for_correction", NOT original scan list
 # e.g. "NBL32.maps_[4]" --> scan 419, "NBL32.maps[4]" --> scan 538)
 
+'''i want to see how the Zn channel might be enhanced'''
 
+from background_subtraction import background_subtraction
+from standardize_map import standardize_map
+from scipy.ndimage import gaussian_filter
+
+a = NBL33.scan264[4,:,:-2].copy()
+
+b = background_subtraction(a, 10)
+
+c = gaussian_filter(b,sigma=1)

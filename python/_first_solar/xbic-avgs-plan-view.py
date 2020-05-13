@@ -60,7 +60,7 @@ DEL2 = aligned_crop[3]-aligned_crop[2]
 DEL3 = aligned_crop[4]-aligned_crop[3]
 deltas = [DEL0,DEL1,DEL2,DEL3]
 
-'''used to make same scale delta maps for DoE Q10 presentation'''
+'''used to make same scale maps for DoE Q10 presentation'''
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.offsetbox as offbox
 from matplotlib.lines import Line2D
@@ -82,7 +82,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         size_bar.add_artist(vline1)
         size_bar.add_artist(vline2)
         txt = offbox.TextArea(label, minimumdescent=False, 
-                              textprops=dict(color="black"))
+                              textprops=dict(color="white"))
         self.vpac = offbox.VPacker(children=[size_bar,txt],  
                                  align="center", pad=ppad, sep=sep) 
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
@@ -90,21 +90,21 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  **kwargs)
 
 for data in aligned_crop:
-    data1 = 1000*data
+    data1 = data.copy()
     plt.figure()
     
     fig, ax = plt.subplots()
-    im = ax.imshow(data1, cmap='magma', vmax=7.90255, vmin=1.245)
+    im = ax.imshow(data1, cmap='inferno', vmax=0.007906, vmin=0.001245)
     ax.axis('off')
     
     ob = AnchoredHScaleBar(size=100, label="10 um", loc=4, frameon=False,
                            pad=0.6,sep=4, 
-                           linekw=dict(color="black"))
+                           linekw=dict(color="white"))
     ax.add_artist(ob)
     
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes('right', size='5%', pad=0.1)
-    fig.colorbar(im, cax=cax, orientation='vertical')
+    #divider = make_axes_locatable(ax)
+    #cax = divider.append_axes('right', size='5%', pad=0.1)
+    #fig.colorbar(im, cax=cax, orientation='vertical')
 
 
 # =============================================================================

@@ -101,3 +101,45 @@ B = np.std(Y)
 C = np.mean(Ymask)
 data_in_mask_avg_in_ug = C*B + A
 print(data_in_mask_avg_in_ug)
+#%%
+'''this was to see what the histograms of the Cu maps looked like
+because it wasn't clear if they were normally distributed... in which case
+the whole standardization procedure sort of fails...'''
+Cu_NBL31 = [MAP[1,:,:-2] for MAP in NBL31.maps[6:10]]
+Cu_NBL32 = [MAP[1,:,:-2] for MAP in NBL32.maps[6:10]]
+Cu_NBL33 = [MAP[1,:,:-2] for MAP in NBL33.maps[6:10]]
+Cu_TS58A = [MAP[1,:,:-2] for MAP in TS58A.maps[6:10]]
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.ndimage import gaussian_filter
+# =============================================================================
+# colors = ['red', 'blue', 'green', 'grey']
+# for idx, Cu_map in enumerate(Cu_NBL32):
+#     array = Cu_map.ravel()
+#     plt.hist(array, color = colors[idx], alpha=0.25, bins=36)
+#     #plt.xlim([0,10])
+# =============================================================================
+
+# =============================================================================
+# copy = [array.copy() for array in Cu_NBL32]
+# img_gaus = [gaussian_filter(img, sigma=1) for img in copy]
+# for array in copy:
+#     # ZnTe|CdTe interface threshold
+#     array[array>0.832832] = np.nan
+#     array[array<0.306381771] = np.nan
+# 
+#     plt.figure()
+#     plt.imshow(array)
+# =============================================================================
+
+copy = [array.copy() for array in Cu_NBL33]
+img_gaus = [gaussian_filter(img, sigma=1) for img in copy]
+for array in copy:
+    # ZnTe|CdTe interface threshold
+    array[array>3.331328] = np.nan
+    array[array<1.225527083] = np.nan
+
+    plt.figure()
+    plt.imshow(array)
