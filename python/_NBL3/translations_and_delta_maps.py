@@ -24,8 +24,6 @@ obtain a proper shift in the numpy array:
 """
 
 from skimage.transform import SimilarityTransform, warp
-import matplotlib.pyplot as plt
-import numpy as np
 
 def translate_and_crop(img0, img1, xyshift):
     '''img0 is the reference, img2 will be translated'''
@@ -60,22 +58,55 @@ def translate_and_crop(img0, img1, xyshift):
         img1_cln = shiftd_img[-y: , -x:]
     return img0_cln, img1_cln
 
-img0 = NBL33.scan263[0,:,:-2]
-img1 = NBL33.scan266[0,:,:-2]
-xyshift = (-9, 1)
+# =============================================================================
+# img0 = TS58A.scan383[0,:,:-2]
+# img1 = TS58A.scan379[0,:,:-2]
+# # these values should be the negative of whatever is in the ImageJ xml file
+# xyshift = (22, 14)
+# 
+# X, Y = translate_and_crop(img0,img1,xyshift)
+# =============================================================================
 
-X, Y = translate_and_crop(img0,img1,xyshift)
+# save shifted images #
+import numpy as np
+samples = [NBL31.maps[0:6], NBL32.maps, NBL33.maps, TS58A.maps]
+
+scans = [(338,335), (339,336), (340,337),
+         (419,422), (420,423), (421,424),
+         (261,258), (262,259), (263,260),
+         (382,378), (383,379), (384,380)]
+
+_idxs = [(3,0), (4,1), (5,2),
+         (3,0), (4,1), (5,2),
+         (3,0), (4,1), (5,2),
+         (3,0), (4,1), (5,2)]
+
+shifts = [(12,8), (12,9), (13,10),
+          (6,-2), (-14,-9), (-11,-7),
+          (8,6), (10,-2), (10,-1),
+          (18,12),(22,13),(22,14)]
+
+PATH_ALIGNED = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\Aligned XBIC_XBIV csvs'
+samples_str = ['NBL31']*3 + ['NBL32']*3 + ['NBL33']*3 + ['TS58A']*3
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+for map_set, idx_pair, shift_pair, samp_str,scan_pair in zip(samples,_idxs,shifts,samples_str,scans):
+    xbiv_idx = idx_pair[0]
+    xbic_idx = idx_pair[1]
+    
+    img0 = map_set[xbiv_idx][0,:,:-2]
+    img1 = map_set[xbic_idx][0,:,:-2]
+    
+    
+    X, Y = translate_and_crop(img0,img1,shift_pair)
+    
+    xbiv_str = 'scan' + str(scan_pair[0])
+    xbic_str = 'scan' + str(scan_pair[1])
+    xbiv_fname = xbiv_str + '_XBIV'
+    fname = r'\{s}_{x}.csv'.format(s=samp_str,x=xbiv_fname)
+    np.savetxt(PATH_ALIGNED + fname, X, delimiter=",")
+    
+    xbic_fname = xbic_str + '_XBIC'
+    fname = r'\{s}_{x}.csv'.format(s=samp_str,x=xbic_fname)
+    np.savetxt(PATH_ALIGNED + fname, Y, delimiter=",")
+    
