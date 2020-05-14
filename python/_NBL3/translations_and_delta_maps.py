@@ -6,66 +6,68 @@ Wed May 13 15:00:27 2020
 
 translating shift in XBIC and XBIV images taken for NBL3 set
 
-enter xy_shift from ImageJ xml file output
-translate coordinates read from xml files exported by ImageJ
-    Plugins --> Registration --> Register Virtual Stack Slices
+enter xy_shift from ImageJ xml file output 
+Plugins --> Registration --> Register Virtual Stack Slices:
     the shift in x and y are found on the first line w/ "iict_transform data" 
-    round to nearest integer
-    take the negative of each value
-
+    these steps are required for SimilarityTransform to properly translate
+        -round to nearest integer
+        -take the negative of each value
+this operation is undone later to properly crop the aligned images
+the boolean checks were made according to 
+this mapping of the tuple sign to the shift in the numpy array
+the x and y coordinate need to reverse their sign and order to
+obtain a proper shift in the numpy array:
+(+x, +y) --> [:-y , :-x] 
+(+x, -y) --> [+y: , :-x]
+(-x, +y) --> [:-y , +x:] # tested
+(-x, -y) --> [+y: , +x:] # tested
 """
 
 from skimage.transform import SimilarityTransform, warp
 import matplotlib.pyplot as plt
 import numpy as np
 
-def translate_and_crop(img0, img1, xy_tuple):
+def translate_and_crop(img0, img1, xyshift):
     '''img0 is the reference, img2 will be translated'''
-    shift = SimilarityTransform(translation=xy_move_tuple)
+    shift = SimilarityTransform(translation=xyshift)
     # apply shift
-    shifted_image = warp(img1, shift)
+    shiftd_img = warp(img1, shift)
     # mask according to offset
-    mask = shifted_image=0
+    mask = shiftd_img!=0
     mask = mask.astype(int)
     # apply mask to reference img0
     masked_img = img0*mask
-    # crop the two images according to shift
-    if xy_tuple[0] < 0:
-        x_shift = -xy_tuple[0]
-    
-    if xy_tuple[1] < 0:
-        y_shift = -xy_tuple[1]
-    
-    img0_cln = img0[x_shift:,x_shift:]
+    # set up cropping
+    x = xyshift[0]
+    y = xyshift[1]
+    # get boolean tuple pair
+    x_bool = x >= 0
+    y_bool = y >= 0
+    xy_bool = (x_bool, y_bool)
+    # check and assign proper cropping indices
+    if xy_bool == (True,True): 
+        img0_cln = masked_img[:-y , :-x]
+        img1_cln = shiftd_img[:-y , :-x]
+    elif xy_bool == (True,False): 
+        img0_cln = masked_img[-y: , :-x]        
+        img1_cln = shiftd_img[-y: , :-x]
+        
+    elif xy_bool == (False,True): 
+        img0_cln = masked_img[:-y , -x:]
+        img1_cln = shiftd_img[:-y , -x:]
+    elif xy_bool == (False,False): 
+        img0_cln = masked_img[-y: , -x:]
+        img1_cln = shiftd_img[-y: , -x:]
     return img0_cln, img1_cln
 
 img0 = NBL33.scan263[0,:,:-2]
 img1 = NBL33.scan266[0,:,:-2]
+xyshift = (-9, 1)
+
+X, Y = translate_and_crop(img0,img1,xyshift)
 
 
-xy_shift = (-9, 1)
 
-# multiply values to keep by 1, and values to rid by 0
-
-aligned=[IMG0_MSK, IMG1_SHIFT]
-
-# remove zeros using indices of image with largest offset
-# this is tricky, need to pay attention to how the array
-# is indexed and what the transform does to the array
-aligned_crop = [arr[:-1,9:] for arr in aligned]
-
-X = aligned_crop[1] # xbic
-Y = aligned_crop[0] # xbiv
-
-
-# tuple sign mapped to numpy array shift; incorporate this into definition above
-(+x, +y) --> [:-y , :-x]
-
-(-x, -y) --> [+y: , +x:]
-
-(-x, +y) --> [:-y , +x:]
-
-(+x, -y) --> [+y: , :-x]
 
 
 
