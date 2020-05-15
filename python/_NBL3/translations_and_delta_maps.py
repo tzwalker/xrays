@@ -24,7 +24,22 @@ obtain a proper shift in the numpy array:
 
 this file was used in conjunction with "XBIC-XBIV-sctter-hex-fit.py"
 in that file the linear regressions of the aligned images were found
+# save shifted images #
 
+samples = [NBL31.maps,NBL31.maps,NBL31.maps,
+           NBL32.maps,NBL32.maps,NBL32.maps,
+           NBL33.maps,NBL33.maps,NBL33.maps,
+           TS58A.maps,TS58A.maps,TS58A.maps]
+
+scans = [(338,335), (339,336), (340,337),
+         (419,422), (420,423), (421,424),
+         (261,258), (262,259), (263,260),
+         (382,378), (383,379), (384,380)]
+
+shifts = [(12,8), (12,9), (13,10),
+          (6,-2), (-14,-9), (-11,-7),
+          (8,-6), (10,-2), (10,-1),
+          (18,12),(22,13),(22,14)]
 """
 
 from skimage.transform import SimilarityTransform, warp
@@ -66,11 +81,11 @@ import numpy as np
 
 PATH_ALIGNED = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\Aligned XBIC_XBIV csvs'
 
-scans = ['scan384', 'scan380']
-img0 = getattr(TS58A, scans[0])[0,:,:-2]
-img1 = getattr(TS58A, scans[1])[0,:,:-2]
+scans = ['scan335', 'scan341']
+img0 = getattr(NBL31, scans[0])[0,:,:-2]
+img1 = getattr(NBL31, scans[1])[0,:,:-2]
 # these values should be the negative of whatever is in the ImageJ xml file
-xyshift = (22, 14)
+xyshift = (-2, -13)
 
 X, Y = translate_and_crop(img0,img1,xyshift)
 plt.figure()
@@ -78,28 +93,13 @@ plt.imshow(X)
 plt.figure()
 plt.imshow(Y)
 
-OUT = PATH_ALIGNED + r'\TS58A_{s}_XBIV.csv'.format(s=scans[0])
-np.savetxt(OUT, X, delimiter=',')
+# =============================================================================
+# OUT = PATH_ALIGNED + r'\NBL31_{s}_XBIV.csv'.format(s=scans[0])
+# np.savetxt(OUT, X, delimiter=',')
+# =============================================================================
 
-OUT = PATH_ALIGNED + r'\TS58A_{s}_XBIC.csv'.format(s=scans[1])
-np.savetxt(OUT, Y, delimiter=',')
-#%%
-# save shifted images #
-
-samples = [NBL31.maps,NBL31.maps,NBL31.maps,
-           NBL32.maps,NBL32.maps,NBL32.maps,
-           NBL33.maps,NBL33.maps,NBL33.maps,
-           TS58A.maps,TS58A.maps,TS58A.maps]
-
-scans = [(338,335), (339,336), (340,337),
-         (419,422), (420,423), (421,424),
-         (261,258), (262,259), (263,260),
-         (382,378), (383,379), (384,380)]
-
-shifts = [(12,8), (12,9), (13,10),
-          (6,-2), (-14,-9), (-11,-7),
-          (8,-6), (10,-2), (10,-1),
-          (18,12),(22,13),(22,14)]
+OUT = PATH_ALIGNED + r'\NBL31_{s}_XRF.csv'.format(s=scans[1])
+#np.savetxt(OUT, Y, delimiter=',')
 
 #%%
 # check if saved text files were aligned
@@ -107,10 +107,65 @@ shifts = [(12,8), (12,9), (13,10),
 # not sure why, but after this the translate function just stops working...
 # may have to do it manually...
 import pandas as pd
+import numpy as np
 
-xbiv = pd.read_csv(PATH_ALIGNED + r'\TS58A_scan382_XBIV.csv', header=None)
-xbic = pd.read_csv(PATH_ALIGNED + r'\TS58A_scan378_XBIC.csv', header=None)
-plt.figure()
-plt.imshow(xbiv)
-plt.figure()
-plt.imshow(xbic)
+PATH_ALIGNED = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\Aligned XBIC_XBIV csvs'
+img_aligned = pd.read_csv(PATH_ALIGNED + r'\NBL31_scan335_XBIC.csv', header=None)
+
+PATH_IMG = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\for_imagej\NBL31'
+FNAME = r'\scan337_aligned.txt'
+PATH_OUT = PATH_IMG+FNAME
+#np.savetxt(PATH_OUT, img_aligned)
+
+#%%
+'''
+need to take approach similar to that of FS3 if i want to align more than
+two maps at a time; which is the case for XBIC_XBIV_XRF registration
+
+focusing on NBL31 as that electrical response may be more closely related
+to the XRF response; collection in this sample is presumed to be 
+around the ZnTe-CdTe interface, and our XRF probes around this interface with
+some certainty
+'''
+from skimage.transform import SimilarityTransform, warp
+import matplotlib.pyplot as plt
+import numpy as np
+
+img0 = NBL31.scan338[0,:,:-2]
+img1 = NBL31.scan335[0,:,:-2]
+img2 = NBL31.scan341[0,:,:-2]
+
+# translate coordinates read from xml files exportde by ImageJ
+    # Plugins --> Registration --> Register Virtual Stack Slices
+SHFT1 = SimilarityTransform(translation=(12, 8))
+SHFT2 = SimilarityTransform(translation=(2, 12))
+
+
+# apply translations
+IMG1_SHIFT = warp(img1, SHFT1)
+IMG2_SHIFT = warp(img2, SHFT2)
+IMG3_SHIFT = warp(img3, SHFT3)
+IMG4_SHIFT = warp(img4, SHFT4)
+
+# mask according to map with largest offset (img2 (scan330))
+mask = IMG2_SHIFT!=0
+mask = mask.astype(int)
+
+# multiply values to keep by 1, and values to rid by 0
+IMG0_MSK = img0*mask
+IMG1_MSK = IMG1_SHIFT*mask
+IMG3_MSK = IMG3_SHIFT*mask
+IMG4_MSK = IMG4_SHIFT*mask
+aligned = [IMG0_MSK,IMG1_MSK,IMG2_SHIFT,IMG3_MSK,IMG4_MSK]
+
+# remove zeros using indices of image with largest offset (img2)
+aligned_crop = [arr[45:,62:] for arr in aligned]
+
+# save to folder using "export to imageJ.py"
+
+# make delta maps
+DEL0 = aligned_crop[1]-aligned_crop[0]
+DEL1 = aligned_crop[2]-aligned_crop[1]
+DEL2 = aligned_crop[3]-aligned_crop[2]
+DEL3 = aligned_crop[4]-aligned_crop[3]
+deltas = [DEL0,DEL1,DEL2,DEL3]

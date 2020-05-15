@@ -106,16 +106,17 @@ used for both First Solar and NBL3 images
 # =============================================================================
 
 import numpy as np
+import matplotlib.pyplot as plt
 # save FS3 operando XBIV vs. Temp
 # this code will show axes in spyder, but the exported image
 # will have no axes in the image
 # and will ahve the same pixels as the original array
 # i.e. this code WORKS despite what is shown in the spyder plot window
-
-PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\for_imagej\TS58A'
-FNAME = r'\scan383_XBIV.txt'
+SCAN = 'scan338'
+PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\for_imagej\NBL31'
+FNAME = r'\{s}_XBIC.txt'.format(s=SCAN)
 PATH_OUT = PATH + FNAME
-ARR_OUT = TS58A.scan383[0,:,:-2]
+ARR_OUT = getattr(NBL31,SCAN)[0,:,:-2]
 DPI=96
 
 fig, ax = plt.subplots()
