@@ -21,6 +21,10 @@ obtain a proper shift in the numpy array:
 (+x, -y) --> [+y: , :-x]
 (-x, +y) --> [:-y , +x:] # tested
 (-x, -y) --> [+y: , +x:] # tested
+
+this file was used in conjunction with "XBIC-XBIV-sctter-hex-fit.py"
+in that file the linear regressions of the aligned images were found
+
 """
 
 from skimage.transform import SimilarityTransform, warp
@@ -58,55 +62,55 @@ def translate_and_crop(img0, img1, xyshift):
         img1_cln = shiftd_img[-y: , -x:]
     return img0_cln, img1_cln
 
-# =============================================================================
-# img0 = TS58A.scan383[0,:,:-2]
-# img1 = TS58A.scan379[0,:,:-2]
-# # these values should be the negative of whatever is in the ImageJ xml file
-# xyshift = (22, 14)
-# 
-# X, Y = translate_and_crop(img0,img1,xyshift)
-# =============================================================================
-
-# save shifted images #
 import numpy as np
-samples = [NBL31.maps[0:6], NBL32.maps, NBL33.maps, TS58A.maps]
+
+PATH_ALIGNED = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\Aligned XBIC_XBIV csvs'
+
+scans = ['scan384', 'scan380']
+img0 = getattr(TS58A, scans[0])[0,:,:-2]
+img1 = getattr(TS58A, scans[1])[0,:,:-2]
+# these values should be the negative of whatever is in the ImageJ xml file
+xyshift = (22, 14)
+
+X, Y = translate_and_crop(img0,img1,xyshift)
+plt.figure()
+plt.imshow(X)
+plt.figure()
+plt.imshow(Y)
+
+OUT = PATH_ALIGNED + r'\TS58A_{s}_XBIV.csv'.format(s=scans[0])
+np.savetxt(OUT, X, delimiter=',')
+
+OUT = PATH_ALIGNED + r'\TS58A_{s}_XBIC.csv'.format(s=scans[1])
+np.savetxt(OUT, Y, delimiter=',')
+#%%
+# save shifted images #
+
+samples = [NBL31.maps,NBL31.maps,NBL31.maps,
+           NBL32.maps,NBL32.maps,NBL32.maps,
+           NBL33.maps,NBL33.maps,NBL33.maps,
+           TS58A.maps,TS58A.maps,TS58A.maps]
 
 scans = [(338,335), (339,336), (340,337),
          (419,422), (420,423), (421,424),
          (261,258), (262,259), (263,260),
          (382,378), (383,379), (384,380)]
 
-_idxs = [(3,0), (4,1), (5,2),
-         (3,0), (4,1), (5,2),
-         (3,0), (4,1), (5,2),
-         (3,0), (4,1), (5,2)]
-
 shifts = [(12,8), (12,9), (13,10),
           (6,-2), (-14,-9), (-11,-7),
-          (8,6), (10,-2), (10,-1),
+          (8,-6), (10,-2), (10,-1),
           (18,12),(22,13),(22,14)]
 
-PATH_ALIGNED = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\Aligned XBIC_XBIV csvs'
-samples_str = ['NBL31']*3 + ['NBL32']*3 + ['NBL33']*3 + ['TS58A']*3
+#%%
+# check if saved text files were aligned
+# this only seems to work up to the end of NBL31.maps
+# not sure why, but after this the translate function just stops working...
+# may have to do it manually...
+import pandas as pd
 
-
-for map_set, idx_pair, shift_pair, samp_str,scan_pair in zip(samples,_idxs,shifts,samples_str,scans):
-    xbiv_idx = idx_pair[0]
-    xbic_idx = idx_pair[1]
-    
-    img0 = map_set[xbiv_idx][0,:,:-2]
-    img1 = map_set[xbic_idx][0,:,:-2]
-    
-    
-    X, Y = translate_and_crop(img0,img1,shift_pair)
-    
-    xbiv_str = 'scan' + str(scan_pair[0])
-    xbic_str = 'scan' + str(scan_pair[1])
-    xbiv_fname = xbiv_str + '_XBIV'
-    fname = r'\{s}_{x}.csv'.format(s=samp_str,x=xbiv_fname)
-    np.savetxt(PATH_ALIGNED + fname, X, delimiter=",")
-    
-    xbic_fname = xbic_str + '_XBIC'
-    fname = r'\{s}_{x}.csv'.format(s=samp_str,x=xbic_fname)
-    np.savetxt(PATH_ALIGNED + fname, Y, delimiter=",")
-    
+xbiv = pd.read_csv(PATH_ALIGNED + r'\TS58A_scan382_XBIV.csv', header=None)
+xbic = pd.read_csv(PATH_ALIGNED + r'\TS58A_scan378_XBIC.csv', header=None)
+plt.figure()
+plt.imshow(xbiv)
+plt.figure()
+plt.imshow(xbic)
