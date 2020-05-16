@@ -102,9 +102,11 @@ C = np.mean(Ymask)
 data_in_mask_avg_in_ug = C*B + A
 print(data_in_mask_avg_in_ug)
 #%%
-'''this was to see what the histograms of the Cu maps looked like
+'''
+this was to see what the histograms of the Cu maps looked like
 because it wasn't clear if they were normally distributed... in which case
-the whole standardization procedure sort of fails...'''
+the whole standardization procedure sort of fails...
+'''
 Cu_NBL31 = [MAP[1,:,:-2] for MAP in NBL31.maps[6:10]]
 Cu_NBL32 = [MAP[1,:,:-2] for MAP in NBL32.maps[6:10]]
 Cu_NBL33 = [MAP[1,:,:-2] for MAP in NBL33.maps[6:10]]
