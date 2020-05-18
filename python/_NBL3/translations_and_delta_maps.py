@@ -79,13 +79,11 @@ def translate_and_crop(img0, img1, xyshift):
 
 import numpy as np
 
-PATH_ALIGNED = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\Aligned XBIC_XBIV csvs'
-
-scans = ['scan335', 'scan341']
-img0 = getattr(NBL31, scans[0])[0,:,:-2]
-img1 = getattr(NBL31, scans[1])[0,:,:-2]
+scans = ['scan419', 'scan416']
+img0 = getattr(NBL32, scans[0])[0,:,:-2]
+img1 = getattr(NBL32, scans[1])[0,:,:-2]
 # these values should be the negative of whatever is in the ImageJ xml file
-xyshift = (-2, -13)
+xyshift = (19, 6)
 
 X, Y = translate_and_crop(img0,img1,xyshift)
 plt.figure()
@@ -93,29 +91,40 @@ plt.imshow(X)
 plt.figure()
 plt.imshow(Y)
 
-# =============================================================================
-# OUT = PATH_ALIGNED + r'\NBL31_{s}_XBIV.csv'.format(s=scans[0])
-# np.savetxt(OUT, X, delimiter=',')
-# =============================================================================
-
-OUT = PATH_ALIGNED + r'\NBL31_{s}_XRF.csv'.format(s=scans[1])
+'''to save aligned images'''
+PATH_ALIGNED = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\Aligned XBIC_XBIV csvs'
+OUT = PATH_ALIGNED + r'\NBL32_{s}_XBIC.csv'.format(s=scans[1])
+np.savetxt(OUT, Y, delimiter=',')
+#OUT = PATH_ALIGNED + r'\NBL32_{s}_XBIC.csv'.format(s=scans[1])
 #np.savetxt(OUT, Y, delimiter=',')
 
+
+
 #%%
-# check if saved text files were aligned
-# this only seems to work up to the end of NBL31.maps
-# not sure why, but after this the translate function just stops working...
-# may have to do it manually...
+'''import aligned images, save them as txt for imageJ'''
 import pandas as pd
 import numpy as np
 
 PATH_ALIGNED = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\Aligned XBIC_XBIV csvs'
-img_aligned = pd.read_csv(PATH_ALIGNED + r'\NBL31_scan335_XBIC.csv', header=None)
+img_aligned = pd.read_csv(PATH_ALIGNED + r'\NBL32_scan416_XBIC.csv', header=None)
+img_aligned1 = pd.read_csv(PATH_ALIGNED + r'\NBL32_scan419_XBIV.csv', header=None)
+img_aligned2 = pd.read_csv(PATH_ALIGNED + r'\NBL32_scan422_XRF.csv', header=None)
 
-PATH_IMG = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\for_imagej\NBL31'
-FNAME = r'\scan337_aligned.txt'
-PATH_OUT = PATH_IMG+FNAME
-#np.savetxt(PATH_OUT, img_aligned)
+a = np.array(img_aligned) # 95x80
+b = np.array(img_aligned1) # 99x93
+c = np.array(img_aligned2) #99x93
+
+# to align b (or c) to a: b[:96,:81]
+# all translations were done with reference to the XBIV image (e.g. a)
+# this reference can be used to find further translations of future images
+
+# =============================================================================
+# PATH_IMG = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\for_imagej\NBL32'
+# FNAME = r'\scan419_aligned.txt'
+# PATH_OUT = PATH_IMG+FNAME
+# np.savetxt(PATH_OUT, img_aligned)
+# =============================================================================
+
 
 #%%
 '''

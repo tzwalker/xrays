@@ -123,14 +123,15 @@ scans_for_correction = [439,427,408,440]
 # scan accessed by index in "scans_for_correction", NOT original scan list
 # e.g. "NBL32.maps_[4]" --> scan 419, "NBL32.maps[4]" --> scan 538)
 
-'''i want to see how the Zn channel might be enhanced'''
-
-from background_subtraction import background_subtraction
-from standardize_map import standardize_map
-from scipy.ndimage import gaussian_filter
-
-a = NBL33.scan264[4,:,:-2].copy()
-
-b = background_subtraction(a, 10)
-
-c = gaussian_filter(b,sigma=1)
+# =============================================================================
+# '''i want to see how the Zn channel might be enhanced'''
+# 
+# from background_subtraction import background_subtraction
+# from scipy.ndimage import gaussian_filter
+# 
+# a = NBL33.scan264[4,:,:-2].copy()
+# 
+# b = background_subtraction(a, 10)
+# 
+# c = gaussian_filter(b,sigma=1)
+# =============================================================================

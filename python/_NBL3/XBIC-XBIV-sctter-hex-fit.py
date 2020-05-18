@@ -11,13 +11,11 @@ make XBIV the y value and img0, make xbic the x value and img1
 """
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
-from scipy.ndimage import gaussian_filter
+#from scipy.ndimage import gaussian_filter
 import numpy as np
 
-X = NBL31.scan341[0,:,:-2]
-Y = NBL31.scan341[4,:,:-2]
-#Y = gaussian_filter(Y, sigma=1)
-
+X = TS58A.scan387[0,:,:-2]
+Y = TS58A.scan387[3,:,:-2]
 x = Y.ravel()
 y = X.ravel()
 
@@ -42,8 +40,8 @@ y_hist = fig.add_subplot(grid[-3:, 3], yticklabels=[], yticks=[])
 
 
 # plot #
-main_ax.hexbin(x,y, mincnt=1, cmap='Greys', gridsize=(50,20))
-#main_ax.scatter(x,y,s=1, c='#808080')
+#main_ax.hexbin(x,y, mincnt=1, cmap='Greys', gridsize=(50,20))
+main_ax.scatter(x,y,s=1, c='#808080')
 main_ax.plot(x, ypred, color='red', linestyle='--', linewidth=1)
 main_ax.set_xlim([np.min(x), np.max(x)])
 main_ax.set_ylim([np.min(y), np.max(y)])
