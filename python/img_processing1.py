@@ -92,3 +92,16 @@ colors = [(0, 0, 0), (0.5, 0, 0), (1, 0, 0)]  # R -> G -> B
 cmap_name = 'imgj_reds'
 # Create the colormap
 cm = LinearSegmentedColormap.from_list(cmap_name, colors, N=255)
+#%%
+
+'''i want to see how the Zn channel might be enhanced'''
+
+from background_subtraction import background_subtraction
+from scipy.ndimage import gaussian_filter
+
+a = NBL33.scan264[1,:,:-2].copy()
+
+b = background_subtraction(a, 10)
+
+#c = gaussian_filter(b,sigma=1)
+plt.imshow(b)
