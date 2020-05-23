@@ -27,24 +27,24 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         size_bar.add_artist(vline1)
         size_bar.add_artist(vline2)
         txt = offbox.TextArea(label, minimumdescent=False, 
-                              textprops=dict(color="white"))
+                              textprops=dict(color="black"))
         self.vpac = offbox.VPacker(children=[size_bar,txt],  
                                  align="center", pad=ppad, sep=sep) 
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-data = XRF_or_XBIC_2d_array_map
+data = NBL33.scan264[3,:,:-2]
 data1 = data.copy()
 plt.figure()
 
 fig, ax = plt.subplots()
-im = ax.imshow(data1, cmap='inferno', vmax=0.007906, vmin=0.001245)
+im = ax.imshow(data1, cmap='Greys_r')
 ax.axis('off')
 
-ob = AnchoredHScaleBar(size=100, label="10 um", loc=4, frameon=False,
+ob = AnchoredHScaleBar(size=50, label="5 um", loc=1, frameon=True,
                        pad=0.6,sep=4, 
-                       linekw=dict(color="white"))
+                       linekw=dict(color="black"))
 ax.add_artist(ob)
 
 #divider = make_axes_locatable(ax)

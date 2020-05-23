@@ -13,9 +13,10 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 #from scipy.ndimage import gaussian_filter
 import numpy as np
+import matplotlib.pyplot as plt
 
-X = TS58A.scan387[0,:,:-2]
-Y = TS58A.scan387[3,:,:-2]
+X = NBL31.scan343[0,:,:-2]
+Y = NBL31.scan343[2,:,:-2]
 x = Y.ravel()
 y = X.ravel()
 
