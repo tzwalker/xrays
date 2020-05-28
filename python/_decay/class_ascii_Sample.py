@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-this sample class was created for scans of sample FS3 2019_06_2IDD
+this sample class was created for TS1181A scans 2018_11_26IDC
 because the scaler data was stored haphazardly at the beam
---> the XBIC data is found in one H5 file (fitted by T Walker)
-and the XRF data is found in another h5 file (fitted by B Lai)
 
--the XBIC data from TW and XRF data from XRF
-were exported independently using MAPS
--"merge FS3 data.py" was used to merge these csvs into one file
-for each scan; the intention: avoid importing scans from
-separate directories
+the XBIC data is found in mda file
+the XRF data is found in an h5 file (fitted by B Tracy)
 
+ASCII-merge-reduce.py was used to merge the XBIC and XRF info
+the scaler definitions were preserved in leiu of the common "ds_ic" header
+skiprows is no longer needed
 """
 
 import numpy as np
@@ -49,7 +47,7 @@ class Sample():
         self.scans = []; self.scans=[]; self.maps = [];
     def import_maps(self, path_ascii, path_lockin, CH, sector=None):
         if sector == None: 
-            print("enter a sector argument (e.g. sector=2")
+            print("enter a sector argument (e.g. sector=2)")
         elif sector == 2:
             file_string = r'\combined_ASCII_2idd_0'
         elif sector == 26:
@@ -58,9 +56,12 @@ class Sample():
         for scan in self.scans:
             scan_str = str(scan)
             # define ascii of scan
-            file = path_ascii + file_string + '{s}.h5.csv'.format(s=scan_str)
+            if len(scan_str) == 2:
+                file = path_ascii + file_string + '0{s}.h5_mda.csv'.format(s=scan_str)
+            if len(scan_str) == 3:
+                file = path_ascii + file_string + '{s}.h5_mda.csv'.format(s=scan_str)
             # import ascii as dataframe
-            data = pd.read_csv(file,skiprows=1)
+            data = pd.read_csv(file)
             data = remove_header_whitespace(data)
             # dataframe keys used for shaping into map
             i = 'y pixel no'; j='x pixel no'

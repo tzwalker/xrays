@@ -28,25 +28,25 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         size_bar.add_artist(vline1)
         size_bar.add_artist(vline2)
         txt = offbox.TextArea(label, minimumdescent=False, 
-                              textprops=dict(color="black"))
+                              textprops=dict(color="white"))
         self.vpac = offbox.VPacker(children=[size_bar,txt],  
                                  align="center", pad=ppad, sep=sep) 
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-data = TS1181A.scan197[0,:,:]
+data = TS1181A.scan39[1,:,:]
 data1 = data.copy()
-data1 = data1*1E12
+data1 = data1
 plt.figure()
 
 fig, ax = plt.subplots()
-im = ax.imshow(data1, cmap='inferno')
+im = ax.imshow(data1, cmap='Oranges_r')
 ax.axis('off')
 
-ob = AnchoredHScaleBar(size=20, label="10 um", loc=4, frameon=False,
+ob = AnchoredHScaleBar(size=20, label="2 um", loc=4, frameon=False,
                        pad=0.05,sep=4, 
-                       linekw=dict(color="black"))
+                       linekw=dict(color="white"))
 ax.add_artist(ob)
 
 # create color bar
@@ -59,7 +59,7 @@ fig.colorbar(im, cax=cax, orientation='vertical')
 # get color bar object
 cbar = plt.gcf().axes[-1]
 # format colorbar
-cbar.set_ylabel('pA', rotation=90, va="bottom", size=10, labelpad=15)
+cbar.set_ylabel('Cu (ug/cm2)', rotation=90, va="bottom", size=10, labelpad=15)
 # change colorbar tick label sizes
 #cbar.tick_params(labelsize=cbar_ticklbl_size)   
 # change color bar scale label size, e.g. 1e-8
