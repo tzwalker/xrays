@@ -6,7 +6,8 @@ Wed May 13 15:31:19 2020
 """
 
 '''adds scalebar to matplotlib images'''
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+import matplotlib.pyplot as plt
+
 import matplotlib.offsetbox as offbox
 from matplotlib.lines import Line2D
 
@@ -34,20 +35,35 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-data = NBL33.scan264[3,:,:-2]
+data = TS1181A.scan197[0,:,:]
 data1 = data.copy()
+data1 = data1*1E12
 plt.figure()
 
 fig, ax = plt.subplots()
-im = ax.imshow(data1, cmap='Greys_r')
+im = ax.imshow(data1, cmap='inferno')
 ax.axis('off')
 
-ob = AnchoredHScaleBar(size=50, label="5 um", loc=1, frameon=True,
-                       pad=0.6,sep=4, 
+ob = AnchoredHScaleBar(size=20, label="10 um", loc=4, frameon=False,
+                       pad=0.05,sep=4, 
                        linekw=dict(color="black"))
 ax.add_artist(ob)
 
-#divider = make_axes_locatable(ax)
-#cax = divider.append_axes('right', size='5%', pad=0.1)
-#fig.colorbar(im, cax=cax, orientation='vertical')
+# create color bar
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+divider = make_axes_locatable(ax)
+cax = divider.append_axes('right', size='5%', pad=0.1)
+fig.colorbar(im, cax=cax, orientation='vertical')
+
+# format colorbar
+# get color bar object
+cbar = plt.gcf().axes[-1]
+# format colorbar
+cbar.set_ylabel('pA', rotation=90, va="bottom", size=10, labelpad=15)
+# change colorbar tick label sizes
+#cbar.tick_params(labelsize=cbar_ticklbl_size)   
+# change color bar scale label size, e.g. 1e-8
+#cbar.yaxis.get_offset_text().set(size=14)
+# change color bar scale label position   
+#cbar.yaxis.set_offset_position('left')
 
