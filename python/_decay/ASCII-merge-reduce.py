@@ -36,8 +36,9 @@ plan view part 2
     TS1181Ascans= list(range(204,215)) + [218] + list(range(220,230))
 cross-section degradation
     these h5 files do not have a ds_ic
-    for this merge, comment out drop columns for h5 ascii
-    and insert 'df_h5' for df_merge
+    for this merge, 
+        comment out drop columns for h5 ascii
+        df_merged = 'df_h5' for df_merge
     TS1181Ascans = list(range(277,310))
 note altered Sample class for TS118A_1A to be compatible with the output
 from this program
@@ -48,7 +49,7 @@ import pandas as pd
 
 SYS_PATH = r'C:\Users\triton\decay_data\csv_separate'
 OUT_PATH = r'C:\Users\triton\decay_data\csv_combined'
-TS1181Ascans= list(range(204,215)) + [218] + list(range(220,230))
+TS1181Ascans= [275,276]
 
 for SCANNUM in TS1181Ascans:
     H5_fname = r'\combined_ASCII_26idbSOFT_0{s}.h5.csv'.format(s=SCANNUM)
@@ -58,8 +59,8 @@ for SCANNUM in TS1181Ascans:
     df_mda = pd.read_csv(SYS_PATH + MDA_fname, skiprows=1)
     
     # delete repetitive data
-    drop_columns = ['ds_ic']
-    df_h51 = df_h5.drop(columns=drop_columns)
+    #drop_columns = ['ds_ic']
+    #df_h51 = df_h5.drop(columns=drop_columns)
     
     drop_columns = ['x pixel no', ' y pixel no', ' x position', ' y position']
     df_mda1 = df_mda.drop(columns=drop_columns)
