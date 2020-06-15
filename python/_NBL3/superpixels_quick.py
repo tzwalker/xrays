@@ -60,8 +60,6 @@ img_test_cln = background_subtraction(img_test_stnd, 20)
 mask = find_boundaries(labels)
 mask = mask.astype('int')
 
-
-
 # replacing with average #
 # non-zero labels for regionprops
 labels = labels + 1  
