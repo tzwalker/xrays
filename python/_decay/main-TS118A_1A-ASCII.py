@@ -6,6 +6,19 @@ Wed May 27 18:25:55 2020
 
 analyses for XBIC decay data
 
+plan view maps: 195-200
+    -these scans were not merged and were directly exported using MAPS
+    -the Sample class was written for merged csvs
+    -the following was done to the files to accomodate Sample class import:
+        -filenames were changed from "h5.csv" to "h5_mda.csv"
+        -1sr row of csv deleted; contained
+        "ascii information for file: combined_ASCII_26idbSOFT_0195.h5.csv"
+    -the lockin XBIC channel header: 'ds_ic'
+xsect maps: 39,51
+    -these were merged from mda and h5 csv outputs
+    -the lockin XBIC channel header: '26idc:3820:scaler1_cts2.B'
+    -the direct XBIC channel header: '26idc:3820:scaler1_cts2.C' (double check)
+    
 """
 
 from class_ascii_Sample import Sample
@@ -20,11 +33,11 @@ TS1181A.stack = {'Au':   [19.3, 100E-7],
                  'CdTe': [5.85, 5E-4],
                  'Se': [4.82, 100E-7],
                  'SnO2': [100E-7]}
-TS1181A.scans = [39,51]
+TS1181A.scans = [195,196,197,198,199,200]
 
 
 # channels to import from ASCII
-channels = ['26idc:3820:scaler1_cts2.B', 'Cu', 'Cd_L', 'Te_L', 'Au_M']
+channels = ['ds_ic', 'Cu', 'Cd_L', 'Te_L', 'Au_M']
 
 TS1181A.import_maps(ASCII_PATH, PATH_LOCKIN, channels, sector=26)
 

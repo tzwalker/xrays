@@ -116,8 +116,9 @@ iio_beam = iio_beam.reshape(-1,1)
 roughup = rough_up[:,1].reshape(-1,1)
 roughdown = rough_down[:,1].reshape(-1,1)
 arr = np.concatenate((DEPTH_UM, iio_beam, iio_ele, roughup, roughdown), axis=1)
-SYSPATH = r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\for Origin iio_sims\iio_sim_'
-#np.savetxt(SYSPATH+str(detect_theta) +'deg_ALL'+ ele +'.csv', arr, delimiter=',')
+SYSPATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\XRF absorption profiles'
+FILE_OUT = SYSPATH + '\\' + str(detect_theta) +'deg_ALL'+ ele +'.csv'
+#np.savetxt(FILE_OUT, arr, delimiter=',')
 
 # finding attenuation length (length at which iio decays to 1/e)
 # the initial intensity fraction is that fraction of XRF at the beginning
@@ -129,7 +130,9 @@ ELE_ATTN_VAL = iio_ele[0]*(1/np.e)
 def find_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
-    print(idx)
+    print('1/e depth: {s}nm'.format(s=str(idx)))
     return array[idx]
-print(find_nearest(iio_beam, BEAM_ATTN_VAL))
-print(find_nearest(iio_ele, ELE_ATTN_VAL))
+
+print('1/e fraction: {s}'.format(s=str(find_nearest(iio_beam, BEAM_ATTN_VAL))))
+print('1/e fraction: {s}'.format(s=str(find_nearest(iio_ele, ELE_ATTN_VAL))))
+

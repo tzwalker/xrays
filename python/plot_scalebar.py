@@ -7,9 +7,9 @@ Wed May 13 15:31:19 2020
 
 '''adds scalebar to matplotlib images'''
 import matplotlib.pyplot as plt
-
 import matplotlib.offsetbox as offbox
 from matplotlib.lines import Line2D
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
     """ size: length of bar in pixels
@@ -28,42 +28,46 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         size_bar.add_artist(vline1)
         size_bar.add_artist(vline2)
         txt = offbox.TextArea(label, minimumdescent=False, 
-                              textprops=dict(color="white"))
+                              textprops=dict(color="black"))
         self.vpac = offbox.VPacker(children=[size_bar,txt],  
                                  align="center", pad=ppad, sep=sep) 
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-data = TS1181A.scan39[1,:,:]
+data = TS1181A.scan197[0,:,:]
 data1 = data.copy()
-data1 = data1
+
 plt.figure()
 
 fig, ax = plt.subplots()
-im = ax.imshow(data1, cmap='Oranges_r')
+im = ax.imshow(data1, cmap='inferno')
 ax.axis('off')
 
 ob = AnchoredHScaleBar(size=20, label="2 um", loc=4, frameon=False,
                        pad=0.05,sep=4, 
-                       linekw=dict(color="white"))
+                       linekw=dict(color="black"))
 ax.add_artist(ob)
 
-# create color bar
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-divider = make_axes_locatable(ax)
-cax = divider.append_axes('right', size='5%', pad=0.1)
-fig.colorbar(im, cax=cax, orientation='vertical')
+cbar = 0
+if cbar == 1:
+    # create color bar
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad=0.1)
+    fig.colorbar(im, cax=cax, orientation='vertical')
+    #get color bar object
+    cbar = plt.gcf().axes[-1]
+    #format colorbar
+    cbar.set_ylabel('Cu (ug/cm2)', rotation=90, va="bottom", size=10, labelpad=15)
+    #change colorbar tick label sizes
+    cbar.tick_params(labelsize=14)   
+    #change color bar scale label size, e.g. 1e-8
+    cbar.yaxis.get_offset_text().set(size=14)
+    #change color bar scale label position   
+    cbar.yaxis.set_offset_position('left')
 
-# format colorbar
-# get color bar object
-cbar = plt.gcf().axes[-1]
-# format colorbar
-cbar.set_ylabel('Cu (ug/cm2)', rotation=90, va="bottom", size=10, labelpad=15)
-# change colorbar tick label sizes
-#cbar.tick_params(labelsize=cbar_ticklbl_size)   
-# change color bar scale label size, e.g. 1e-8
-#cbar.yaxis.get_offset_text().set(size=14)
-# change color bar scale label position   
-#cbar.yaxis.set_offset_position('left')
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_XBIC_decay\figures v0'
+FNAME = r'\TS1181A_scan195_XBIC.eps'
+plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300)
+
 
