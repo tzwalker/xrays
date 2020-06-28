@@ -22,7 +22,7 @@ obtain a proper shift in the numpy array:
 (-x, +y) --> [:-y , +x:] # tested
 (-x, -y) --> [+y: , +x:] # tested
 
-this file was used in conjunction with "XBIC-XBIV-sctter-hex-fit.py"
+this file was used in conjunction with "XBIC-XBIV-scatter-hex-fit.py"
 in that file the linear regressions of the aligned images were found
 # save shifted images #
 
@@ -79,6 +79,7 @@ def translate_and_crop(img0, img1, xyshift):
 
 import numpy as np
 
+# in this file X is the XBIV map and Y is the XBIC map
 scans = ['scan419', 'scan416']
 img0 = getattr(NBL32, scans[0])[0,:,:-2]
 img1 = getattr(NBL32, scans[1])[0,:,:-2]
@@ -92,12 +93,11 @@ plt.figure()
 plt.imshow(Y)
 
 '''to save aligned images'''
-PATH_ALIGNED = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\Aligned XBIC_XBIV csvs'
+PATH_ALIGNED = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\XBIC_XBIV aligned image csvs'
+# change "XBIV" to "XBIC", change "scans[0]" to "scans[1]"
 OUT = PATH_ALIGNED + r'\NBL32_{s}_XBIC.csv'.format(s=scans[1])
+# change "X" to "Y"
 np.savetxt(OUT, Y, delimiter=',')
-#OUT = PATH_ALIGNED + r'\NBL32_{s}_XBIC.csv'.format(s=scans[1])
-#np.savetxt(OUT, Y, delimiter=',')
-
 
 
 #%%
@@ -111,7 +111,7 @@ img_aligned1 = pd.read_csv(PATH_ALIGNED + r'\NBL32_scan419_XBIV.csv', header=Non
 img_aligned2 = pd.read_csv(PATH_ALIGNED + r'\NBL32_scan422_XRF.csv', header=None)
 
 a = np.array(img_aligned) # 95x80
-b = np.array(img_aligned1) # 99x93
+b = np.array(img_aligned1) # 95x80
 c = np.array(img_aligned2) #99x93
 
 # to align b (or c) to a: b[:96,:81]

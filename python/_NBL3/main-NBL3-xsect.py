@@ -18,14 +18,101 @@ but based off the plots, it is likley to be around 10-15
     sticking with 15 to be used in average investigations
 """
 
-PATH = r'C:\Users\triton\Desktop\NBL3_data\cross_section_MS' #r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs' #'C:\Users\triton\Desktop\NBL3_data\cross_section_MS'
+PATH = r'C:\Users\triton\NBL3_data\cross_section_MS' #r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs' #'C:\Users\triton\Desktop\NBL3_data\cross_section_MS'
 DEFS = r'C:\Users\triton\xrays\python\_NBL3' #'C:\Users\triton\xrays\python\NBL3xsect' C:\Users\Trumann\xrays\python\NBL3xsect
 import sys
 sys.path.append(DEFS)
-from definitions_NBLxSect import import_xSect_csvs, get_scan_metadata
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+from skimage.transform import rotate
 import seaborn as sns
+
+def get_scan_metadata(path, sample, scannum):
+    metafile_string = '\CdTe_X_' + sample + '_Scan_' + str(scannum) + '_Metadata.csv'
+    metafile = path + metafile_string
+    # import metadata
+    df = pd.read_csv(metafile, header=None)
+    # make new names from labels in 1st column
+    new_names = [name[0:6] for name in df[0]] 
+    # to put labels in first row, transpose df 
+    df = df.T
+    # using labels in 1st row, make column headers                     
+    df.columns = df.iloc[0]
+    # remove first row         
+    df = df.reindex(df.index.drop(0))   
+    # rename column headers with short names
+    df.rename(columns = {old:new for old, new in zip(df.columns.values, new_names)}, inplace=True) 
+    return df
+
+def get_axes_from_metadata(data_df, units_df):
+    old_x = data_df.columns.values                      # get column labels in data df (type: numpy array)
+    # scale indices according to axis step 
+        # cast to float from string, 
+        # and cast to list to prep for rounding
+    x_real = list(old_x * float(units_df['xstep ']))    
+    x_round = [round(i,3) for i in x_real] # round off axis units
+    # same for y
+    old_y = data_df.index.values
+    y_real = list(old_y * float(units_df['ystep ']))
+    y_round = [round(i,2) for i in y_real] # round off axis units
+    
+    data_df.rename(columns = {old:new for old,new in zip(old_x, x_round)},
+                              index = {old:new for old,new in zip(old_y, y_round)}, inplace=True)
+    return 
+
+def import_xSect_csvs(path, sample, scannum, channels, meta, rot):
+    rotated_map_dfs = []
+    for chan in channels:
+        str_scannum = str(scannum)
+        file_string = '\CdTe_X_{s}_Scan_{n}_{c}_data.csv'.format(s=sample,
+                                                                 n=str_scannum,
+                                                                 c=chan)
+        file = path + file_string
+        # import scan
+        df = pd.read_csv(file, header=None)  
+        # rotate image
+        rot_nparray = rotate(df, rot) 
+        # numpy array to df
+        rot_df = pd.DataFrame(rot_nparray) 
+        #set column/row(index) headers to real units
+        get_axes_from_metadata(rot_df, meta) 
+        # build imported list
+        rotated_map_dfs.append(rot_df) 
+    return rotated_map_dfs # can have no rotation
+
+
+
+SAMPLE = 'NBL31'
+SCAN = 8
+CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
+META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)
+ROTATION = 0
+
+map_dfs = import_xSect_csvs(PATH, SAMPLE, SCAN, CHANNELS, META_DATA, ROTATION)
+
+# for NBL31 scan 8 to have the same points and 5um length as NBL33 scan 1
+data = map_dfs[2].iloc[:34,:] # 34 pts at 150nm step ~ 5um
+# otherwise plot data frame normally
+# data = map_dfs[0]
+
+# for exporting cross-section maps
+plt.figure()
+fig, ax = plt.subplots(figsize=(5,5))
+im = ax.imshow(data, cmap='Greys_r')
+ax.axis('off')
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3'
+FNAME = r'\NBL31scan8_Cu.eps'
+#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+
+# for exporting cross-section integration
+integrate = data.sum(axis=0)
+plt.figure()
+plt.plot(integrate)
+OUT_PATH1 = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\xsect integreated and models'
+FNAME = r'\py_NBL31_Scan8_trimTo5um_Cd.csv'
+integrate.to_csv(OUT_PATH1+FNAME, header=False)
+#%%
 
 def plot_NBL3_xsect(df, fig_size, color, cbar_bounds,
                     xyinterval,ticksize,
@@ -66,16 +153,6 @@ def plot_NBL3_xsect(df, fig_size, color, cbar_bounds,
     #positions cbar scale
     cbar_ax.yaxis.set_offset_position('left')           
     return
-
-SAMPLE = 'TS58A'
-SCAN = 2
-CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
-META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)
-ROTATION = 0
-
-
-dfs = import_xSect_csvs(PATH, SAMPLE, SCAN, CHANNELS, META_DATA, ROTATION)
-
 PLOT_CHANNEL_IDX = 0
 PLOT_CHANNEL = dfs[PLOT_CHANNEL_IDX]
 FULL_YRANGE = np.max(np.max(PLOT_CHANNEL))

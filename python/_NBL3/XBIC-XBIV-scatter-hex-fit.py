@@ -4,28 +4,43 @@ coding: utf-8
 tzwalker
 Wed May 13 16:28:24 2020
 
-for XBIC XBIV correlations after alignment (using translations_and...maps.py)
+for XBIC XBIV correlations after alignment 
+    (aligned using "XBIC-XBIV-translate-and-deltas.py")
+
 fit the data and plot using histograms in the margins
 
-make XBIV the y value and img0, make xbic the x value and img1
+in this file X is the XBIC map and Y is the XBIV map
+    -this is the opposite of what is seen in "XBIC-XBIV-translate-and-deltas.py"
+    -this is because, when aligning, the XBIV map was used as the reference img
+    -for correlations, XBIC was chosen as the reference
 """
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 #from scipy.ndimage import gaussian_filter
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+PATH_IN = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\XBIC_XBIV aligned image csvs'
+XBIC_FNAME = r'\NBL32_scan416_XBIC.csv'
+XBIV_FNAME = r'\NBL32_scan419_XBIV.csv'
 
-X = NBL31.scan343[0,:,:-2]
-Y = NBL31.scan343[2,:,:-2]
-x = Y.ravel()
-y = X.ravel()
+# import aligned csvs
+X = pd.read_csv(PATH_IN + XBIC_FNAME)
+Y = pd.read_csv(PATH_IN + XBIV_FNAME)
+# for different channels
+#X = NBL31.scan343[0,:,:-2]
+#Y = NBL31.scan343[2,:,:-2]
+#x = Y.ravel()
+#y = X.ravel()
 
+x = np.array(X)
+y = np.array(Y)
 x = x.reshape(-1,1)
 y = y.reshape(-1,1)
 
-scaler = StandardScaler()
-x = scaler.fit_transform(x)
-y=scaler.fit_transform(y)
+#scaler = StandardScaler()
+#x = scaler.fit_transform(x)
+#y = scaler.fit_transform(y)
 
 # manual regression #
 MODELR = LinearRegression()
@@ -41,8 +56,8 @@ y_hist = fig.add_subplot(grid[-3:, 3], yticklabels=[], yticks=[])
 
 
 # plot #
-#main_ax.hexbin(x,y, mincnt=1, cmap='Greys', gridsize=(50,20))
-main_ax.scatter(x,y,s=1, c='#808080')
+main_ax.hexbin(x,y, mincnt=1, cmap='inferno', gridsize=(50,20))
+#main_ax.scatter(x,y,s=1, c='#808080')
 main_ax.plot(x, ypred, color='red', linestyle='--', linewidth=1)
 main_ax.set_xlim([np.min(x), np.max(x)])
 main_ax.set_ylim([np.min(y), np.max(y)])
