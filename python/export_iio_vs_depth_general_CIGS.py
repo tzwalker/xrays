@@ -1,3 +1,10 @@
+"""
+coding: utf-8
+
+tzwalker
+Fri Jul  3 09:29:14 2020
+"""
+
 import numpy as np
 import xraylib as xl
 
@@ -35,8 +42,7 @@ def get_upstream_iioOUT(layers_before, elements, beam_settings):
         tmp_iios = [] # holds the atten. coeff. of each layer for one element
         for layer, layer_info in layers_before.items():
             sigma = xl.CS_Total_CP(layer,XRF_line)
-            density=layer_info[0]
-            thickness=layer_info[1]
+            density=layer_info[0];      thickness=layer_info[1]
             iio = np.exp(- sigma * density * thickness / det_rad) # Beer-Lambert
             tmp_iios.append(iio)
         # find cumulative atten. coeff. of each layer for one element
@@ -115,31 +121,18 @@ def get_iios(beam_settings, elements, STACK, end_layer):
     return ele_avg_iios, ele_all_iios.T
 
 
-stack = {'CdS':   [4.82, 5E-7], 
-                 'CdTe': [5.85, 12E-4], 
-                 'CuInGaAs': [5.7, 1.8E-4]}
+stack = {'ZnO':   [5.61, 2E-5], 
+                 'CdS': [6.34, 4E-6], 
+                 'CuInGaAs': [5.7, 1.8E-4], 
+                 'Mo':  [10.4, 0.1E-4]}
 
-elements = ['Cu', 'Cd', 'Te']
+elements = ['Cu', 'Se', 'In', 'Ga']
 
-beam_settings = {'beam_energy': 12.7, 'beam_theta':90, 'detect_theta':47}
+beam_settings = {'beam_energy': 12.8, 'beam_theta':90, 'detect_theta':47}
 
-iios2019, iio_arr = get_iios(beam_settings, elements, stack, end_layer='CdTe')
+iios2019, iio_arr = get_iios(beam_settings, elements, stack, end_layer='CuInGaAs')
 
 # save arrays for Tara
 PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\DefectLab\group photos CAD and misc'
 FNAME = r'\for Tara Cu_Se_In_Ga XRF absorption in typical CIGS.csv'
-#np.savetxt(PATH_OUT+FNAME, iio_arr, delimiter=",")
-
-#%%
-""""to quickly get attenuation of bema in CdTe layer"""
-steps = np.linspace(0, 10000000, 10000001)
-dt = 1*10**-7
-beam_iio_thru_layer = []
-cap_cross_section_of_one_sublayer_in = - xl.CS_Total_CP('CdTe', 12.7) * 5.85 * dt / 75
-for index, step in enumerate(steps):
-    beam_in = cap_cross_section_of_one_sublayer_in * index
-    iio_beam = np.exp(beam_in)
-    beam_iio_thru_layer.append(iio_beam)
-plt.plot(beam_iio_thru_layer)
-
-#in cross section beam attenuates at roughly 200um
+np.savetxt(PATH_OUT+FNAME, iio_arr, delimiter=",")

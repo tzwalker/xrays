@@ -83,8 +83,8 @@ def import_xSect_csvs(path, sample, scannum, channels, meta, rot):
 
 
 
-SAMPLE = 'NBL31'
-SCAN = 8
+SAMPLE = 'NBL33'
+SCAN = 1
 CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
 META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)
 ROTATION = 0
@@ -92,18 +92,18 @@ ROTATION = 0
 map_dfs = import_xSect_csvs(PATH, SAMPLE, SCAN, CHANNELS, META_DATA, ROTATION)
 
 # for NBL31 scan 8 to have the same points and 5um length as NBL33 scan 1
-data = map_dfs[2].iloc[:34,:] # 34 pts at 150nm step ~ 5um
-# otherwise plot data frame normally
-# data = map_dfs[0]
+#data = map_dfs[2].iloc[:34,:] # 34 pts at 150nm step ~ 5um
+# otherwise (for NBL33) plot data frame normally
+data = map_dfs[2]
 
 # for exporting cross-section maps
 plt.figure()
 fig, ax = plt.subplots(figsize=(5,5))
-im = ax.imshow(data, cmap='Greys_r')
+im = ax.imshow(data, cmap='Blues_r')
 ax.axis('off')
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3'
-FNAME = r'\NBL31scan8_Cu.eps'
-#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp'
+FNAME = r'\NBL33scan1_Cd.eps'
+plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
 
 # for exporting cross-section integration
 integrate = data.sum(axis=0)
@@ -111,7 +111,7 @@ plt.figure()
 plt.plot(integrate)
 OUT_PATH1 = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\xsect integreated and models'
 FNAME = r'\py_NBL31_Scan8_trimTo5um_Cd.csv'
-integrate.to_csv(OUT_PATH1+FNAME, header=False)
+#integrate.to_csv(OUT_PATH1+FNAME, header=False)
 #%%
 
 def plot_NBL3_xsect(df, fig_size, color, cbar_bounds,

@@ -25,16 +25,18 @@ XBIC_FNAME = r'\NBL32_scan416_XBIC.csv'
 XBIV_FNAME = r'\NBL32_scan419_XBIV.csv'
 
 # import aligned csvs
-X = pd.read_csv(PATH_IN + XBIC_FNAME)
-Y = pd.read_csv(PATH_IN + XBIV_FNAME)
+#X = pd.read_csv(PATH_IN + XBIC_FNAME)
+#Y = pd.read_csv(PATH_IN + XBIV_FNAME)
 # for different channels
-#X = NBL31.scan343[0,:,:-2]
-#Y = NBL31.scan343[2,:,:-2]
-#x = Y.ravel()
-#y = X.ravel()
+X = NBL33.scan264[4,:,:-2]
+Y = NBL33.scan264[2,:,:-2]
+x = X.ravel()
+y = Y.ravel()
 
-x = np.array(X)
-y = np.array(Y)
+# for changing pandas df into numpy arr
+#x = np.array(X)
+#y = np.array(Y)
+
 x = x.reshape(-1,1)
 y = y.reshape(-1,1)
 

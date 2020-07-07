@@ -4,9 +4,19 @@ coding: utf-8
 tzwalker
 Sun Apr 19 18:21:43 2020
 
+load data from main-FS3-ASCII.py
 this is file is meant for various tasks that are part of processing
 the XBIV/C vs Temp data of the FS3 2019_06_2IDD
 see docstring of each sub-script for purpose
+
+20200707: these alignments were never saved as separate csvs...
+they were only used to plot for the DoE meeting
+    -GOAL: make aligned csvs of XBIC, XBIV, and XRF
+    to correlate composition performance changes
+    
+cannot directly use the code from the NBL3 translations because
+these are four scans of the same area, not two scans of the same area
+    i need to translate both XBIC and XRF relative to the first XBIV map...
 """
 
 """
@@ -60,52 +70,89 @@ DEL2 = aligned_crop[3]-aligned_crop[2]
 DEL3 = aligned_crop[4]-aligned_crop[3]
 deltas = [DEL0,DEL1,DEL2,DEL3]
 
-'''used to make same scale maps for DoE Q10 presentation'''
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-import matplotlib.offsetbox as offbox
-from matplotlib.lines import Line2D
 
-class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
-    """ size: length of bar in pixels
-        extent : height of bar ends in axes units """
-    def __init__(self, size=1, extent = 0.03, label="", loc=2, ax=None,
-                 pad=0.4, borderpad=0.5, ppad = 0, sep=2, prop=None, 
-                 frameon=True, linekw={}, **kwargs):
-        if not ax:
-            ax = plt.gca()
-        trans = ax.get_xaxis_transform()
-        size_bar = offbox.AuxTransformBox(trans)
-        line = Line2D([0,size],[0,0], **linekw)
-        vline1 = Line2D([0,0],[-extent/2.,extent/2.], **linekw)
-        vline2 = Line2D([size,size],[-extent/2.,extent/2.], **linekw)
-        size_bar.add_artist(line)
-        size_bar.add_artist(vline1)
-        size_bar.add_artist(vline2)
-        txt = offbox.TextArea(label, minimumdescent=False, 
-                              textprops=dict(color="white"))
-        self.vpac = offbox.VPacker(children=[size_bar,txt],  
-                                 align="center", pad=ppad, sep=sep) 
-        offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
-                 borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
-                 **kwargs)
+#%%
+from skimage.transform import SimilarityTransform, warp
+import matplotlib.pyplot as plt
+import numpy as np
 
-for data in aligned_crop:
-    data1 = data.copy()
-    plt.figure()
-    
-    fig, ax = plt.subplots()
-    im = ax.imshow(data1, cmap='inferno', vmax=0.007906, vmin=0.001245)
-    ax.axis('off')
-    
-    ob = AnchoredHScaleBar(size=100, label="10 um", loc=4, frameon=False,
-                           pad=0.6,sep=4, 
-                           linekw=dict(color="white"))
-    ax.add_artist(ob)
-    
-    #divider = make_axes_locatable(ax)
-    #cax = divider.append_axes('right', size='5%', pad=0.1)
-    #fig.colorbar(im, cax=cax, orientation='vertical')
+### start with map with largest offset (img2, scan330)
+img2 = FS3.scan330
+SHFT2 = SimilarityTransform(translation=(-62, -45))
+# shift (translate) all imported channels
+shifted_channels2 = []
+for i, channel in enumerate(channels):
+    IMG2_SHIFT = warp(img2[i,:,:-2], SHFT2)
+    shifted_channels2.append(IMG2_SHIFT)
+# store shifted channels
+shifted_channels2 = np.array(shifted_channels2)
 
+### make mask that defines area to crop
+mask = IMG2_SHIFT!=0
+mask = mask.astype(int)
+
+### mask the map used as alignemnt reference
+img0 = FS3.scan321
+shifted_channels0 = []
+for i, channel in enumerate(channels):
+    # mask the translated maps
+    IMG0_MSK = img0[i,:,:-2]*mask
+    shifted_channels0.append(IMG0_MSK)
+shifted_channels0 = np.array(shifted_channels0) 
+
+### workflow for translating and masking images with other offsets:
+    #import image array
+    #translate image arrays
+    #mask image arrays
+    #store image arrays
+img1 = FS3.scan325
+SHFT1 = SimilarityTransform(translation=(-25, -41))
+shifted_channels1 = []
+for i, channel in enumerate(channels):
+    IMG1_SHIFT = warp(img1[i,:,:-2], SHFT1)
+    # mask the translated maps
+    IMG1_MSK = IMG1_SHIFT*mask
+    shifted_channels1.append(IMG1_MSK)
+shifted_channels1 = np.array(shifted_channels1)   
+
+img3 = FS3.scan337
+SHFT3 = SimilarityTransform(translation=(-32, -44))
+shifted_channels3 = []
+for i, channel in enumerate(channels):
+    IMG3_SHIFT = warp(img3[i,:,:-2], SHFT3)
+    IMG3_MSK = IMG3_SHIFT*mask
+    shifted_channels3.append(IMG3_MSK)
+shifted_channels3 = np.array(shifted_channels3) 
+
+img4 = FS3.scan342
+SHFT4 = SimilarityTransform(translation=(-38, -39))
+# shift (translate) all imported channels
+shifted_channels4 = []
+for i, channel in enumerate(channels):
+    IMG4_SHIFT = warp(img4[i,:,:-2], SHFT4)
+    # mask the translated maps
+    IMG4_MSK = IMG4_SHIFT*mask
+    shifted_channels4.append(IMG4_MSK)
+shifted_channels4 = np.array(shifted_channels4) 
+
+### store aligned and masked images
+aligned = [shifted_channels0,shifted_channels1,
+           shifted_channels2,shifted_channels3,
+           shifted_channels4]
+### remove zeros according to indices of map with largest offset
+aligned_crop = [arr[:,45:,62:] for arr in aligned]
+
+### check alignment of images
+# =============================================================================
+# for scan in aligned_crop:
+#     plt.figure()
+#     plt.imshow(scan[1,:,:]) # change this number to check
+# #plt.imshow(aligned_crop[0][2,:,:])
+# #plt.imshow(aligned_crop[1][2,:,:])
+# =============================================================================
+
+PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\XBIC_XBIV aligned image csvs'
+SCAN_STR = ['scan321','scan']
 
 # =============================================================================
 # """
