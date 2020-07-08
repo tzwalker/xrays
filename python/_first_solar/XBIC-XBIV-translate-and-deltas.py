@@ -24,54 +24,56 @@ translating shift XBIV images
 scans 321,325,330,337,342
 trimming for delta maps
 """
-from skimage.transform import SimilarityTransform, warp
-import matplotlib.pyplot as plt
-import numpy as np
+# =============================================================================
+# from skimage.transform import SimilarityTransform, warp
+# import matplotlib.pyplot as plt
+# import numpy as np
+# 
+# img0 = FS3.scan321[0,:,:-2]
+# img1 = FS3.scan325[0,:,:-2]
+# img2 = FS3.scan330[0,:,:-2]
+# img3 = FS3.scan337[0,:,:-2]
+# img4 = FS3.scan342[0,:,:-2]
+# 
+# # translate coordinates read from xml files exportde by ImageJ
+#     # Plugins --> Registration --> Register Virtual Stack Slices
+# SHFT1 = SimilarityTransform(translation=(-25, -41))
+# SHFT2 = SimilarityTransform(translation=(-62, -45))
+# SHFT3 = SimilarityTransform(translation=(-32, -44))
+# SHFT4 = SimilarityTransform(translation=(-38, -39))
+# 
+# # apply translations
+# IMG1_SHIFT = warp(img1, SHFT1)
+# IMG2_SHIFT = warp(img2, SHFT2)
+# IMG3_SHIFT = warp(img3, SHFT3)
+# IMG4_SHIFT = warp(img4, SHFT4)
+# 
+# # mask according to map with largest offset (img2 (scan330))
+# mask = IMG2_SHIFT!=0
+# mask = mask.astype(int)
+# 
+# # multiply values to keep by 1, and values to rid by 0
+# IMG0_MSK = img0*mask
+# IMG1_MSK = IMG1_SHIFT*mask
+# IMG3_MSK = IMG3_SHIFT*mask
+# IMG4_MSK = IMG4_SHIFT*mask
+# aligned = [IMG0_MSK,IMG1_MSK,IMG2_SHIFT,IMG3_MSK,IMG4_MSK]
+# 
+# # remove zeros using indices of image with largest offset (img2)
+# aligned_crop = [arr[45:,62:] for arr in aligned]
+# 
+# # save to folder using "export to imageJ.py"
+# 
+# # make delta maps
+# DEL0 = aligned_crop[1]-aligned_crop[0]
+# DEL1 = aligned_crop[2]-aligned_crop[1]
+# DEL2 = aligned_crop[3]-aligned_crop[2]
+# DEL3 = aligned_crop[4]-aligned_crop[3]
+# deltas = [DEL0,DEL1,DEL2,DEL3]
+# =============================================================================
 
-img0 = FS3.scan321[0,:,:-2]
-img1 = FS3.scan325[0,:,:-2]
-img2 = FS3.scan330[0,:,:-2]
-img3 = FS3.scan337[0,:,:-2]
-img4 = FS3.scan342[0,:,:-2]
-
-# translate coordinates read from xml files exportde by ImageJ
-    # Plugins --> Registration --> Register Virtual Stack Slices
-SHFT1 = SimilarityTransform(translation=(-25, -41))
-SHFT2 = SimilarityTransform(translation=(-62, -45))
-SHFT3 = SimilarityTransform(translation=(-32, -44))
-SHFT4 = SimilarityTransform(translation=(-38, -39))
-
-# apply translations
-IMG1_SHIFT = warp(img1, SHFT1)
-IMG2_SHIFT = warp(img2, SHFT2)
-IMG3_SHIFT = warp(img3, SHFT3)
-IMG4_SHIFT = warp(img4, SHFT4)
-
-# mask according to map with largest offset (img2 (scan330))
-mask = IMG2_SHIFT!=0
-mask = mask.astype(int)
-
-# multiply values to keep by 1, and values to rid by 0
-IMG0_MSK = img0*mask
-IMG1_MSK = IMG1_SHIFT*mask
-IMG3_MSK = IMG3_SHIFT*mask
-IMG4_MSK = IMG4_SHIFT*mask
-aligned = [IMG0_MSK,IMG1_MSK,IMG2_SHIFT,IMG3_MSK,IMG4_MSK]
-
-# remove zeros using indices of image with largest offset (img2)
-aligned_crop = [arr[45:,62:] for arr in aligned]
-
-# save to folder using "export to imageJ.py"
-
-# make delta maps
-DEL0 = aligned_crop[1]-aligned_crop[0]
-DEL1 = aligned_crop[2]-aligned_crop[1]
-DEL2 = aligned_crop[3]-aligned_crop[2]
-DEL3 = aligned_crop[4]-aligned_crop[3]
-deltas = [DEL0,DEL1,DEL2,DEL3]
 
 
-#%%
 from skimage.transform import SimilarityTransform, warp
 import matplotlib.pyplot as plt
 import numpy as np
@@ -151,9 +153,17 @@ aligned_crop = [arr[:,45:,62:] for arr in aligned]
 # #plt.imshow(aligned_crop[1][2,:,:])
 # =============================================================================
 
+# save aligned arrays for further processing
 PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\XBIC_XBIV aligned image csvs'
-SCAN_STR = ['scan321','scan']
+SCAN_STR = ['scan321','scan325','scan330','scan337','scan342']
+CHANNELS = ['XBIV','Se', 'Cd', 'Te', 'Au']
 
+for i,scan in enumerate(aligned_crop):
+    for j,chan in enumerate(CHANNELS):
+        FNAME = r'\FS3_{scn}_{chn}.csv'.format(scn=SCAN_STR[i], chn=CHANNELS[j])
+        array = scan[j,:,:]
+        np.savetxt(PATH_OUT+FNAME, array, delimiter=',')
+        
 # =============================================================================
 # """
 # parsing,reading,andextracting SIFT translation from ImageJ

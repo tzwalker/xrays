@@ -7,6 +7,13 @@ these functions import electrical and XRF data from two types of files:
     csv file containing the lockin settings of each scan
     h5 file containing the XRF data of each scan
 each sample object has data related to that sample
+
+workflow for XBIC v XBIV alignment and correlations
+    "main-NBL3-plan" --> "XBIC-XBIV-translate-and-deltas.py" --> 
+    "XBIC-XBIV-scatter-hex-fit.py"
+workflow for grain core v boundary analyses:
+    "main-NBL3-plan" --> "masked-data-save-arrays-to-csv.py" --> 
+    "masked-data-construct-violin-df.py"
 """
 
 from classh5_Sample import Sample
