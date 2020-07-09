@@ -30,6 +30,7 @@ XBIV
 present workflow:
     "main-FS3-ASCII" --> "XBIC-XBIV-translate-and-deltas" --> 
     "translated analyses"
+for plotting reference, pixel step was 150nm --> 20pixels = 3um, 67pix = 10um
 """
 
 from class_ascii_Sample import Sample

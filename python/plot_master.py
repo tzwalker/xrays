@@ -35,36 +35,37 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-data = NBL33.scan261[0,:,:]
-data1 = data.copy()
-
-plt.figure()
-
-fig, ax = plt.subplots()
-im = ax.imshow(data1, cmap='inferno')
-ax.axis('off')
-
-ob = AnchoredHScaleBar(size=20, label="2 um", loc=4, frameon=True,
-                       pad=0.5, borderpad=1, sep=4, 
-                       linekw=dict(color="black"))
-ax.add_artist(ob)
-
-cbar = 1
-if cbar == 1:
-    # create color bar
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes('right', size='5%', pad=0.1)
-    fig.colorbar(im, cax=cax, orientation='vertical',format='%.2e')
-    #get color bar object
-    cbar = plt.gcf().axes[-1]
-    #format colorbar
-    cbar.set_ylabel('XBIV (V)', rotation=90, va="bottom", size=11, labelpad=15)
-    #change colorbar tick label sizes
-    cbar.tick_params(labelsize=11)   
-    #change color bar scale label size, e.g. 1e-8
-    cbar.yaxis.get_offset_text().set(size=11)
-    #change color bar scale label position   
-    cbar.yaxis.set_offset_position('left')
+for i in imgs:
+    data = i*1000#NBL33.scan261[0,:,:]
+    data1 = data.copy()
+    
+    plt.figure()
+    
+    fig, ax = plt.subplots()
+    im = ax.imshow(data1, cmap='inferno') #RdYlGn #inferno
+    ax.axis('off')
+    
+    ob = AnchoredHScaleBar(size=67, label="10 um", loc=4, frameon=True,
+                           pad=0.5, borderpad=1, sep=4, 
+                           linekw=dict(color="black"))
+    ax.add_artist(ob)
+    
+    cbar = 1
+    if cbar == 1:
+        # create color bar
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes('right', size='5%', pad=0.1)
+        fig.colorbar(im, cax=cax, orientation='vertical',format='%.2g')
+        #get color bar object
+        cbar = plt.gcf().axes[-1]
+        #format colorbar
+        cbar.set_ylabel('XBIV (mV)', rotation=90, va="bottom", size=11, labelpad=15)
+        #change colorbar tick label sizes
+        cbar.tick_params(labelsize=11)   
+        #change color bar scale label size, e.g. 1e-8
+        cbar.yaxis.get_offset_text().set(size=11)
+        #change color bar scale label position   
+        cbar.yaxis.set_offset_position('left')
 
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_XBIC_decay\figures v0'
 FNAME = r'\TS1181A_scan195_XBIC.eps'
