@@ -35,14 +35,14 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-for i in imgs:
-    data = i*1000#NBL33.scan261[0,:,:]
+for i in Se_maps:
+    data = i#NBL33.scan261[0,:,:]
     data1 = data.copy()
     
     plt.figure()
     
     fig, ax = plt.subplots()
-    im = ax.imshow(data1, cmap='inferno') #RdYlGn #inferno
+    im = ax.imshow(data1, cmap='viridis', vmin=0.5,vmax=1.5) #RdYlGn #inferno #Greys_r
     ax.axis('off')
     
     ob = AnchoredHScaleBar(size=67, label="10 um", loc=4, frameon=True,
@@ -50,7 +50,7 @@ for i in imgs:
                            linekw=dict(color="black"))
     ax.add_artist(ob)
     
-    cbar = 1
+    cbar = 0
     if cbar == 1:
         # create color bar
         divider = make_axes_locatable(ax)
@@ -59,7 +59,7 @@ for i in imgs:
         #get color bar object
         cbar = plt.gcf().axes[-1]
         #format colorbar
-        cbar.set_ylabel('XBIV (mV)', rotation=90, va="bottom", size=11, labelpad=15)
+        cbar.set_ylabel('Se (ug/cm2)', rotation=90, va="bottom", size=11, labelpad=15)
         #change colorbar tick label sizes
         cbar.tick_params(labelsize=11)   
         #change color bar scale label size, e.g. 1e-8

@@ -47,7 +47,7 @@ FS3.stack = {'Au':   [19.3, 100E-7],
                  'CdTe': [5.85, 5E-4],
                  'Se': [4.82, 100E-7],
                  'SnO2': [100E-7]}
-FS3.scans = [321,325,330,337,342] #XBIC: [323,327,332,339,344]
+FS3.scans = [323,327,332,339,344] #XBIC: [323,327,332,339,344] #XBIV: [321,325,330,337,342]
 
 
 # channels to import from ASCII
@@ -69,9 +69,9 @@ elements = [ele[0:2] for ele in channels[1:]]
     # 
 beam_settings = {'beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
 
-FS3iios = XRFcorr.get_iios(beam_settings, elements, FS3.stack, end_layer='Se')
-scans_for_correction = FS3.scans
-FS3.apply_iios(scans_for_correction, FS3iios)
+#FS3iios = XRFcorr.get_iios(beam_settings, elements, FS3.stack, end_layer='Se')
+#scans_for_correction = FS3.scans
+#FS3.apply_iios(scans_for_correction, FS3iios)
 
 # i need to modify the apply_iios definition in Sample() class
 # in order to handle an Se gradient

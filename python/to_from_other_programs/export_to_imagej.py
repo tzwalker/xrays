@@ -44,11 +44,11 @@ def export_to_ImgJ_planview(path, shaped_data, color, name,
 # will have no axes in the image
 # and will ahve the same pixels as the original array
 # i.e. this code WORKS despite what is shown in the spyder plot window
-SCAN = 'scan264'
-PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\for_imagej\NBL33\43deg_scan475_POP'
-FNAME = r'\{s}_75deg_Te.txt'.format(s=SCAN)
+#SCAN = 'scan321'
+PATH = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\for_imageJ\Se'
+FNAME = r'\scan321_XBIV.txt'
 PATH_OUT = PATH + FNAME
-ARR_OUT = getattr(NBL33,SCAN)[3,:,:-2]
+ARR_OUT = imgs[0] #getattr(NBL33,SCAN)[3,:,:-2]
 DPI=96
 
 fig, ax = plt.subplots()
