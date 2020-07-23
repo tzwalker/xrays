@@ -35,14 +35,14 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-for i in Se_maps:
+for i in dels1:
     data = i#NBL33.scan261[0,:,:]
     data1 = data.copy()
     
     plt.figure()
     
     fig, ax = plt.subplots()
-    im = ax.imshow(data1, cmap='viridis', vmin=0.5,vmax=1.5) #RdYlGn #inferno #Greys_r
+    im = ax.imshow(data1, cmap='RdYlBu',vmin=0.85,vmax=1.15) #RdYlGn #inferno #Greys_r
     ax.axis('off')
     
     ob = AnchoredHScaleBar(size=67, label="10 um", loc=4, frameon=True,
@@ -50,16 +50,16 @@ for i in Se_maps:
                            linekw=dict(color="black"))
     ax.add_artist(ob)
     
-    cbar = 0
+    cbar = 1
     if cbar == 1:
         # create color bar
         divider = make_axes_locatable(ax)
         cax = divider.append_axes('right', size='5%', pad=0.1)
-        fig.colorbar(im, cax=cax, orientation='vertical',format='%.2g')
+        fig.colorbar(im, cax=cax, orientation='vertical',format='%.2f')
         #get color bar object
         cbar = plt.gcf().axes[-1]
         #format colorbar
-        cbar.set_ylabel('Se (ug/cm2)', rotation=90, va="bottom", size=11, labelpad=15)
+        cbar.set_ylabel('Norm. $\Delta$V (a.u.)', rotation=90, va="bottom", size=11, labelpad=15)
         #change colorbar tick label sizes
         cbar.tick_params(labelsize=11)   
         #change color bar scale label size, e.g. 1e-8
