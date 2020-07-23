@@ -135,44 +135,45 @@ amp = np.real(data_fft)
 #https://en.wikipedia.org/wiki/Absolute_value#Complex_numbers
 #%%
 '''1D FFT of XBIV map'''
+data = imgs[0]
 
-data = imgs[0][0,:]#.sum(axis=1) # for summing rows
+# normalize data using "max-min stretch"
+data_norm = (data - data.min()) / (data.max() - data.min())
 
-# compute fast, discrete Fourier transform
-fft = np.fft.fft(data)
-# compute frequency bins accroding to sample step
-n = data.size
+# number of samples row-wise
+N = np.shape(data_norm)[1]
+# step size (i.e. sampling rate)
 um_step = 0.150
-freq = np.fft.fftfreq(n, d=um_step)
+# compute (symmetric) frequency bins accroding to sample step
+freq = np.fft.fftfreq(N, d=um_step)
+# remove redundancy in frequency bins
+freq_clipped = freq[0:int(N/2)]
 
-# without shifting zero freq component to center of spectrum
-modulus_noshft = np.abs(fft)
+# stored modulus of FFT transforms
+moduli = []
+for row in data_norm:
+    # compute fast, discrete, fast Fourier transform (FFT) of row
+    fft = np.fft.fft(row)
+    # compute (symmetric) modulus of FFT
+    mod = np.abs(fft)
+    # remove redundancy in modulus
+    mod_clipped = mod[0:int(N/2)]
+    # store clipped modulus
+    moduli.append(mod_clipped)
+
+moduli = np.array(moduli)
+moduli_avg = np.mean(moduli,axis=0)
 
 # with shifting zero freq component to center of spectrum
-modulus_shft = np.abs(np.fft.fftshift(fft))
+# modulus_shft = np.abs(np.fft.fftshift(fft))
 
 # freq vs. noshft <--> shft plot (with discontinuity)
 # freq vs. shft <--> noshft plot (with discontinuity)
 
-# make freq vs. noshft array
-# get only one half of mirror
-freq1 = freq[0:int(n/2)].reshape(-1,1)
-mod = modulus_noshft[0:int(n/2)].reshape(-1,1)
 
 # freq1 vs. mod will give a plot that has the same spatial coordinates
 # as what is seen in Michael's paper
 
-# invert, center, then square the transform
-data_shft = np.fft.fftshift(data_fft)**2
-# take modulus of inverted, centered square
-data_abs = np.abs(data_shft)
-data_log = np.log(data_abs)
-
-ax0.plot(row)
-ax0.set_xlim([0,np.size(row)])
-
-ax1.plot(data_log)
-#ax1.set_ylim([-10,10])
 
 
 
