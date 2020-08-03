@@ -135,35 +135,44 @@ amp = np.real(data_fft)
 #https://en.wikipedia.org/wiki/Absolute_value#Complex_numbers
 #%%
 '''1D FFT of XBIV map'''
-data = imgs[0]
+# lables for plotting
+labels = ['25C', '40C', '60C', '80C', '100C']
+colors = ['k','#801100', '#B62203', '#FC6400', '#FAC000']
 
-# normalize data using "max-min stretch"
-data_norm = (data - data.min()) / (data.max() - data.min())
-
-# number of samples row-wise
-N = np.shape(data_norm)[1]
-# step size (i.e. sampling rate)
-um_step = 0.150
-# compute (symmetric) frequency bins accroding to sample step
-freq = np.fft.fftfreq(N, d=um_step)
-# remove redundancy in frequency bins
-freq_clipped = freq[0:int(N/2)]
-
-# stored modulus of FFT transforms
-moduli = []
-for row in data_norm:
-    # compute fast, discrete, fast Fourier transform (FFT) of row
-    fft = np.fft.fft(row)
-    # compute (symmetric) modulus of FFT
-    mod = np.abs(fft)
-    # remove redundancy in modulus
-    mod_clipped = mod[0:int(N/2)]
-    # store clipped modulus
-    moduli.append(mod_clipped)
-
-moduli = np.array(moduli)
-moduli_avg = np.mean(moduli,axis=0)
-
+for img, lab, col in zip(imgs, labels, colors):
+    #data = imgs[0]
+    
+    # normalize data using "max-min stretch"
+    #data_norm = (data - data.min()) / (data.max() - data.min())
+    data_norm = (img - img.min()) / (img.max() - img.min())
+    # number of samples row-wise
+    N = np.shape(data_norm)[1]
+    # step size (i.e. sampling rate)
+    um_step = 0.150
+    # compute (symmetric) frequency bins accroding to sample step
+    freq = np.fft.fftfreq(N, d=um_step)
+    # remove redundancy in frequency bins
+    freq_clipped = freq[0:int(N/2)]
+    
+    # stored modulus of FFT transforms
+    moduli = []
+    for row in data_norm:
+        # compute fast, discrete, fast Fourier transform (FFT) of row
+        fft = np.fft.fft(row)
+        # compute (symmetric) modulus of FFT
+        mod = np.abs(fft)
+        # remove redundancy in modulus
+        mod_clipped = mod[0:int(N/2)]
+        # store clipped modulus
+        moduli.append(mod_clipped)
+    
+    # convert list to array
+    moduli = np.array(moduli)
+    # take column-wise avg of array 
+    moduli_avg = np.mean(moduli,axis=0)
+    # plot results
+    plt.semilogy(freq_clipped, moduli_avg, label = lab, color=col)
+plt.legend()
 # with shifting zero freq component to center of spectrum
 # modulus_shft = np.abs(np.fft.fftshift(fft))
 
