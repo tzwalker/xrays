@@ -44,22 +44,28 @@ def export_to_ImgJ_planview(path, shaped_data, color, name,
 # will have no axes in the image
 # and will ahve the same pixels as the original array
 # i.e. this code WORKS despite what is shown in the spyder plot window
-#SCAN = 'scan321'
-PATH = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\for_imageJ\Se'
-FNAME = r'\scan321_XBIV.txt'
-PATH_OUT = PATH + FNAME
-ARR_OUT = imgs[0] #getattr(NBL33,SCAN)[3,:,:-2]
-DPI=96
+SCANS = [323,327,332,339,344]
+#PATH = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\for_imageJ\Se'
+PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_FS_operando\for_imageJ\XBIC\from_python'
+#FNAME = r'\scan321_XBIV.txt'
+for SCAN in SCANS:
+    scan = str(SCAN)
+    FNAME = r'\scan{s}_XBIC.txt'.format(s=str(scan))
+    PATH_OUT = PATH + FNAME
+    attr_name = 'scan'+scan
+    ARR_OUT = getattr(FS3,attr_name)[0,:,:-2] #imgs[0]
+    
+    np.savetxt(PATH_OUT, ARR_OUT)
 
-fig, ax = plt.subplots()
-XDIM = ARR_OUT.shape[1] ; YDIM = ARR_OUT.shape[0]
-fig.set_size_inches(XDIM/DPI, YDIM/DPI)    
-ax = fig.add_axes([0, 0, 1, 1])
-
-ax.imshow(ARR_OUT, cmap='inferno')
-ax.set_axis_off()
-#plt.savefig(PATH_OUT, dpi=DPI)
-
-np.savetxt(PATH_OUT, ARR_OUT)
-
-
+# =============================================================================
+#     DPI=96
+#     
+#     fig, ax = plt.subplots()
+#     XDIM = ARR_OUT.shape[1] ; YDIM = ARR_OUT.shape[0]
+#     fig.set_size_inches(XDIM/DPI, YDIM/DPI)    
+#     ax = fig.add_axes([0, 0, 1, 1])
+#     
+#     ax.imshow(ARR_OUT, cmap='inferno')
+#     ax.set_axis_off()
+#     #plt.savefig(PATH_OUT, dpi=DPI)
+# =============================================================================

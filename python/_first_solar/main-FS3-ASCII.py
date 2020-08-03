@@ -9,7 +9,9 @@ Sample FS3_3: 2019_06_2IDD
 -abandoned h5 importing, the structure between the TW fit and BL fit
 is far too different and not worth the time
 
---> use ASCII csvs for these data
+ASCIIS_TW_BL have the combined data
+    'us_ic' is the relevant scaler for the electrical channel
+    'UC_IC' is the relevant scaler for the upstream ion chamber
 
 XBIC
 20C: scan0323
@@ -34,10 +36,10 @@ for plotting reference, pixel step was 150nm --> 20pixels = 3um, 67pix = 10um
 """
 
 from class_ascii_Sample import Sample
-ASCII_PATH = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL'
-PATH_LOCKIN = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL\FS_plan_electrical.csv'
-#ASCII_PATH =  r'C:\Users\Trumann\data_First Solar\FS3_2019_06_2IDD\ASCIIS_TW_BL' 
-#PATH_LOCKIN = r'C:\Users\Trumann\data_First Solar\FS3_2019_06_2IDD\ASCIIS_TW_BL\FS_plan_electrical.csv'
+#ASCII_PATH = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL'
+#PATH_LOCKIN = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL\FS_plan_electrical.csv'
+ASCII_PATH =  r'C:\Users\Trumann\FS3_2019_06_operando\ASCIIS_TW_BL' 
+PATH_LOCKIN = r'C:\Users\Trumann\FS3_2019_06_operando\ASCIIS_TW_BL\FS_plan_electrical.csv'
 
 # create sample objects
 FS3 = Sample()
