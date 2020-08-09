@@ -35,14 +35,14 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-for i in dels1:
+for i in imgs:
     data = i#NBL33.scan261[0,:,:]
     data1 = data.copy()
     
     plt.figure()
     
     fig, ax = plt.subplots()
-    im = ax.imshow(data1, cmap='RdYlBu',vmin=0.85,vmax=1.15) #RdYlGn #inferno #Greys_r
+    im = ax.imshow(data1, cmap='inferno',vmin=5.6E-8,vmax=8.6E-8) #RdYlGn #inferno #Greys_r
     ax.axis('off')
     
     ob = AnchoredHScaleBar(size=67, label="10 um", loc=4, frameon=True,
@@ -55,11 +55,11 @@ for i in dels1:
         # create color bar
         divider = make_axes_locatable(ax)
         cax = divider.append_axes('right', size='5%', pad=0.1)
-        fig.colorbar(im, cax=cax, orientation='vertical',format='%.2f')
+        fig.colorbar(im, cax=cax, orientation='vertical',format='%.2e')
         #get color bar object
         cbar = plt.gcf().axes[-1]
         #format colorbar
-        cbar.set_ylabel('Norm. $\Delta$V (a.u.)', rotation=90, va="bottom", size=11, labelpad=15)
+        cbar.set_ylabel('XBIC (A)', rotation=90, va="bottom", size=11, labelpad=15)
         #change colorbar tick label sizes
         cbar.tick_params(labelsize=11)   
         #change color bar scale label size, e.g. 1e-8
