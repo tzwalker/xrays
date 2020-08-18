@@ -33,7 +33,7 @@ PATH_IN = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\XBIC_XBIV aligned image 
 scans = [321,325,330,337,342]
 scans1 = [str(s) for s in scans]
 
-# import XBIV maps
+# import aligned XBIV maps
 imgs = []
 for S in scans1:
     FNAME = r'\FS3_scan{SCN}_XBIV.csv'.format(SCN=S)
@@ -139,7 +139,23 @@ amp = np.real(data_fft)
 labels = ['25C', '40C', '60C', '80C', '100C']
 colors = ['k','#801100', '#B62203', '#FC6400', '#FAC000']
 
-for img, lab, col in zip(imgs, labels, colors):
+# following Michael's suggestions
+
+# define Gaussian filter by pixel
+# https://stackoverflow.com/questions/25216382/gaussian-filter-in-scipy
+from scipy.ndimage.filters import gaussian_filter
+# for width, w = 3px --> corresponds to 500nm (with 150nm step size)
+w = 3
+s = 2
+t = (((w - 1)/2)-0.5)/s
+# loop over imgs
+imgs_gaussFilt = [gaussian_filter(img, sigma=s, truncate=t) for img in imgs]
+
+
+
+# for aligned XBIV, change 1st arg in zip() to list 'imgs'
+# for gaussFilt aligned XBIV, change 1st arg in zip() to list 'imgs_gaussFilt'
+for img, lab, col in zip(imgs_gaussFilt, labels, colors): #change to imgs
     #data = imgs[0]
     
     # normalize data using "max-min stretch"
@@ -182,6 +198,7 @@ plt.legend()
 
 # freq1 vs. mod will give a plot that has the same spatial coordinates
 # as what is seen in Michael's paper
+
 #%%
 '''
 1D FFT of misaligned XBIC maps - copy XBIV image analysis
