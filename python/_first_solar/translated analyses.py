@@ -155,7 +155,7 @@ imgs_gaussFilt = [gaussian_filter(img, sigma=s, truncate=t) for img in imgs]
 
 # for aligned XBIV, change 1st arg in zip() to list 'imgs'
 # for gaussFilt aligned XBIV, change 1st arg in zip() to list 'imgs_gaussFilt'
-for img, lab, col in zip(imgs_gaussFilt, labels, colors): #change to imgs
+for img, lab, col in zip(imgs, labels, colors): #change to imgs
     #data = imgs[0]
     
     # normalize data using "max-min stretch"
@@ -205,7 +205,7 @@ plt.legend()
 these images have better quality as the sampling frequency
 was further from the chopping frequency
 '''
-# data loaded directly from main-FS3-ACSII.py
+# data loaded directly from 'main-FS3-ACSII.py'
 imgs = [img[0,:,:-2] for img in FS3.maps]
 # delete invalid row in 100C map; fill/unfill
 imgs[4] = np.delete(imgs[4],81,0)
