@@ -18,8 +18,9 @@ but based off the plots, it is likley to be around 10-15
     sticking with 15 to be used in average investigations
 """
 
-PATH = r'C:\Users\triton\NBL3_data\cross_section_MS' #r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs' #'C:\Users\triton\Desktop\NBL3_data\cross_section_MS'
-DEFS = r'C:\Users\triton\xrays\python\_NBL3' #'C:\Users\triton\xrays\python\NBL3xsect' C:\Users\Trumann\xrays\python\NBL3xsect
+PATH = r'C:\Users\Trumann\data_NBL3\cross_sections_MS' #r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs' #'C:\Users\triton\Desktop\NBL3_data\cross_section_MS'
+DEFS = r'C:\Users\Trumann\xrays\python\NBL3xsect' #'C:\Users\triton\xrays\python\NBL3xsect' #C:\Users\Trumann\xrays\python\NBL3xsect
+
 import sys
 sys.path.append(DEFS)
 import numpy as np
@@ -92,7 +93,7 @@ ROTATION = 0
 map_dfs = import_xSect_csvs(PATH, SAMPLE, SCAN, CHANNELS, META_DATA, ROTATION)
 
 # for NBL31 scan 8 to have the same points and 5um length as NBL33 scan 1
-#data = map_dfs[2].iloc[:34,:] # 34 pts at 150nm step ~ 5um
+#data = map_dfs[1].iloc[:34,:] # 34 pts at 150nm step ~ 5um
 # otherwise (for NBL33) plot data frame normally
 data = map_dfs[2]
 
@@ -103,14 +104,14 @@ im = ax.imshow(data, cmap='Blues_r')
 ax.axis('off')
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp'
 FNAME = r'\NBL33scan1_Cd.eps'
-plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
 
 # for exporting cross-section integration
-integrate = data.sum(axis=0)
-plt.figure()
-plt.plot(integrate)
-OUT_PATH1 = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\xsect integreated and models'
-FNAME = r'\py_NBL31_Scan8_trimTo5um_Cd.csv'
+#integrate = data.sum(axis=0)
+#plt.figure()
+#plt.plot(integrate)
+#OUT_PATH1 = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\DATA\xsect integreated and models'
+#FNAME = r'\py_NBL31_Scan8_trimTo5um_Cd.csv'
 #integrate.to_csv(OUT_PATH1+FNAME, header=False)
 #%%
 
