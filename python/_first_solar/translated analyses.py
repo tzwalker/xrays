@@ -133,6 +133,7 @@ data_log = np.log(data_abs)
 plt.imshow(data_log)
 amp = np.real(data_fft)
 #https://en.wikipedia.org/wiki/Absolute_value#Complex_numbers
+
 #%%
 '''1D FFT of aligned XBIV map'''
 # lables for plotting

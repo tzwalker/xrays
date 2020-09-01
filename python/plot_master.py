@@ -37,8 +37,8 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
 
 #for i in imgs:
 #data = FS3.scan344[1,:,:]#i#NBL33.scan261[0,:,:]
-data1 = data.copy()
-data1=data1
+data1 = img_filt.copy()
+data1=np.abs(data1)
 plt.figure()
 
 fig, ax = plt.subplots(figsize=(5,5))
@@ -51,17 +51,17 @@ fig, ax = plt.subplots(figsize=(5,5))
     # Se XRF: vmin=0.5,vmax=1.5
     # XBIC: vmin=5.6E-8,vmax=8.6E-8 
     
-im = ax.imshow(data1, cmap='Blues_r')#, vmin=0,vmax=4)
+im = ax.imshow(data1, cmap='inferno')#, vmin=0,vmax=4)
 ax.axis('off')
 
-scalebar = 0
+scalebar = 1
 if scalebar == 1:
     ob = AnchoredHScaleBar(size=67, label="10 um", loc=4, frameon=True,
                            pad=0.5, borderpad=1, sep=4, 
                            linekw=dict(color="black"))
     ax.add_artist(ob)
 
-cbar = 1
+cbar = 0
 if cbar == 1:
     # create color bar
     divider = make_axes_locatable(ax)
@@ -82,6 +82,6 @@ if cbar == 1:
 
 OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp\maps with colorbars'
 FNAME = r'\NBL33scan1_Cd.eps'
-plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
 
 

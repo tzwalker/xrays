@@ -30,7 +30,8 @@ XBIV
              337,338,339,340,341,342,343, 344, 345]
 
 present workflow:
-    "main-FS3-ASCII" --> "XBIC-XBIV-translate-and-deltas" --> 
+    "main-FS3-ASCII" --> 
+    "XBIV-translate-and-deltas" --> 
     "translated analyses"
 for plotting reference, pixel step was 150nm --> 20pixels = 3um, 67pix = 10um
 """
