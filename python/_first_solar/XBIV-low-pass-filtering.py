@@ -4,6 +4,9 @@ coding: utf-8
 tzwalker
 Tue Sep  1 14:09:48 2020
 
+"""
+
+"""
 this program takes an XBIV image from "translated analyses.py"
 and filters out the high spatial frequencies
 
@@ -11,7 +14,6 @@ this is done by computing the 2D FFT spectra,
 applying a circular, binary mask to the spectra
 then, inverting the thresholded spectra back to real space
 """
-
 import numpy as np
 img = imgs[0].copy()
 
@@ -78,3 +80,29 @@ img_filt = np.fft.ifft2(fft_filt)
 
 # plot filtered image
 plt.imshow(np.abs(img_filt))
+
+#%%
+"""
+only the important parts to make list "imgs_LP" 
+and perform the row-wise average FFT
+"""
+# make symmetric filter in frequency (i.e the fft spectrum's) space
+LP_filt = low_pass_brickwall_filter(43, np.shape(img))
+
+imgs_LP = []
+for img in imgs:
+    # normalize data using "max-min stretch"
+    img_norm = (img - img.min()) / (img.max() - img.min())
+    # compute fast fourier transform
+    fft_spectrum = np.fft.fft2(img_norm)
+    # shift zero-frequency component to center of spectrum (for convenience)
+    fft_shft = np.fft.fftshift(fft_spectrum)
+    # apply filter to FFT spectrum
+    fft_shft_filt = LP_filt * fft_shft
+    # shift the zero-frequency component to corners of spectrum 
+        # (prep for inversion to real space)
+    fft_filt = np.fft.ifftshift(fft_shft_filt)
+    # invert spectrum to real space
+    img_filt = np.fft.ifft2(fft_filt)
+    img_filt_abs = np.abs(img_filt)
+    imgs_LP.append(img_filt_abs)
