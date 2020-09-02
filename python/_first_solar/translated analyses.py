@@ -133,11 +133,14 @@ data_log = np.log(data_abs)
 plt.imshow(data_log)
 amp = np.real(data_fft)
 #https://en.wikipedia.org/wiki/Absolute_value#Complex_numbers
+
 #%%
 '''1D FFT of aligned XBIV map'''
 # lables for plotting
 labels = ['25C', '40C', '60C', '80C', '100C']
 colors = ['k','#801100', '#B62203', '#FC6400', '#FAC000']
+
+from matplotlib.ticker import MultipleLocator
 
 # following Michael's suggestions
 
@@ -151,11 +154,14 @@ t = (((w - 1)/2)-0.5)/s
 # loop over imgs
 imgs_gaussFilt = [gaussian_filter(img, sigma=s, truncate=t) for img in imgs]
 
-
+# run second code cell in "XBIV-low-pass_filtering.py" first
+# to get list of low pass filter images
 
 # for aligned XBIV, change 1st arg in zip() to list 'imgs'
 # for gaussFilt aligned XBIV, change 1st arg in zip() to list 'imgs_gaussFilt'
-for img, lab, col in zip(imgs, labels, colors): #change to imgs
+# for low-low-pas-filtered aligned XBIV, change 1st arg in zip() to "imgs_LP"
+fig, ax = plt.subplots()
+for img, lab, col in zip(imgs_LP, labels, colors): #change to imgs
     #data = imgs[0]
     
     # normalize data using "max-min stretch"
@@ -187,8 +193,13 @@ for img, lab, col in zip(imgs, labels, colors): #change to imgs
     # take column-wise avg of array 
     moduli_avg = np.mean(moduli,axis=0)
     # plot results
-    plt.semilogy(freq_clipped, moduli_avg, label = lab, color=col)
+    ax.semilogy(freq_clipped, moduli_avg, label = lab, color=col)
+ax.xaxis.grid(True, which='minor')
+ax.xaxis.set_minor_locator(MultipleLocator(0.1))
 plt.legend()
+plt.ylim([0.2,2E2])
+
+
 # with shifting zero freq component to center of spectrum
 # modulus_shft = np.abs(np.fft.fftshift(fft))
 
