@@ -84,8 +84,8 @@ def import_xSect_csvs(path, sample, scannum, channels, meta, rot):
 
 
 
-SAMPLE = 'NBL33'
-SCAN = 1
+SAMPLE = 'NBL31'
+SCAN = 8
 CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
 META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)
 ROTATION = 0
@@ -93,9 +93,9 @@ ROTATION = 0
 map_dfs = import_xSect_csvs(PATH, SAMPLE, SCAN, CHANNELS, META_DATA, ROTATION)
 
 # for NBL31 scan 8 to have the same points and 5um length as NBL33 scan 1
-#data = map_dfs[1].iloc[:34,:] # 34 pts at 150nm step ~ 5um
+data = map_dfs[2].iloc[:34,:] # 34 pts at 150nm step ~ 5um
 # otherwise (for NBL33) plot data frame normally
-data = map_dfs[2]
+#data = map_dfs[2]
 
 # for exporting cross-section maps
 plt.figure()
