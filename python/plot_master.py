@@ -35,7 +35,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-for i in imgs_LP:
+for i in imgs_gaussFilt:
 #data = FS3.scan344[1,:,:]#i#NBL33.scan261[0,:,:]
     data1 = i.copy()
     data1=np.abs(data1)
