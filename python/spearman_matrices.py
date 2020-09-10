@@ -1,9 +1,27 @@
-# -*- coding: utf-8 -*-
-"""
-Trumann
-Wed Sep 11 11:47:57 2019
-"""
+from scipy.stats import spearmanr
+import numpy as np
+import seaborn as sns
 
+imgs = NBL33.scan264[0:4,:,:-2]
+
+x,y = np.shape(imgs)[1],np.shape(imgs)[2]
+new_shape = x*y
+
+imgs_flt = imgs.reshape(4, new_shape)
+
+imgs_fltT = imgs_flt.T
+spear = spearmanr(imgs_fltT)
+
+labs = ['XBIC', 'Cu', 'Cd', 'Te']
+cbar_lab = 'Monotonicty'
+mask = np.triu(np.ones_like(spear[0], dtype=bool))
+
+fig, ax = plt.subplots(figsize=(5,2))
+sns.heatmap(spear[0], vmin=-1, vmax=1, cmap='coolwarm',
+            annot=True, xticklabels=labs, yticklabels=labs,
+            mask=mask, fmt='.2f', cbar_kws={'label': cbar_lab})
+
+#%%
 """
 tzwalker
 Sun Feb  2 11:01:38 2020
