@@ -115,13 +115,13 @@ def get_iios(beam_settings, elements, STACK, end_layer):
     return ele_avg_iios, ele_all_iios.T
 
 
-stack = {'CdS':   [4.82, 5E-7], 
-                 'CdTe': [5.85, 12E-4], 
-                 'CuInGaAs': [5.7, 1.8E-4]}
+stack = {'Mo':   [10.22, 500E-7], 
+         'ZnTe': [6.34, 375E-7],
+         'CdTe': [5.85, 12E-4]}
 
 elements = ['Cu', 'Cd', 'Te']
 
-beam_settings = {'beam_energy': 12.7, 'beam_theta':90, 'detect_theta':47}
+beam_settings = {'beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
 
 iios2019, iio_arr = get_iios(beam_settings, elements, stack, end_layer='CdTe')
 
@@ -135,11 +135,18 @@ FNAME = r'\for Tara Cu_Se_In_Ga XRF absorption in typical CIGS.csv'
 steps = np.linspace(0, 10000000, 10000001)
 dt = 1*10**-7
 beam_iio_thru_layer = []
-cap_cross_section_of_one_sublayer_in = - xl.CS_Total_CP('CdTe', 12.7) * 5.85 * dt / 75
+cap_cross_section_of_one_sublayer_in = - xl.CS_Total_CP('CdTe', 9.9) * 5.85 * dt / 75
 for index, step in enumerate(steps):
     beam_in = cap_cross_section_of_one_sublayer_in * index
     iio_beam = np.exp(beam_in)
     beam_iio_thru_layer.append(iio_beam)
-plt.plot(beam_iio_thru_layer)
+#plt.plot(beam_iio_thru_layer)
 
-#in cross section beam attenuates at roughly 200um
+value = (1/np.e)
+array = np.asarray(beam_iio_thru_layer)
+idx = (np.abs(array - value)).argmin() # this is the same as the step in nm
+um = idx*0.001
+print(um)
+
+
+#in cross section, the beam attenuates at roughly 900um @ 9.9keV
