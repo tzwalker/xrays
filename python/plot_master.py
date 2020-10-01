@@ -3,6 +3,9 @@ coding: utf-8
 
 tzwalker
 Wed May 13 15:31:19 2020
+
+for FS3_operando: 67px = 10um
+for NBL3:  33px = 5um
 """
 import matplotlib.pyplot as plt
 import matplotlib.offsetbox as offbox
@@ -34,11 +37,9 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-for i in imgs_gaussFilt:
-#for i in imgs:
-#data = FS3.scan344[1,:,:] #i #NBL33.scan261[0,:,:]
-data1 = data.copy()
-data1=data1
+img = FS3.scan323[0,:,:-2]
+data = img.copy()
+data = data
 plt.figure()
 
 fig, ax = plt.subplots(figsize=(5,5))
@@ -60,10 +61,10 @@ fig, ax = plt.subplots(figsize=(5,5))
     # Se XRF: vmin=0.5,vmax=1.5
     # XBIC: vmin=5.6E-8,vmax=8.6E-8 
     
-im = ax.imshow(data1, cmap='Blues_r', vmin=0,vmax=15000)
+im = ax.imshow(img, cmap='bwr')
 ax.axis('off')
 
-scalebar = 0
+scalebar = 1
 if scalebar == 1:
     ob = AnchoredHScaleBar(size=67, label="10 um", loc=4, frameon=True,
                            pad=0.5, borderpad=1, sep=4, 
@@ -79,15 +80,15 @@ if cbar == 1:
         #get color bar object
     cbar = plt.gcf().axes[-1]
         #format colorbar
-    cbar.set_ylabel('(cts/s)', rotation=90, va="bottom", size=7, labelpad=10)
+    cbar.set_ylabel('XBIC (A)', rotation=90, va="bottom", size=12, labelpad=20)
         # change number of tick labels on colorbar
-    cbar.locator_params(nbins=4)
+    #cbar.locator_params(nbins=4)
         #change colorbar tick label sizes
-    cbar.tick_params(labelsize=7)
+    cbar.tick_params(labelsize=12)
         # change scale label, e.g. 1e-8
     #cbar.set_title('1e4', size=11,loc='left')
         #change color bar scale label size, e.g. 1e-8
-    cbar.yaxis.get_offset_text().set(size=7)
+    cbar.yaxis.get_offset_text().set(size=12)
         #change color bar scale label position   
     cbar.yaxis.set_offset_position('left')
 
