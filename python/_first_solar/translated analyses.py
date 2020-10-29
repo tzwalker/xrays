@@ -122,20 +122,25 @@ FNAME = r'\arrays_for_hist_hiXBIVvTemp.csv'
 #np.savetxt(PATH_OUT+FNAME, hi_XBIV_arr, delimiter=',')
 #%%
 '''2D FFT of XBIV maps'''
-DATA = imgs[4]
-data_fft = np.fft.fft2(DATA)#, s=None, axes=(-2, -1), norm=None)
-# invert, center, then square the transform
-data_shft = np.fft.fftshift(data_fft)**2
-# take modulus of inverted, centered square
-data_abs = np.abs(data_shft)
+transforms = []
+for img in imgs:
+    DATA = img
+    data_fft = np.fft.fft2(DATA)#, s=None, axes=(-2, -1), norm=None)
+    # invert, center, then square the transform
+    data_shft = np.fft.fftshift(data_fft)**2
+    # take modulus of inverted, centered square
+    data_abs = np.abs(data_shft)
+    
+    data_log = np.log(data_abs)
+    transforms.append(data_log)
 
-data_log = np.log(data_abs)
-plt.imshow(data_log)
-amp = np.real(data_fft)
+#plt.imshow(data_log)
+#amp = np.real(data_fft)
 #https://en.wikipedia.org/wiki/Absolute_value#Complex_numbers
 
 #%%
-'''1D FFT of aligned XBIV map'''
+'''1D FFT of aligned XBIV map
+this code cell includes filtering attempts'''
 # lables for plotting
 labels = ['25C', '40C', '60C', '80C', '100C']
 colors = ['k','#801100', '#B62203', '#FC6400', '#FAC000']
