@@ -37,7 +37,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-img = FS3.scan323[0,:,:-2]
+img = xbic_nA#FS3.scan323[0,:,:-2]
 data = img.copy()
 data = data
 plt.figure()
@@ -61,12 +61,12 @@ fig, ax = plt.subplots(figsize=(5,5))
     # Se XRF: vmin=0.5,vmax=1.5
     # XBIC: vmin=5.6E-8,vmax=8.6E-8 
     
-im = ax.imshow(img, cmap='bwr')
+im = ax.imshow(data, cmap='inferno')
 ax.axis('off')
 
 scalebar = 1
 if scalebar == 1:
-    ob = AnchoredHScaleBar(size=67, label="10 um", loc=4, frameon=True,
+    ob = AnchoredHScaleBar(size=25, label="4 um", loc=4, frameon=True,
                            pad=0.5, borderpad=1, sep=4, 
                            linekw=dict(color="black"))
     ax.add_artist(ob)
@@ -80,7 +80,7 @@ if cbar == 1:
         #get color bar object
     cbar = plt.gcf().axes[-1]
         #format colorbar
-    cbar.set_ylabel('XBIC (A)', rotation=90, va="bottom", size=12, labelpad=20)
+    cbar.set_ylabel('XBIC (nA)', rotation=90, va="bottom", size=12, labelpad=20)
         # change number of tick labels on colorbar
     #cbar.locator_params(nbins=4)
         #change colorbar tick label sizes
