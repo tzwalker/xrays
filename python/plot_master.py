@@ -1,11 +1,9 @@
 """
 coding: utf-8
-
 tzwalker
 Wed May 13 15:31:19 2020
-
 for FS3_operando: 67px = 10um
-for NBL3:  33px = 5um or... 50px =5um (for older scans 2017_2018)
+for NBL3:  33px = 5um
 """
 import matplotlib.pyplot as plt
 import matplotlib.offsetbox as offbox
@@ -37,7 +35,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-img = NBL32.scan422[1,:,:-2]
+img = xbic_nA#FS3.scan323[0,:,:-2]
 data = img.copy()
 data = data
 plt.figure()
@@ -61,12 +59,12 @@ fig, ax = plt.subplots(figsize=(5,5))
     # Se XRF: vmin=0.5,vmax=1.5
     # XBIC: vmin=5.6E-8,vmax=8.6E-8 
     
-im = ax.imshow(data, cmap='Oranges_r')
+im = ax.imshow(data, cmap='inferno')
 ax.axis('off')
 
 scalebar = 1
 if scalebar == 1:
-    ob = AnchoredHScaleBar(size=33, label="5 um", loc=2, frameon=True,
+    ob = AnchoredHScaleBar(size=25, label="4 um", loc=4, frameon=True,
                            pad=0.5, borderpad=1, sep=4, 
                            linekw=dict(color="black"))
     ax.add_artist(ob)
@@ -80,7 +78,7 @@ if cbar == 1:
         #get color bar object
     cbar = plt.gcf().axes[-1]
         #format colorbar
-    cbar.set_ylabel('Concentration (ug/cm2)', rotation=90, va="bottom", size=12, labelpad=20)
+    cbar.set_ylabel('XBIC (nA)', rotation=90, va="bottom", size=12, labelpad=20)
         # change number of tick labels on colorbar
     #cbar.locator_params(nbins=4)
         #change colorbar tick label sizes
@@ -92,8 +90,6 @@ if cbar == 1:
         #change color bar scale label position   
     cbar.yaxis.set_offset_position('left')
 
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\main_xrf\vector graphics'
-FNAME = r'\NBL32scan422_Cu.eps'
-plt.savefig(OUT_PATH+FNAME, format='eps', bbox_inches='tight', pad_inches = 0) #, dpi=300, )
-
-
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp\maps with colorbars'
+FNAME = r'\NBL31scan8_Cd2.eps'
+#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
