@@ -37,7 +37,7 @@ NBL31.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-NBL31.scans = [335,336,337, 338,339,340, 341,342,343,344]#, 517,519]
+NBL31.scans = [335,336,337, 338,339,340, 341,342,343,344, 517,519]
 
 NBL32.stack = {'Mo':   [10.2, 500E-7], 
                  'ZnTe': [6.34, 375E-7], 
@@ -45,7 +45,7 @@ NBL32.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-NBL32.scans =  [416,417,418, 419,420,421, 422,423,424,426]#, 538,550,575,551]
+NBL32.scans =  [416,417,418, 419,420,421, 422,423,424,426, 538,550,575,551]
 
 NBL33.stack = {'Mo':   [10.2, 500E-7], 
                  'ZnTe': [6.34, 375E-7], 
@@ -53,7 +53,7 @@ NBL33.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-NBL33.scans =  [258,259,260, 261,262,263, 264,265,266,267]#, 491,472,475]
+NBL33.scans =  [258,259,260, 261,262,263, 264,265,266,267, 491,472,475]
 
 TS58A.stack = {'Mo':   [10.2, 500E-7], 
                  'ZnTe': [6.34, 375E-7], 
@@ -61,7 +61,7 @@ TS58A.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-TS58A.scans =  [378,379,380, 382,383,384, 385,386,387,388]#,  439,408,427,440]
+TS58A.scans =  [378,379,380, 382,383,384, 385,386,387,388,  439,408,427,440]
 
 # import h5 data for each sample
 NBL31.import_scan_data(data_path)
@@ -82,7 +82,7 @@ TS58A.get_lockin(data_path+'/a_class_electrical.csv')
 # arg2: element maps to extract
 # arg3: scaler channel to normalize elemental signal
 # arg4: use 'fit' on fitted h5s, or 'roi' for unfitted h5s
-elements = ['Cu', 'Cd_L', 'Te_L', 'Zn', 'Mo_L']
+elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L'] #'Zn', 
 NBL31.import_maps('ds_ic', elements, 'us_ic', 'fit')
 NBL32.import_maps('ds_ic', elements, 'us_ic', 'fit')
 NBL33.import_maps('ds_ic', elements, 'us_ic', 'fit')
@@ -133,6 +133,8 @@ TS58A.import_maps('ds_ic', elements, 'us_ic', 'fit')
 # =============================================================================
 #%%
 
+import numpy as np
+import matplotlib.pyplot as plt
 # max-min stretch 
 def normalize(array):
     data_norm = (array - array.min()) / (array.max() - array.min())
@@ -140,7 +142,7 @@ def normalize(array):
 
 # save XBIC array for Fiji processing and main_xrf figure
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\main_xrf'
-FILE = r'\NBL31_scan341_XBIC.csv'
+FILE = r'\NBL3_scan341_XBIC.csv'
 arr = NBL31.scan341[0,:,:-2]
 arr = normalize(arr)
 np.savetxt(OUT_PATH+FILE,arr,delimiter=',')
