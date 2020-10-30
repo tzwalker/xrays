@@ -23,7 +23,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # specificy path to csvs
-PATH_IN = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\XBIC_XBIV aligned image csvs'
+PATH_IN = r'C:\Users\Trumann\Dropbox (ASU)\1_FS_operando\XBIV aligned image csvs'
 scans = [321,325,330,337,342]
 scans1 = [str(s) for s in scans]
 
@@ -118,8 +118,8 @@ FNAME = r'\arrays_for_hist_hiXBIVvTemp.csv'
 '''2D FFT of XBIV maps'''
 transforms = []
 for img in imgs:
-    DATA = img
-    data_fft = np.fft.fft2(DATA)#, s=None, axes=(-2, -1), norm=None)
+    data_norm = (img - img.min()) / (img.max() - img.min())
+    data_fft = np.fft.fft2(data_norm)#, s=None, axes=(-2, -1), norm=None)
     # invert, center, then square the transform
     data_shft = np.fft.fftshift(data_fft)**2
     # take modulus of inverted, centered square

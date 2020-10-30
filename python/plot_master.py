@@ -34,61 +34,61 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
-
-img = transforms[4] #FS3.scan323[0,:,:-2]
-data = img.copy()
-data = data
-plt.figure()
-
-fig, ax = plt.subplots(figsize=(5,5))
-# cmaps: 
-    #RdYlGn 
-    #inferno 
-    #Greys_r
-    #Blues_r
-    #viridis #Oranges_r 
-#for NBL3xsect NBL33
-    # XBIC: vmin=0,vmax=80, after multiplying 'data1' by 1E9
-    # Cu XRF: vmin=0,vmax=30000
-    # Cd XRF: vmin=0,vmax=15000
-#for NBL3xsect NBL31
-    # XBIC: vmin=0,vmax=250, after multiplying 'data1' by 1E9,bins=3
-    # Cu XRF: vmin=0,vmax=2000, bins=2
-    # Cd XRF: vmin=0,vmax=15000, bins=4
-#for FS3
-    # Se XRF: vmin=0.5,vmax=1.5
-    # XBIC: vmin=5.6E-8,vmax=8.6E-8 
+for img in transforms:
+    #img = transforms[4] #FS3.scan323[0,:,:-2]
+    data = img.copy()
+    data = data
+    plt.figure()
     
-im = ax.imshow(data, cmap='Greys_r')
-ax.axis('off')
-
-scalebar = 0
-if scalebar == 1:
-    ob = AnchoredHScaleBar(size=25, label="4 um", loc=4, frameon=True,
-                           pad=0.5, borderpad=1, sep=4, 
-                           linekw=dict(color="black"))
-    ax.add_artist(ob)
-
-cbar = 1
-if cbar == 1:
-        # create color bar
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes('right', size='5%', pad=0.1)
-    fig.colorbar(im, cax=cax, orientation='vertical')#,format='%.0f')
-        #get color bar object
-    cbar = plt.gcf().axes[-1]
-        #format colorbar
-    cbar.set_ylabel('log(amplitude) (a.u.)', rotation=90, va="bottom", size=12, labelpad=20)
-        # change number of tick labels on colorbar
-    #cbar.locator_params(nbins=4)
-        #change colorbar tick label sizes
-    cbar.tick_params(labelsize=12)
-        # change scale label, e.g. 1e-8
-    #cbar.set_title('1e4', size=11,loc='left')
-        #change color bar scale label size, e.g. 1e-8
-    cbar.yaxis.get_offset_text().set(size=12)
-        #change color bar scale label position   
-    cbar.yaxis.set_offset_position('left')
+    fig, ax = plt.subplots(figsize=(5,5))
+    # cmaps: 
+        #RdYlGn 
+        #inferno 
+        #Greys_r
+        #Blues_r
+        #viridis #Oranges_r 
+    #for NBL3xsect NBL33
+        # XBIC: vmin=0,vmax=80, after multiplying 'data1' by 1E9
+        # Cu XRF: vmin=0,vmax=30000
+        # Cd XRF: vmin=0,vmax=15000
+    #for NBL3xsect NBL31
+        # XBIC: vmin=0,vmax=250, after multiplying 'data1' by 1E9,bins=3
+        # Cu XRF: vmin=0,vmax=2000, bins=2
+        # Cd XRF: vmin=0,vmax=15000, bins=4
+    #for FS3
+        # Se XRF: vmin=0.5,vmax=1.5
+        # XBIC: vmin=5.6E-8,vmax=8.6E-8 
+        
+    im = ax.imshow(data, cmap='Greys_r')
+    ax.axis('off')
+    
+    scalebar = 0
+    if scalebar == 1:
+        ob = AnchoredHScaleBar(size=25, label="4 um", loc=4, frameon=True,
+                               pad=0.5, borderpad=1, sep=4, 
+                               linekw=dict(color="black"))
+        ax.add_artist(ob)
+    
+    cbar = 1
+    if cbar == 1:
+            # create color bar
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes('right', size='5%', pad=0.1)
+        fig.colorbar(im, cax=cax, orientation='vertical')#,format='%.0f')
+            #get color bar object
+        cbar = plt.gcf().axes[-1]
+            #format colorbar
+        cbar.set_ylabel('log(amplitude) (a.u.)', rotation=90, va="bottom", size=12, labelpad=20)
+            # change number of tick labels on colorbar
+        #cbar.locator_params(nbins=4)
+            #change colorbar tick label sizes
+        cbar.tick_params(labelsize=12)
+            # change scale label, e.g. 1e-8
+        #cbar.set_title('1e4', size=11,loc='left')
+            #change color bar scale label size, e.g. 1e-8
+        cbar.yaxis.get_offset_text().set(size=12)
+            #change color bar scale label position   
+        cbar.yaxis.set_offset_position('left')
 
 OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp\maps with colorbars'
 FNAME = r'\NBL31scan8_Cd2.eps'

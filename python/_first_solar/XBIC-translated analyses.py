@@ -46,11 +46,11 @@ dels1 = [(X/np.median(X)) / (Y/np.median(Y)) for X,Y in zip(imgs[1:], imgs[0:])]
 
 #%%
 
-'''2D FFT of XBIC maps'''
+'''2D FFT of aligned XBIC maps'''
 transforms = []
 for img in imgs:
-    DATA = img
-    data_fft = np.fft.fft2(DATA)#, s=None, axes=(-2, -1), norm=None)
+    data_norm = (img - img.min()) / (img.max() - img.min())
+    data_fft = np.fft.fft2(data_norm)#, s=None, axes=(-2, -1), norm=None)
     # invert, center, then square the transform
     data_shft = np.fft.fftshift(data_fft)**2
     # take modulus of inverted, centered square
