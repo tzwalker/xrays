@@ -142,22 +142,23 @@ shifted_channels4 = np.array(shifted_channels4)
 aligned = [shifted_channels0,shifted_channels1,
            shifted_channels2,shifted_channels3,
            shifted_channels4]
-### remove zeros according to indices of map with largest offset
-aligned_crop = [arr[:,19:,44:] for arr in aligned]
 
-### check alignment of images
-# =============================================================================
-# for scan in aligned_crop:
-#     plt.figure()
-#     plt.imshow(scan[1,:,:]) # change this number to check
-# #plt.imshow(aligned_crop[0][2,:,:])
-# #plt.imshow(aligned_crop[1][2,:,:])
-# =============================================================================
+### remove zeros according to indices of map with largest offsets
+# in the XBIC images, the last 100C map is cut off both above and below, 
+    # from row indices 19:176
+aligned_crop = [arr[:,19:176,44:] for arr in aligned]
+
+# last 100C map has a line with a fill/unfill
+    # at row index 57 in translated image
+    # at row index 38 in cropped image
+    # this will mess with the FFT of the image so it has been removed
+aligned_crop[4] = np.delete(aligned_crop[4], 38, axis=1)
+
 
 # save aligned arrays for further processing
-PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\XBIC_XBIV aligned image csvs'
-SCAN_STR = ['scan321','scan325','scan330','scan337','scan342']
-CHANNELS = ['XBIV','Se', 'Cd', 'Te', 'Au']
+PATH_OUT = r'C:\Users\Trumann\Dropbox (ASU)\1_FS_operando\XBIC aligned image csvs'
+SCAN_STR = ['scan323','scan327','scan332','scan339','scan344']
+CHANNELS = ['XBIC','Se', 'Cd', 'Te', 'Au']
 
 for i,scan in enumerate(aligned_crop):
     for j,chan in enumerate(CHANNELS):

@@ -10,12 +10,6 @@ XBIV scans produced using
 
 before serious correlations are preformed, the XRF data should be
 corrected for absorption
-XBIC
-20C: scan0323
-40C: scan0327
-60C: scan0332
-80C: scan0339
-100C: scan344
 
 XBIV
 20C: scan0321
@@ -214,56 +208,3 @@ plt.ylim([0.2,2E2])
 
 # freq1 vs. mod will give a plot that has the same spatial coordinates
 # as what is seen in Michael's paper
-
-#%%
-'''
-1D FFT of misaligned XBIC maps - copy XBIV image analysis
-these images have better quality as the sampling frequency
-was further from the chopping frequency
-'''
-# data loaded directly from 'main-FS3-ACSII.py'
-imgs = [img[0,:,:-2] for img in FS3.maps]
-# delete invalid row in 100C map; fill/unfill
-imgs[4] = np.delete(imgs[4],81,0)
-
-# lables for plotting
-labels = ['25C', '40C', '60C', '80C', '100C']
-colors = ['k','#801100', '#B62203', '#FC6400', '#FAC000']
-
-for img, lab, col in zip(imgs, labels, colors):
-    #data = imgs[0]
-    
-    # normalize data using "max-min stretch"
-    #data_norm = (data - data.min()) / (data.max() - data.min())
-    data_norm = (img - img.min()) / (img.max() - img.min())
-    # number of samples row-wise
-    N = np.shape(data_norm)[1]
-    # step size (i.e. sampling rate)
-    um_step = 0.150
-    # compute (symmetric) frequency bins accroding to sample step
-    freq = np.fft.fftfreq(N, d=um_step)
-    # remove redundancy in frequency bins
-    freq_clipped = freq[0:int(N/2)]
-    
-    # stored modulus of FFT transforms
-    moduli = []
-    for row in data_norm:
-        # compute fast, discrete, fast Fourier transform (FFT) of row
-        fft = np.fft.fft(row)
-        # compute (symmetric) modulus of FFT
-        mod = np.abs(fft)
-        # remove redundancy in modulus
-        mod_clipped = mod[0:int(N/2)]
-        # store clipped modulus
-        moduli.append(mod_clipped)
-    
-    # convert list to array
-    moduli = np.array(moduli)
-    # take column-wise avg of array 
-    moduli_avg = np.nanmean(moduli,axis=0)
-    # plot results
-    plt.semilogy(freq_clipped, moduli_avg, label = lab, color=col)
-plt.legend()
-
-
-
