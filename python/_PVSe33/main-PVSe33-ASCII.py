@@ -16,7 +16,7 @@ insert the variable name "Map_arr" in "plot_master.py"
 
 import pandas as pd
 
-PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\nanoXRF_XBIC'
+PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\nanoXRF_XBIC\fit1_ASCII'
 FILE = r'\combined_ASCII_26idbSOFT_0011.h5.csv'
 
 DATA = PATH+FILE
@@ -34,8 +34,9 @@ def remove_column_header_spaces(df):
 
 data = remove_column_header_spaces(data)
 
-Map = data.pivot(index='y pixel no', columns='x pixel no', values = "ds_ic")
+Map = data.pivot(index='y pixel no', columns='x pixel no', values = "Cu")
 
+#%%
 Map_arr = Map.to_numpy()
 
 # these are stanford settings

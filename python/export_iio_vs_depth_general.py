@@ -150,3 +150,6 @@ print(um)
 
 
 #in cross section, the beam attenuates at roughly 900um @ 9.9keV
+# glass compounds
+'CaHNaO2'
+'SiO2'

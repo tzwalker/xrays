@@ -23,7 +23,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # specificy path to csvs
-PATH_IN = r'C:\Users\Trumann\Dropbox (ASU)\1_FS_operando\XBIV aligned image csvs'
+PATH_IN = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\XBIV aligned image csvs'
 scans = [321,325,330,337,342]
 scans1 = [str(s) for s in scans]
 
@@ -33,7 +33,7 @@ for S in scans1:
     FNAME = r'\FS3_scan{SCN}_XBIV.csv'.format(SCN=S)
     IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
     imgs.append(IMG)
-
+#%%
 # import XRF maps
 Se_maps = []
 for S in scans1:
@@ -153,14 +153,14 @@ t = (((w - 1)/2)-0.5)/s
 # loop over imgs
 imgs_gaussFilt = [gaussian_filter(img, sigma=s, truncate=t) for img in imgs]
 
-# run second code cell in "XBIV-low-pass_filtering.py" first
+# !!! run second code cell in "XBIV-low-pass_filtering.py" first !!!
 # to get list of low pass filter images
 
 # for aligned XBIV, change 1st arg in zip() to list 'imgs'
 # for gaussFilt aligned XBIV, change 1st arg in zip() to list 'imgs_gaussFilt'
 # for low-low-pas-filtered aligned XBIV, change 1st arg in zip() to "imgs_LP"
 fig, ax = plt.subplots()
-for img, lab, col in zip(imgs_LP, labels, colors): #change to imgs
+for img, lab, col in zip(imgs, labels, colors): #change to imgs
     #data = imgs[0]
     
     # normalize data using "max-min stretch"
@@ -193,11 +193,22 @@ for img, lab, col in zip(imgs_LP, labels, colors): #change to imgs
     moduli_avg = np.mean(moduli,axis=0)
     # plot results
     ax.semilogy(freq_clipped, moduli_avg, label = lab, color=col)
-ax.xaxis.grid(True, which='minor')
-ax.xaxis.set_minor_locator(MultipleLocator(0.1))
-plt.legend()
-plt.ylim([0.2,2E2])
 
+plt.legend()
+
+### other plotting stuff
+
+#plot estimated spatial frequency of diffusion length
+#spatial frequency of estimated diffusoin length 
+    # this was taken from Dropbox (ASU)\Internal Reports\Trumann_IntRep\internal meetings\20201026 subgroup - FFT XBIC.pptx
+D_e = 0.435 #um-1
+pt = (D_e,np.max(moduli_avg))
+plt.plot( [pt[0],pt[0]], [0,pt[1]], color="gray", linestyle='--')
+
+# plot grey lines at every 0.1um-1 interval
+#ax.xaxis.grid(True, which='minor')
+#ax.xaxis.set_minor_locator(MultipleLocator(0.1))
+#plt.ylim([0.2,2E2])
 
 # with shifting zero freq component to center of spectrum
 # modulus_shft = np.abs(np.fft.fftshift(fft))

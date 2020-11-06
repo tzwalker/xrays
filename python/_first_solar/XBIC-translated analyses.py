@@ -22,7 +22,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # specificy path to csvs
-PATH_IN = r'C:\Users\Trumann\Dropbox (ASU)\1_FS_operando\XBIC aligned image csvs'
+PATH_IN = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\XBIC aligned image csvs'
 scans = [323,327,332,339,344]
 scans1 = [str(s) for s in scans]
 
@@ -32,7 +32,7 @@ for S in scans1:
     FNAME = r'\FS3_scan{SCN}_XBIC.csv'.format(SCN=S)
     IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
     imgs.append(IMG)
-
+#%%
 # import XRF maps
 Se_maps = []
 for S in scans1:
@@ -113,6 +113,11 @@ for img, lab, col in zip(imgs, labels, colors):
     plt.semilogy(freq_clipped, moduli_avg, label = lab, color=col)
 plt.legend()
 
+#spatial frequency of estimated diffusoin length 
+    # this was taken from Dropbox (ASU)\Internal Reports\Trumann_IntRep\internal meetings\20201026 subgroup - FFT XBIC.pptx
+D_e = 0.435 #um-1
+pt = (D_e,np.max(moduli_avg))
+plt.plot( [pt[0],pt[0]], [0,pt[1]], color="gray", linestyle='--')
 
 #%%
 '''
