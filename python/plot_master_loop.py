@@ -34,7 +34,8 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
-for img in transforms:
+img_list = [NBL31.scan341[2,:,:], NBL32.scan422[2,:,:],NBL33.scan264[2,:,:],TS58A.scan385[2,:,:]]
+for img in img_list:
     #img = transforms[4] #FS3.scan323[0,:,:-2]
     data = img.copy()
     data = data
@@ -59,12 +60,12 @@ for img in transforms:
         # Se XRF: vmin=0.5,vmax=1.5
         # XBIC: vmin=5.6E-8,vmax=8.6E-8 
         
-    im = ax.imshow(data, cmap='Greys_r')
+    im = ax.imshow(data, cmap='Blues_r', vmin=0,vmax=25)
     ax.axis('off')
     
-    scalebar = 0
+    scalebar = 1
     if scalebar == 1:
-        ob = AnchoredHScaleBar(size=25, label="4 um", loc=4, frameon=True,
+        ob = AnchoredHScaleBar(size=33, label="5 um", loc=4, frameon=True,
                                pad=0.5, borderpad=1, sep=4, 
                                linekw=dict(color="black"))
         ax.add_artist(ob)
@@ -78,7 +79,7 @@ for img in transforms:
             #get color bar object
         cbar = plt.gcf().axes[-1]
             #format colorbar
-        cbar.set_ylabel('log(amplitude) (a.u.)', rotation=90, va="bottom", size=12, labelpad=20)
+        cbar.set_ylabel('Te (ug/cm2)', rotation=90, va="bottom", size=12, labelpad=20)
             # change number of tick labels on colorbar
         #cbar.locator_params(nbins=4)
             #change colorbar tick label sizes

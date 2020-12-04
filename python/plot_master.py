@@ -4,6 +4,11 @@ tzwalker
 Wed May 13 15:31:19 2020
 for FS3_operando: 67px = 10um
 for NBL3:  33px = 5um
+for stage pattern
+    overview: 12px = 8um
+    tiny features: 10px = 1um
+    Au4: 10px = 1um
+    line: 1px = 50nm
 """
 import matplotlib.pyplot as plt
 import matplotlib.offsetbox as offbox
@@ -34,7 +39,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
-img = Map #FS3.scan323[0,:,:-2]
+img = Au4.scan243[0,:,:] #FS3.scan323[0,:,:-2]
 data = img.copy()
 data = data
 plt.figure()
@@ -45,7 +50,9 @@ fig, ax = plt.subplots(figsize=(5,5))
     #inferno 
     #Greys_r
     #Blues_r
-    #viridis #Oranges_r 
+    #viridis
+    #Oranges_r
+    #YlOrBr_r
 #for NBL3xsect NBL33
     # XBIC: vmin=0,vmax=80, after multiplying 'data1' by 1E9
     # Cu XRF: vmin=0,vmax=30000
@@ -58,12 +65,12 @@ fig, ax = plt.subplots(figsize=(5,5))
     # Se XRF: vmin=0.5,vmax=1.5
     # XBIC: vmin=5.6E-8,vmax=8.6E-8 
     
-im = ax.imshow(data, cmap='Oranges_r')
+im = ax.imshow(data, cmap='YlOrBr_r')
 ax.axis('off')
 
 scalebar = 1
 if scalebar == 1:
-    ob = AnchoredHScaleBar(size=25, label="4 um", loc=4, frameon=True,
+    ob = AnchoredHScaleBar(size=30, label="20 um", loc=4, frameon=True,
                            pad=0.5, borderpad=1, sep=4, 
                            linekw=dict(color="black"))
     ax.add_artist(ob)
@@ -77,7 +84,7 @@ if cbar == 1:
         #get color bar object
     cbar = plt.gcf().axes[-1]
         #format colorbar
-    cbar.set_ylabel('Cu (ug/cm2)', rotation=90, va="bottom", size=12, labelpad=20)
+    cbar.set_ylabel('Au (ug/cm2)', rotation=90, va="bottom", size=12, labelpad=20)
         # change number of tick labels on colorbar
     #cbar.locator_params(nbins=4)
         #change colorbar tick label sizes
@@ -89,6 +96,6 @@ if cbar == 1:
         #change color bar scale label position   
     cbar.yaxis.set_offset_position('left')
 
-OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp\maps with colorbars'
-FNAME = r'\NBL31scan8_Cd2.eps'
-#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_stage design\paper figures'
+FNAME = r'\scan243_1234overview.eps'
+plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)

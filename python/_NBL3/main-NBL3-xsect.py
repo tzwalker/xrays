@@ -18,8 +18,8 @@ but based off the plots, it is likley to be around 10-15
     sticking with 15 to be used in average investigations
 """
 
-PATH = r'C:\Users\Trumann\data_NBL3\cross_sections_MS' #r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs' #'C:\Users\triton\Desktop\NBL3_data\cross_section_MS'
-DEFS = r'C:\Users\Trumann\xrays\python\NBL3xsect' #'C:\Users\triton\xrays\python\NBL3xsect' #C:\Users\Trumann\xrays\python\NBL3xsect
+PATH = r'C:\Users\triton\NBL3_data\cross_section_MS' #r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs' #'C:\Users\triton\Desktop\NBL3_data\cross_section_MS'
+DEFS = r'C:\Users\triton\xrays\python\NBL3xsect' #'C:\Users\triton\xrays\python\NBL3xsect' #C:\Users\Trumann\xrays\python\NBL3xsect
 
 import sys
 sys.path.append(DEFS)
@@ -27,7 +27,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from skimage.transform import rotate
-import seaborn as sns
 
 def get_scan_metadata(path, sample, scannum):
     metafile_string = '\CdTe_X_' + sample + '_Scan_' + str(scannum) + '_Metadata.csv'
@@ -92,19 +91,23 @@ ROTATION = 0
 
 map_dfs = import_xSect_csvs(PATH, SAMPLE, SCAN, CHANNELS, META_DATA, ROTATION)
 
+if SAMPLE == 'NBL31':
 # for NBL31 scan 8 to have the same points and 5um length as NBL33 scan 1
-data = map_dfs[2].iloc[:34,:] # 34 pts at 150nm step ~ 5um
-# otherwise (for NBL33) plot data frame normally
-#data = map_dfs[2]
+    # XBIC scale from 0-250 nA
+    data = map_dfs[0].iloc[:34,:] # 34 pts at 150nm step ~ 5um
+else: 
+    # otherwise (for NBL33) plot data frame normally
+    data = map_dfs[0]
 
 # for exporting cross-section maps
 plt.figure()
 fig, ax = plt.subplots(figsize=(5,5))
-im = ax.imshow(data, cmap='Blues_r')
+im = ax.imshow(data, cmap='inferno', vmin=0,vmax=250e-9)
+plt.gca().invert_xaxis()
 ax.axis('off')
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp'
-FNAME = r'\NBL33scan1_Cd.eps'
-#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp\FINALS_maps with colorbars'
+FNAME = r'\map_NBL31scan8_XBIC_flip.eps'
+plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
 
 # for exporting cross-section integration
 #integrate = data.sum(axis=0)
