@@ -22,7 +22,7 @@ xsect maps: 39,51
 """
 
 from class_ascii_Sample import Sample
-ASCII_PATH =  r'C:\Users\triton\decay_data' 
+ASCII_PATH =  r'C:\Users\triton\decay_data\TS118A_1A_2018_11_26IDC' 
 PATH_LOCKIN = r'C:\Users\triton\Dropbox (ASU)\1_XBIC_decay\decay_electrical.csv'
 
 # create sample objects

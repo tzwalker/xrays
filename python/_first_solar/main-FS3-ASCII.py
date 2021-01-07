@@ -11,7 +11,7 @@ is far too different and not worth the time
 
 ASCIIS_TW_BL have the combined data
     'us_ic' is the relevant scaler for the electrical channel
-    'UC_IC' is the relevant scaler for the upstream ion chamber
+    'US_IC' is the relevant scaler for the upstream ion chamber
 
 XBIC
 20C: scan0323
@@ -30,9 +30,9 @@ XBIV
              337,338,339,340,341,342,343, 344, 345]
 
 present workflow:
-    "main-FS3-ASCII" --> 
-    "XBIV-translate-and-deltas" --> 
-    "translated analyses"
+    1. "main-FS3-ASCII"
+    2. "...-translate-and-deltas"
+    3. "...-translated analyses"
 for plotting reference, pixel step was 150nm --> 20pixels = 3um, 67pix = 10um
 """
 
@@ -58,7 +58,7 @@ channels = ['us_ic', 'Se', 'Cd_L', 'Te_L', 'Au_L']
 
 FS3.import_maps(ASCII_PATH, PATH_LOCKIN, channels)
 
-elements = [ele[0:2] for ele in channels[1:]]
+#elements = [ele[0:2] for ele in channels[1:]]
 
 #FS3.ug_to_mol(elements)
 # attribute Sample.mol now exists; contains XRF maps as mol/cm2
@@ -70,7 +70,7 @@ elements = [ele[0:2] for ele in channels[1:]]
         # FS2_1, 2019_03_2IDD, scan551
         # FS2_2, 2019_03_2IDD, scan661
     # 
-beam_settings = {'beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
+#beam_settings = {'beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
 
 #FS3iios = XRFcorr.get_iios(beam_settings, elements, FS3.stack, end_layer='Se')
 #scans_for_correction = FS3.scans

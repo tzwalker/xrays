@@ -5,10 +5,33 @@ Wed May 13 15:31:19 2020
 for FS3_operando: 67px = 10um
 for NBL3:  33px = 5um
 for stage pattern
-    overview: 12px = 8um
+    overview: 30px = 20um
     tiny features: 10px = 1um
     Au4: 10px = 1um
     line: 1px = 50nm
+for TS118_1A decay (2018_11_26IDC):
+    plan-view inner map: 4px = 1um
+    plan-view outer map: 2px = 1um
+
+# cmaps: 
+    #RdYlGn 
+    #inferno 
+    #Greys_r
+    #Blues_r
+    #viridis
+    #Oranges_r
+    #YlOrBr_r
+#for NBL3xsect NBL33
+    # XBIC: vmin=0,vmax=80, after multiplying 'data1' by 1E9
+    # Cu XRF: vmin=0,vmax=30000
+    # Cd XRF: vmin=0,vmax=15000
+#for NBL3xsect NBL31
+    # XBIC: vmin=0,vmax=250, after multiplying 'data1' by 1E9,bins=3
+    # Cu XRF: vmin=0,vmax=2000, bins=2
+    # Cd XRF: vmin=0,vmax=15000, bins=4
+#for FS3
+    # Se XRF: vmin=0.5,vmax=1.5
+    # XBIC: vmin=5.6E-8,vmax=8.6E-8 
 """
 import matplotlib.pyplot as plt
 import matplotlib.offsetbox as offbox
@@ -39,63 +62,54 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
-img = Au4.scan243[0,:,:] #FS3.scan323[0,:,:-2]
+SAVE = 0
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_XBIC_decay\figures v0'
+FNAME = r'\TS118scan196_XBIC2.eps'
+
+scalebar = 1; draw_cbar = 1; map_is_XBIC = 0
+img = TS1181A.scan196[0,:,:] #FS3.scan323[0,:,:-2]
+unit = 'element'
+colormap = 'Greys_r'
+
 data = img.copy()
 data = data
 plt.figure()
 
-fig, ax = plt.subplots(figsize=(5,5))
-# cmaps: 
-    #RdYlGn 
-    #inferno 
-    #Greys_r
-    #Blues_r
-    #viridis
-    #Oranges_r
-    #YlOrBr_r
-#for NBL3xsect NBL33
-    # XBIC: vmin=0,vmax=80, after multiplying 'data1' by 1E9
-    # Cu XRF: vmin=0,vmax=30000
-    # Cd XRF: vmin=0,vmax=15000
-#for NBL3xsect NBL31
-    # XBIC: vmin=0,vmax=250, after multiplying 'data1' by 1E9,bins=3
-    # Cu XRF: vmin=0,vmax=2000, bins=2
-    # Cd XRF: vmin=0,vmax=15000, bins=4
-#for FS3
-    # Se XRF: vmin=0.5,vmax=1.5
-    # XBIC: vmin=5.6E-8,vmax=8.6E-8 
+fig, ax = plt.subplots(figsize=(2.5,2.5))
     
-im = ax.imshow(data, cmap='YlOrBr_r')
+im = ax.imshow(data, cmap=colormap)
 ax.axis('off')
 
-scalebar = 1
 if scalebar == 1:
-    ob = AnchoredHScaleBar(size=30, label="20 um", loc=4, frameon=True,
-                           pad=0.5, borderpad=1, sep=4, 
+    ob = AnchoredHScaleBar(size=12, label="3 um", loc=4, frameon=True,
+                           pad=0.5, borderpad=0.25, sep=4, 
                            linekw=dict(color="black"))
     ax.add_artist(ob)
 
-cbar = 1
-if cbar == 1:
+if draw_cbar == 1:
         # create color bar
     divider = make_axes_locatable(ax)
     cax = divider.append_axes('right', size='5%', pad=0.1)
-    fig.colorbar(im, cax=cax, orientation='vertical')#,format='%.0f')
+    if map_is_XBIC ==1:
+        fmt = ticker.ScalarFormatter(useMathText=True)
+        fmt.set_powerlimits((-11, -11))
+        cb = fig.colorbar(im, cax=cax, orientation='vertical',format=fmt)
+    else:
+        cb = fig.colorbar(im, cax=cax, orientation='vertical')#,format='.1f')
         #get color bar object
     cbar = plt.gcf().axes[-1]
         #format colorbar
-    cbar.set_ylabel('Au (ug/cm2)', rotation=90, va="bottom", size=12, labelpad=20)
+    cbar.set_ylabel(unit, rotation=90, va="bottom", size=12, labelpad=20)
         # change number of tick labels on colorbar
     #cbar.locator_params(nbins=4)
         #change colorbar tick label sizes
     cbar.tick_params(labelsize=12)
         # change scale label, e.g. 1e-8
-    #cbar.set_title('1e4', size=11,loc='left')
+    #cbar.set_title(r'$\times$10$^{-9}$', size=11,loc='left')
         #change color bar scale label size, e.g. 1e-8
     cbar.yaxis.get_offset_text().set(size=12)
         #change color bar scale label position   
     cbar.yaxis.set_offset_position('left')
 
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_stage design\paper figures'
-FNAME = r'\scan243_1234overview.eps'
-plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+if SAVE == 1:
+    plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)

@@ -26,7 +26,7 @@ PATH_IN = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\XBIC aligned image csvs'
 scans = [323,327,332,339,344]
 scans1 = [str(s) for s in scans]
 
-# import aligned XBIV maps
+# import aligned XBIC maps
 imgs = []
 for S in scans1:
     FNAME = r'\FS3_scan{SCN}_XBIC.csv'.format(SCN=S)
@@ -65,7 +65,7 @@ for img in imgs:
 
 #%%
 '''
-1D FFT of misaligned XBIC maps - copy XBIV image analysis
+1D FFT of imported XBIC maps - copy XBIV image analysis
 these images have better quality as the sampling frequency
 was further from the chopping frequency
 '''

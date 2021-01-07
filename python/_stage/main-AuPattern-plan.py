@@ -23,7 +23,7 @@ Au4 = Sample()
 
 # define stack and scans of each sample
 #Au4.stack = {'Au':   [10.2, 100E-7], 'Si': [2.33,200E-6]}
-Au4.scans = [243,244]
+Au4.scans = [261,262]
 
 # import h5 data for each sample
 Au4.import_scan_data(DATA_PATH)
