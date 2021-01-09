@@ -51,14 +51,14 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         #size_bar.add_artist(vline1)
         #size_bar.add_artist(vline2)
         txt = offbox.TextArea(label, minimumdescent=False, 
-                              textprops=dict(color="white",size=12,weight="bold"))
+                              textprops=dict(color="white",size=14))
         self.vpac = offbox.VPacker(children=[size_bar,txt],  
                                  align="center", pad=ppad, sep=sep) 
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-SAVE = 0; scalebar = 1; 
+scalebar = 1; 
 
 Cu = NBL31.scan341[1,:,:-2]
 Te = NBL31.scan341[3,:,:-2]
@@ -76,7 +76,7 @@ Cu_gauss1[Cu_gauss1<0.023]=np.nan
 Te1 = Te.copy()
 #Te1[Te1<10]=np.nan
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(2.5, 2.5))
 
 pltTe = ax.imshow(Te1, cmap='bone',
                    vmin=0,vmax=30,
@@ -88,25 +88,28 @@ pltCu = ax.imshow(Cu_gauss1, cmap='Oranges_r',
 ax.axis('off')
 
 if scalebar == 1:
-    ob = AnchoredHScaleBar(length=20, label="3 $\mu$m", loc=1, frameon=True,
+    ob = AnchoredHScaleBar(length=20, label="", loc=1, frameon=False,
                            pad=0.5, borderpad=0.25, sep=4, 
                            linekw=dict(color="white",linewidth=3))
-    ob.patch.set_facecolor('k')
+    # change facecolor of frameon
+    #ob.patch.set_facecolor('k')
     ax.add_artist(ob)
 
 divider = make_axes_locatable(ax)
 
 cax = divider.new_vertical(size='5%', pad=0.55)
 fig.add_axes(cax)
-fig.colorbar(pltTe, cax=cax, orientation='horizontal', label='Te ($\mu$g/cm$^2$)')
+cbarTe = fig.colorbar(pltTe, cax=cax, orientation='horizontal')
+cbarTe.set_label('Te ($\mu$g/cm$^2$)', fontsize=8)
 
 cax1 = divider.new_vertical(size='5%', pad=0)
 fig.add_axes(cax1)
-fig.colorbar(pltCu, cax=cax1, orientation='horizontal', label='Cu ($\mu$g/cm$^2$)')
+cbarCu = fig.colorbar(pltCu, cax=cax1, orientation='horizontal', label='Cu ($\mu$g/cm$^2$)')
 cax1.xaxis.set_label_position('top')
 cax1.xaxis.set_ticks_position('top')
+#cax1.set_label(labelsize=12)
 
-
+SAVE = 0;
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20210106 figures_semifinals'
 FNAME = r'\NBL31scan341_CuTe.eps'
 if SAVE == 1:
@@ -142,19 +145,30 @@ pltCu = axs.imshow(Cu_gauss1, cmap='Oranges_r',
                    vmin=0,vmax=1,
                    alpha=0.75)
 
+if scalebar == 1:
+    ob = AnchoredHScaleBar(length=20, label="3 $\mu$m", loc=1, frameon=True,
+                           pad=0.5, borderpad=0.25, sep=4, 
+                           linekw=dict(color="white",linewidth=3))
+    ob.patch.set_facecolor('k')
+    ax.add_artist(ob)
 
 divider = make_axes_locatable(axs)
 
-cax = divider.new_vertical(size='5%', pad=0.5)
+cax = divider.new_vertical(size='5%', pad=0.55)
 fig.add_axes(cax)
-fig.colorbar(pltTe, cax=cax, orientation='horizontal', label='Te (ug/cm2)')
+fig.colorbar(pltTe, cax=cax, orientation='horizontal', label='Te ($\mu$g/cm$^2$)')
 
 cax1 = divider.new_vertical(size='5%', pad=0)
 fig.add_axes(cax1)
-fig.colorbar(pltCu, cax=cax1, orientation='horizontal', label='Cu (ug/cm2)')
+fig.colorbar(pltCu, cax=cax1, orientation='horizontal', label='Cu ($\mu$g/cm$^2$)')
 cax1.xaxis.set_label_position('top')
 cax1.xaxis.set_ticks_position('top')
 
+SAVE = 0;
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20210106 figures_semifinals'
+FNAME = r'\NBL32scan422_CuTe.eps'
+if SAVE == 1:
+    plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
 #%%
 Cu = NBL33.scan264[1,:,:-2]
 Te = NBL33.scan264[3,:,:-2]
