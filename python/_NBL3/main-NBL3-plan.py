@@ -131,36 +131,38 @@ TS58A.import_maps('ds_ic', elements, 'us_ic', 'fit')
 # # scan accessed by index in "scans_for_correction", NOT original scan list
 # # e.g. "NBL32.maps_[4]" --> scan 419, "NBL32.maps[4]" --> scan 538)
 # =============================================================================
-#%%
 
-import numpy as np
-import matplotlib.pyplot as plt
-# max-min stretch 
-def normalize(array):
-    data_norm = (array - array.min()) / (array.max() - array.min())
-    return data_norm
 
-# save XBIC array for Fiji processing and main_xrf figure
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\main_xrf'
-FILE = r'\NBL3_scan341_XBIC.csv'
-arr = NBL31.scan341[0,:,:-2]
-arr = normalize(arr)
-np.savetxt(OUT_PATH+FILE,arr,delimiter=',')
-
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\main_xrf'
-FILE = r'\NBL32_scan422_bksubXBIC.csv'
-arr = NBL32.scan422[0,:,:-2]
-arr = normalize(arr)
-np.savetxt(OUT_PATH+FILE,arr1,delimiter=',')
-
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\main_xrf'
-FILE = r'\NBL33_scan264_XBIC.csv'
-arr = NBL33.scan264[0,:,:-2]
-arr = normalize(arr)
-np.savetxt(OUT_PATH+FILE,arr,delimiter=',')
-
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\main_xrf'
-FILE = r'\TS58A_scan386_XBIC.csv'
-arr = TS58A.scan386[0,:,:-2]
-arr = normalize(arr)
-np.savetxt(OUT_PATH+FILE,arr,delimiter=',')
+# =============================================================================
+# import numpy as np
+# import matplotlib.pyplot as plt
+# # max-min stretch 
+# def normalize(array):
+#     data_norm = (array - array.min()) / (array.max() - array.min())
+#     return data_norm
+# 
+# # save XBIC array for Fiji processing and main_xrf figure
+# OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\main_xrf'
+# FILE = r'\NBL3_scan341_XBIC.csv'
+# arr = NBL31.scan341[0,:,:-2]
+# arr = normalize(arr)
+# np.savetxt(OUT_PATH+FILE,arr,delimiter=',')
+# 
+# OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\main_xrf'
+# FILE = r'\NBL32_scan422_bksubXBIC.csv'
+# arr = NBL32.scan422[0,:,:-2]
+# arr = normalize(arr)
+# np.savetxt(OUT_PATH+FILE,arr1,delimiter=',')
+# 
+# OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\main_xrf'
+# FILE = r'\NBL33_scan264_XBIC.csv'
+# arr = NBL33.scan264[0,:,:-2]
+# arr = normalize(arr)
+# np.savetxt(OUT_PATH+FILE,arr,delimiter=',')
+# 
+# OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\main_xrf'
+# FILE = r'\TS58A_scan386_XBIC.csv'
+# arr = TS58A.scan386[0,:,:-2]
+# arr = normalize(arr)
+# np.savetxt(OUT_PATH+FILE,arr,delimiter=',')
+# =============================================================================

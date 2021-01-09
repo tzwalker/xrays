@@ -3,7 +3,7 @@ coding: utf-8
 tzwalker
 Wed May 13 15:31:19 2020
 for FS3_operando: 67px = 10um
-for NBL3:  33px = 5um
+for NBL3:  20px = 3um
 for stage pattern
     overview: 30px = 20um
     tiny features: 10px = 1um
