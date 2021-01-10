@@ -58,7 +58,6 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-scalebar = 1; 
 
 Cu = NBL31.scan341[1,:,:-2]
 Te = NBL31.scan341[3,:,:-2]
@@ -87,13 +86,12 @@ pltCu = ax.imshow(Cu_gauss1, cmap='Oranges_r',
                    alpha=0.75)
 ax.axis('off')
 
-if scalebar == 1:
-    ob = AnchoredHScaleBar(length=20, label="", loc=1, frameon=False,
-                           pad=0.5, borderpad=0.25, sep=4, 
-                           linekw=dict(color="white",linewidth=3))
-    # change facecolor of frameon
-    #ob.patch.set_facecolor('k')
-    ax.add_artist(ob)
+ob = AnchoredHScaleBar(length=20, label="", loc=2, frameon=False,
+                       pad=0.5, borderpad=0.25, sep=4, 
+                       linekw=dict(color="white",linewidth=3))
+# change facecolor of frameon
+#ob.patch.set_facecolor('k')
+ax.add_artist(ob)
 
 divider = make_axes_locatable(ax)
 
@@ -101,15 +99,19 @@ cax = divider.new_vertical(size='5%', pad=0.55)
 fig.add_axes(cax)
 cbarTe = fig.colorbar(pltTe, cax=cax, orientation='horizontal')
 cbarTe.set_label('Te ($\mu$g/cm$^2$)', fontsize=8)
+cbarTe.ax.tick_params(labelsize=8)
 
 cax1 = divider.new_vertical(size='5%', pad=0)
 fig.add_axes(cax1)
-cbarCu = fig.colorbar(pltCu, cax=cax1, orientation='horizontal', label='Cu ($\mu$g/cm$^2$)')
+cbarCu = fig.colorbar(pltCu, cax=cax1, orientation='horizontal')
+cbarCu.set_label('Cu ($\mu$g/cm$^2$)', fontsize=8)
+cbarCu.ax.tick_params(labelsize=8)
 cax1.xaxis.set_label_position('top')
 cax1.xaxis.set_ticks_position('top')
-#cax1.set_label(labelsize=12)
 
-SAVE = 0;
+
+
+SAVE = 1;
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20210106 figures_semifinals'
 FNAME = r'\NBL31scan341_CuTe.eps'
 if SAVE == 1:
@@ -134,37 +136,41 @@ Cu_gauss1[Cu_gauss1<0.25]=np.nan
 Te1 = Te.copy()
 #Te1[Te1<10]=np.nan
 
-fig,axs = plt.subplots()
-axs.axis('off')
+fig, ax = plt.subplots(figsize=(2.5, 2.5))
 
-pltTe = axs.imshow(Te1, cmap='bone',
+pltTe = ax.imshow(Te1, cmap='bone',
                    vmin=0,vmax=30,
                    alpha=1)
 
-pltCu = axs.imshow(Cu_gauss1, cmap='Oranges_r',
+pltCu = ax.imshow(Cu_gauss1, cmap='Oranges_r',
                    vmin=0,vmax=1,
                    alpha=0.75)
+ax.axis('off')
 
-if scalebar == 1:
-    ob = AnchoredHScaleBar(length=20, label="3 $\mu$m", loc=1, frameon=True,
-                           pad=0.5, borderpad=0.25, sep=4, 
-                           linekw=dict(color="white",linewidth=3))
-    ob.patch.set_facecolor('k')
-    ax.add_artist(ob)
+ob = AnchoredHScaleBar(length=20, label="", loc=2, frameon=False,
+                       pad=0.5, borderpad=0.25, sep=4, 
+                       linekw=dict(color="white",linewidth=3))
+#ob.patch.set_facecolor('k')
+ax.add_artist(ob)
 
-divider = make_axes_locatable(axs)
+divider = make_axes_locatable(ax)
 
 cax = divider.new_vertical(size='5%', pad=0.55)
 fig.add_axes(cax)
-fig.colorbar(pltTe, cax=cax, orientation='horizontal', label='Te ($\mu$g/cm$^2$)')
+cbarTe = fig.colorbar(pltTe, cax=cax, orientation='horizontal')
+cbarTe.set_label('Te ($\mu$g/cm$^2$)', fontsize=8)
+cbarTe.ax.tick_params(labelsize=8)
+
 
 cax1 = divider.new_vertical(size='5%', pad=0)
 fig.add_axes(cax1)
-fig.colorbar(pltCu, cax=cax1, orientation='horizontal', label='Cu ($\mu$g/cm$^2$)')
+cbarCu = fig.colorbar(pltCu, cax=cax1, orientation='horizontal')
+cbarCu.set_label('Cu ($\mu$g/cm$^2$)', fontsize=8)
+cbarCu.ax.tick_params(labelsize=8)
 cax1.xaxis.set_label_position('top')
 cax1.xaxis.set_ticks_position('top')
 
-SAVE = 0;
+SAVE = 1;
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20210106 figures_semifinals'
 FNAME = r'\NBL32scan422_CuTe.eps'
 if SAVE == 1:
@@ -182,32 +188,49 @@ Cu_gauss = gaussian_filter(Cu_bs, 1)
 #Cu1[Cu1<2.9]=np.nan
 Cu_gauss1 = Cu_gauss.copy()
 Cu_gauss1[Cu_gauss1<0.65]=np.nan
+
 Te1 = Te.copy()
 #Te1[Te1<10]=np.nan
 
-fig,axs = plt.subplots()
-axs.axis('off')
+fig, ax = plt.subplots(figsize=(2.5, 2.5))
 
-pltTe = axs.imshow(Te1, cmap='bone',
+pltTe = ax.imshow(Te1, cmap='bone',
                    vmin=0,vmax=30,
                    alpha=1)
 
-pltCu = axs.imshow(Cu_gauss1, cmap='Oranges_r',
+pltCu = ax.imshow(Cu_gauss1, cmap='Oranges_r',
                    vmin=0,vmax=3,
                    alpha=0.75)
+ax.axis('off')
 
+ob = AnchoredHScaleBar(length=20, label="", loc=2, frameon=False,
+                       pad=0.5, borderpad=0.25, sep=4, 
+                       linekw=dict(color="white",linewidth=3))
+#ob.patch.set_facecolor('k')
+ax.add_artist(ob)
 
-divider = make_axes_locatable(axs)
+divider = make_axes_locatable(ax)
 
-cax = divider.new_vertical(size='5%', pad=0.5)
+cax = divider.new_vertical(size='5%', pad=0.55)
 fig.add_axes(cax)
-fig.colorbar(pltTe, cax=cax, orientation='horizontal', label='Te (ug/cm2)')
+cbarTe = fig.colorbar(pltTe, cax=cax, orientation='horizontal')
+cbarTe.set_label('Te ($\mu$g/cm$^2$)', fontsize=8)
+cbarTe.ax.tick_params(labelsize=8)
+
 
 cax1 = divider.new_vertical(size='5%', pad=0)
 fig.add_axes(cax1)
-fig.colorbar(pltCu, cax=cax1, orientation='horizontal', label='Cu (ug/cm2)')
+cbarCu = fig.colorbar(pltCu, cax=cax1, orientation='horizontal')
+cbarCu.set_label('Cu ($\mu$g/cm$^2$)', fontsize=8)
+cbarCu.ax.tick_params(labelsize=8)
 cax1.xaxis.set_label_position('top')
 cax1.xaxis.set_ticks_position('top')
+
+SAVE = 1;
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20210106 figures_semifinals'
+FNAME = r'\NBL33scan264_CuTe.eps'
+if SAVE == 1:
+    plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
 
 #%%
 
@@ -227,26 +250,42 @@ Cu_gauss1[Cu_gauss1<0.2]=np.nan
 Te1 = Te.copy()
 #Te1[Te1<10]=np.nan
 
-fig,axs = plt.subplots()
-axs.axis('off')
+fig, ax = plt.subplots(figsize=(2.5, 2.5))
 
-pltTe = axs.imshow(Te1, cmap='bone',
+pltTe = ax.imshow(Te1, cmap='bone',
                    vmin=0,vmax=30,
                    alpha=1)
 
-pltCu = axs.imshow(Cu_gauss1, cmap='Oranges_r',
+pltCu = ax.imshow(Cu_gauss1, cmap='Oranges_r',
                    vmin=0,vmax=1,
                    alpha=0.75)
+ax.axis('off')
 
+ob = AnchoredHScaleBar(length=20, label="", loc=2, frameon=False,
+                       pad=0.5, borderpad=0.25, sep=4, 
+                       linekw=dict(color="white",linewidth=3))
+#ob.patch.set_facecolor('k')
+ax.add_artist(ob)
 
-divider = make_axes_locatable(axs)
+divider = make_axes_locatable(ax)
 
-cax = divider.new_vertical(size='5%', pad=0.5)
+cax = divider.new_vertical(size='5%', pad=0.55)
 fig.add_axes(cax)
-fig.colorbar(pltTe, cax=cax, orientation='horizontal', label='Te (ug/cm2)')
+cbarTe = fig.colorbar(pltTe, cax=cax, orientation='horizontal')
+cbarTe.set_label('Te ($\mu$g/cm$^2$)', fontsize=8)
+cbarTe.ax.tick_params(labelsize=8)
+
 
 cax1 = divider.new_vertical(size='5%', pad=0)
 fig.add_axes(cax1)
-fig.colorbar(pltCu, cax=cax1, orientation='horizontal', label='Cu (ug/cm2)')
+cbarCu = fig.colorbar(pltCu, cax=cax1, orientation='horizontal')
+cbarCu.set_label('Cu ($\mu$g/cm$^2$)', fontsize=8)
+cbarCu.ax.tick_params(labelsize=8)
 cax1.xaxis.set_label_position('top')
 cax1.xaxis.set_ticks_position('top')
+
+SAVE = 1;
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20210106 figures_semifinals'
+FNAME = r'\TS58Ascan386_CuTe.eps'
+if SAVE == 1:
+    plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
