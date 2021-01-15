@@ -50,13 +50,13 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         trans = ax.get_xaxis_transform()
         size_bar = offbox.AuxTransformBox(trans)
         line = Line2D([0,size],[0,0], **linekw)
-        vline1 = Line2D([0,0],[-extent/2.,extent/2.], **linekw)
-        vline2 = Line2D([size,size],[-extent/2.,extent/2.], **linekw)
+        #vline1 = Line2D([0,0],[-extent/2.,extent/2.], **linekw)
+        #vline2 = Line2D([size,size],[-extent/2.,extent/2.], **linekw)
         size_bar.add_artist(line)
-        size_bar.add_artist(vline1)
-        size_bar.add_artist(vline2)
+        #size_bar.add_artist(vline1)
+        #size_bar.add_artist(vline2)
         txt = offbox.TextArea(label, minimumdescent=False, 
-                              textprops=dict(color="black"))
+                              textprops=dict(color="white"))
         self.vpac = offbox.VPacker(children=[size_bar,txt],  
                                  align="center", pad=ppad, sep=sep) 
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
@@ -66,10 +66,10 @@ SAVE = 0
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_XBIC_decay\figures v0'
 FNAME = r'\TS118scan196_XBIC2.eps'
 
-scalebar = 1; draw_cbar = 1; map_is_XBIC = 0
-img = TS1181A.scan196[0,:,:] #FS3.scan323[0,:,:-2]
-unit = 'element'
-colormap = 'Greys_r'
+scalebar = 1; draw_cbar = 1; map_is_XBIC = 1
+img = data
+unit = 'Cd (cts/s)'
+colormap = 'Blues_r'
 
 data = img.copy()
 data = data
@@ -81,9 +81,9 @@ im = ax.imshow(data, cmap=colormap)
 ax.axis('off')
 
 if scalebar == 1:
-    ob = AnchoredHScaleBar(size=12, label="3 um", loc=4, frameon=True,
-                           pad=0.5, borderpad=0.25, sep=4, 
-                           linekw=dict(color="black"))
+    ob = AnchoredHScaleBar(size=50, label="2.5 um", loc=3, frameon=False,
+                           pad=0.1, borderpad=0.1, sep=4, 
+                           linekw=dict(color="white"))
     ax.add_artist(ob)
 
 if draw_cbar == 1:
@@ -92,7 +92,7 @@ if draw_cbar == 1:
     cax = divider.append_axes('right', size='5%', pad=0.1)
     if map_is_XBIC ==1:
         fmt = ticker.ScalarFormatter(useMathText=True)
-        fmt.set_powerlimits((-11, -11))
+        fmt.set_powerlimits((0, 0))
         cb = fig.colorbar(im, cax=cax, orientation='vertical',format=fmt)
     else:
         cb = fig.colorbar(im, cax=cax, orientation='vertical')#,format='.1f')

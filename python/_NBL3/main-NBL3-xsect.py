@@ -18,8 +18,12 @@ but based off the plots, it is likley to be around 10-15
     sticking with 15 to be used in average investigations
 """
 
-PATH = r'C:\Users\triton\NBL3_data\cross_section_MS' #r'C:\Users\Trumann\Desktop\NBL3_data\cross_sections_MS\csvs' #'C:\Users\triton\Desktop\NBL3_data\cross_section_MS'
-DEFS = r'C:\Users\triton\xrays\python\NBL3xsect' #'C:\Users\triton\xrays\python\NBL3xsect' #C:\Users\Trumann\xrays\python\NBL3xsect
+#r'C:\Users\Trumann\data_NBL3\cross_sections_MS'
+#r'C:\Users\triton\NBL3_data\cross_section_MS'
+PATH = r'C:\Users\Trumann\data_NBL3\cross_sections_MS' 
+#'C:\Users\triton\xrays\python\NBL3xsect'
+# #C:\Users\Trumann\xrays\python\NBL3xsect
+DEFS = r'C:\Users\Trumann\xrays\python\NBL3xsect' 
 
 import sys
 sys.path.append(DEFS)
@@ -83,8 +87,8 @@ def import_xSect_csvs(path, sample, scannum, channels, meta, rot):
 
 
 
-SAMPLE = 'NBL31'
-SCAN = 8
+SAMPLE = 'TS58A'
+SCAN = 4
 CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
 META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)
 ROTATION = 0
@@ -97,17 +101,19 @@ if SAMPLE == 'NBL31':
     data = map_dfs[0].iloc[:34,:] # 34 pts at 150nm step ~ 5um
 else: 
     # otherwise (for NBL33) plot data frame normally
-    data = map_dfs[0]
+    data = map_dfs[2]
 
 # for exporting cross-section maps
 plt.figure()
 fig, ax = plt.subplots(figsize=(5,5))
-im = ax.imshow(data, cmap='inferno', vmin=0,vmax=250e-9)
-plt.gca().invert_xaxis()
+im = ax.imshow(data, cmap='inferno')
+#plt.gca().invert_xaxis() --> flips map
 ax.axis('off')
+
+
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp\FINALS_maps with colorbars'
 FNAME = r'\map_NBL31scan8_XBIC_flip.eps'
-plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
 
 # for exporting cross-section integration
 #integrate = data.sum(axis=0)

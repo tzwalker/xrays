@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 
 # specificy path to csvs
 PATH_IN = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\XBIV aligned image csvs'
+PATH_IN = r'C:\Users\Trumann\Dropbox (ASU)\1_FS_operando\XBIV aligned image csvs'
 scans = [321,325,330,337,342]
 scans1 = [str(s) for s in scans]
 
@@ -171,10 +172,11 @@ for img, lab, col in zip(imgs, labels, colors): #change to imgs
     # step size (i.e. sampling rate)
     um_step = 0.150
     # compute (symmetric) frequency bins accroding to sample step
-    freq = np.fft.fftfreq(N, d=um_step)
+    freq = np.fft.fftfreq(N, d=um_step) # 0.150/1/237 is the bin step
     # remove redundancy in frequency bins
     freq_clipped = freq[0:int(N/2)]
-    
+    X2 = freq_clipped[16]
+    X1 = freq_clipped[15]
     # stored modulus of FFT transforms
     moduli = []
     for row in data_norm:
@@ -191,10 +193,17 @@ for img, lab, col in zip(imgs, labels, colors): #change to imgs
     moduli = np.array(moduli)
     # take column-wise avg of array 
     moduli_avg = np.mean(moduli,axis=0)
+    Y2 = moduli_avg[16]
+    Y1 = moduli_avg[15]
+    # interpolated moduli
+    X = 0.435 #um-1
+    Y = np.interp(X, [X1,X2], [Y1,Y2])
+    print(Y)
     # plot results
     ax.semilogy(freq_clipped, moduli_avg, label = lab, color=col)
 
 plt.legend()
+
 
 ### other plotting stuff
 
