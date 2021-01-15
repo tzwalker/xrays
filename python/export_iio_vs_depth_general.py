@@ -75,6 +75,7 @@ def get_avg_internal_attn(layer_info, layer, elements, beam_settings, cum_upstrm
             each_sublayer_iios[sub_idx] = cum_upstrm_attn[ele_idx] * np.exp(iio_in + iio_out)
         ### new proposed correction ###
         depth_idx_iio_bound = each_sublayer_iios[0] * (1/np.e)
+        print(each_sublayer_iios[0])
         characteristic_depth = get_char_depth(each_sublayer_iios, depth_idx_iio_bound)
         # UNCOMMENT CHARACTERISTIC DEPTH FOR CDTE CALC; ONLY USE IF ATTENUATION
         # LENGTH IS LESS THAN THE THICKNESS OF THE CDTE LAYER...
@@ -115,13 +116,12 @@ def get_iios(beam_settings, elements, STACK, end_layer):
     return ele_avg_iios, ele_all_iios.T
 
 
-stack = {'Mo':   [10.22, 500E-7], 
-         'ZnTe': [6.34, 375E-7],
+stack = {'Cu':   [8.94, 1E-7],
          'CdTe': [5.85, 12E-4]}
 
 elements = ['Cu', 'Cd', 'Te']
 
-beam_settings = {'beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
+beam_settings = {'beam_energy': 9.9, 'beam_theta':90, 'detect_theta':13}
 
 iios2019, iio_arr = get_iios(beam_settings, elements, stack, end_layer='CdTe')
 
@@ -131,7 +131,7 @@ FNAME = r'\for Tara Cu_Se_In_Ga XRF absorption in typical CIGS.csv'
 #np.savetxt(PATH_OUT+FNAME, iio_arr, delimiter=",")
 
 #%%
-""""to quickly get attenuation of bema in CdTe layer"""
+""""to quickly get attenuation of beam in CdTe layer"""
 steps = np.linspace(0, 10000000, 10000001)
 dt = 1*10**-7
 beam_iio_thru_layer = []
@@ -153,3 +153,26 @@ print(um)
 # glass compounds
 'CaHNaO2'
 'SiO2'
+
+#%%
+""""to quickly get attenuation of Cu_K XRF in CdTe layer"""
+# define thickness of CdTe layer (1E7nm = 1cm)
+# define thickness of CdTe layer (1E3nm = 1um)
+steps = np.linspace(0, 10000, 10001)
+dt = 1*10**-7
+beam_iio_thru_layer = []
+cap_cross_section_of_one_sublayer_in = - xl.CS_Total_CP('CdTe', 8.0478) * 5.85 * dt / 75
+for index, step in enumerate(steps):
+    beam_in = cap_cross_section_of_one_sublayer_in * index
+    iio_beam = np.exp(beam_in)
+    beam_iio_thru_layer.append(iio_beam)
+#plt.plot(beam_iio_thru_layer)
+
+value = (1/np.e)
+array = np.asarray(beam_iio_thru_layer)
+idx = (np.abs(array - value)).argmin() # this is the same as the step in nm
+um = idx*0.001
+print(um)
+
+
+#in cross section, Cu_K XRF reaches 1/e at about 500um
