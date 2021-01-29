@@ -40,6 +40,18 @@ for S in scans1:
     IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
     Se_maps.append(IMG)
 
+Cd_maps = []
+for S in scans1:
+    FNAME = r'\FS3_scan{SCN}_Cd.csv'.format(SCN=S)
+    IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
+    Cd_maps.append(IMG)
+
+Te_maps = []
+for S in scans1:
+    FNAME = r'\FS3_scan{SCN}_Te.csv'.format(SCN=S)
+    IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
+    Te_maps.append(IMG)
+
 # compute delta XBIV maps
 dels = [X - Y for X, Y in zip(imgs[1:], imgs[0:])]
 dels1 = [(X/np.median(X)) / (Y/np.median(Y)) for X,Y in zip(imgs[1:], imgs[0:])]
@@ -178,13 +190,99 @@ for i,m in enumerate(Se_maps):
     err = pt_75 - pt_25
     print(err)
     print()
-    #plt.figure()
-    #plt.hist(DATA, bins=50,histtype='step', color=colors[i], label=labels[i])
-    #plt.legend(prop={'size': 10})
-    #plt.xlim([0.5,1.5])
-    #plt.ylim([0,3000])
+    plt.figure()
+    plt.hist(DATA, bins=50,histtype='step', color=colors[i], label=labels[i])
+    plt.legend(prop={'size': 10})
+    plt.xlim([0.5,1.5])
+    plt.ylim([0,3000])
 Se_hist_out = np.array(Se_hist)
 Se_hist_out = Se_hist_out.T
-PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando'
-FNAME = r'\SevTemp_arrays_for_hist.csv'
-#np.savetxt(PATH_OUT+FNAME, Se_hist_out, delimiter=',')
+PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\histogram arrays from python'
+FNAME = r'\XBIC - SevTemp_arrays_for_hist.csv'
+np.savetxt(PATH_OUT+FNAME, Se_hist_out, delimiter=',')
+
+#%%
+'''correlation matrices at each temperature step, load XRF maps first'''
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import spearmanr
+import seaborn as sns
+
+# specificy path to csvs
+PATH_IN = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\XBIC aligned image csvs'
+scans = [323,327,332,339,344]
+scans1 = [str(s) for s in scans]
+
+# import xbic maps
+imgs = []
+for S in scans1:
+    FNAME = r'\FS3_scan{SCN}_XBIC.csv'.format(SCN=S)
+    IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
+    imgs.append(IMG)
+
+# import XRF maps
+Se_maps = []
+for S in scans1:
+    FNAME = r'\FS3_scan{SCN}_Se.csv'.format(SCN=S)
+    IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
+    Se_maps.append(IMG)
+
+Cd_maps = []
+for S in scans1:
+    FNAME = r'\FS3_scan{SCN}_Cd.csv'.format(SCN=S)
+    IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
+    Cd_maps.append(IMG)
+
+Te_maps = []
+for S in scans1:
+    FNAME = r'\FS3_scan{SCN}_Te.csv'.format(SCN=S)
+    IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
+    Te_maps.append(IMG)
+
+# NOTE ONLY RUN THIS SECTION ONCE AFTER IMPORTING MAPS
+SET = [imgs,Cd_maps,Te_maps, Se_maps]
+# insert nan array at end of 100C map to make 3D numpy 
+length_of_img_row = np.size(imgs[0], axis=1)
+a = np.empty((1,255))
+a[:] = np.nan
+# only run this once, otherwise it will keep adding nan rows to the array
+for maps in SET:
+    map_100C = maps[4]
+    # add non row to map
+    map_100C_w_row = np.vstack((map_100C, a))
+    maps[4] = map_100C_w_row # !!! overwrite last map in loaded list
+    
+ # RUN THIS SECTION AS MANY TIMES AS YOU WANT
+temp_idx = 0
+arr_XBIC = imgs[temp_idx].ravel().reshape(-1,1)
+arr_Cd = Cd_maps[temp_idx].ravel().reshape(-1,1)
+arr_Te = Te_maps[temp_idx].ravel().reshape(-1,1)
+arr_Se = Se_maps[temp_idx].ravel().reshape(-1,1)
+arr_combined = np.concatenate((arr_XBIC, arr_Cd, arr_Te, arr_Se), axis=1)
+correlations = spearmanr(arr_combined)
+# for 100C map
+if temp_idx==4:
+    x = arr_combined[~np.isnan(arr_combined).any(axis=1),:]
+    correlations = spearmanr(x)
+
+labs = ['XBIC', 'Cd', 'Te', 'Se']
+cbar_lab = 'Monotonicty'
+mask = np.triu(np.ones_like(correlations[0], dtype=bool))
+
+fig, ax = plt.subplots(figsize=(4,1.5))
+sns.heatmap(correlations[0], vmin=-1, vmax=1, cmap='coolwarm',
+            annot=True, xticklabels=labs, yticklabels=labs,
+            mask=mask, fmt='.2f', cbar_kws={'label': cbar_lab})
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\spearman matrices from python'
+FNAME=r'\FS3_correlation_TmapNum0{s}.eps'.format(s=str(temp_idx))
+#print(OUT_PATH+FNAME)
+#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+
+    
+    
+
+
+    
+
+
+

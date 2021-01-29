@@ -12,12 +12,16 @@ it is converted from a pandas object to a numpy object
 
 to plot a pretty map
 insert the variable name "Map_arr" in "plot_master.py" 
+
+2020_10_26IDC
+scan0011 --> PVSe33.3_4 (not stressed)
+scan0148 --> PVSe33.4_3 (stressed)
 """
 
 import pandas as pd
 
 PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\nanoXRF_XBIC\fit1_ASCII'
-FILE = r'\combined_ASCII_26idbSOFT_0011.h5.csv'
+FILE = r'\combined_ASCII_26idbSOFT_0148.h5.csv'
 
 DATA = PATH+FILE
 
@@ -34,14 +38,14 @@ def remove_column_header_spaces(df):
 
 data = remove_column_header_spaces(data)
 
-Map = data.pivot(index='y pixel no', columns='x pixel no', values = "Cu")
+Map = data.pivot(index='y pixel no', columns='x pixel no', values = "ds_ic")
 
 #%%
 Map_arr = Map.to_numpy()
 
 # these are stanford settings
-scan148_standford = 10 #nA/V
-scan011_stanford = 500 #nA/V
+scan011_stanford = 500 #nA/V # PVSe33.3_4
+scan148_standford = 10 #nA/V # PVSe33.4_3
 V2F_sector26 = 1E5 #cts/V
 
-xbic_nA = Map_arr * scan011_stanford / V2F_sector26
+xbic_nA = Map_arr * scan148_standford / V2F_sector26

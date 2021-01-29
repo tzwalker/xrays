@@ -34,11 +34,6 @@ from scipy.stats import spearmanr
 import samp_dict_grow
 import custom_heatmap_defs
 
-
-
-
-
-
 def spearman_matrix(data, row_labels, col_labels, mask,
             cbarpad, cbar_labsize, cbar_ticksize, 
             xylabelsizes,
