@@ -42,9 +42,9 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
-SAVE = 1;
+SAVE = 0;
 # XBIC
-img = NBL31.scan341[0,:,:-2]
+img = NBL33.scan491[0,:,:-2]
 
 #scale for proper colorbar
 #img = img*1E8

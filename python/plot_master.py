@@ -69,27 +69,36 @@ SAVE = 0
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_stage design\paper figures'
 FNAME = r'\FS3_scan344_Se.eps'
 
-scalebar = 1; scalebar_color='white'
-draw_cbar = 0; cbar_txt_size=10; top_cbar=1; normal_cbar=0
+scalebar = 0
+scalebar_color='white'
+draw_cbar = 0
+cbar_txt_size=10
+top_cbar=0;
+normal_cbar=1
 
+scale_control = 0
 convert = 0
-sci_notation = 1
-img = Se_maps[4]
+sci_notation = 0
+unit = 'XBIC'
+
+colormap = 'inferno'
+
+img = NBL33.scan491[0,:,:-2]
 data = img.copy()
 
 if convert == 1:
     #data = data*1e8
     data_norm = (data - data.min()) / (data.max() - data.min())
 
-unit = 'Se ($\mu$g/cm$^2$)'
-MAX = 1.5; MIN = 0
-colormap = 'viridis'
 
 plt.figure()
-
 fig, ax = plt.subplots(figsize=(2.5,2.5))
-    
-im = ax.imshow(data, cmap=colormap, vmax=MAX, vmin=MIN)
+
+if scale_control == 1:
+    MAX = 15; MIN = 0.01
+    im = ax.imshow(data, cmap=colormap, vmax=MAX, vmin=MIN)
+else: 
+    im = ax.imshow(data, cmap=colormap)
 ax.axis('off')
 
 if scalebar == 1:
