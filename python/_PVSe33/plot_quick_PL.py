@@ -149,14 +149,46 @@ plt.plot(px_spec[:,0], fitted_model(px_spec[:,0]))
 # 
 # =============================================================================
 #%%
-'''for single spectrum'''
-import pandas as pd
+
+
+
+
+#%%
+'''
+testing git package that reads wdf files
+    https://github.com/alchem0x2A/py-wdf-reader
+wdf files have more information that the text file
+the above package is ordered in a way that i could never do with the
+    text file
+'''
+
+from renishawWiRE import WDFReader
 import matplotlib.pyplot as plt
-
+import matplotlib.image as mpimg
+ 
 IN_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\PL'
-FNAME = r'\20210119 PVSe33.4_3SLAC PL - glass side test1.txt'
+FNAME = r'\20210119 PVSe33.4_3SLAC PL MAP - Au side test2.wdf'
 
-data = pd.read_csv(IN_PATH+FNAME, sep='\t', skiprows=1)
-data.columns = ["Wave #", "Intensity"]
+# import wdf file
+filename = IN_PATH+FNAME
+reader = WDFReader(filename)
+reader.print_info()
 
-plt.plot(data["Wave #"], data["Intensity"])
+### access spectral and optical image data
+# get x-axis of spectral data
+    # keep in mind the units you specified for the measurement
+    # here the measurement was made using the eV as the x-axis
+energy = reader.xdata
+# specify the x-axis value you wish to plot
+    # here the CdTe bandgap is 1.51 at room temperature (Fonthal, 1999)
+Eg_CdTe = 1.51
+# find the value in the x-axis that is closest to the specified x-axis value
+E_idx = (np.abs(energy - Eg_CdTe)).argmin()
+
+# get the spectral data from the map; has form (y_pixel, x_pixel, intensity)
+spectra = reader.spectra
+
+# get optical image
+img = mpimg.imread(reader.img, format="jpg")
+
+
