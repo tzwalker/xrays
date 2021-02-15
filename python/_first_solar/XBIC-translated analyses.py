@@ -22,7 +22,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # specificy path to csvs
-PATH_IN = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\XBIC aligned image csvs'
+PATH_IN = r'C:\Users\Trumann\Dropbox (ASU)\1_FS_operando\XBIC aligned image csvs'
 scans = [323,327,332,339,344]
 scans1 = [str(s) for s in scans]
 
@@ -40,9 +40,28 @@ for S in scans1:
     IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
     Se_maps.append(IMG)
 
-# compute delta XBIV maps
-dels = [X - Y for X, Y in zip(imgs[1:], imgs[0:])]
-dels1 = [(X/np.median(X)) / (Y/np.median(Y)) for X,Y in zip(imgs[1:], imgs[0:])]
+#%%
+'''
+compute delta XBIC maps
+need to add additional row to 100C map
+'''
+imgs2 = Se_maps.copy()
+# add row of zeros to 100C map (imgs[4])
+imgs2_100C = np.append(imgs2[4], np.empty((1,255,)), axis=0)
+# replace last map with edited map
+imgs2[4] = imgs2_100C
+# convert maps to array
+imgs_to_arr = [img.ravel() for img in imgs2]
+dels = [X - Y for X, Y in zip(imgs2[1:], imgs2[0:])]
+dels1 = [(X/np.median(X)) / (Y/np.median(Y)) for X,Y in zip(imgs2[1:], imgs2[0:])]
+
+for i in dels1:
+    fig, ax = plt.subplots()
+    ax.imshow(i, cmap='RdBu')
+    ax.axis('off')
+
+
+    
 
 #%%
 
@@ -156,11 +175,36 @@ for m in XBIV_hi:
 hi_XBIV_arr = np.array(hi_XBIV_arr)
 hi_XBIV_arr = hi_XBIV_arr.T
 
-PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando'
+PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\histogram arrays from python'
 FNAME = r'\arrays_for_hist_loXBIVvTemp.csv'
 #np.savetxt(PATH_OUT+FNAME, lo_XBIV_arr, delimiter=',')
 FNAME = r'\arrays_for_hist_hiXBIVvTemp.csv'
 #np.savetxt(PATH_OUT+FNAME, hi_XBIV_arr, delimiter=',')
+
+#%%
+'''
+retrieving percentile masks over temp
+and plotting histograms of whole area
+-removed a row in 100C map due to fill/unfill,
+need to re-insert this row as nan to export as histogram
+'''
+img2 = imgs.copy()
+# add row of zeros to 100C map (imgs[4])
+imgs2_100C = np.append(img2[4], np.empty((1,255,)), axis=0)
+# replace last map with edited map
+img2[4] = imgs2_100C
+# convert maps to array
+imgs_to_arr = [img.ravel() for img in img2]
+# combine arrays
+concatenate = np.vstack(imgs_to_arr)
+# transpose arrays to column format
+concatenate = concatenate.T
+# save arrays
+PATH_OUT = r'C:\Users\Trumann\Dropbox (ASU)\1_FS_operando\histogram arrays from python'
+FNAME = r'\arrays_for_hist_loXBIVvTemp.csv'
+#np.savetxt(PATH_OUT+FNAME, lo_XBIV_arr, delimiter=',')
+FNAME = r'\arrays_for_hist_XBICvTemp.csv'
+np.savetxt(PATH_OUT+FNAME, concatenate, delimiter=',')
 
 #%%
 '''Se distirbutions and/or maps and/or histograms'''
