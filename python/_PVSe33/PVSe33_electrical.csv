@@ -1,4 +1,4 @@
-scan,XBIC/V,V2F,stanford,lockin,
-11,C,1.00E+05,500,1,2020_10_26IDC
-148,C,1.00E+05,10,1,all direct XBIC signals
-153,C,1.00E+05,10,1,
+scan,XBIC/V,V2F,stanford,lockin,,,,
+11,C,1.00E+05,500,1,2020_10_26IDC,,,PVSe33.3_4
+148,C,1.00E+05,10,1,all direct XBIC signals,,,PVSe33.4_3
+153,C,1.00E+05,10,1,,,,PVSe33.4_3

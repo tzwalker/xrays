@@ -17,16 +17,7 @@ NBL33_scan17 rotation could not be determined,
 but based off the plots, it is likley to be around 10-15
     sticking with 15 to be used in average investigations
 """
-
-#r'C:\Users\Trumann\data_NBL3\cross_sections_MS'
-#r'C:\Users\triton\NBL3_data\cross_section_MS'
-PATH = r'C:\Users\Trumann\data_NBL3\cross_sections_MS' 
-#'C:\Users\triton\xrays\python\NBL3xsect'
-# #C:\Users\Trumann\xrays\python\NBL3xsect
-DEFS = r'C:\Users\Trumann\xrays\python\NBL3xsect' 
-
 import sys
-sys.path.append(DEFS)
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -85,11 +76,18 @@ def import_xSect_csvs(path, sample, scannum, channels, meta, rot):
         rotated_map_dfs.append(rot_df) 
     return rotated_map_dfs # can have no rotation
 
+#r'C:\Users\Trumann\data_NBL3\cross_sections_MS'
+#r'C:\Users\triton\NBL3_data\cross_section_MS'
+PATH = r'C:\Users\triton\NBL3_data\cross_section_MS' 
+#'C:\Users\triton\xrays\python\NBL3xsect'
+# #C:\Users\Trumann\xrays\python\NBL3xsect
+DEFS = r'C:\Users\triton\xrays\python\NBL3xsect' 
+sys.path.append(DEFS)
 
-
-SAMPLE = 'TS58A'
-SCAN = 4
+SAMPLE = 'NBL33'
+SCAN = 1
 CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
+PLT_CHAN_IDX = 2
 META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)
 ROTATION = 0
 
@@ -98,15 +96,15 @@ map_dfs = import_xSect_csvs(PATH, SAMPLE, SCAN, CHANNELS, META_DATA, ROTATION)
 if SAMPLE == 'NBL31':
 # for NBL31 scan 8 to have the same points and 5um length as NBL33 scan 1
     # XBIC scale from 0-250 nA
-    data = map_dfs[0].iloc[:34,:] # 34 pts at 150nm step ~ 5um
+    map_data = map_dfs[PLT_CHAN_IDX].iloc[:34,:] # 34 pts at 150nm step ~ 5um
 else: 
     # otherwise (for NBL33) plot data frame normally
-    data = map_dfs[2]
+    map_data = map_dfs[PLT_CHAN_IDX]
 
 # for exporting cross-section maps
 plt.figure()
 fig, ax = plt.subplots(figsize=(5,5))
-im = ax.imshow(data, cmap='inferno')
+im = ax.imshow(map_data, cmap='inferno')
 #plt.gca().invert_xaxis() --> flips map
 ax.axis('off')
 

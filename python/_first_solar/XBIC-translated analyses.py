@@ -1,16 +1,12 @@
 """
 coding: utf-8
-
 tzwalker
 Tue Jul  7 17:05:57 2020
-
 this program is meant for analyses of the aligned
 XBIV scans produced using 
 '_first_solar/XBIC-XBIV-translate-and-deltas.py'
-
 before serious correlations are preformed, the XRF data should be
 corrected for absorption
-
 XBIC
 20C: scan0323
 40C: scan0327
@@ -22,7 +18,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # specificy path to csvs
-PATH_IN = r'C:\Users\Trumann\Dropbox (ASU)\1_FS_operando\XBIC aligned image csvs'
+PATH_IN = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\XBIC aligned image csvs'
 scans = [323,327,332,339,344]
 scans1 = [str(s) for s in scans]
 
@@ -40,28 +36,21 @@ for S in scans1:
     IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
     Se_maps.append(IMG)
 
-#%%
-'''
-compute delta XBIC maps
-need to add additional row to 100C map
-'''
-imgs2 = Se_maps.copy()
-# add row of zeros to 100C map (imgs[4])
-imgs2_100C = np.append(imgs2[4], np.empty((1,255,)), axis=0)
-# replace last map with edited map
-imgs2[4] = imgs2_100C
-# convert maps to array
-imgs_to_arr = [img.ravel() for img in imgs2]
-dels = [X - Y for X, Y in zip(imgs2[1:], imgs2[0:])]
-dels1 = [(X/np.median(X)) / (Y/np.median(Y)) for X,Y in zip(imgs2[1:], imgs2[0:])]
+Cd_maps = []
+for S in scans1:
+    FNAME = r'\FS3_scan{SCN}_Cd.csv'.format(SCN=S)
+    IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
+    Cd_maps.append(IMG)
 
-for i in dels1:
-    fig, ax = plt.subplots()
-    ax.imshow(i, cmap='RdBu')
-    ax.axis('off')
+Te_maps = []
+for S in scans1:
+    FNAME = r'\FS3_scan{SCN}_Te.csv'.format(SCN=S)
+    IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
+    Te_maps.append(IMG)
 
-
-    
+# compute delta XBIV maps
+dels = [X - Y for X, Y in zip(imgs[1:], imgs[0:])]
+dels1 = [(X/np.median(X)) / (Y/np.median(Y)) for X,Y in zip(imgs[1:], imgs[0:])]
 
 #%%
 
@@ -108,9 +97,9 @@ for img, lab, col in zip(imgs, labels, colors):
     # step size (i.e. sampling rate)
     um_step = 0.150
     # compute (symmetric) frequency bins accroding to sample step
-    freq = np.fft.fftfreq(N, d=um_step)
+    freq = np.fft.fftfreq(N, d=um_step) # 1/0.150/237 is the bin step
     # remove redundancy in frequency bins
-    freq_clipped = freq[0:int(N/2)]
+    freq_clipped = freq[0:int(N/2)] 
     
     # stored modulus of FFT transforms
     moduli = []
@@ -175,36 +164,11 @@ for m in XBIV_hi:
 hi_XBIV_arr = np.array(hi_XBIV_arr)
 hi_XBIV_arr = hi_XBIV_arr.T
 
-PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\histogram arrays from python'
+PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando'
 FNAME = r'\arrays_for_hist_loXBIVvTemp.csv'
 #np.savetxt(PATH_OUT+FNAME, lo_XBIV_arr, delimiter=',')
 FNAME = r'\arrays_for_hist_hiXBIVvTemp.csv'
 #np.savetxt(PATH_OUT+FNAME, hi_XBIV_arr, delimiter=',')
-
-#%%
-'''
-retrieving percentile masks over temp
-and plotting histograms of whole area
--removed a row in 100C map due to fill/unfill,
-need to re-insert this row as nan to export as histogram
-'''
-img2 = imgs.copy()
-# add row of zeros to 100C map (imgs[4])
-imgs2_100C = np.append(img2[4], np.empty((1,255,)), axis=0)
-# replace last map with edited map
-img2[4] = imgs2_100C
-# convert maps to array
-imgs_to_arr = [img.ravel() for img in img2]
-# combine arrays
-concatenate = np.vstack(imgs_to_arr)
-# transpose arrays to column format
-concatenate = concatenate.T
-# save arrays
-PATH_OUT = r'C:\Users\Trumann\Dropbox (ASU)\1_FS_operando\histogram arrays from python'
-FNAME = r'\arrays_for_hist_loXBIVvTemp.csv'
-#np.savetxt(PATH_OUT+FNAME, lo_XBIV_arr, delimiter=',')
-FNAME = r'\arrays_for_hist_XBICvTemp.csv'
-np.savetxt(PATH_OUT+FNAME, concatenate, delimiter=',')
 
 #%%
 '''Se distirbutions and/or maps and/or histograms'''
@@ -222,13 +186,90 @@ for i,m in enumerate(Se_maps):
     err = pt_75 - pt_25
     print(err)
     print()
-    #plt.figure()
-    #plt.hist(DATA, bins=50,histtype='step', color=colors[i], label=labels[i])
-    #plt.legend(prop={'size': 10})
-    #plt.xlim([0.5,1.5])
-    #plt.ylim([0,3000])
+    plt.figure()
+    plt.hist(DATA, bins=50,histtype='step', color=colors[i], label=labels[i])
+    plt.legend(prop={'size': 10})
+    plt.xlim([0.5,1.5])
+    plt.ylim([0,3000])
 Se_hist_out = np.array(Se_hist)
 Se_hist_out = Se_hist_out.T
-PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando'
-FNAME = r'\SevTemp_arrays_for_hist.csv'
-#np.savetxt(PATH_OUT+FNAME, Se_hist_out, delimiter=',')
+PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\histogram arrays from python'
+FNAME = r'\XBIC - SevTemp_arrays_for_hist.csv'
+np.savetxt(PATH_OUT+FNAME, Se_hist_out, delimiter=',')
+
+#%%
+'''correlation matrices at each temperature step, load XRF maps first'''
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import spearmanr
+import seaborn as sns
+
+# specificy path to csvs
+PATH_IN = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\XBIC aligned image csvs'
+scans = [323,327,332,339,344]
+scans1 = [str(s) for s in scans]
+
+# import xbic maps
+imgs = []
+for S in scans1:
+    FNAME = r'\FS3_scan{SCN}_XBIC.csv'.format(SCN=S)
+    IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
+    imgs.append(IMG)
+
+# import XRF maps
+Se_maps = []
+for S in scans1:
+    FNAME = r'\FS3_scan{SCN}_Se.csv'.format(SCN=S)
+    IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
+    Se_maps.append(IMG)
+
+Cd_maps = []
+for S in scans1:
+    FNAME = r'\FS3_scan{SCN}_Cd.csv'.format(SCN=S)
+    IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
+    Cd_maps.append(IMG)
+
+Te_maps = []
+for S in scans1:
+    FNAME = r'\FS3_scan{SCN}_Te.csv'.format(SCN=S)
+    IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
+    Te_maps.append(IMG)
+
+# NOTE ONLY RUN THIS SECTION ONCE AFTER IMPORTING MAPS
+SET = [imgs,Cd_maps,Te_maps, Se_maps]
+# insert nan array at end of 100C map to make 3D numpy 
+length_of_img_row = np.size(imgs[0], axis=1)
+a = np.empty((1,255))
+a[:] = np.nan
+# only run this once, otherwise it will keep adding nan rows to the array
+for maps in SET:
+    map_100C = maps[4]
+    # add non row to map
+    map_100C_w_row = np.vstack((map_100C, a))
+    maps[4] = map_100C_w_row # !!! overwrite last map in loaded list
+    
+ # RUN THIS SECTION AS MANY TIMES AS YOU WANT
+temp_idx = 0
+arr_XBIC = imgs[temp_idx].ravel().reshape(-1,1)
+arr_Cd = Cd_maps[temp_idx].ravel().reshape(-1,1)
+arr_Te = Te_maps[temp_idx].ravel().reshape(-1,1)
+arr_Se = Se_maps[temp_idx].ravel().reshape(-1,1)
+arr_combined = np.concatenate((arr_XBIC, arr_Cd, arr_Te, arr_Se), axis=1)
+correlations = spearmanr(arr_combined)
+# for 100C map
+if temp_idx==4:
+    x = arr_combined[~np.isnan(arr_combined).any(axis=1),:]
+    correlations = spearmanr(x)
+
+labs = ['XBIC', 'Cd', 'Te', 'Se']
+cbar_lab = 'Monotonicty'
+mask = np.triu(np.ones_like(correlations[0], dtype=bool))
+
+fig, ax = plt.subplots(figsize=(4,1.5))
+sns.heatmap(correlations[0], vmin=-1, vmax=1, cmap='coolwarm',
+            annot=True, xticklabels=labs, yticklabels=labs,
+            mask=mask, fmt='.2f', cbar_kws={'label': cbar_lab})
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\spearman matrices from python'
+FNAME=r'\FS3_correlation_TmapNum0{s}.eps'.format(s=str(temp_idx))
+#print(OUT_PATH+FNAME)
+#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)

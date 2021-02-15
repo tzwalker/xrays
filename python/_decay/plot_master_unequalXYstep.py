@@ -46,7 +46,7 @@ for PVS33 (2020_10_26IDC)
 import matplotlib.pyplot as plt
 import matplotlib.offsetbox as offbox
 from matplotlib.lines import Line2D
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+from mpl_toolkits.axes_grid1 import make_axes_locatable,axes_size
 from matplotlib import ticker
 '''adds scalebar to matplotlib images'''
 class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
@@ -72,42 +72,51 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
-SAVE = 0
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_stage design\paper figures'
-FNAME = r'\FS3_scan344_Se.eps'
 
-scalebar = 1
+
+SAVE = 1
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_XBIC_decay\figures v0'
+FNAME = r'\TS118_1Ax_scan0051_Cd.eps'
+
+scalebar = 0
 scalebar_color = 'white'
-px = 5; dist = '5um'
+px = 12; dist = '3um'
 
 draw_cbar = 1
 cbar_txt_size = 10
 top_cbar = 0
 side_cbar=1
 
-cbar_scale_control = 1; MAX = 0.25; MIN = 0.05
+cbar_scale_control = 1; MAX = 250; MIN = 0
 normalize = 0
 sci_notation = 0
 
-unit = '275cm$^{-1}$ / 141cm$^{-1}$ (.)'; colormap = 'Greys_r'; 
+#unit = 'XBIC (A)'; colormap='inferno'
+#unit = 'Cu ($\mu$g/cm$^2$)'; colormap = 'Oranges_r'
+unit = 'Cd ($\mu$g/cm$^2$)'; colormap = 'Blues_r'
 
-img = ratio_map
+img = TS1181A.maps[3][2,:,:]
+map_extent = [-5, 5, -20, 20]
 data = img.copy()
-
-if normalize == 1:
-    #data = data*1e8
-    data_norm = (data - data.min()) / (data.max() - data.min())
 
 
 plt.figure()
 fig, ax = plt.subplots(figsize=(2.5,2.5))
 
 if cbar_scale_control == 1:
-    im = ax.imshow(data, cmap=colormap, vmax=MAX, vmin=MIN)
+    if normalize == 1:
+        #data = data*1e8
+        data = (data - data.min()) / (data.max() - data.min())
+    im = ax.imshow(data, cmap=colormap, vmax=MAX, vmin=MIN,extent=map_extent)
 else: 
-    im = ax.imshow(data, cmap=colormap)
+    if normalize == 1:
+        #data = data*1e8
+        data = (data - data.min()) / (data.max() - data.min())
+    im = ax.imshow(data, cmap=colormap, extent=map_extent)
 
-ax.axis('off')
+ax.set_xlabel('X (um)')
+ax.set_ylabel('Y (um)')
+ax.set_aspect('auto')
 
 if scalebar == 1:
     ob = AnchoredHScaleBar(size=px, label=dist, loc=4, frameon=False,
@@ -117,12 +126,13 @@ if scalebar == 1:
 
 if draw_cbar == 1:
     divider = make_axes_locatable(ax)
+    
     if side_cbar == 1:
         # create color bar
-        cax = divider.append_axes('right', size='5%', pad=0.1)
+        cax = divider.append_axes('right', size='10%', pad=0.1)
         if sci_notation == 1:
             fmt = ticker.ScalarFormatter(useMathText=True)
-            fmt.set_powerlimits((1, 0))
+            fmt.set_powerlimits((0, 0))
             cb = fig.colorbar(im, cax=cax, orientation='vertical',format=fmt)
         else:
             cb = fig.colorbar(im, cax=cax, orientation='vertical')#,format='.1f')
@@ -138,8 +148,9 @@ if draw_cbar == 1:
         cbar.yaxis.get_offset_text().set(size=cbar_txt_size)
             #change color bar scale label position   
         cbar.yaxis.set_offset_position('left')
+    
     if top_cbar == 1:
-        cax = divider.new_vertical(size='5%', pad=0.1)
+        cax = divider.new_vertical(size='5%', pad=-0.75)
         fig.add_axes(cax)
         if sci_notation == 1:
             fmt = ticker.ScalarFormatter(useMathText=True)
@@ -155,7 +166,8 @@ if draw_cbar == 1:
         cax.xaxis.set_ticks_position('top')
         #change number of tick labels on cbar
         cbar = plt.gcf().axes[-1]
-        cbar.locator_params(nbins=4)
+        #cbar.locator_params(nbins=4)
+        
 
 if SAVE == 1:
     plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)

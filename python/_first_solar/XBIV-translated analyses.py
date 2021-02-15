@@ -172,7 +172,7 @@ for img, lab, col in zip(imgs, labels, colors): #change to imgs
     # step size (i.e. sampling rate)
     um_step = 0.150
     # compute (symmetric) frequency bins accroding to sample step
-    freq = np.fft.fftfreq(N, d=um_step) # 0.150/1/237 is the bin step
+    freq = np.fft.fftfreq(N, d=um_step) # 1/0.150/237 is the bin step
     # remove redundancy in frequency bins
     freq_clipped = freq[0:int(N/2)]
     X2 = freq_clipped[16]
