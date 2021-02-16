@@ -29,7 +29,7 @@ def gaussian(x, height, center, width, offset):
 
 
 '''for single spectrum'''
-IN_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\PL'
+IN_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\PL\spectra'
 FNAME = r'\20210119 PVSe33.4_3SLAC PL - glass side test1.txt'
 #FNAME = r'\20201105 PVSe33.3_4 PL Spot - Au side - boundary.txt'
 

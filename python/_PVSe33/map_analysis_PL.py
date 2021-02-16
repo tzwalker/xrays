@@ -12,14 +12,30 @@ this program uses the packages provided here:
 it is highly recommended to install these packages through the Anaconda
     distirbution and use them inside the Spyder environment
 
+primary filenames and Z:/ location:
+    unstressed
+		PL Au Side : 20210213 PVSe33 redo 2/PVSe33.3_2 Au Side_PL_map0
+    20-hour stressed
+		PL Au Side : 20210215 PVSe33.3_4SLAC/PL Au side map0.wdf 
+    500-hour stressed
+		PL Au Side : 20210203 PVSe33 redo/PL Au Side/PVSe334_3 - Au Side map 1
+-the directories above reflect the directory on the Z:/ drive
+
+-to input the file into this program, use the following adjusted directories:
+    unstreseed
+        PL Au side: 20210213 PVSe33 redo 2 - PVSe33.3_2 Au Side_PL_map0.wdf
+    20-hour stressed
+        20210215 PVSe33.3_4SLAC - PL Au side map0.wdf
+    500-hour stressed
+        PL Au side: 20210203 PVSe33 redo PL Au Side PVSe334_3 - Au Side map 1.wdf
 """
 
 from renishawWiRE import WDFReader
 import matplotlib.pyplot as plt
 import numpy as np
  
-IN_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\PL'
-FNAME = r'\20210203 PVSe33 redo PL Au Side PVSe334_3 - Au Side map 1.wdf'
+IN_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\PL'
+FNAME = r'\20210213 PVSe33 redo 2 - PVSe33.3_2 Au Side_PL_map0.wdf'
 
 # import wdf file
 filename = IN_PATH+FNAME

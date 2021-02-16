@@ -9,14 +9,31 @@ this program is used to import and process Raman data
 this program uses the packages provided here:
     https://github.com/alchem0x2A/py-wdf-reader
 
+primary filenames and Z:/ location:
+	unstressed (PVSe33.3_2) 
+		Raman Au Side: 20210213 PVSe33 redo 2/PVSe33.3_2 Au Side_raman_map0.wdf
+	20-hour stress (PVSe33.3_4SLAC)			
+		Raman Au Side : 20210215 PVSe33.3_4SLAC/Raman Au side map0.wdf
+	500-hour stress (PVSe33.4_3)
+		Raman Au Side : 20210203 PVSe33 redo/Raman Au Side/PVSe334_3 - Au Side map 1
+-the directories above reflect the directory on the Z:/ drive
+
+-to input the file into this program, use the following adjusted directories:
+	unstressed (PVSe33.3_2) 
+		Raman Au Side: 20210213 PVSe33 redo 2 - PVSe33.3_2 Au Side_raman_map0.wdf
+	20-hour stress (PVSe33.3_4SLAC)			
+		Raman Au Side : 20210215 PVSe33.3_4SLAC - Raman Au side map0.wdf
+	500-hour stress (PVSe33.4_3)
+		Raman Au Side : 20210203 PVSe33 redo - Raman Au Side - PVSe334_3 - Au Side map 1.wdf
+
 """
 
 from renishawWiRE import WDFReader
 import matplotlib.pyplot as plt
 import numpy as np
  
-IN_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\Raman'
-FNAME = r'\20210203 PVSe33 redo Au Side PVSe334_3 - Au Side map 1.wdf'
+IN_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\Raman'
+FNAME = r'\20210215 PVSe33.3_4SLAC - Raman Au side map0.wdf'
 
 # import wdf file
 filename = IN_PATH+FNAME
@@ -39,8 +56,8 @@ x = np.shape(spectra)[1]
 spectra_ravel = spectra.reshape((x*y),z)
 
 z_average = np.mean(spectra_ravel, axis=0)
-z_std = np.std(spectra_ravel, axis=1)
-plt.plot(z_average)
+z_std = np.std(spectra_ravel, axis=0)
+plt.plot(shift, z_average)
 
 #%%
 '''
