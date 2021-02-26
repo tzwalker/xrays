@@ -2,7 +2,7 @@
 coding: utf-8
 
 tzwalker
-Wed Feb  3 09:49:31 2021
+Thu Feb 25 19:18:12 2021
 
 this program plots the optical image, area of the optical image, and
     the PL intensity as a function of x and y position for a single energy 
@@ -11,15 +11,16 @@ this program uses the packages provided here:
     https://github.com/alchem0x2A/py-wdf-reader
 it is highly recommended to install these packages through the Anaconda
     distirbution and use them inside the Spyder environment
-
 """
+
+
 
 from renishawWiRE import WDFReader
 import matplotlib.pyplot as plt
 import numpy as np
  
-IN_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\PL'
-FNAME = r'\20210203 PVSe33 redo PL Au Side PVSe334_3 - Au Side map 1.wdf'
+IN_PATH = r'Z:\Trumann\Renishaw\20210119 PVSe33 SLAC - PL front and back'
+FNAME = r'\PVSe33.4_3SLAC PL MAP - Au side test2.wdf'
 
 # import wdf file
 filename = IN_PATH+FNAME
@@ -35,7 +36,6 @@ energy = reader.xdata
 # get the spectral data from the map; has form (y_pixel, x_pixel, intensity)
 spectra = reader.spectra
 
-#%%
 '''
 this cell acesses a wavenumber, raman shift, or energy of interest
 and plots its intensity as a funciton of x and y
