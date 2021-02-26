@@ -34,63 +34,72 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
-img_list = [NBL31.scan341[2,:,:], NBL32.scan422[2,:,:],NBL33.scan264[2,:,:],TS58A.scan385[2,:,:]]
+
+# cmaps: 
+    #RdYlGn 
+    #inferno 
+    #Greys_r
+    #Blues_r
+    #viridis #Oranges_r 
+#for NBL3xsect NBL33
+    # XBIC: vmin=0,vmax=80, after multiplying 'data1' by 1E9
+    # Cu XRF: vmin=0,vmax=30000
+    # Cd XRF: vmin=0,vmax=15000
+#for NBL3xsect NBL31
+    # XBIC: vmin=0,vmax=250, after multiplying 'data1' by 1E9,bins=3
+    # Cu XRF: vmin=0,vmax=2000, bins=2
+    # Cd XRF: vmin=0,vmax=15000, bins=4
+#for FS3
+    # Se XRF: vmin=0.5,vmax=1.5
+    # XBIC: vmin=5.6E-8,vmax=8.6E-8 
+    
+scalebar = 1; cbar = 1; SAVE = 0
+UNITS = 'XBIC (A)'; COLOR = 'inferno'
+#img_list = [NBL31.scan341[2,:,:], NBL32.scan422[2,:,:],NBL33.scan264[2,:,:],TS58A.scan385[2,:,:]]
+img_list = imgs
+#delsEdit = dels1.copy()
+#delsEdit[3] = delsEdit[3][:-1,:]
+
 for img in img_list:
-    #img = transforms[4] #FS3.scan323[0,:,:-2]
     data = img.copy()
     data = data
     plt.figure()
     
-    fig, ax = plt.subplots(figsize=(5,5))
-    # cmaps: 
-        #RdYlGn 
-        #inferno 
-        #Greys_r
-        #Blues_r
-        #viridis #Oranges_r 
-    #for NBL3xsect NBL33
-        # XBIC: vmin=0,vmax=80, after multiplying 'data1' by 1E9
-        # Cu XRF: vmin=0,vmax=30000
-        # Cd XRF: vmin=0,vmax=15000
-    #for NBL3xsect NBL31
-        # XBIC: vmin=0,vmax=250, after multiplying 'data1' by 1E9,bins=3
-        # Cu XRF: vmin=0,vmax=2000, bins=2
-        # Cd XRF: vmin=0,vmax=15000, bins=4
-    #for FS3
-        # Se XRF: vmin=0.5,vmax=1.5
-        # XBIC: vmin=5.6E-8,vmax=8.6E-8 
+    fig, ax = plt.subplots()
+
         
-    im = ax.imshow(data, cmap='Blues_r', vmin=0,vmax=25)
+    im = ax.imshow(data, cmap=COLOR)#vmin=6E-8, vmax=8.5E-8)
     ax.axis('off')
     
-    scalebar = 1
     if scalebar == 1:
-        ob = AnchoredHScaleBar(size=33, label="5 um", loc=4, frameon=True,
+        ob = AnchoredHScaleBar(size=67, label="10 um", loc=4, frameon=True,
                                pad=0.5, borderpad=1, sep=4, 
                                linekw=dict(color="black"))
         ax.add_artist(ob)
     
-    cbar = 1
-    if cbar == 1:
-            # create color bar
-        divider = make_axes_locatable(ax)
-        cax = divider.append_axes('right', size='5%', pad=0.1)
-        fig.colorbar(im, cax=cax, orientation='vertical')#,format='%.0f')
-            #get color bar object
-        cbar = plt.gcf().axes[-1]
-            #format colorbar
-        cbar.set_ylabel('Te (ug/cm2)', rotation=90, va="bottom", size=12, labelpad=20)
-            # change number of tick labels on colorbar
-        #cbar.locator_params(nbins=4)
-            #change colorbar tick label sizes
-        cbar.tick_params(labelsize=12)
-            # change scale label, e.g. 1e-8
-        #cbar.set_title('1e4', size=11,loc='left')
-            #change color bar scale label size, e.g. 1e-8
-        cbar.yaxis.get_offset_text().set(size=12)
-            #change color bar scale label position   
-        cbar.yaxis.set_offset_position('left')
 
-OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp\maps with colorbars'
-FNAME = r'\NBL31scan8_Cd2.eps'
-#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+    #if cbar == 1:
+        # create color bar
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad=0.1)
+
+    fig.colorbar(im, cax=cax, orientation='vertical',format='%.3g')
+        #get color bar object
+    cbar = plt.gcf().axes[-1]
+        #format colorbar
+    cbar.set_ylabel(UNITS, rotation=90, va="bottom", size=12, labelpad=20)
+        # change number of tick labels on colorbar
+    #cbar.locator_params(nbins=4)
+        #change colorbar tick label sizes
+    cbar.tick_params(labelsize=12)
+        # change scale label, e.g. 1e-8
+    #cbar.set_title('1e4', size=11,loc='left')
+        #change color bar scale label size, e.g. 1e-8
+    cbar.yaxis.get_offset_text().set(size=12)
+        #change color bar scale label position   
+    cbar.yaxis.set_offset_position('left')
+
+if SAVE == 1:
+    OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp\maps with colorbars'
+    FNAME = r'\NBL31scan8_Cd2.eps'
+    #plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)

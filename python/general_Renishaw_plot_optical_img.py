@@ -11,6 +11,26 @@ this program uses the packages provided here:
     https://github.com/alchem0x2A/py-wdf-reader
 it is highly recommended to install these packages through the Anaconda
     distirbution and use them inside the Spyder environment
+<<<<<<< HEAD:python/general_Renishaw_plot_optical_img.py
+=======
+
+primary filenames and Z:/ location:
+    unstressed
+		PL Au Side : 20210213 PVSe33 redo 2/PVSe33.3_2 Au Side_PL_map0
+    20-hour stressed
+		PL Au Side : 20210215 PVSe33.3_4SLAC/PL Au side map0.wdf 
+    500-hour stressed
+		PL Au Side : 20210203 PVSe33 redo/PL Au Side/PVSe334_3 - Au Side map 1
+-the directories above reflect the directory on the Z:/ drive
+
+-to input the file into this program, use the following adjusted directories:
+    unstreseed
+        PL Au side: 20210213 PVSe33 redo 2 - PVSe33.3_2 Au Side_PL_map0.wdf
+    20-hour stressed
+        20210215 PVSe33.3_4SLAC - PL Au side map0.wdf
+    500-hour stressed
+        PL Au side: 20210203 PVSe33 redo PL Au Side PVSe334_3 - Au Side map 1.wdf
+>>>>>>> cd0bb28cd7db3132e353a8aae5252334dce683f2:python/_PVSe33/map_analysis_PL.py
 """
 
 
@@ -19,8 +39,13 @@ from renishawWiRE import WDFReader
 import matplotlib.pyplot as plt
 import numpy as np
  
+<<<<<<< HEAD:python/general_Renishaw_plot_optical_img.py
 IN_PATH = r'Z:\Trumann\Renishaw\20210119 PVSe33 SLAC - PL front and back'
 FNAME = r'\PVSe33.4_3SLAC PL MAP - Au side test2.wdf'
+=======
+IN_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\PL'
+FNAME = r'\20210213 PVSe33 redo 2 - PVSe33.3_2 Au Side_PL_map0.wdf'
+>>>>>>> cd0bb28cd7db3132e353a8aae5252334dce683f2:python/_PVSe33/map_analysis_PL.py
 
 # import wdf file
 filename = IN_PATH+FNAME

@@ -1,16 +1,12 @@
 """
 coding: utf-8
-
 tzwalker
 Tue Jul  7 17:05:57 2020
-
 this program is meant for analyses of the aligned
 XBIV scans produced using 
 '_first_solar/XBIC-XBIV-translate-and-deltas.py'
-
 before serious correlations are preformed, the XRF data should be
 corrected for absorption
-
 XBIC
 20C: scan0323
 40C: scan0327
@@ -277,12 +273,3 @@ OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_FS_operando\spearman matrices from 
 FNAME=r'\FS3_correlation_TmapNum0{s}.eps'.format(s=str(temp_idx))
 #print(OUT_PATH+FNAME)
 #plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
-
-    
-    
-
-
-    
-
-
-
