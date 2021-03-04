@@ -21,8 +21,8 @@ from renishawWiRE import WDFReader
 import matplotlib.pyplot as plt
 import numpy as np
  
-IN_PATH = r'Z:\Trumann\Renishaw\20210119 PVSe33 SLAC - PL front and back'
-FNAME = r'\PVSe33.4_3SLAC PL MAP - Au side test2.wdf'
+IN_PATH = r'Z:\Trumann\Renishaw\20210302 PVSe33.4_3'
+FNAME = r'\Au side PL map0.wdf'
 
 # import wdf file
 filename = IN_PATH+FNAME
@@ -50,30 +50,12 @@ z_std = np.std(spectra_ravel, axis=0)
 plt.plot(energy,z_average)
 
 #%%
-'''this cell takes the average spectrum from a map and checks
+'''this cell takes the average spectrum from a map and
 performs a baseline subtraction; prepatory step for gaussian fits'''
-
-def gaussian1(x,*pars):
-    offset = pars[0]
-    A = pars[1]
-    x0 = pars[2]
-    sig = pars[3]
-    g1 = A*np.exp(-(x-x0)**2/(2*sig**2))
-    return g1 + offset
-
-def gaussian2(x, A, x0, sig):
-    return A*np.exp(-(x-x0)**2/(2*sig**2))
-
-def multi_gaussian(x, *pars):
-    offset = pars[0]
-    g1 = gaussian2(x, pars[1], pars[2], pars[3])
-    g2 = gaussian2(x, pars[4], pars[5], pars[6])
-    return g1 + g2 + offset
 
 import sys
 sys.path.append(r'C:\Users\triton\xrays\python')
 from baseline_algorithms import arpls
-from scipy import optimize
 
 # construct and subtract baseline from average spectrum
 
@@ -93,6 +75,24 @@ the amplitude guesses for these spectra will be substantially lower
 than the geusses for the glass side spectra since 1% laser power was 
 used for the Au side and 5% was used for the glass side 
 '''
+from scipy import optimize
+
+def gaussian1(x,*pars):
+    offset = pars[0]
+    A = pars[1]
+    x0 = pars[2]
+    sig = pars[3]
+    g1 = A*np.exp(-(x-x0)**2/(2*sig**2))
+    return g1 + offset
+
+def gaussian2(x, A, x0, sig):
+    return A*np.exp(-(x-x0)**2/(2*sig**2))
+
+def multi_gaussian(x, *pars):
+    offset = pars[0]
+    g1 = gaussian2(x, pars[1], pars[2], pars[3])
+    g2 = gaussian2(x, pars[4], pars[5], pars[6])
+    return g1 + g2 + offset
 
 # fit to double gaussian
 # initial fit parameter guess
@@ -108,3 +108,56 @@ plt.plot(energy, gauss1, 'r--',label='peak1')
 plt.xlabel('energy (eV)')
 plt.ylabel('intensity (a.u.)')
 plt.legend()
+
+#%%
+'''this cell takes an incomplete scan and chops off the last row'''
+
+# scan 31x31 = 961
+# file array (960,512)
+# new array 30x31 = 930
+spectra2 = spectra[:930,:]
+spectra3 = spectra2.reshape(30,31,-1)
+
+#%%
+'''
+this cell acesses a wavenumber, raman shift, or energy of interest
+and plots its intensity as a funciton of x and y
+'''
+# specify the x-axis value you wish to plot
+user_energy = 1.497
+# find the value in the x-axis that is closest to the specified x-axis value
+E_idx = (np.abs(user_energy - energy)).argmin()
+
+# get relative positions of the x and y motors
+map_x = reader.xpos
+map_y = reader.ypos
+# specificy the bounds of the area that was measured
+bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
+# extract map of a certain energy or shift
+user_map = spectra3[:,:,E_idx]
+plt.imshow(user_map, extent=bounds_map)
+
+#%%
+'''
+this cell takes the ratio between two peak intesities at each pixel
+and plots that ratio as a function of x and y
+'''
+# raman_peak 1 (primary peak)
+raman_shift1 = 141
+E_idx1 = (np.abs(shift - raman_shift1)).argmin()
+# rmaman_peak 2 (other peak of interest)
+raman_shift2 = 275
+E_idx2 = (np.abs(shift - raman_shift2)).argmin()
+
+# maps of peak intensities
+raman_map1 = spectra[:,:,E_idx1]
+raman_map2 = spectra[:,:,E_idx2]
+
+ratio_map = raman_map2/raman_map1
+
+# get relative positions of the x and y motors
+map_x = reader.xpos
+map_y = reader.ypos
+# specificy the bounds of the area that was measured
+bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
+plt.imshow(ratio_map, extent=bounds_map)

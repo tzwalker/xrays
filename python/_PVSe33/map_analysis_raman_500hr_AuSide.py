@@ -9,31 +9,16 @@ this program is used to import and process Raman data
 this program uses the packages provided here:
     https://github.com/alchem0x2A/py-wdf-reader
 
-primary filenames and Z:/ location:
-	unstressed (PVSe33.3_2) 
-		Raman Au Side: 20210213 PVSe33 redo 2/PVSe33.3_2 Au Side_raman_map0.wdf
-	20-hour stress (PVSe33.3_4SLAC)			
-		Raman Au Side : 20210215 PVSe33.3_4SLAC/Raman Au side map0.wdf
-	500-hour stress (PVSe33.4_3)
-		Raman Au Side : 20210203 PVSe33 redo/Raman Au Side/PVSe334_3 - Au Side map 1
--the directories above reflect the directory on the Z:/ drive
-
--to input the file into this program, use the following adjusted directories:
-	unstressed (PVSe33.3_2) 
-		Raman Au Side: 20210213 PVSe33 redo 2 - PVSe33.3_2 Au Side_raman_map0.wdf
-	20-hour stress (PVSe33.3_4SLAC)			
-		Raman Au Side : 20210215 PVSe33.3_4SLAC - Raman Au side map0.wdf
-	500-hour stress (PVSe33.4_3)
-		Raman Au Side : 20210203 PVSe33 redo - Raman Au Side - PVSe334_3 - Au Side map 1.wdf
-
+relevant files can be found here
+'Z:\Trumann\Renishaw\PVSe33 measurement overview.txt'
 """
 
 from renishawWiRE import WDFReader
 import matplotlib.pyplot as plt
 import numpy as np
  
-IN_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\Raman'
-FNAME = r'\20210215 PVSe33.3_4SLAC - Raman Au side map0.wdf'
+IN_PATH = r'Z:\Trumann\Renishaw\20210302 PVSe33.4_3'
+FNAME = r'\Au side raman map0.wdf'
 
 # import wdf file
 filename = IN_PATH+FNAME
@@ -60,6 +45,11 @@ z_std = np.std(spectra_ravel, axis=0)
 plt.plot(shift, z_average)
 
 #%%
+'''this cell clips the map in case we need to compare it to a scan 
+that got aborted'''
+spectra2 = spectra[:-1,:,:]
+
+#%%
 '''
 this cell acesses a wavenumber, raman shift, or energy of interest
 and plots its intensity as a funciton of x and y
@@ -75,8 +65,8 @@ map_x = reader.xpos
 map_y = reader.ypos
 # specificy the bounds of the area that was measured
 bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
-raman_map = spectra[:,:,E_idx]
-plt.imshow(raman_map, extent=bounds_map)
+user_map = spectra2[:,:,E_idx]
+plt.imshow(user_map, extent=bounds_map)
 
 #%%
 '''

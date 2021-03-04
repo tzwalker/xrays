@@ -38,6 +38,7 @@ energy = reader.xdata
 # get the spectral data from the map; has form (y_pixel, x_pixel, intensity)
 spectra = reader.spectra
 
+
 #%%
 '''this cell averages the spectra in each pixel'''
 z = np.shape(spectra)[2]
@@ -108,3 +109,22 @@ plt.plot(energy, gauss1, 'r--',label='peak1')
 plt.xlabel('energy (eV)')
 plt.ylabel('intensity (a.u.)')
 plt.legend()
+
+#%%
+'''
+this cell acesses a wavenumber, raman shift, or energy of interest
+and plots its intensity as a funciton of x and y
+'''
+# specify the x-axis value you wish to plot
+    # here the CdTe peaks of interest are 127,141,167,275,365cm-1
+user_energy = 1.499
+# find the value in the x-axis that is closest to the specified x-axis value
+E_idx = (np.abs(energy - user_energy)).argmin()
+
+# get relative positions of the x and y motors
+map_x = reader.xpos
+map_y = reader.ypos
+# specificy the bounds of the area that was measured
+bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
+PL_map = spectra[:,:,E_idx]
+plt.imshow(PL_map, extent=bounds_map)
