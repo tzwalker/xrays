@@ -4,28 +4,15 @@ coding: utf-8
 tzwalker
 Thu Feb  4 10:47:19 2021
 
-this program is used to import and process Raman data
+this program is used to import and process Raman map data
 
 this program uses the packages provided here:
     https://github.com/alchem0x2A/py-wdf-reader
 
-primary filenames and Z:/ location:
-	unstressed (PVSe33.3_2) 
-		Raman Au Side: 20210213 PVSe33 redo 2/PVSe33.3_2 Au Side_raman_map0.wdf
-	20-hour stress (PVSe33.3_4SLAC)			
-		Raman Au Side : 20210215 PVSe33.3_4SLAC/Raman Au side map0.wdf
-	500-hour stress (PVSe33.4_3)
-		Raman Au Side : 20210203 PVSe33 redo/Raman Au Side/PVSe334_3 - Au Side map 1
--the directories above reflect the directory on the Z:/ drive
-
--to input the file into this program, use the following adjusted directories:
-	unstressed (PVSe33.3_2) 
-		Raman Au Side: 20210213 PVSe33 redo 2 - PVSe33.3_2 Au Side_raman_map0.wdf
-	20-hour stress (PVSe33.3_4SLAC)			
-		Raman Au Side : 20210215 PVSe33.3_4SLAC - Raman Au side map0.wdf
-	500-hour stress (PVSe33.4_3)
-		Raman Au Side : 20210203 PVSe33 redo - Raman Au Side - PVSe334_3 - Au Side map 1.wdf
-
+Raman CdTe peaks of interest are 127,141,167,275,365cm-1
+ 
+relevant data files can be found here
+'Z:\Trumann\Renishaw\PVSe33 measurement overview.txt'
 """
 
 from renishawWiRE import WDFReader

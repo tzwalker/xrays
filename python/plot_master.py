@@ -77,7 +77,7 @@ OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_stage design\paper figures'
 FNAME = r'\FS3_scan344_Se.eps'
 
 scalebar = 1
-scalebar_color = 'black'
+scalebar_color = 'white'
 px = 5; dist = '5um'
 
 draw_cbar = 1
@@ -89,8 +89,8 @@ cbar_scale_control = 0; MAX = 800; MIN = 400
 normalize = 0
 sci_notation = 0
 
-unit = '141cm$^{-1}$ Peak Intensity (.)'; colormap = 'Greys_r'; 
-#unit = '1.497eV Peak Intensity (.)'; colormap = 'viridis'; 
+#unit = '141cm$^{-1}$ Peak Intensity (.)'; colormap = 'Greys_r'; 
+unit = '1.497eV Peak Intensity (.)'; colormap = 'viridis'; 
 
 img = user_map
 data = img.copy()

@@ -21,8 +21,8 @@ from renishawWiRE import WDFReader
 import matplotlib.pyplot as plt
 import numpy as np
  
-IN_PATH = r'Z:\Trumann\Renishaw\20210302 PVSe33.4_3'
-FNAME = r'\Au side PL map0.wdf'
+IN_PATH = r'Z:\Trumann\Renishaw\20210304 PVSe33'
+FNAME = r'\PVSe33.4_3 Au side PL map0.wdf'
 
 # import wdf file
 filename = IN_PATH+FNAME
@@ -39,15 +39,36 @@ energy = reader.xdata
 spectra = reader.spectra
 
 #%%
-'''this cell averages the spectra in each pixel'''
-z = np.shape(spectra)[2]
-y = np.shape(spectra)[0]
-x = np.shape(spectra)[1]
-spectra_ravel = spectra.reshape((x*y),z)
+'''this cell takes an incomplete scan and chops off the last row'''
+# maybe insert a if statement here that checks if the map is complete
+    # if reader.capacity == reader.count: chop off last row
+# scan 31x31 = 961
+# file array (960,512)
+# new array 30x31 = 930
+spectra2 = spectra[:930,:]
+spectra3 = spectra2.reshape(30,31,-1)
 
-z_average = np.mean(spectra_ravel, axis=0)
-z_std = np.std(spectra_ravel, axis=0)
+#%%
+'''this cell averages the spectra in each pixel'''
+aborted_map = 1
+
+if aborted_map == 0:
+    # for a map that was not aborted
+    z = np.shape(spectra)[2]
+    y = np.shape(spectra)[0]
+    x = np.shape(spectra)[1]
+    spectra_ravel = spectra.reshape((x*y),z)
+
+    z_average = np.mean(spectra_ravel, axis=0)
+    z_std = np.std(spectra_ravel, axis=0)
+    
+if aborted_map == 1:
+    # for map that was aborted
+    z_average = np.mean(spectra, axis=0)
+    z_std = np.std(spectra, axis=0)
+
 plt.plot(energy,z_average)
+
 
 #%%
 '''this cell takes the average spectrum from a map and
@@ -109,14 +130,6 @@ plt.xlabel('energy (eV)')
 plt.ylabel('intensity (a.u.)')
 plt.legend()
 
-#%%
-'''this cell takes an incomplete scan and chops off the last row'''
-
-# scan 31x31 = 961
-# file array (960,512)
-# new array 30x31 = 930
-spectra2 = spectra[:930,:]
-spectra3 = spectra2.reshape(30,31,-1)
 
 #%%
 '''
@@ -139,25 +152,64 @@ plt.imshow(user_map, extent=bounds_map)
 
 #%%
 '''
-this cell takes the ratio between two peak intesities at each pixel
-and plots that ratio as a function of x and y
+this cell subtracts background and fits gaussian
+to each spectrum in each pixel
+
+the gaussian fit parameters are stored and can be saved for boxplot analysis
+or reshaping and mapping
 '''
-# raman_peak 1 (primary peak)
-raman_shift1 = 141
-E_idx1 = (np.abs(shift - raman_shift1)).argmin()
-# rmaman_peak 2 (other peak of interest)
-raman_shift2 = 275
-E_idx2 = (np.abs(shift - raman_shift2)).argmin()
 
-# maps of peak intensities
-raman_map1 = spectra[:,:,E_idx1]
-raman_map2 = spectra[:,:,E_idx2]
+import sys
+sys.path.append(r'C:\Users\triton\xrays\python')
+from baseline_algorithms import arpls
+from scipy import optimize
 
-ratio_map = raman_map2/raman_map1
+def gaussian_fit(x,*pars):
+    offset = pars[0]
+    A = pars[1]
+    x0 = pars[2]
+    sig = pars[3]
+    g1 = A*np.exp(-(x-x0)**2/(2*sig**2))
+    return g1 + offset
 
-# get relative positions of the x and y motors
-map_x = reader.xpos
-map_y = reader.ypos
-# specificy the bounds of the area that was measured
-bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
-plt.imshow(ratio_map, extent=bounds_map)
+def gaussian_plot(x, A, x0, sig):
+    return A*np.exp(-(x-x0)**2/(2*sig**2))
+
+# initial fit parameter guess; find from plotting background-subtraction
+    # [offset, A1, xc1, width1]
+guess = [0, 200, 1.50, 0.01]
+
+# reshape spectra so they may be iterated over
+aborted_map = 1
+if aborted_map == 0:
+    # for a map that was not aborted
+    z = np.shape(spectra)[2]
+    y = np.shape(spectra)[0]
+    x = np.shape(spectra)[1]
+    spectra_ravel = spectra.reshape((x*y),z)
+if aborted_map == 1:
+    spectra_ravel = spectra.copy()
+
+
+# construct array to store gaussian fit parameters
+    # the no. of rows (4) correspond to the number of optimization parameters
+    # from the optimize.curve_fit function: offset, A, x0, sig
+    # the no. of columns correspond to the number of pixels or spectra measured
+pixels = np.shape(spectra_ravel)[0]
+stored_gauss_params = np.zeros((pixels,4))
+for pix, spectrum in enumerate(spectra_ravel[100:105,:]):
+    # construct and subtract baseline from pixel spectrum
+    baseline_arpls = arpls(spectrum, 1e5, 0.01)
+    spectrum_arpls = spectrum - baseline_arpls
+    # fit gaussian to background-subtracted spectrum
+    popt, pcov = optimize.curve_fit(gaussian_fit, energy, spectrum_arpls, guess)
+    # store gaussian fit values; popt needs to be transposed
+        #  since optimize.curve_fit outputs as (4,1) array
+    stored_gauss_params[pix,:] = popt.T
+
+SAVE = 0
+if SAVE == 1:
+    OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\PL'
+    OUT_FILE = r'\gaussian fit params - 20210304 PVSe33.3_2 Au Side_PL_map0.csv'
+    OUT = OUT_PATH + OUT_FILE
+    np.savetxt(OUT, stored_gauss_params, delimiter=',')
