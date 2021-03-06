@@ -4,12 +4,14 @@ coding: utf-8
 tzwalker
 Thu Feb  4 10:47:19 2021
 
-this program is used to import and process Raman data
+this program is used to import and process Raman map data
 
 this program uses the packages provided here:
     https://github.com/alchem0x2A/py-wdf-reader
 
-relevant files can be found here
+Raman CdTe peaks of interest are 127,141,167,275,365cm-1
+ 
+relevant data files can be found here
 'Z:\Trumann\Renishaw\PVSe33 measurement overview.txt'
 """
 
@@ -17,8 +19,8 @@ from renishawWiRE import WDFReader
 import matplotlib.pyplot as plt
 import numpy as np
  
-IN_PATH = r'Z:\Trumann\Renishaw\20210302 PVSe33.4_3'
-FNAME = r'\Au side raman map0.wdf'
+IN_PATH = r'Z:\Trumann\Renishaw\20210304 PVSe33'
+FNAME = r'\PVSe33.4_3 Au side raman map0.wdf'
 
 # import wdf file
 filename = IN_PATH+FNAME
@@ -56,7 +58,7 @@ and plots its intensity as a funciton of x and y
 '''
 # specify the x-axis value you wish to plot
     # here the CdTe peaks of interest are 127,141,167,275,365cm-1
-raman_shift = 141
+raman_shift = 167
 # find the value in the x-axis that is closest to the specified x-axis value
 E_idx = (np.abs(shift - raman_shift)).argmin()
 
@@ -65,7 +67,7 @@ map_x = reader.xpos
 map_y = reader.ypos
 # specificy the bounds of the area that was measured
 bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
-user_map = spectra2[:,:,E_idx]
+user_map = spectra[:,:,E_idx]
 plt.imshow(user_map, extent=bounds_map)
 
 #%%
@@ -92,3 +94,30 @@ map_y = reader.ypos
 # specificy the bounds of the area that was measured
 bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
 plt.imshow(ratio_map, extent=bounds_map)
+
+#%%
+'''
+this cell takes the raman map
+finds bin closest to the wavenumber shift specified by the user
+records and stores intensity
+and repeats procedure for each pixel in the map
+'''
+# reshape spectra out of map form for convenience
+z = np.shape(spectra)[2]
+y = np.shape(spectra)[0]
+x = np.shape(spectra)[1]
+spectra_ravel = spectra.reshape((x*y),z)
+
+# specify the x-axis value you wish to plot
+    # here the CdTe peaks of interest are 127,141,167,275,365cm-1
+user_shift = 141
+
+# find the value in the x-axis that is closest to the specified x-axis value
+E_idx = (np.abs(shift - user_shift)).argmin()
+
+user_intensities = spectra_ravel[:,E_idx]
+
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\Raman'
+OUT_FILE = r'141 peak intensities - 20210304 PVSe33.4_3 Au side raman map0.csv'
+OUT = OUT_PATH + OUT_FILE
+np.savetxt(OUT, user_intensities, delimiter=',')

@@ -152,12 +152,17 @@ plt.imshow(user_map, extent=bounds_map)
 
 #%%
 '''
+TO PROCESS MAPS PIX-BY-PIX
+
 this cell subtracts background and fits gaussian
 to each spectrum in each pixel
 
 the gaussian fit parameters are stored and can be saved for boxplot analysis
 or reshaping and mapping
 '''
+
+import time
+start = time.time()
 
 import sys
 sys.path.append(r'C:\Users\triton\xrays\python')
@@ -197,9 +202,9 @@ if aborted_map == 1:
     # the no. of columns correspond to the number of pixels or spectra measured
 pixels = np.shape(spectra_ravel)[0]
 stored_gauss_params = np.zeros((pixels,4))
-for pix, spectrum in enumerate(spectra_ravel[100:105,:]):
+for pix, spectrum in enumerate(spectra_ravel):
     # construct and subtract baseline from pixel spectrum
-    baseline_arpls = arpls(spectrum, 1e5, 0.01)
+    baseline_arpls = arpls(spectrum, 1e7, 0.1)
     spectrum_arpls = spectrum - baseline_arpls
     # fit gaussian to background-subtracted spectrum
     popt, pcov = optimize.curve_fit(gaussian_fit, energy, spectrum_arpls, guess)
@@ -211,5 +216,18 @@ SAVE = 0
 if SAVE == 1:
     OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\PL'
     OUT_FILE = r'\gaussian fit params - 20210304 PVSe33.3_2 Au Side_PL_map0.csv'
+    OUT = OUT_PATH + OUT_FILE
+    np.savetxt(OUT, stored_gauss_params, delimiter=',')
+
+end = time.time()
+t = end-start
+t_str = "%.3f" % t
+message = 'time to complete: {i}s'.format(i=str(t_str))
+print(message)
+
+SAVE = 1
+if SAVE == 1:
+    OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\PL'
+    OUT_FILE = r'\gaussian fit params - 20210304 PVSe33.4_3 Au Side_PL_map0.csv'
     OUT = OUT_PATH + OUT_FILE
     np.savetxt(OUT, stored_gauss_params, delimiter=',')

@@ -85,12 +85,12 @@ cbar_txt_size = 10
 top_cbar = 0
 side_cbar=1
 
-cbar_scale_control = 0; MAX = 800; MIN = 400
+cbar_scale_control = 1; MIN = 0; MAX = 500
 normalize = 0
 sci_notation = 0
 
-#unit = '141cm$^{-1}$ Peak Intensity (.)'; colormap = 'Greys_r'; 
-unit = '1.497eV Peak Intensity (.)'; colormap = 'viridis'; 
+unit = 'Intensity (.)'; colormap = 'Greys_r'; 
+#unit = 'Intensity (.)'; colormap = 'viridis'; 
 
 img = user_map
 data = img.copy()

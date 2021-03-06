@@ -136,6 +136,8 @@ plt.imshow(PL_map, extent=bounds_map)
 
 #%%
 '''
+TO PROCESS MAPS PIX-BY-PIX
+
 this cell subtracts background and fits gaussian
 to each spectrum in each pixel
 
@@ -205,7 +207,7 @@ and plots it as a map
 '''
 
 # specify parameter 
-    # 1: amplitude 2: energy position 3: width
+    # 1: amplitude, 2: energy position, 3: width
 fit_param = 1
 
 # extract parameter for each pixel
@@ -231,6 +233,6 @@ map_x = reader.xpos
 map_y = reader.ypos
 # specificy the bounds of the area that was measured
 bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
-PL_map = spectra[:,:,E_idx]
+user_map = spectra[:,:,E_idx]
 plt.figure()
-plt.imshow(PL_map, extent=bounds_map)
+plt.imshow(user_map, extent=bounds_map)
