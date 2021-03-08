@@ -22,8 +22,8 @@ from renishawWiRE import WDFReader
 import matplotlib.pyplot as plt
 import numpy as np
  
-IN_PATH = r'Z:\Trumann\Renishaw\20210301 PVSe33 PL glass side'
-FNAME = r'\PVSe33.3_2 map0.wdf'
+IN_PATH = r'Z:\Trumann\Renishaw\20210304 PVSe33'
+FNAME = r'\PVSe33.3_2 Glass side PL map0.wdf'
 
 # import wdf file
 filename = IN_PATH+FNAME
@@ -50,13 +50,26 @@ z_std = np.std(spectra_ravel, axis=0)
 plt.plot(energy,z_average)
 
 #%%
-'''this cell averages the spectra in each pixel when the
-scan gets hung up in on the last few points and must be aborted'''
+'''this cell averages the spectra in each pixel'''
 
-z_average = np.mean(spectra, axis=0)
-z_std = np.std(spectra, axis=0)
+aborted_map = 0
+
+if aborted_map == 0:
+    # for a map that was not aborted
+    z = np.shape(spectra)[2]
+    y = np.shape(spectra)[0]
+    x = np.shape(spectra)[1]
+    spectra_ravel = spectra.reshape((x*y),z)
+
+    z_average = np.mean(spectra_ravel, axis=0)
+    z_std = np.std(spectra_ravel, axis=0)
+    
+if aborted_map == 1:
+    # for map that was aborted
+    z_average = np.mean(spectra, axis=0)
+    z_std = np.std(spectra, axis=0)
+
 plt.plot(energy,z_average)
-
 #%%
 '''this cell takes the average spectrum from a map and checks
 performs a baseline subtraction; prepatory step for gaussian fits'''
@@ -78,13 +91,18 @@ plt.plot(energy,zaverage_arpls)
 #%%
 '''this cell fits average spectrum of glass side
 with double gaussian and plot the results'''
-def gaussian2(x, A, x0, sig):
+def gaussian_plot(x, A, x0, sig):
     return A*np.exp(-(x-x0)**2/(2*sig**2))
 
-def multi_gaussian(x, *pars):
+# =============================================================================
+# def single_gauss_fit(x, A, x0, sig):
+#     return A*np.exp(-(x-x0)**2/(2*sig**2))
+# =============================================================================
+
+def multi_gaussian_fit(x, *pars):
     offset = pars[0]
-    g1 = gaussian2(x, pars[1], pars[2], pars[3])
-    g2 = gaussian2(x, pars[4], pars[5], pars[6])
+    g1 = single_gauss_fit(x, pars[1], pars[2], pars[3])
+    g2 = single_gauss_fit(x, pars[4], pars[5], pars[6])
     return g1 + g2 + offset
 
 from scipy import optimize
@@ -92,16 +110,16 @@ from scipy import optimize
 # fit to double gaussian
 # initial fit parameter guess
     # [offset, A1, xc1, width1, A2, xc2, width2]
-guess = [0, 300, 1.388, 0.009, 175, 1.371, 0.018] # for 0hr glass side spectrum
-popt, pcov = optimize.curve_fit(multi_gaussian, energy, zaverage_arpls, guess)
+guess = [0, 750, 1.388, 0.01, 250, 1.371, 0.01]  # for 0hr glass side spectrum
+popt, pcov = optimize.curve_fit(multi_gaussian_fit, energy, zaverage_arpls, guess)
 
 # plot the data with the gaussian fits
 plt.plot(energy, zaverage_arpls, '-', color='#1f77b4', label='0hr')
-gauss1 =  gaussian2(energy, popt[1], popt[2], popt[3])
+gauss1 =  gaussian_plot(energy, popt[1], popt[2], popt[3])
 plt.plot(energy, gauss1, 'g-.',label='peak1')
-gauss2 =  gaussian2(energy, popt[4], popt[5], popt[6])
+gauss2 =  gaussian_plot(energy, popt[4], popt[5], popt[6])
 plt.plot(energy, gauss2, 'm-.', label='peak2')
-gaussian_fits = multi_gaussian(energy, *popt)
+gaussian_fits = multi_gaussian_fit(energy, *popt)
 plt.plot(energy, gaussian_fits, 'r--', label='total_fit')
 plt.xlabel('energy (eV)')
 plt.ylabel('intensity (a.u.)')
@@ -112,62 +130,134 @@ plt.legend()
 this cell acesses a wavenumber, raman shift, or energy of interest
 and plots its intensity as a funciton of x and y
 
-here the energy was recorded after running the Gaussian fits,
-there is no need to run the fits before running this cell
-however, do run the first cell in this file
-
-in this case, the scan froze toward the end, and was aborted prematurely
-most of the data points were saved, but the last row in the map incomplete 
-the data need to be clipped, then reshaped into the map
-
-this map
-IN_PATH = r'Z:\Trumann\Renishaw\20210224 PL glass side'
-FNAME = r'\PVSe33.3_2 test map.wdf'
-showed degradation similar to XBIC degradation; the second PL peak
-is probably due to laser damage
+if the map was aborted, then some shaping things needs to happen
 '''
-# clip spectra, remove last row of 101x101map --> 101x100 spectra --> 10100 rows
-spectra2 = spectra[:10100,:]
-# reshape clipped spectra
-spectra2_map = spectra2.reshape(100,101,-1)
 
+aborted_map=0
 # specify the x-axis value you wish to plot
     # this value is taken from the Gaussian fit above
 PL_energy = 1.384
-# find the value in the x-axis that is closest to the specified x-axis value
-E_idx = (np.abs(energy - PL_energy)).argmin()
+if aborted_map == 1:
+    # clip spectra, remove last row of 101x101map --> 101x100 spectra --> 10100 rows
+    spectra2 = spectra[:10100,:]
+    # reshape clipped spectra
+    spectra2_map = spectra2.reshape(100,101,-1)
 
-# get relative positions of the x and y motors
-map_x = reader.xpos
-map_y = reader.ypos
-# specificy the bounds of the area that was measured
-bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
-raman_map = spectra2_map[:,:,E_idx]
-plt.imshow(raman_map, extent=bounds_map)
+    # find the value in the x-axis that is closest to the specified x-axis value
+    E_idx = (np.abs(energy - PL_energy)).argmin()
+    # get relative positions of the x and y motors
+    map_x = reader.xpos
+    map_y = reader.ypos
+    # specificy the bounds of the area that was measured
+    bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
+    raman_map = spectra2_map[:,:,E_idx]
+    plt.imshow(raman_map, extent=bounds_map)
+else:
+    E_idx = (np.abs(energy - PL_energy)).argmin()
+    # get relative positions of the x and y motors
+    map_x = reader.xpos
+    map_y = reader.ypos
+    # specificy the bounds of the area that was measured
+    bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
+    raman_map = spectra[:,:,E_idx]
+    plt.imshow(raman_map, extent=bounds_map)
+
 
 #%%
 '''
-this cell acesses a wavenumber, raman shift, or energy of interest
-and plots its intensity as a funciton of x and y
+TO PROCESS MAPS PIX-BY-PIX
 
-here the energy was recorded after running the Gaussian fits,
-there is no need to run the fits before running this cell
-however, do run the first cell in this file
+this cell subtracts background and fits gaussian
+to each spectrum in each pixel
+
+the gaussian fit parameters are stored and can be saved for boxplot analysis
+or reshaping and mapping
 '''
 
-# specify the x-axis value you wish to plot
-    # this value is taken from the Gaussian fit above
-PL_energy = 0.55#1.392
-# find the value in the x-axis that is closest to the specified x-axis value
-E_idx = (np.abs(energy - PL_energy)).argmin()
+import time
+start = time.time()
 
-# get relative positions of the x and y motors
-map_x = reader.xpos
-map_y = reader.ypos
-# specify the bounds of the area that was measured
-bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
-raman_map = spectra[:,:,E_idx]
-raman_map_shift = np.roll(raman_map, -1)
-#plt.imshow(raman_map, extent=bounds_map)
-#plt.figure()
-plt.imshow(raman_map_shift, extent=bounds_map)
+import sys
+sys.path.append(r'C:\Users\triton\xrays\python')
+from baseline_algorithms import arpls
+from scipy import optimize
+
+
+def gaussian_plot(x, A, x0, sig):
+    return A*np.exp(-(x-x0)**2/(2*sig**2))
+
+def single_gauss_fit(x, A, x0, sig):
+    return A*np.exp(-(x-x0)**2/(2*sig**2))
+
+def multi_gaussian_fit(x, *pars):
+    offset = pars[0]
+    g1 = single_gauss_fit(x, pars[1], pars[2], pars[3])
+    g2 = single_gauss_fit(x, pars[4], pars[5], pars[6])
+    return g1 + g2 + offset
+
+# initial fit parameter guess; find from plotting background-subtraction
+    # [offset, A1, xc1, width1, A2, xc2, width2]
+guess = [0, 750, 1.388, 0.01, 250, 1.371, 0.01] 
+
+# reshape spectra so they may be iterated over
+aborted_map = 0
+if aborted_map == 0:
+    # for a map that was not aborted
+    z = np.shape(spectra)[2]
+    y = np.shape(spectra)[0]
+    x = np.shape(spectra)[1]
+    spectra_ravel = spectra.reshape((x*y),z)
+if aborted_map == 1:
+    spectra_ravel = spectra.copy()
+
+
+# construct array to store gaussian fit parameters
+    # the no. of rows (4) correspond to the number of optimization parameters
+    # from the optimize.curve_fit function: offset, A, x0, sig
+    # the no. of columns correspond to the number of pixels or spectra measured
+pixels = np.shape(spectra_ravel)[0]
+stored_gauss_params = np.zeros((pixels,7))
+for pix, spectrum in enumerate(spectra_ravel):
+    # construct and subtract baseline from pixel spectrum
+    baseline_arpls = arpls(spectrum, 1e6, 0.01)
+    spectrum_arpls = spectrum - baseline_arpls
+    # fit gaussian to background-subtracted spectrum
+    popt, pcov = optimize.curve_fit(multi_gaussian_fit, energy, spectrum_arpls, guess)
+    # store gaussian fit values; popt needs to be transposed
+        #  since optimize.curve_fit outputs as (4,1) array
+    stored_gauss_params[pix,:] = popt.T
+
+end = time.time()
+t = end-start
+t_str = "%.3f" % t
+message = 'time to complete: {i}s'.format(i=str(t_str))
+print(message)
+#%%
+SAVE = 1
+if SAVE == 1:
+    OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\PL'
+    OUT_FILE = r'\gaussian fit params - 20210304 PVSe33.3_2 Glass side PL map0.wdf.csv'
+    OUT = OUT_PATH + OUT_FILE
+    np.savetxt(OUT, stored_gauss_params, delimiter=',')
+#%%
+'''
+this cell selects a specified gaussian fit parameter
+and plots it as a map
+'''
+
+# specify parameter 
+    # 1: amplitude1, 2: energy position1, 3: width1
+    # 4: amplitude2, 5: energy position2, 6: width2
+fit_param = 4
+
+# extract parameter for each pixel
+    # note if array isn't loaded, then you will have to import the file
+relevant_data = stored_gauss_params[:,fit_param]
+
+# reshape into map shape
+x = np.shape(spectra)[1]
+y = np.shape(spectra)[0]
+param_map = relevant_data.reshape(y,x)
+
+# plot parameter map
+plt.imshow(param_map)

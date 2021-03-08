@@ -58,7 +58,7 @@ and plots its intensity as a funciton of x and y
 '''
 # specify the x-axis value you wish to plot
     # here the CdTe peaks of interest are 127,141,167,275,365cm-1
-raman_shift = 167
+raman_shift = 141
 # find the value in the x-axis that is closest to the specified x-axis value
 E_idx = (np.abs(shift - raman_shift)).argmin()
 
@@ -120,4 +120,4 @@ user_intensities = spectra_ravel[:,E_idx]
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\Raman'
 OUT_FILE = r'141 peak intensities - 20210304 PVSe33.4_3 Au side raman map0.csv'
 OUT = OUT_PATH + OUT_FILE
-np.savetxt(OUT, user_intensities, delimiter=',')
+#np.savetxt(OUT, user_intensities, delimiter=',')

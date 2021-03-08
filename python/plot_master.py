@@ -78,21 +78,21 @@ FNAME = r'\FS3_scan344_Se.eps'
 
 scalebar = 1
 scalebar_color = 'white'
-px = 5; dist = '5um'
+px = 5; dist = '50um'
 
 draw_cbar = 1
 cbar_txt_size = 10
 top_cbar = 0
 side_cbar=1
 
-cbar_scale_control = 1; MIN = 0; MAX = 500
+cbar_scale_control = 1; MIN = 0; MAX = 1000
 normalize = 0
 sci_notation = 0
 
-unit = 'Intensity (.)'; colormap = 'Greys_r'; 
-#unit = 'Intensity (.)'; colormap = 'viridis'; 
+#unit = 'Intensity (.)'; colormap = 'Greys_r'; 
+unit = 'Intensity (.)'; colormap = 'viridis'; 
 
-img = user_map
+img = param_map
 data = img.copy()
 
 if normalize == 1:
