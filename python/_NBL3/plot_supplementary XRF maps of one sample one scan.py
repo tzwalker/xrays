@@ -1,18 +1,25 @@
 """
-this file is meant to plot the maps we took at different energy
-steps across the Cu absorption edge
+coding: utf-8
 
-these areas will be used to justify the Cu distribution is unlikely to
-change during irradation up to 42min, and the integral specturm will be
-included in the supplementary graph in further support
+tzwalker
+Wed Apr 14 11:44:27 2021
 """
 
-import pandas as pd
+"""
+coding: utf-8
+
+tzwalker
+Wed May 13 15:31:19 2020
+
+for FS3_operando: 67px = 10um
+for NBL3:  33px = 5um
+"""
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.offsetbox as offbox
 from matplotlib.lines import Line2D
-
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+from matplotlib import ticker
+'''adds scalebar to matplotlib images'''
 class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
     """ size: length of bar in pixels
         extent : height of bar ends in axes units """
@@ -37,31 +44,47 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-ASCII_PATH = r'C:\Users\triton\Dropbox (ASU)\2_xray\xray fitting data\2017_12_2IDD_XANES\ASCIIs'
-SCANS = [423,424] + list(range(426,433))
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\supplementary\XANES intspec - prove Cu does not move\TS58A 2017_12_2IDD'
+import numpy as np
 
-for scan in SCANS:
-    scan_str = str(scan)
-    # define ascii of scan
-    file = ASCII_PATH + '/combined_ASCII_2idd_0'+scan_str+'.h5.csv'
-    # import ascii as dataframe
-    data = pd.read_csv(file, skiprows=1)
-    # dataframe keys used for shaping into map
-    i = ' y pixel no'; j='x pixel no'
-    # extract maps of interest; shape according to pixel no
-    data_shape = data.pivot(index=i, columns=j, values=" Cu")
-    # convert dataframes to numpy arrays
-    data_arr = data_shape.to_numpy()
+data = NBL33.maps[12]
+data1 = data[[0,1,2,3],:,:]
 
-    fig, ax = plt.subplots(figsize=(5,5))
+colors = ['inferno', 'Oranges_r', 'Greys_r', 'Blues_r']
+# to include scale bar control
+    # uncomment 'maxes'
+    # include MX in for loop
+    # include maxes in zip()
+    # include vmax in imshow()
+#maxes = [np.max(data1[0,:,:]), 4, 100, 100]
+
+for Map,color in zip(data1,colors):
+    plt.figure()
     
-    im = ax.imshow(data_arr[:,:-2], cmap="Oranges_r")
+    fig, ax = plt.subplots(figsize=(5,5))
+    # cmaps: 
+        #RdYlGn 
+        #inferno 
+        #Greys_r
+        #Blues_r
+        #viridis #Oranges_r 
+    #for NBL3xsect NBL33
+        # XBIC: vmin=0,vmax=80, after multiplying 'data1' by 1E9
+        # Cu XRF: vmin=0,vmax=30000
+        # Cd XRF: vmin=0,vmax=15000
+    #for NBL3xsect NBL31
+        # XBIC: vmin=0,vmax=250, after multiplying 'data1' by 1E9,bins=3
+        # Cu XRF: vmin=0,vmax=2000, bins=2
+        # Cd XRF: vmin=0,vmax=15000, bins=4
+    #for FS3
+        # Se XRF: vmin=0.5,vmax=1.5
+        # XBIC: vmin=5.6E-8,vmax=8.6E-8 
+        
+    im = ax.imshow(Map, cmap=color)#, vmax = MX)
     ax.axis('off')
-
+    
     scalebar = 1
     if scalebar == 1:
-        ob = AnchoredHScaleBar(size=50, label="5 um", loc=2, frameon=True,
+        ob = AnchoredHScaleBar(size=33, label="5 um", loc=4, frameon=True,
                                pad=0.5, borderpad=1, sep=4, 
                                linekw=dict(color="black"))
         ax.add_artist(ob)
@@ -75,7 +98,7 @@ for scan in SCANS:
             #get color bar object
         cbar = plt.gcf().axes[-1]
             #format colorbar
-        cbar.set_ylabel('Cu (ug/cm2)', rotation=90, va="bottom", size=12, labelpad=20)
+        cbar.set_ylabel('$ug/cm^{2}$', rotation=90, va="bottom", size=12, labelpad=20)
             # change number of tick labels on colorbar
         #cbar.locator_params(nbins=4)
             #change colorbar tick label sizes
@@ -86,7 +109,9 @@ for scan in SCANS:
         cbar.yaxis.get_offset_text().set(size=12)
             #change color bar scale label position   
         cbar.yaxis.set_offset_position('left')
-    FNAME = r'\scan{s}_Cu.png'.format(s=scan_str)
-    #print(OUT_PATH+FNAME)
-    #plt.savefig(OUT_PATH+FNAME, format='png', bbox_inches='tight', pad_inches = 0) #, dpi=300, )
+
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp\maps with colorbars'
+FNAME = r'\NBL31scan8_Cd2.eps'
+#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+
 

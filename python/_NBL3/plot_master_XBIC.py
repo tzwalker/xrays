@@ -44,7 +44,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  **kwargs)
 SAVE = 0;
 # XBIC
-img = NBL33.scan491[0,:,:-2]
+img = NBL31.scan341[0,:,:-2]
 
 #scale for proper colorbar
 #img = img*1E8
@@ -72,7 +72,7 @@ fig.add_axes(cax)
 fmt = ticker.ScalarFormatter(useMathText=True)
 fmt.set_powerlimits((0, 0))
 cbarTe = fig.colorbar(pltTe, cax=cax, orientation='horizontal', format=fmt)
-cbarTe.set_label('XBIC (nA)', fontsize=8)
+cbarTe.set_label('XBIC (au)', fontsize=8)
 cbarTe.ax.tick_params(labelsize=8)
 cax.xaxis.set_label_position('bottom')
 cax.xaxis.set_ticks_position('bottom')
@@ -112,12 +112,12 @@ divider = make_axes_locatable(ax)
 cax = divider.new_vertical(size='5%', pad=0.1, pack_start=True)
 fig.add_axes(cax)
 cbarTe = fig.colorbar(pltTe, cax=cax, orientation='horizontal')
-cbarTe.set_label('XBIC (nA)', fontsize=8)
+cbarTe.set_label('XBIC (au)', fontsize=8)
 cbarTe.ax.tick_params(labelsize=8)
 cax.xaxis.set_label_position('bottom')
 cax.xaxis.set_ticks_position('bottom')
 
-
+SAVE =0
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20210106 figures_semifinals'
 FNAME = r'\NBL32scan422_XBIC.eps'
 if SAVE == 1:
@@ -147,15 +147,17 @@ ax.add_artist(ob)
 
 divider = make_axes_locatable(ax)
 
-cax = divider.new_vertical(size='5%', pad=0.1, pack_start=True)
-fig.add_axes(cax)
-cbarTe = fig.colorbar(pltTe, cax=cax, orientation='horizontal')
-cbarTe.set_label('XBIC (nA)', fontsize=8)
-cbarTe.ax.tick_params(labelsize=8)
-cax.xaxis.set_label_position('bottom')
-cax.xaxis.set_ticks_position('bottom')
+# =============================================================================
+# cax = divider.new_vertical(size='5%', pad=0.1, pack_start=True)
+# fig.add_axes(cax)
+# cbarTe = fig.colorbar(pltTe, cax=cax, orientation='horizontal')
+# cbarTe.set_label('XBIC (au)', fontsize=8)
+# cbarTe.ax.tick_params(labelsize=8)
+# cax.xaxis.set_label_position('bottom')
+# cax.xaxis.set_ticks_position('bottom')
+# =============================================================================
 
-
+SAVE =0
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20210106 figures_semifinals'
 FNAME = r'\NBL33scan264_XBIC.eps'
 if SAVE == 1:
@@ -185,15 +187,17 @@ ax.add_artist(ob)
 
 divider = make_axes_locatable(ax)
 
-cax = divider.new_vertical(size='5%', pad=0.1, pack_start=True)
-fig.add_axes(cax)
-cbarTe = fig.colorbar(pltTe, cax=cax, orientation='horizontal')
-cbarTe.set_label('XBIC (nA)', fontsize=8)
-cbarTe.ax.tick_params(labelsize=8)
-cax.xaxis.set_label_position('bottom')
-cax.xaxis.set_ticks_position('bottom')
+# =============================================================================
+# cax = divider.new_vertical(size='5%', pad=0.1, pack_start=True)
+# fig.add_axes(cax)
+# cbarTe = fig.colorbar(pltTe, cax=cax, orientation='horizontal')
+# cbarTe.set_label('XBIC (au)', fontsize=8)
+# cbarTe.ax.tick_params(labelsize=8)
+# cax.xaxis.set_label_position('bottom')
+# cax.xaxis.set_ticks_position('bottom')
+# =============================================================================
 
-
+SAVE =0
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20210106 figures_semifinals'
 FNAME = r'\TS58Ascan386_XBIC.eps'
 if SAVE == 1:

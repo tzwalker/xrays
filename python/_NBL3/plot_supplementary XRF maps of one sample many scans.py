@@ -37,13 +37,13 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-colors = ['Oranges_r', 'Blues_r', 'viridis']
-maxes = [2, 30]
+colors = ['Oranges_r', 'Greys_r', 'Blues_r']
+maxes = [2, 20, 30]
 
-data = TS58A.maps[6:9]
+data = TS58A.maps[6:8]
 for maps in data:
     #data = FS3.scan344[1,:,:] #i NBL33.scan261[0,:,:]
-    data1 = maps[[1,3],:,:]
+    data1 = maps[[1,2,3],:,:]
     for Map,color, MX in zip(data1,colors, maxes):
         plt.figure()
         

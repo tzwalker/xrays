@@ -4,17 +4,18 @@ coding: utf-8
 tzwalker
 Wed Feb  3 09:49:31 2021
 
-Au side measurements taken with 50x objective, 1% laser power, 1.0s dwell
-
 Au side measurements showed the presence of one peak
-
-this program loads the map measurement file, 
-constructs an average spectrum from the spectra of the pixels,
-constructs and subtracts a baseline from the average spectrum
-fits background-subtracted, average spectrum with one gaussian peak
 
 relevant files can be found here
 'Z:\Trumann\Renishaw\PVSe33 measurement overview.txt'
+
+basic workflow:
+        import spectral map
+        calculate average spectrum over all spectra
+        manually determine fit parameters for baseline
+        subtract baseline from average spectrum
+        manually determine fit parameters for gaussian fit of average spectrum
+        use these fit parameters to fit spectrum of each pixel
 """
 
 from renishawWiRE import WDFReader
@@ -39,17 +40,9 @@ energy = reader.xdata
 spectra = reader.spectra
 
 #%%
-'''this cell takes an incomplete scan and chops off the last row'''
-# maybe insert a if statement here that checks if the map is complete
-    # if reader.capacity == reader.count: chop off last row
-# scan 31x31 = 961
-# file array (960,512)
-# new array 30x31 = 930
-spectra2 = spectra[:930,:]
-spectra3 = spectra2.reshape(30,31,-1)
-
-#%%
 '''this cell averages the spectra in each pixel'''
+from scipy.stats import iqr
+from sklearn.preprocessing import normalize
 aborted_map = 1
 
 if aborted_map == 0:
@@ -59,15 +52,32 @@ if aborted_map == 0:
     x = np.shape(spectra)[1]
     spectra_ravel = spectra.reshape((x*y),z)
 
+    # stats of spectra without normalizing
     z_average = np.mean(spectra_ravel, axis=0)
     z_std = np.std(spectra_ravel, axis=0)
+    q = iqr(spectra_ravel, axis=0, rng=(25 ,75))
+    
+    # stats of spectra with normalizing; this was done to see
+        # if i could get rid of some error bar artifacts in origin
+    spectra_norm = normalize(spectra_ravel, axis=1, norm='max')
+    norm_avg = np.mean(spectra_norm, axis=0)
+    
+    norm_q = iqr(spectra_norm, axis=0, rng=(25,75))
+    x = np.vstack((norm_avg,norm_q)).T
     
 if aborted_map == 1:
-    # for map that was aborted
+    # stats of spectra without normalizing
     z_average = np.mean(spectra, axis=0)
     z_std = np.std(spectra, axis=0)
-
-plt.plot(energy,z_average)
+    q = iqr(spectra, axis=0, rng=(25 ,75))
+    
+    # stats of spectra with normalizing; this was done to see
+        # if i could get rid of some error bar artifacts in origin
+    spectra_norm = normalize(spectra, axis=1, norm='max')
+    norm_avg = np.mean(spectra_norm, axis=0)
+    
+    norm_q = iqr(spectra_norm, axis=0, rng=(25,75))
+    x = np.vstack((norm_avg,norm_q)).T
 
 
 #%%
@@ -129,26 +139,6 @@ plt.plot(energy, gauss1, 'r--',label='peak1')
 plt.xlabel('energy (eV)')
 plt.ylabel('intensity (a.u.)')
 plt.legend()
-
-
-#%%
-'''
-this cell acesses a wavenumber, raman shift, or energy of interest
-and plots its intensity as a funciton of x and y
-'''
-# specify the x-axis value you wish to plot
-user_energy = 1.497
-# find the value in the x-axis that is closest to the specified x-axis value
-E_idx = (np.abs(user_energy - energy)).argmin()
-
-# get relative positions of the x and y motors
-map_x = reader.xpos
-map_y = reader.ypos
-# specificy the bounds of the area that was measured
-bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
-# extract map of a certain energy or shift
-user_map = spectra3[:,:,E_idx]
-plt.imshow(user_map, extent=bounds_map)
 
 #%%
 '''

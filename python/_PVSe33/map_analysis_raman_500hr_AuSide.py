@@ -16,11 +16,10 @@ relevant data files can be found here
 """
 
 from renishawWiRE import WDFReader
-import matplotlib.pyplot as plt
 import numpy as np
  
-IN_PATH = r'Z:\Trumann\Renishaw\20210304 PVSe33'
-FNAME = r'\PVSe33.4_3 Au side raman map0.wdf'
+IN_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\Raman'
+FNAME = r'\20210203 PVSe33 redo - PVSe334_3 - Au Side map 1.wdf'
 
 # import wdf file
 filename = IN_PATH+FNAME
@@ -36,71 +35,35 @@ shift = reader.xdata
 spectra = reader.spectra
 
 #%%
-'''this cell averages the spectra in each pixel'''
+'''this cell averages the spectra in each pixel, among other things'''
+from scipy.stats import iqr
+from sklearn.preprocessing import normalize
+
 z = np.shape(spectra)[2]
 y = np.shape(spectra)[0]
 x = np.shape(spectra)[1]
 spectra_ravel = spectra.reshape((x*y),z)
 
+# stats of spectra without normalizing
 z_average = np.mean(spectra_ravel, axis=0)
 z_std = np.std(spectra_ravel, axis=0)
-plt.plot(shift, z_average)
+q = iqr(spectra_ravel, axis=0, rng=(25 ,75))
 
-#%%
-'''this cell clips the map in case we need to compare it to a scan 
-that got aborted'''
-spectra2 = spectra[:-1,:,:]
+# stats of spectra with normalizing; this was done to see
+    # if i could get rid of some error bar artifacts in origin
+spectra_norm = normalize(spectra_ravel, axis=1, norm='max')
+norm_avg = np.mean(spectra_norm, axis=0)
+norm_std = np.std(spectra_norm, axis=0)
+norm_q = iqr(spectra_norm, axis=0, rng=(25,75))
 
-#%%
-'''
-this cell acesses a wavenumber, raman shift, or energy of interest
-and plots its intensity as a funciton of x and y
-'''
-# specify the x-axis value you wish to plot
-    # here the CdTe peaks of interest are 127,141,167,275,365cm-1
-raman_shift = 141
-# find the value in the x-axis that is closest to the specified x-axis value
-E_idx = (np.abs(shift - raman_shift)).argmin()
+x = np.vstack((norm_avg,norm_std,norm_q)).T
 
-# get relative positions of the x and y motors
-map_x = reader.xpos
-map_y = reader.ypos
-# specificy the bounds of the area that was measured
-bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
-user_map = spectra[:,:,E_idx]
-plt.imshow(user_map, extent=bounds_map)
-
-#%%
-'''
-this cell takes the ratio between two peak intesities at each pixel
-and plots that ratio as a function of x and y
-'''
-# raman_peak 1 (primary peak)
-raman_shift1 = 141
-E_idx1 = (np.abs(shift - raman_shift1)).argmin()
-# rmaman_peak 2 (other peak of interest)
-raman_shift2 = 275
-E_idx2 = (np.abs(shift - raman_shift2)).argmin()
-
-# maps of peak intensities
-raman_map1 = spectra[:,:,E_idx1]
-raman_map2 = spectra[:,:,E_idx2]
-
-ratio_map = raman_map2/raman_map1
-
-# get relative positions of the x and y motors
-map_x = reader.xpos
-map_y = reader.ypos
-# specificy the bounds of the area that was measured
-bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
-plt.imshow(ratio_map, extent=bounds_map)
 
 #%%
 '''
 this cell takes the raman map
 finds bin closest to the wavenumber shift specified by the user
 records and stores intensity
-and repeats procedure for each pixel in the map
 '''
 # reshape spectra out of map form for convenience
 z = np.shape(spectra)[2]

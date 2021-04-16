@@ -58,7 +58,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-
+SAVE = 0;
 Cu = NBL31.scan341[1,:,:-2]
 Te = NBL31.scan341[3,:,:-2]
 
@@ -91,7 +91,7 @@ ob = AnchoredHScaleBar(length=20, label="", loc=2, frameon=False,
                        linekw=dict(color="white",linewidth=3))
 # change facecolor of frameon
 #ob.patch.set_facecolor('k')
-ax.add_artist(ob)
+#ax.add_artist(ob)
 
 divider = make_axes_locatable(ax)
 
@@ -110,8 +110,6 @@ cax1.xaxis.set_label_position('top')
 cax1.xaxis.set_ticks_position('top')
 
 
-
-SAVE = 1;
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20210106 figures_semifinals'
 FNAME = r'\NBL31scan341_CuTe.eps'
 if SAVE == 1:
@@ -170,7 +168,6 @@ cbarCu.ax.tick_params(labelsize=8)
 cax1.xaxis.set_label_position('top')
 cax1.xaxis.set_ticks_position('top')
 
-SAVE = 1;
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20210106 figures_semifinals'
 FNAME = r'\NBL32scan422_CuTe.eps'
 if SAVE == 1:
@@ -226,7 +223,7 @@ cbarCu.ax.tick_params(labelsize=8)
 cax1.xaxis.set_label_position('top')
 cax1.xaxis.set_ticks_position('top')
 
-SAVE = 1;
+
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20210106 figures_semifinals'
 FNAME = r'\NBL33scan264_CuTe.eps'
 if SAVE == 1:
@@ -284,7 +281,6 @@ cbarCu.ax.tick_params(labelsize=8)
 cax1.xaxis.set_label_position('top')
 cax1.xaxis.set_ticks_position('top')
 
-SAVE = 1;
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_NBL3\20210106 figures_semifinals'
 FNAME = r'\TS58Ascan386_CuTe.eps'
 if SAVE == 1:

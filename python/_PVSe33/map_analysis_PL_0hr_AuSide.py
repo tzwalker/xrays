@@ -13,6 +13,15 @@ Au side PL spectra showed only one PL peak
 
 relevant data files can be found here
 'Z:\Trumann\Renishaw\PVSe33 measurement overview.txt'
+
+basic workflow:
+        import spectral map
+        calculate average spectrum over all spectra
+        manually determine fit parameters for baseline
+        subtract baseline from average spectrum
+        manually determine fit parameters for gaussian fit of average spectrum
+        use these fit parameters to fit spectrum of each pixel
+        
 """
 
 from renishawWiRE import WDFReader
@@ -41,6 +50,8 @@ spectra = reader.spectra
 '''
 this cell averages the spectra in each pixel
 '''
+from scipy.stats import iqr
+from sklearn.preprocessing import normalize
 aborted_map = 0
 
 if aborted_map == 0:
@@ -50,16 +61,32 @@ if aborted_map == 0:
     x = np.shape(spectra)[1]
     spectra_ravel = spectra.reshape((x*y),z)
 
+    # stats of spectra without normalizing
     z_average = np.mean(spectra_ravel, axis=0)
     z_std = np.std(spectra_ravel, axis=0)
+    q = iqr(spectra_ravel, axis=0, rng=(25 ,75))
+    
+    # stats of spectra with normalizing; this was done to see
+        # if i could get rid of some error bar artifacts in origin
+    spectra_norm = normalize(spectra_ravel, axis=1, norm='max')
+    norm_avg = np.mean(spectra_norm, axis=0)
+    
+    norm_q = iqr(spectra_norm, axis=0, rng=(25,75))
+    x = np.vstack((norm_avg,norm_q)).T
     
 if aborted_map == 1:
-    # for map that was aborted
+    # stats of spectra without normalizing
     z_average = np.mean(spectra, axis=0)
     z_std = np.std(spectra, axis=0)
-
-plt.plot(energy,z_average)
-
+    q = iqr(spectra_ravel, axis=0, rng=(25 ,75))
+    
+    # stats of spectra with normalizing; this was done to see
+        # if i could get rid of some error bar artifacts in origin
+    spectra_norm = normalize(spectra_ravel, axis=1, norm='max')
+    norm_avg = np.mean(spectra_norm, axis=0)
+    
+    norm_q = iqr(spectra_norm, axis=0, rng=(25,75))
+    x = np.vstack((norm_avg,norm_q)).T
 
 #%%
 '''
@@ -115,24 +142,6 @@ plt.plot(energy, gauss1, 'r--',label='peak1')
 plt.xlabel('energy (eV)')
 plt.ylabel('intensity (a.u.)')
 plt.legend()
-
-#%%
-'''
-this cell acesses a wavenumber, raman shift, or energy of interest
-and plots its intensity as a funciton of x and y
-'''
-# specify the x-axis value you wish to plot
-user_energy = 1.497
-# find the value in the x-axis that is closest to the specified x-axis value
-E_idx = (np.abs(energy - user_energy)).argmin()
-
-# get relative positions of the x and y motors
-map_x = reader.xpos
-map_y = reader.ypos
-# specificy the bounds of the area that was measured
-bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
-PL_map = spectra[:,:,E_idx]
-plt.imshow(PL_map, extent=bounds_map)
 
 #%%
 '''
@@ -200,39 +209,3 @@ if SAVE == 1:
     OUT = OUT_PATH + OUT_FILE
     np.savetxt(OUT, stored_gauss_params, delimiter=',')
 
-#%%
-'''
-this cell selects a specified gaussian fit parameter
-and plots it as a map
-'''
-
-# specify parameter 
-    # 1: amplitude, 2: energy position, 3: width
-fit_param = 1
-
-# extract parameter for each pixel
-relevant_data = stored_gauss_params[:,fit_param]
-
-# reshape into map shape
-x = np.shape(spectra)[1]
-y = np.shape(spectra)[0]
-param_map = relevant_data.reshape(y,x)
-
-# plot parameter map
-plt.imshow(param_map)
-
-# if parameter map is amplitude, plot original map intensity at 
-    # the peak user finds
-# specify the x-axis value you wish to plot
-user_energy = 1.497
-# find the value in the x-axis that is closest to the specified x-axis value
-E_idx = (np.abs(energy - user_energy)).argmin()
-
-# get relative positions of the x and y motors
-map_x = reader.xpos
-map_y = reader.ypos
-# specificy the bounds of the area that was measured
-bounds_map = [0, map_x.max() - map_x.min(), map_y.max() - map_y.min(), 0]
-user_map = spectra[:,:,E_idx]
-plt.figure()
-plt.imshow(user_map, extent=bounds_map)
