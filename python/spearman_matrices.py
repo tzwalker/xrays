@@ -1,18 +1,19 @@
 from scipy.stats import spearmanr
 import numpy as np
 import seaborn as sns
+import matplotlib.pyplot as plt
 
-imgs = NBL33.scan264[0:4,:,:-2]
+imgs = TS58A.scan386[0:6,:,:-2]
 
 x,y = np.shape(imgs)[1],np.shape(imgs)[2]
 new_shape = x*y
 
-imgs_flt = imgs.reshape(4, new_shape)
+imgs_flt = imgs.reshape(6, new_shape)
 
 imgs_fltT = imgs_flt.T
 spear = spearmanr(imgs_fltT)
 
-labs = ['XBIC', 'Cu', 'Cd', 'Te']
+labs = ['XBIC', 'Cu', 'Cd', 'Te','Zn','Mo']
 cbar_lab = 'Monotonicty'
 mask = np.triu(np.ones_like(spear[0], dtype=bool))
 

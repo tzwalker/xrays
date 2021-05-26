@@ -14,21 +14,17 @@ from matplotlib import ticker
 class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
     """ size: length of bar in pixels
         extent : height of bar ends in axes units """
-    def __init__(self, size=1, extent = 0.03, label="", loc=2, ax=None,
+    def __init__(self, length=1, extent = 0.03, label="", loc=2, ax=None,
                  pad=0.4, borderpad=0.5, ppad = 0, sep=2, prop=None, 
                  frameon=True, linekw={}, **kwargs):
         if not ax:
             ax = plt.gca()
         trans = ax.get_xaxis_transform()
         size_bar = offbox.AuxTransformBox(trans)
-        line = Line2D([0,size],[0,0], **linekw)
-        vline1 = Line2D([0,0],[-extent/2.,extent/2.], **linekw)
-        vline2 = Line2D([size,size],[-extent/2.,extent/2.], **linekw)
+        line = Line2D([0,length],[0,0], **linekw)
         size_bar.add_artist(line)
-        size_bar.add_artist(vline1)
-        size_bar.add_artist(vline2)
         txt = offbox.TextArea(label, minimumdescent=False, 
-                              textprops=dict(color="black"))
+                              textprops=dict(color="black",size=14, fontweight='bold'))
         self.vpac = offbox.VPacker(children=[size_bar,txt],  
                                  align="center", pad=ppad, sep=sep) 
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
@@ -54,27 +50,28 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
     # XBIC: vmin=5.6E-8,vmax=8.6E-8 
     
 scalebar = 1; cbar = 1; SAVE = 0
-UNITS = 'XBIC (A)'; COLOR = 'inferno'
-#img_list = [NBL31.scan341[2,:,:], NBL32.scan422[2,:,:],NBL33.scan264[2,:,:],TS58A.scan385[2,:,:]]
-img_list = imgs
+UNITS = r'Cu$_{K\alpha1}$ XRF (cts/s)'; COLOR = 'Oranges_r'
+img_list = [NBL31.scan341[1,:,:-2], NBL32.scan422[1,:,:-2],NBL33.scan264[1,:,:-2],TS58A.scan385[1,:,:-2]]
+Cu_cts_bounds = [150,1000,3000,1000]
+#img_list = imgs
 #delsEdit = dels1.copy()
 #delsEdit[3] = delsEdit[3][:-1,:]
 
-for img in img_list:
+for img, bound in zip(img_list,Cu_cts_bounds):
     data = img.copy()
     data = data
     plt.figure()
     
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(2.0, 2.0))
 
         
-    im = ax.imshow(data, cmap=COLOR)#vmin=6E-8, vmax=8.5E-8)
+    im = ax.imshow(data, cmap=COLOR, vmin=0, vmax=bound)
     ax.axis('off')
     
     if scalebar == 1:
-        ob = AnchoredHScaleBar(size=67, label="10 um", loc=4, frameon=True,
-                               pad=0.5, borderpad=1, sep=4, 
-                               linekw=dict(color="black"))
+        ob = AnchoredHScaleBar(length=20, label="3μm", loc=2, frameon=False,
+                       pad=0.5, borderpad=0.25, sep=4, 
+                       linekw=dict(color="black",linewidth=3))
         ax.add_artist(ob)
     
 
@@ -83,7 +80,7 @@ for img in img_list:
     divider = make_axes_locatable(ax)
     cax = divider.append_axes('right', size='5%', pad=0.1)
 
-    fig.colorbar(im, cax=cax, orientation='vertical',format='%.3g')
+    fig.colorbar(im, cax=cax, orientation='vertical')
         #get color bar object
     cbar = plt.gcf().axes[-1]
         #format colorbar
@@ -98,7 +95,7 @@ for img in img_list:
     cbar.yaxis.get_offset_text().set(size=12)
         #change color bar scale label position   
     cbar.yaxis.set_offset_position('left')
-
+SAVE=0
 if SAVE == 1:
     OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp\maps with colorbars'
     FNAME = r'\NBL31scan8_Cd2.eps'

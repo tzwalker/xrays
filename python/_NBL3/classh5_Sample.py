@@ -72,8 +72,8 @@ class Sample():
                 ele_idx = dcoded_chs.index(element)
                 ele_map = h5[fit_keys[0]][ele_idx,:,:]
                 nrmlize_map = h5['/MAPS/scalers'][norm_idx, :, :] 
-                quant_map = h5[fit_keys[1]][norm_idx, 0, ele_idx]
-                fit_map = ele_map / nrmlize_map / quant_map # --> fitted map
+                #quant_map = h5[fit_keys[1]][norm_idx, 0, ele_idx]
+                fit_map = ele_map #/ nrmlize_map #/ quant_map # --> fitted map
                 maps_for_scan.append(fit_map)
             maps_to_array = np.array(maps_for_scan)
             name = 'scan' + str(scannum)

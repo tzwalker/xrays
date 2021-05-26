@@ -18,8 +18,8 @@ relevant data files can be found here
 from renishawWiRE import WDFReader
 import numpy as np
  
-IN_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\Raman'
-FNAME = r'\20210203 PVSe33 redo - PVSe334_3 - Au Side map 1.wdf'
+IN_PATH = r'Z:\Trumann\Renishaw\20210304 PVSe33'
+FNAME = r'\PVSe33.4_3 Au side raman map0.wdf'
 
 # import wdf file
 filename = IN_PATH+FNAME
@@ -49,6 +49,8 @@ z_average = np.mean(spectra_ravel, axis=0)
 z_std = np.std(spectra_ravel, axis=0)
 q = iqr(spectra_ravel, axis=0, rng=(25 ,75))
 
+matrix_w_reg_data= np.vstack((z_average,z_std,q)).T
+
 # stats of spectra with normalizing; this was done to see
     # if i could get rid of some error bar artifacts in origin
 spectra_norm = normalize(spectra_ravel, axis=1, norm='max')
@@ -56,7 +58,7 @@ norm_avg = np.mean(spectra_norm, axis=0)
 norm_std = np.std(spectra_norm, axis=0)
 norm_q = iqr(spectra_norm, axis=0, rng=(25,75))
 
-x = np.vstack((norm_avg,norm_std,norm_q)).T
+matrix_w_norm_data = np.vstack((norm_avg,norm_std,norm_q)).T
 
 
 #%%

@@ -116,14 +116,13 @@ def get_iios(beam_settings, elements, STACK, end_layer):
     return ele_avg_iios, ele_all_iios.T
 
 
-stack = {'Cu':   [8.94, 1E-7],
-         'CdTe': [5.85, 12E-4]}
+stack = {'Mo':[10.22, 500E-7], 'ZnTe':[6.34, 375E-7], 'CdTe': [5.85, 12E-4]}
 
 elements = ['Cu', 'Cd', 'Te']
 
-beam_settings = {'beam_energy': 9.9, 'beam_theta':90, 'detect_theta':13}
+beam_settings = {'beam_energy': 12.7, 'beam_theta':75, 'detect_theta':15}
 
-iios2019, iio_arr = get_iios(beam_settings, elements, stack, end_layer='CdTe')
+iios2019, iio_arr = get_iios(beam_settings, elements, stack, end_layer='ZnTe')
 
 # save arrays for Tara
 PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\DefectLab\group photos CAD and misc'
@@ -161,7 +160,7 @@ print(um)
 steps = np.linspace(0, 10000, 10001)
 dt = 1*10**-7
 beam_iio_thru_layer = []
-cap_cross_section_of_one_sublayer_in = - xl.CS_Total_CP('CdTe', 8.0478) * 5.85 * dt / 75
+cap_cross_section_of_one_sublayer_in = - xl.CS_Total_CP('ZnTe', 8.0478) * 6.34 * dt / 75
 for index, step in enumerate(steps):
     beam_in = cap_cross_section_of_one_sublayer_in * index
     iio_beam = np.exp(beam_in)

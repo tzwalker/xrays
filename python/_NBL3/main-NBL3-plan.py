@@ -14,6 +14,12 @@ workflow for XBIC v XBIV alignment and correlations
 workflow for grain core v boundary analyses:
     "main-NBL3-plan" --> "masked-data-save-arrays-to-csv.py" --> 
     "masked-data-construct-violin-df.py"
+    
+note that the Sample class (classh5_Sample.py) for these samples was changed
+at line 75
+this is done to avoid the
+quantification units of ug/cm2; the quantification doesn't mean anything
+because of the vanishing transmittance of Cu, te, and Cd XRF in these layers'
 """
 
 from classh5_Sample import Sample
@@ -53,7 +59,7 @@ NBL33.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-NBL33.scans =  [258,259,260, 261,262,263, 264,265,266,267, 491,472,475]
+NBL33.scans =  [258,259,260, 261,262,263, 264,265,266,267,  491,472,475]
 
 TS58A.stack = {'Mo':   [10.2, 500E-7], 
                  'ZnTe': [6.34, 375E-7], 

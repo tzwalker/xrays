@@ -12,7 +12,7 @@ tzwalker
 Wed May 13 15:31:19 2020
 
 for FS3_operando: 67px = 10um
-for NBL3:  33px = 5um
+for NBL3:  20px = 3um
 """
 import matplotlib.pyplot as plt
 import matplotlib.offsetbox as offbox
@@ -46,7 +46,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
 
 import numpy as np
 
-data = NBL33.maps[12]
+data = NBL32.maps[6]
 data1 = data[[0,1,2,3],:,:]
 
 colors = ['inferno', 'Oranges_r', 'Greys_r', 'Blues_r']
@@ -84,7 +84,7 @@ for Map,color in zip(data1,colors):
     
     scalebar = 1
     if scalebar == 1:
-        ob = AnchoredHScaleBar(size=33, label="5 um", loc=4, frameon=True,
+        ob = AnchoredHScaleBar(size=20, label="3 um", loc=4, frameon=True,
                                pad=0.5, borderpad=1, sep=4, 
                                linekw=dict(color="black"))
         ax.add_artist(ob)

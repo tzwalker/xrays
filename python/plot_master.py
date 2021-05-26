@@ -78,6 +78,9 @@ SAVE = 0
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_stage design\paper figures'
 FNAME = r'\FS3_scan344_Se.eps'
 
+img = NBL33.scan491[1,:,:-2]
+data = img.copy()
+
 scalebar = 1
 scalebar_color = 'white'
 px = 20; dist = '3um'
@@ -92,10 +95,7 @@ normalize = 0
 standardized = 0
 sci_notation = 0
 
-unit = 'XBIC (a.u.)'; colormap = 'inferno'; 
-
-img = TS58A.scan386[0,:,:-2]
-data = img.copy()
+unit = 'Cu (cts/s)'; colormap = 'Oranges_r'; 
 
 if normalize == 1:
     #data = data*1e8
@@ -112,7 +112,7 @@ fig, ax = plt.subplots(figsize=(2.5,2.5))
 if cbar_scale_control == 1:
     im = ax.imshow(data, cmap=colormap, vmax=MAX, vmin=MIN)
 if cbar_scale_control == 0: 
-    im = ax.imshow(data, cmap=colormap)
+    im = ax.imshow(data, cmap=colormap, origin='lower')
 if normalize == 1:
     im = ax.imshow(data_norm, cmap=colormap)
 if standardized == 1:
