@@ -75,27 +75,27 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
 import numpy as np
 
 SAVE = 0
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_stage design\paper figures'
-FNAME = r'\FS3_scan344_Se.eps'
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\0_stage design\20210527 figures_v1'
+FNAME = r'\fig2_scan244_small_200C.eps'
 
-img = NBL33.scan491[1,:,:-2]
+img = Au4.scan244[0,:,:-2]
 data = img.copy()
 
 scalebar = 1
 scalebar_color = 'white'
-px = 20; dist = '3um'
+px = 20; dist = u"2\u03bcm"
 
 draw_cbar = 1
 cbar_txt_size = 10
 top_cbar = 0
 side_cbar=1
 
-cbar_scale_control = 0; MIN = 6E3; MAX = 16E3
+cbar_scale_control = 1; MIN = 0; MAX = 30
 normalize = 0
 standardized = 0
 sci_notation = 0
 
-unit = 'Cu (cts/s)'; colormap = 'Oranges_r'; 
+unit = u'Au (\u03bcg/cm$^{2}$)'; colormap = 'YlOrBr_r'; 
 
 if normalize == 1:
     #data = data*1e8
@@ -112,7 +112,7 @@ fig, ax = plt.subplots(figsize=(2.5,2.5))
 if cbar_scale_control == 1:
     im = ax.imshow(data, cmap=colormap, vmax=MAX, vmin=MIN)
 if cbar_scale_control == 0: 
-    im = ax.imshow(data, cmap=colormap, origin='lower')
+    im = ax.imshow(data, cmap=colormap)
 if normalize == 1:
     im = ax.imshow(data_norm, cmap=colormap)
 if standardized == 1:
