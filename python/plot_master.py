@@ -66,7 +66,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         #size_bar.add_artist(vline1)
         #size_bar.add_artist(vline2)
         txt = offbox.TextArea(label, minimumdescent=False, 
-                              textprops=dict(color=scalebar_color,weight='bold'))
+                              textprops=dict(color=scalebar_color,weight='bold', size=cbar_txt_size))
         self.vpac = offbox.VPacker(children=[size_bar,txt],  
                                  align="center", pad=ppad, sep=sep) 
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
@@ -75,10 +75,10 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
 import numpy as np
 
 SAVE = 0
-OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\0_stage design\20210527 figures_v1'
-FNAME = r'\fig2_scan244_small_200C.eps'
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\0_stage design\20210527 figures_v1\figure 3 materials'
+FNAME = r'\fig3_scan245_Au4_20C_smallTXT_smallFig.eps'
 
-img = Au4.scan244[0,:,:-2]
+img = Au4.scan245[0,:,:-2]
 data = img.copy()
 
 scalebar = 1
@@ -86,7 +86,7 @@ scalebar_color = 'white'
 px = 20; dist = u"2\u03bcm"
 
 draw_cbar = 1
-cbar_txt_size = 10
+cbar_txt_size = 8
 top_cbar = 0
 side_cbar=1
 
@@ -107,7 +107,7 @@ if standardized == 1:
 
 
 plt.figure()
-fig, ax = plt.subplots(figsize=(2.5,2.5))
+fig, ax = plt.subplots(figsize=(2,2))
 
 if cbar_scale_control == 1:
     im = ax.imshow(data, cmap=colormap, vmax=MAX, vmin=MIN)

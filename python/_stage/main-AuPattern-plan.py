@@ -24,8 +24,9 @@ Au4 = Sample()
 # define stack and scans of each sample
 #Au4.stack = {'Au':   [10.2, 100E-7], 'Si': [2.33,200E-6]}
 
-#20C scans
-Au4.scans = [243,244]
+#20C scans 
+#Au4.scans = [243,244]
+Au4.scans = [245]
 
 # 100C scans
 #Au4.scans = [261,262]
