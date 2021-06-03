@@ -9,31 +9,43 @@ Sample FS3_3: 2019_06_2IDD
 -abandoned h5 importing, the structure between the TW fit and BL fit
 is far too different and not worth the time
 
-ASCIIS_TW_BL have the combined data
+instead the ASCIIs were exported from TW fit and BL fit and combined
+    workflow:
+        1. 'ASCII old-main.py'
+        2. 'ASCII-merge.py'
+        3. 'ASCII-reduce.py'
+
+after (3), ASCIIS_TW_BL have the combined data
     'us_ic' is the relevant scaler for the electrical channel
     'US_IC' is the relevant scaler for the upstream ion chamber
 
-XBIC
-20C: scan0323
-40C: scan0327
-60C: scan0332
-80C: scan0339
-100C: scan344
+the relevant scans are given below
+    XBIC
+    20C: scan0323
+    40C: scan0327
+    60C: scan0332
+    80C: scan0339
+    100C: scan344
+    
+    XBIV
+    20C: scan0321
+    40C: scan0325
+    60C: scan0330
+    80C: scan0337
+    100C: scan0342
+    [322,323,324,325,326,327,328,329,330,331,332,333,
+                 337,338,339,340,341,342,343, 344, 345]
 
-XBIV
-20C: scan0321
-40C: scan0325
-60C: scan0330
-80C: scan0337
-100C: scan0342
-322,323,324,325,326,327,328,329,330,331,332,333,
-             337,338,339,340,341,342,343, 344, 345]
+workflow to align XBIC and XBIV maps:
+    1. 'main-FS3-ASCII'
+    2. '...-translate-and-deltas'
+    3. '...-translated analyses'
 
-present workflow:
-    1. "main-FS3-ASCII"
-    2. "...-translate-and-deltas"
-    3. "...-translated analyses"
+after (3), the aligned maps were saved as 2D csvs  in
+    r'C:\\Users\triton\Dropbox (ASU)\2_FS_operando\XBIC aligned image csvs'
+    and 'XBIC aligned image csvs'
 for plotting reference, pixel step was 150nm --> 20pixels = 3um, 67pix = 10um
+
 """
 
 from class_ascii_Sample import Sample
@@ -54,9 +66,26 @@ FS3.scans = [323,327,332,339,344] #XBIC: [323,327,332,339,344] #XBIV: [321,325,3
 
 
 # channels to import from ASCII
-channels = ['us_ic', 'Se', 'Cd_L', 'Te_L', 'Au_L']
+channels = ['US_IC','us_ic', 'Se', 'Cd_L', 'Te_L', 'Au_L']
 
-FS3.import_maps(ASCII_PATH, PATH_LOCKIN, channels)
+# this requires XBIC channel ('us_ic') to be in first position of 'channels' list
+#FS3.import_maps(ASCII_PATH, PATH_LOCKIN, channels)
+
+
+# it's important to normalize the XBIC channel 'us_ic' cts/s to the
+# upstream ion chamber 'US_IC' cts/s before converting into ampere
+    # the measurements took place over many hours and the incident beam
+    # flux can easily change during that time (especially during fill/unfill)
+
+FS3.import_maps_no_XBIC_conversion(ASCII_PATH, channels)
+
+xboc_norms = []
+for scan in FS3.maps:
+    us_ic = scan[0,:,:-2]
+    xbic = scan[1,:,:-2]
+    xbic_norm = xbic / us_ic
+    xboc_norms.append(xbic_norm)
+    
 
 #elements = [ele[0:2] for ele in channels[1:]]
 
