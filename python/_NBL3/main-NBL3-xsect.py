@@ -1,22 +1,12 @@
 """
-this is the most recent program used to plot xsect NBL3 data (20200308)
--the program relies on custom functions in "definitions_NBLxSect.py" 
--first the metadata is retrieved for the relevant scan
--then the indicated channels are imported; the XRF line needs to be added
--the program rotates each map by the same number of degrees, and the final dfs
-are these rotated maps
--a plotting function is used to plot the map; many formatting 
-parameters can be specified
--rotation is done to integrate along the vertical axis (the data must be
-perpendicular to the x-axis) for future comparison to SIMS profiles
+20210623
+this is the most recent program used to access and plot xsect NBL3 data
 
-note for the analyses in origin
-NLB31_scan8 had no rotation, and 
-NBL33_scan1 had no rotation
-NBL33_scan17 rotation could not be determined,
-but based off the plots, it is likley to be around 10-15
-    sticking with 15 to be used in average investigations
+-the program assumes you have all the csvs shared with us by M. Stuckelberger
+and these csvs are in the directory "PATH"
+
 """
+
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
@@ -79,20 +69,28 @@ def import_xSect_csvs(path, sample, scannum, channels, meta, rot):
 #r'C:\Users\Trumann\data_NBL3\cross_sections_MS'
 #r'C:\Users\triton\NBL3_data\cross_section_MS'
 PATH = r'C:\Users\triton\NBL3_data\cross_section_MS' 
-#'C:\Users\triton\xrays\python\NBL3xsect'
-# #C:\Users\Trumann\xrays\python\NBL3xsect
-DEFS = r'C:\Users\triton\xrays\python\NBL3xsect' 
-sys.path.append(DEFS)
+
 
 SAMPLE = 'NBL33'
 SCAN = 1
 CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
-PLT_CHAN_IDX = 2
+
 META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)
 ROTATION = 0
 
 map_dfs = import_xSect_csvs(PATH, SAMPLE, SCAN, CHANNELS, META_DATA, ROTATION)
 
+#%%
+'''
+everything from this point on is for plotting or some sort of post-analysis
+
+you can ignore or edit it as you see fit
+
+'''
+
+# this if statement was created so that the same number of rows could be
+# compared between scans (i.e. the same number of pixels or data points)
+PLT_CHAN_IDX = 2
 if SAMPLE == 'NBL31':
 # for NBL31 scan 8 to have the same points and 5um length as NBL33 scan 1
     # XBIC scale from 0-250 nA
@@ -100,6 +98,7 @@ if SAMPLE == 'NBL31':
 else: 
     # otherwise (for NBL33) plot data frame normally
     map_data = map_dfs[PLT_CHAN_IDX]
+
 
 # for exporting cross-section maps
 plt.figure()
