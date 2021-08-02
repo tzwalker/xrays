@@ -22,6 +22,8 @@ for TS118_1A decay (2018_11_26IDC):
             y - 40px/101pts = 1px = 0.400um
 for PVS33 (2020_10_26IDC)
     plan-view: 25px = 4um
+for PVSe33 (2021_07_2IDD)
+    cross-section: 25px = 4um
     
 # cmaps: 
     #RdYlGn 
@@ -78,24 +80,24 @@ SAVE = 0
 OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\0_stage design\20210527 figures_v1\figure 3 materials'
 FNAME = r'\fig3_scan245_Au4_20C_smallTXT_smallFig.eps'
 
-img = Au4.scan245[0,:,:-2]
+img = df_rot
 data = img.copy()
 
 scalebar = 1
-scalebar_color = 'white'
-px = 20; dist = u"2\u03bcm"
+scalebar_color = 'black'
+px = 25; dist = u"4\u03bcm"
 
 draw_cbar = 1
 cbar_txt_size = 8
 top_cbar = 0
 side_cbar=1
 
-cbar_scale_control = 1; MIN = 0; MAX = 30
+cbar_scale_control = 0; MIN = 0; MAX = 30
 normalize = 0
 standardized = 0
 sci_notation = 0
 
-unit = u'Au (\u03bcg/cm$^{2}$)'; colormap = 'YlOrBr_r'; 
+unit = u'Te (\u03bcg/cm$^{2}$)'; colormap = 'Greys_r'; 
 
 if normalize == 1:
     #data = data*1e8
