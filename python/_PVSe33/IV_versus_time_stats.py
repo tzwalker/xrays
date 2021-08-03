@@ -96,7 +96,15 @@ for timestamp in timestamps:
     minorIV_time.append(avg_minorIV)
     minorIV_err_time.append(std_minorIV)
 
-majorIV_time_arr = np.array(majorIV_time)
-minorIV_time_arr = np.array(minorIV_time)
+# convert avg and std at each timestamp to numpy array
+A = np.array(majorIV_time)
+B = np.array(majorIV_err_time)
 
+C = np.array(minorIV_time)
+D = np.array(minorIV_err_time)
 
+# alternate mean and std arrays so they have proper format
+    # copy "a" and "b" into Origin
+a = np.stack((A,B),2).reshape(A.shape[0],-1)
+
+b = np.stack((C,D),2).reshape(C.shape[0],-1)
