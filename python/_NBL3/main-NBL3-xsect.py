@@ -71,8 +71,8 @@ def import_xSect_csvs(path, sample, scannum, channels, meta, rot):
 PATH = r'C:\Users\triton\NBL3_data\cross_section_MS' 
 
 
-SAMPLE = 'NBL33'
-SCAN = 1
+SAMPLE = 'NBL31'
+SCAN = 7
 CHANNELS = ['XBIC_lockin', 'Cu_K', 'Cd_L3']
 
 META_DATA = get_scan_metadata(PATH, SAMPLE, SCAN)

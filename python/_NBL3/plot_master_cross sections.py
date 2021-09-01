@@ -72,7 +72,7 @@ FNAME = r'\TS118scan196_XBIC2.eps'
 
 scalebar = 1; scalebar_color='white'
 draw_cbar = 1; sci_notation = 1; cbar_txt_size=10
-img = map_data
+img = map_dfs[0]
 data = img.copy()
 data = data
 
@@ -88,13 +88,16 @@ data = data
 # colormap = 'Oranges_r'
 # =============================================================================
 
-unit = 'Cd XRF (cts/s)'
-MAX = data.max().max(); MIN = 0
-colormap = 'Greys_r'
 
+unit = 'XBIC (A)'
+colormap = 'inferno'
+
+
+MAX = data.max().max(); MIN = 0
 plt.figure()
 
 fig, ax = plt.subplots(figsize=(3,1.7))
+ax.set_aspect('equal')
     
 im = ax.imshow(data, cmap=colormap, vmax=MAX, vmin=MIN)
 ax.axis('off')
@@ -118,7 +121,7 @@ if draw_cbar == 1:
         #get color bar object
     cbar = plt.gcf().axes[-1]
         #format colorbar
-    #cbar.set_ylabel(unit, rotation=90, va="bottom", size=cbar_txt_size, labelpad=20)
+    cbar.set_ylabel(unit, rotation=90, va="bottom", size=cbar_txt_size, labelpad=20)
         # change number of tick labels on colorbar
     #cbar.locator_params(nbins=4)
         #change colorbar tick label sizes
