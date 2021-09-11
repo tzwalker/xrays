@@ -16,18 +16,7 @@ the cross-section maps are for PVSe33
     plan-view (2020_10_26IDC): 25px = 4um
     cross-section(2021_07_2IDD): 1px = 160nm, 25px = 4um
     
-#for NBL3xsect NBL33
-    # XBIC: vmin=0,vmax=80, after multiplying 'data1' by 1E9
-    # Cu XRF: vmin=0,vmax=30000
-    # Cd XRF: vmin=0,vmax=15000
 
-#for NBL33 xsect scan 1: 1px = 0.10um, 10px = 1.0um, 20px = 2um 
-#for NBL3xsect NBL31
-    for NBL31 xsect scan 8: 1px = 0.05um, 10px = 0.5um, 20px = 1um
-    # XBIC: vmin=0,vmax=250, after multiplying 'data1' by 1E9,bins=3
-    # Cu XRF: vmin=0,vmax=2000, bins=2
-    # Cd XRF: vmin=0,vmax=15000, bins=4
-    
 # cmaps: 
     #RdYlGn 
     #inferno 
@@ -50,9 +39,9 @@ def forceAspect(ax,aspect=1):
 
 idxs = [0,1,2,3]
 # for windows 
-units = ['XBIC (nA)', 'Se XRF (ug/cm2)', 'Te XRF (ug/cm2)', 'Au XRF (ug/cm2)']
+#units = ['XBIC (nA)', 'Se XRF (ug/cm2)', 'Te XRF (ug/cm2)', 'Au XRF (ug/cm2)']
 # for infinite cross sections
-#units = ['XBIC (nA)', 'Se XRF (cts/s)', 'Te XRF (cts/s)', 'Au XRF (cts/s)']
+units = ['XBIC (nA)', 'Se XRF (cts/s)', 'Te XRF (cts/s)', 'Au XRF (cts/s)']
 cmaps = ['inferno', 'Blues_r', 'Greys_r', 'YlOrBr_r']
 
 cbar_txt_size=10
@@ -70,8 +59,8 @@ for idx in idxs:
     
     im = ax.imshow(data, cmap=cmaps[idx])
     
-    fmtr_x = lambda x, pos: f'{(x * 0.160):.0f}'
-    fmtr_y = lambda x, pos: f'{(x * 0.160):.0f}'
+    fmtr_x = lambda x, pos: f'{(x * 0.100):.0f}'
+    fmtr_y = lambda x, pos: f'{(x * 1):.0f}'
     ax.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
     ax.set_xlabel('X (μm)')
@@ -91,6 +80,6 @@ for idx in idxs:
     cbar.set_ylabel(units[idx], rotation=90, va="bottom", size=12, labelpad=20)
     cbar.yaxis.set_offset_position('left')
     
-    aspect_ratio = 8/10
+    aspect_ratio = 1
     forceAspect(ax,aspect=aspect_ratio)
 

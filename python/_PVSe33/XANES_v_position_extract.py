@@ -3,10 +3,15 @@ coding: utf-8
 
 tzwalker
 Fri Jul 30 13:45:05 2021
+
+the csvs were exported using ROI and "1" normalization in MAPS
+
+
 """
 
 PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\output'
-FILE = r'\combined_ASCII_2idd_0145.h5.csv'
+FILE = r'\combined_ASCII_2idd_0112.h5.csv' # 0hr
+#FILE = r'\combined_ASCII_2idd_0145.h5.csv' # 500hr
 
 F = PATH+FILE
 
