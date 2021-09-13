@@ -3,26 +3,13 @@ coding: utf-8
 tzwalker
 Wed May 13 15:31:19 2020
 
-for FS3_operando:
-    67px = 10um
-for NBL3:  
-        20px = 3um
-for NBL33 xsect: 
-        20px = 1.0um
-for stage pattern
-    overview: 30px = 20um
-    tiny features: 10px = 1um
-    Au4: 10px = 1um
-    line: 1px = 50nm
 for TS118_1A decay (2018_11_26IDC):
     plan-view inner map: 4px = 1um
     plan-view outer map: 2px = 1um
     xsect scan0051: 
             x - 10um/101pts = 1px = 0.100um
             y - 40px/101pts = 1px = 0.400um
-for PVS33 (2020_10_26IDC)
-    plan-view: 25px = 4um
-    
+  
 # cmaps: 
     #RdYlGn 
     #inferno 
@@ -31,17 +18,7 @@ for PVS33 (2020_10_26IDC)
     #viridis
     #Oranges_r
     #YlOrBr_r
-#for NBL3xsect NBL33
-    # XBIC: vmin=0,vmax=80, after multiplying 'data1' by 1E9
-    # Cu XRF: vmin=0,vmax=30000
-    # Cd XRF: vmin=0,vmax=15000
-#for NBL3xsect NBL31
-    # XBIC: vmin=0,vmax=250, after multiplying 'data1' by 1E9,bins=3
-    # Cu XRF: vmin=0,vmax=2000, bins=2
-    # Cd XRF: vmin=0,vmax=15000, bins=4
-#for FS3
-    # Se XRF: vmin=0.5,vmax=1.5
-    # XBIC: vmin=5.6E-8,vmax=8.6E-8 
+
 """
 import matplotlib.pyplot as plt
 import matplotlib.offsetbox as offbox
@@ -74,7 +51,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  **kwargs)
 
 
-SAVE = 1
+SAVE = 0
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_XBIC_decay\figures v0'
 FNAME = r'\TS118_1Ax_scan0051_Cd.eps'
 

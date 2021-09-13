@@ -14,6 +14,7 @@ plan view maps: 195-200
         -1sr row of csv deleted; contained
         "ascii information for file: combined_ASCII_26idbSOFT_0195.h5.csv"
     -the lockin XBIC channel header: 'ds_ic'
+    
 xsect maps: 39,51
     -these were merged from mda and h5 csv outputs
     -the lockin XBIC channel header: '26idc:3820:scaler1_cts2.B'
@@ -22,8 +23,8 @@ xsect maps: 39,51
 """
 
 from class_ascii_Sample import Sample
-ASCII_PATH =  r'C:\Users\triton\decay_data\TS118A_1A_2018_11_26IDC' 
-PATH_LOCKIN = r'C:\Users\triton\Dropbox (ASU)\1_XBIC_decay\decay_electrical.csv'
+ASCII_PATH =  r'C:\Users\triton\XBIC_decay\TS118A_1A_2018_11_26IDC' 
+PATH_LOCKIN = r'C:\Users\triton\Dropbox (ASU)\2_XBIC_decay\decay_electrical.csv'
 
 # create sample objects
 TS1181A = Sample()
@@ -33,13 +34,13 @@ TS1181A.stack = {'Au':   [19.3, 100E-7],
                  'CdTe': [5.85, 5E-4],
                  'Se': [4.82, 100E-7],
                  'SnO2': [100E-7]}
-TS1181A.scans = [39, 43, 46, 51]#196,197,198,199,200]
+TS1181A.scans = [195,196,197,198,199,200] #[39, 43, 46, 51]
 
 
 # channels to import from ASCII, for plan-view
-#channels = ['ds_ic', 'Cu', 'Cd_L', 'Te_L', 'Au_M']
+channels = ['ds_ic', 'Cu', 'Cd_L', 'Te_L', 'Au_M']
 # for cross-section
-channels = ['26idc:3820:scaler1_cts2.B', 'Cu', 'Cd_L', 'Te_L', 'Au_M']
+#channels = ['26idc:3820:scaler1_cts2.B', 'Cu', 'Cd_L', 'Te_L', 'Au_M']
 
 
 TS1181A.import_maps(ASCII_PATH, PATH_LOCKIN, channels, sector=26)
