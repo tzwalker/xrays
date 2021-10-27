@@ -58,6 +58,8 @@ FNAME = r'\TS118_1A_scan197_XBIC.eps'
 
 scalebar = 1
 scalebar_color = 'black'
+# SET SCALE BAR
+px = 12; dist = '3um' # CHANGE
 px = 20; dist = '10um'
 
 draw_cbar = 1
@@ -71,11 +73,13 @@ sci_notation = 1
 
 unit = 'XBIC (nA)'; colormap='inferno'
 
-img = TS1181A.scan197[0,:,:]
+img = TS1181A.scan197[0,:,:] # CHANGE
 data = img.copy()
 data = data * 1e9
 
+
 plt.figure()
+#fig, ax = plt.subplots(figsize=(2.5,2.5)) # CHANGE
 fig, ax = plt.subplots(figsize=(3.4,5.65))
 
 
@@ -97,12 +101,23 @@ if scalebar == 1:
                            linekw=dict(color=scalebar_color))
     ax.add_artist(ob)
 
+# plot crosshairs at specific positions # CHANGE
+# scan 195 indices
+#plt.scatter([14,16,31], [18,32,20], marker='+', s=50, color='white')
+
+# scan 196 indices
+#plt.scatter([27,5,10], [16,4,24], marker='x', s=50, color='white')
+
+# scan 197 indices
+plt.scatter([27,28,35], [69,76,70], marker='+', s=50, color='white')
+plt.scatter([33,22,25], [28,22,32], marker='x', s=50, color='white')
+
 if draw_cbar == 1:
     divider = make_axes_locatable(ax)
     
     if side_cbar == 1:
         # create color bar
-        cax = divider.append_axes('right', size='10%', pad=0.1)
+        cax = divider.append_axes('right', size='5%', pad=0.1)
         if sci_notation == 1:
             fmt = ticker.ScalarFormatter(useMathText=True)
             fmt.set_powerlimits((0, 0))
