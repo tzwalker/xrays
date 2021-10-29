@@ -27,20 +27,21 @@ the sample temperature reach 80+/-5C at Timer column value = 7077 seconds, see:
 import pandas as pd
 
 def find_time(path,scan_range,user_time):
-    for scan_idx in scan_idxs:
+    for scan_idx in scan_range:
         FNAME = r"\CSET82p3_80C_2_scan{s}.csv".format(s=str(scan_idx))
-        DATA_str = DATA_PATH+FNAME
+        DATA_str = path+FNAME
         data = pd.read_csv(DATA_str,skiprows=0)
         array = data["    Timer"].values
-        if array[0] < time_s < array[-1]:
+        if user_time < array[-1]:
             print('time is in '+ FNAME)
             break
         else:
             print('skipped '+ FNAME)
+            #print('last value was {n}'.format(n=array[-1]))
     return
 
 # define time you want to search for
-time = 0.50 # hours
+time = 35 # hours
 time_s = time*60*60+7077 # seconds, units of data dile
     # 7077 factor is time of start of experiment
 
@@ -48,10 +49,9 @@ time_s = time*60*60+7077 # seconds, units of data dile
 DATA_PATH = r"Z:\BertoniLab\Synchrotron Data\2021_10_BL2-1\raw_data"
 
 # define scan range you want to search through
-scan_idxs = list(range(12,500,1))
+scan_idxs = list(range(450,555,1))
 
-find_time(DATA_PATH,scan_idxs,time)
+find_time(DATA_PATH,scan_idxs,time_s)
 
-# after running several iterations, i found:
-    # 15min @ 80C in "\CSET82p3_80C_2_scan15.csv"
-    # 30min @ 80C in "\CSET82p3_80C_2_scan20.csv"
+# see excel file created to record the results form this program
+    
