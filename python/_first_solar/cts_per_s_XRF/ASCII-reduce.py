@@ -7,6 +7,10 @@ Sat Apr 18 09:55:28 2020
 this is reduce the ASCII of in TW_BL to the channels of interest
 meanth to save degbugging time as the it takes
 a while to load +10MB files into python (22 times)
+
+2021 11 14
+this is unnecessary since i exproted only 2 scans with fewer channels
+
 """
 
 
@@ -14,8 +18,7 @@ import pandas as pd
 ASCII_PATH = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL'
 RED_ASCII_PATH = r'C:\Users\triton\FS3_2019_06_operando\ASCII_TW_BL_reduced'
 
-scans = [321,322,323,324,325,326,327,328,329,330,331,332,333,
-             337,338,339,340,341,342,343, 344, 345]
+scans = [323,339]
 
 channels = ['x pixel no', 'y pixel no', 'x_coord', 'y_coord',
             'us_ic', 'Se', 'Cd_L', 'Te_L', 'Au_L', 'US_IC']

@@ -62,7 +62,7 @@ FS3.stack = {'Au':   [19.3, 100E-7],
                  'CdTe': [5.85, 5E-4],
                  'Se': [4.82, 100E-7],
                  'SnO2': [100E-7]}
-FS3.scans = [321,325,330,337,342] #XBIC: [323,327,332,339,344] #XBIV: [321,325,330,337,342]
+FS3.scans = [323,327,332,339,344] #XBIC: [323,327,332,339,344] #XBIV: [321,325,330,337,342]
 
 
 # channels to import from ASCII
@@ -72,24 +72,29 @@ channels = ['US_IC','us_ic', 'Se', 'Cd_L', 'Te_L', 'Au_L']
 # this requires XBIC channel ('us_ic') to be in first position of 'channels' list
 #FS3.import_maps(ASCII_PATH, PATH_LOCKIN, channels)
 
+# uncomment this line to import maps without XBIC converted to ampere
+FS3.import_maps_no_XBIC_conversion(ASCII_PATH, channels)
+
 #%%
 '''
 current maps
 
 this cell was used to normalize the XBIC maps to the 
-upstream ion chamber; to do this, the XBIC channel
-was kept in cts/s, hence the use of the Sample class method
-'import_maps_no_XBIC_conversion'
+upstream ion chamber
+to do this, use Sample class method 'import_maps_no_XBIC_conversion' above
+	this keeps XBIC in cts/s
 
-only run this cell if the XBIC scans are imported 
+only run this cell if XBIC scans [323,327,...] are imported 
 at the beginning of this program
-'''
-# it's important to normalize the XBIC channel 'us_ic' cts/s to the
-# upstream ion chamber 'US_IC' cts/s before converting into ampere
-    # the measurements took place over many hours and the incident beam
-    # flux can easily change during that time (especially during fill/unfill)
 
-FS3.import_maps_no_XBIC_conversion(ASCII_PATH, channels)
+it's important to normalize the XBIC channel ('us_ic') cts/s 
+to upstream ion chamber ('US_IC') cts/s 
+since the incident flux can change over the time of the experiment (up to 40hrs)
+	especially during fill/unfill
+
+normalization needs to be done before converting into ampere
+	
+'''
 
 # normalize the xbic channel to the us_ic channel
 xboc_norms = []
