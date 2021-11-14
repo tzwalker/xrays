@@ -44,6 +44,12 @@ for S in scans1:
     FNAME = r'\FS3_scan{SCN}_Te.csv'.format(SCN=S)
     IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
     Te_maps.append(IMG)
+    
+Au_maps = []
+for S in scans1:
+    FNAME = r'\FS3_scan{SCN}_Au.csv'.format(SCN=S)
+    IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
+    Au_maps.append(IMG)
 
 # compute delta XBIV maps
 #dels = [X - Y for X, Y in zip(imgs[1:], imgs[0:])]

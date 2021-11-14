@@ -123,13 +123,18 @@ shifted_channels3 = np.array(shifted_channels3)
 aligned = [shifted_channels0,
            shifted_channels2]
 
+### remove zeros according to indices of map with largest offsets
+# in the XBIC images, the last 100C map is cut off both above and below, 
+    # from row indices 19:176
+aligned_crop = [arr[:,8:,11:] for arr in aligned]
+
 
 # save aligned arrays for further processing
 PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\2_FS_operando\XBIC aligned image csvs\cts_per_s_XRF'
 SCAN_STR = ['scan323','scan339']
 CHANNELS = ['XBIC','Se', 'Cd', 'Te', 'Au']
 
-for i,scan in enumerate(aligned):
+for i,scan in enumerate(aligned_crop):
     for j,chan in enumerate(CHANNELS):
         FNAME = r'\FS3_{scn}_{chn}.csv'.format(scn=SCAN_STR[i], chn=CHANNELS[j])
         array = scan[j,:,:]

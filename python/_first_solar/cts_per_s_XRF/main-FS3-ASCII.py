@@ -20,12 +20,14 @@ after (1), ASCIIS_TW_BL have the combined data
 workflow to align XBIC and XBIV maps:
     1. 'main-FS3-ASCII'
     2. '...-translate-and-deltas'
-    3. '...-translated analyses'
 
 after (3), the aligned maps were saved as 2D csvs  in
-    r'C:\\Users\triton\Dropbox (ASU)\2_FS_operando\XBIC aligned image csvs'
-    and 'XBIC aligned image csvs'
-for plotting reference, pixel step was 150nm --> 20pixels = 3um, 67pix = 10um
+    r'C:\Users\triton\Dropbox (ASU)\2_FS_operando\XBIC aligned image csvs\cts_per_s_XRF'
+
+for plotting reference, pixel step was 
+
+20pixels = 3um
+67pix = 10um
 
 """
 

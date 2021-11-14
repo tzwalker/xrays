@@ -14,11 +14,11 @@ for FS3_operando:
     67px = 10um
     
 # common cmaps 
-    #Blues
-    #Purples
-    #BuPu
-    #viridis
-    #Oranges_r : XBIC
+    #Cd - Blues_r - vmin = 3250, vmax = 5500
+    #Te - Purples_r - vmin = 3250, vmax = 5500
+    #Se - BuPu_r - vmin = 3250, vmax = 5500
+    #Au - copper - vmin = 3250, vmax = 5500
+    #XBIC - Oranges_r - vmin = 0, vmax = 1
 
 #for FS3
     # Se XRF: vmin=0.5,vmax=1.5
@@ -27,16 +27,15 @@ for FS3_operando:
 
 
 '''
-use this cell to import the aligned data
+use this cell to IMPORT the aligned data
 '''
 import numpy as np
 
 # specificy path to csvs
-PATH_IN = r'C:\Users\triton\Dropbox (ASU)\2_FS_operando\XBIC aligned image csvs'
+PATH_IN = r'C:\Users\triton\Dropbox (ASU)\2_FS_operando\XBIC aligned image csvs\cts_per_s_XRF'
 # XBIC scans
 scans = [323,339]
-# XBIV scans
-#scans = [321,325,330,337,342]
+
 scans1 = [str(s) for s in scans]
 
 T_list = ['20C', '80C']
@@ -54,7 +53,7 @@ SAVE = 0
 
 #%%
 '''
-use this cell to plot the aligned data
+use this cell to PLOT the aligned data
 '''
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -63,7 +62,7 @@ import matplotlib.ticker as mticker
 
 fig, ax = plt.subplots()
 
-im = ax.imshow(imgs[0], cmap = 'Blues_r')
+im = ax.imshow(imgs[1], cmap = 'Blues_r', origin='lower', vmin=3250, vmax=5500)
 
 # format tick labels (convert to um)
 fmtr_x = lambda x, pos: f'{(x * 0.150):.0f}'
@@ -71,17 +70,30 @@ fmtr_y = lambda x, pos: f'{(x * 0.150):.0f}'
 ax.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
 ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
 
-# insert same p
+# plot some arbitrary points at same locations
 plt.scatter([50,200,75], [120,60,25], color='black', marker='+', s=50)
 
 plt.xlabel('X (um)')
 plt.ylabel('Y (um)')
 
 divider = make_axes_locatable(ax)
-cax = divider.append_axes('right', size='5%',pad=0.1)
-cb = fig.colorbar(im, cax=cax, orientation='vertical')
-cbar = plt.gcf().axes[-1]
-cbar.set_ylabel('ug/cm$^2$', rotation=90, va="bottom", size=12, labelpad=20)
+
+cax = divider.new_vertical(size='5%', pad=0.1)
+fig.add_axes(cax)
+cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
+cbar.set_label('cts/s', rotation=0, fontsize=8)
+cax.xaxis.set_label_position('top')
+cax.xaxis.set_ticks_position('top')
+
+# =============================================================================
+# cax1 = divider.new_vertical(size='5%', pad=0)
+# fig.add_axes(cax1)
+# cbarCu = fig.colorbar(pltCu, cax=cax1, orientation='horizontal')
+# cbarCu.set_label('Cu XRF (cts/s)', fontsize=8)
+# cbarCu.ax.tick_params(labelsize=8)
+# cax1.xaxis.set_label_position('top')
+# cax1.xaxis.set_ticks_position('top')
+# =============================================================================
 
 # =============================================================================
 # 

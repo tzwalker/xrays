@@ -10,6 +10,7 @@ a while to load +10MB files into python (22 times)
 
 2021 11 14
 this is unnecessary since i exproted only 2 scans with fewer channels
+this program was NOT run as a part of this workflow
 
 """
 
