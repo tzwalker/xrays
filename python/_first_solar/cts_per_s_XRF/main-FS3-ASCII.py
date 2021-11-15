@@ -21,8 +21,7 @@ workflow to align XBIC and XBIV maps:
     1. 'main-FS3-ASCII'
     2. '...-translate-and-deltas'
 
-after (3), the aligned maps were saved as 2D csvs  in
-    r'C:\Users\triton\Dropbox (ASU)\2_FS_operando\XBIC aligned image csvs\cts_per_s_XRF'
+
 
 for plotting reference, pixel step was 
 
@@ -31,9 +30,12 @@ for plotting reference, pixel step was
 
 """
 
+# after (3), the aligned maps were saved as 2D csvs  in
+    # r'C:\Users\triton\Dropbox (ASU)\2_FS_operando\XBIC aligned image csvs\cts_per_s_XRF'
+
 from class_ascii_Sample import Sample
-ASCII_PATH = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL'
-PATH_LOCKIN = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL\FS_plan_electrical.csv'
+#ASCII_PATH = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL'
+ASCII_PATH = r'C:\Users\triton\FS3_2019_06_operando\BL_fit_202002\output'
 #ASCII_PATH =  r'C:\Users\Trumann\FS3_2019_06_operando\ASCIIS_TW_BL' 
 #PATH_LOCKIN = r'C:\Users\Trumann\FS3_2019_06_operando\ASCIIS_TW_BL\FS_plan_electrical.csv'
 
@@ -49,7 +51,7 @@ FS3.scans = [323,339] #XBIC: [323,327,332,339,344] #XBIV: [321,325,330,337,342]
 
 
 # channels to import from ASCII
-channels = ['US_IC','us_ic', 'Se', 'Cd_L', 'Te_L', 'Au_L']
+channels = ['US_IC', 'Se', 'Cd_L', 'Te_L', 'Au_L']
 
 # uncomment this line to import maps with XBIC converted to ampere
 # this requires XBIC channel ('us_ic') to be in first position of 'channels' list

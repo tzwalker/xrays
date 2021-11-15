@@ -76,7 +76,6 @@ trimming for delta maps
 
 
 from skimage.transform import SimilarityTransform, warp
-import matplotlib.pyplot as plt
 import numpy as np
 
 ### start with map with largest offset
@@ -132,7 +131,7 @@ aligned_crop = [arr[:,8:,11:] for arr in aligned]
 # save aligned arrays for further processing
 PATH_OUT = r'C:\Users\triton\Dropbox (ASU)\2_FS_operando\XBIC aligned image csvs\cts_per_s_XRF'
 SCAN_STR = ['scan323','scan339']
-CHANNELS = ['XBIC','Se', 'Cd', 'Te', 'Au']
+CHANNELS = ['us_ic', 'Se', 'Cd', 'Te', 'Au']
 
 for i,scan in enumerate(aligned_crop):
     for j,chan in enumerate(CHANNELS):

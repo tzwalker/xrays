@@ -48,8 +48,7 @@ for S in scans1:
     FNAME = r'\FS3_scan{SCN}_{CHAN}.csv'.format(SCN=S, CHAN=channel)
     IMG = np.genfromtxt(PATH_IN+FNAME, delimiter=',')
     imgs.append(IMG)
-    
-SAVE = 0
+
 
 #%%
 '''
@@ -59,10 +58,13 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker as mticker
 
+# specify index of scan, cmap, and fname
+# 0 is scan323, 1 is scan339
+i = 1
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(1.8,3.6))
 
-im = ax.imshow(imgs[1], cmap = 'Blues_r', origin='lower', vmin=3250, vmax=5500)
+im = ax.imshow(imgs[i], cmap = 'Blues_r', origin='lower', vmin=3250, vmax=5500)
 
 # format tick labels (convert to um)
 fmtr_x = lambda x, pos: f'{(x * 0.150):.0f}'
@@ -71,10 +73,13 @@ ax.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
 ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
 
 # plot some arbitrary points at same locations
-plt.scatter([50,200,75], [120,60,25], color='black', marker='+', s=50)
+plt.scatter([50,200,75], [120,60,25], color='black', marker='+', s=8)
 
-plt.xlabel('X (um)')
-plt.ylabel('Y (um)')
+ax.set_xlabel("X (um)", size=8)
+ax.xaxis.set_tick_params(labelsize=8)
+
+ax.set_ylabel("Y (um)", size=8)
+ax.yaxis.set_tick_params(labelsize=8)
 
 divider = make_axes_locatable(ax)
 
@@ -82,24 +87,14 @@ cax = divider.new_vertical(size='5%', pad=0.1)
 fig.add_axes(cax)
 cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
 cbar.set_label('cts/s', rotation=0, fontsize=8)
+cbar.ax.locator_params(nbins=2)
+cbar.ax.tick_params(labelsize=8)
 cax.xaxis.set_label_position('top')
 cax.xaxis.set_ticks_position('top')
 
-# =============================================================================
-# cax1 = divider.new_vertical(size='5%', pad=0)
-# fig.add_axes(cax1)
-# cbarCu = fig.colorbar(pltCu, cax=cax1, orientation='horizontal')
-# cbarCu.set_label('Cu XRF (cts/s)', fontsize=8)
-# cbarCu.ax.tick_params(labelsize=8)
-# cax1.xaxis.set_label_position('top')
-# cax1.xaxis.set_ticks_position('top')
-# =============================================================================
 
-# =============================================================================
-# 
-#     if SAVE == 1:
-#         OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\0_stage design\20210527 figures_v1\figure4 materials'
-#         FNAME = r'\FS3_{TEMP}_scan{SCAN}_{CHAN}.eps'.format(TEMP=T_list[i], SCAN=scans1[i], CHAN=channel)
-#         #print(FNAME)
-#         plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
-# =============================================================================
+
+OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\0_stage design\20211114 figures_v2\figure4 materials'
+FNAME = r'\FS3_{TEMP}_scan{SCAN}_{CHAN}.eps'.format(TEMP=T_list[i], SCAN=scans1[i], CHAN=channel)
+print(FNAME)
+#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
