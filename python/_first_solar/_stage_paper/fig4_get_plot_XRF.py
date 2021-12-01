@@ -9,9 +9,12 @@ this program imports the data from one fit
 i just need the XRF normalized to the US_IC
 for the stage paper
 
+the XRF data were fit by Barry Lai
+
 everything is hard coded, including the alignment of the XRF maps between
 the two scans; i have the translation coordinates from the SIFT alignment
 in 'XBIC-translate'
+-just run these cells in order
 
 use the other directory (ug_per_cm2_XRF) for aligning all the data
 
@@ -94,13 +97,15 @@ the US_IC and XRF came from the same fitted data file fit by BLai
 
 Cd range - vmin=0.00,vmax=15.0
 Te range - vmin=0.00,vmax=15.0
-Se range - vmin=0.70,vmax=1.50
+Se range - vmin=0.70,vmax=1.40
+Au range - vmin=9.00,vmax=15.0
 
 '''
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker as mticker
 
+plt.rcParams['font.sans-serif'] = ['Arial']
 # specify index of scan, cmap, and fname
 # 0 is scan323, 1 is scan339
 idx = 1
@@ -148,5 +153,68 @@ cax.xaxis.set_ticks_position('top')
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\0_stage design\20211114 figures_v2\figure4 materials'
 FNAME = r'\FS3_{TEMP}_scan{SCAN}_{CHAN}.eps'.format(TEMP=T_list[idx], SCAN=scans1[idx], CHAN=channels[channel])
 print(FNAME)
-#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+
+#%%
+'''this cell loops through the plots'''
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+import matplotlib.ticker as mticker
+
+plt.rcParams['font.sans-serif'] = ['Arial']
+# specify index of scan, cmap, and fname
+# 0 is scan323, 1 is scan339
+idxs = [0,1]
+T_list = ['20C','80C']
+scans1 = [323,339]
+
+channel = [1,2,3,4]
+names = ['Se','Cd','Te','Au']
+cmaps = ['Greys_r', 'Blues_r', 'Purples_r', 'copper']
+ranges = [(0.7,1.4),(0,15),(0,15),(9,15)]
+
+
+for idx,T,scan in zip(idxs,T_list,scans1):
+    for chan,name,color,ran in zip(channel, names, cmaps, ranges):
+        img = aligned_crop[idx][chan,:,:]
+        
+        fig, ax = plt.subplots(figsize=(1.8,3.6))
+        
+        im = ax.imshow(img, cmap = color, origin='lower', vmin=ran[0],vmax=ran[1])
+        
+        # format tick labels (convert to um)
+        fmtr_x = lambda x, pos: f'{(x * 0.150):.0f}'
+        fmtr_y = lambda x, pos: f'{(x * 0.150):.0f}'
+        ax.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
+        ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
+        
+        # plot some arbitrary points at same locations
+        plt.scatter([50,200,75], [120,60,25], facecolors='none', edgecolors='black', marker='o', s=10)
+        
+        
+        ax.set_xlabel("X (\u03BCm)", size=8)
+        ax.xaxis.set_tick_params(labelsize=8)
+        
+        ax.set_ylabel("Y (\u03BCm)", size=8)
+        ax.yaxis.set_tick_params(labelsize=8)
+        
+        divider = make_axes_locatable(ax)
+        
+        cax = divider.new_vertical(size='5%', pad=0.1)
+        fig.add_axes(cax)
+        cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
+        cbar_name = '{s} XRF Intensity (arb. units)'.format(s=name)
+        cbar.set_label(cbar_name, rotation=0, fontsize=8)
+        cbar.ax.locator_params(nbins=4)
+        cbar.ax.tick_params(labelsize=8)
+        cax.xaxis.set_label_position('top')
+        cax.xaxis.set_ticks_position('top')
+        
+        
+        
+        OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\0_stage design\20211114 figures_v2\figure4 materials'
+        FNAME = r'\FS3_{TEMP}_scan{SCAN}_{CHAN}.eps'.format(TEMP=T, SCAN=str(scan), CHAN=name)
+        print(FNAME)
+        plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
 

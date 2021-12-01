@@ -49,7 +49,7 @@ for plotting reference, pixel step was 150nm --> 20pixels = 3um, 67pix = 10um
 """
 
 from class_ascii_Sample import Sample
-ASCII_PATH = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL'
+ASCII_PATH = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL\ug_per_cm2_XRF'
 PATH_LOCKIN = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL\FS_plan_electrical.csv'
 #ASCII_PATH =  r'C:\Users\Trumann\FS3_2019_06_operando\ASCIIS_TW_BL' 
 #PATH_LOCKIN = r'C:\Users\Trumann\FS3_2019_06_operando\ASCIIS_TW_BL\FS_plan_electrical.csv'
@@ -62,7 +62,7 @@ FS3.stack = {'Au':   [19.3, 100E-7],
                  'CdTe': [5.85, 5E-4],
                  'Se': [4.82, 100E-7],
                  'SnO2': [100E-7]}
-FS3.scans = [323,327,332,339,344] #XBIC: [323,327,332,339,344] #XBIV: [321,325,330,337,342]
+FS3.scans = [321,325,330,337,342] #XBIC: [323,327,332,339,344] #XBIV: [321,325,330,337,342]
 
 
 # channels to import from ASCII
