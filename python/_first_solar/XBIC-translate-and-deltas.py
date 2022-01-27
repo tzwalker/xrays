@@ -155,16 +155,18 @@ aligned_crop = [arr[:,19:176,44:] for arr in aligned]
 aligned_crop[4] = np.delete(aligned_crop[4], 38, axis=1)
 
 
-# save aligned arrays for further processing
-PATH_OUT = r'C:\Users\Trumann\Dropbox (ASU)\1_FS_operando\XBIC aligned image csvs'
-SCAN_STR = ['scan323','scan327','scan332','scan339','scan344']
-CHANNELS = ['XBIC','Se', 'Cd', 'Te', 'Au']
-
-for i,scan in enumerate(aligned_crop):
-    for j,chan in enumerate(CHANNELS):
-        FNAME = r'\FS3_{scn}_{chn}.csv'.format(scn=SCAN_STR[i], chn=CHANNELS[j])
-        array = scan[j,:,:]
-        np.savetxt(PATH_OUT+FNAME, array, delimiter=',')
+# =============================================================================
+# # save aligned arrays for further processing
+# PATH_OUT = r'C:\Users\Trumann\Dropbox (ASU)\1_FS_operando\XBIC aligned image csvs'
+# SCAN_STR = ['scan323','scan327','scan332','scan339','scan344']
+# CHANNELS = ['XBIC','Se', 'Cd', 'Te', 'Au']
+# 
+# for i,scan in enumerate(aligned_crop):
+#     for j,chan in enumerate(CHANNELS):
+#         FNAME = r'\FS3_{scn}_{chn}.csv'.format(scn=SCAN_STR[i], chn=CHANNELS[j])
+#         array = scan[j,:,:]
+#         np.savetxt(PATH_OUT+FNAME, array, delimiter=',')
+# =============================================================================
         
 # =============================================================================
 # """

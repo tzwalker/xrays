@@ -26,10 +26,10 @@ Au4 = Sample()
 
 #20C scans 
 #Au4.scans = [243,244]
-Au4.scans = [245]
+#Au4.scans = [245]
 
 # 100C scans
-#Au4.scans = [261,262]
+Au4.scans = [261,262]
 
 # import h5 data for each sample
 Au4.import_scan_data(DATA_PATH)

@@ -25,11 +25,11 @@ for plotting reference, pixel step was
 
 """
 import sys
-sys.path.append(r'C:\Users\triton\xrays\python\_first_solar')
+sys.path.append(r'C:\Users\Trumann\xrays\python\_first_solar')
 
 from class_ascii_Sample import Sample
 
-ASCII_PATH = r'C:\Users\triton\FS3_2019_06_operando\BL_fit_202002\output'
+ASCII_PATH = r'Z:\Trumann\Fitted_Sychrotron_Data\2019_06_2IDD_FS3_operando\BL_fit_202002\output'
 
 # create sample objects
 FS3 = Sample()

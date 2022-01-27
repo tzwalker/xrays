@@ -14,7 +14,9 @@ the csvs were exported using ROI and "US_IC" normalization in MAPS
 
 PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_11_2IDD_CuXRF\output'
 #FILE = r'\combined_ASCII_2idd_1099.h5.csv' # 0hr
-FILE = r'\combined_ASCII_2idd_1211.h5.csv' # 500hr
+#FILE = r'\combined_ASCII_2idd_1100.h5.csv' # 0hr
+#FILE = r'\combined_ASCII_2idd_1211.h5.csv' # 500hr
+FILE = r'\combined_ASCII_2idd_1212.h5.csv' # 500hr
 
 F = PATH+FILE
 

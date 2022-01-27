@@ -124,7 +124,7 @@ def forceAspect(ax,aspect=1):
     ax.set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/aspect)
 
 idxs = [0,1,2]
-idx = 2
+idx = 1
 # for windows 
 # units = ['XBIC (nA)', 'Se XRF (ug/cm2)', 'Te XRF (ug/cm2)', 'Au XRF (ug/cm2)']
 # for infinite cross sections
@@ -145,8 +145,13 @@ plt.figure()
 fig, ax = plt.subplots()
 
 im = ax.imshow(data, cmap=cmaps[idx])
-# scan 1086 indices
-#plt.scatter([4,5,7,8,10], [7,7,7,7,7], color='red', s=10)
+# scan 1100 indices
+x_coord = list(range(17,37,2))
+y_coord = 10* [82]
+# scan 1212 indices
+#x_coord = [15,19,23,27,31,35,39,42,46,50]
+#y_coord = 10* [48]
+plt.scatter(x_coord, y_coord, color='black', s=10)
 
 # scan 1210 indices
 #plt.scatter([9,10,12,14,15], [35,35,35,35,35], color='red', s=10)
