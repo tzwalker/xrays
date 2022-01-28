@@ -25,7 +25,7 @@ because of the vanishing transmittance of Cu, te, and Cd XRF in these layers'
 from classh5_Sample import Sample
 #from absorb_correct import get_iios
 
-path = 1
+path = 0
 if path == 0:
     data_path =  r'C:\Users\Trumann\data_NBL3\all_H5s'
 elif path == 1:
@@ -43,7 +43,7 @@ NBL31.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-NBL31.scans = [335,336,337, 338,339,340, 341,342,343,344, 517,519]
+NBL31.scans = [335,336,337, 338,339,340, 341,342,343,344]#, 517,519]
 
 NBL32.stack = {'Mo':   [10.2, 500E-7], 
                  'ZnTe': [6.34, 375E-7], 
@@ -51,7 +51,7 @@ NBL32.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-NBL32.scans =  [416,417,418, 419,420,421, 422,423,424,426, 538,550,575,551]
+NBL32.scans =  [416,417,418, 419,420,421, 422,423,424,426]#, 538,550,575,551]
 
 NBL33.stack = {'Mo':   [10.2, 500E-7], 
                  'ZnTe': [6.34, 375E-7], 
@@ -59,7 +59,7 @@ NBL33.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-NBL33.scans =  [258,259,260, 261,262,263, 264,265,266,267,  491,472,475]
+NBL33.scans =  [258,259,260, 261,262,263, 264,265,266,267]#,  491,472,475]
 
 TS58A.stack = {'Mo':   [10.2, 500E-7], 
                  'ZnTe': [6.34, 375E-7], 
@@ -67,7 +67,7 @@ TS58A.stack = {'Mo':   [10.2, 500E-7],
                  'CdTe': [5.85, 10.85E-4], 
                  'CdS':  [4.82, 80E-7], 
                  'SnO2': [100E-7]}
-TS58A.scans =  [378,379,380, 382,383,384, 385,386,387,388, 439,408,427,440]
+TS58A.scans =  [378,379,380, 382,383,384, 385,386,387,388]#, 439,408,427,440]
 
 # import h5 data for each sample
 NBL31.import_scan_data(data_path)
@@ -88,7 +88,7 @@ TS58A.get_lockin(data_path+'/a_class_electrical.csv')
 # arg2: element maps to extract
 # arg3: scaler channel to normalize elemental signal
 # arg4: use 'fit' on fitted h5s, or 'roi' for unfitted h5s
-elements = ['Cu', 'Cd_L', 'Te_L', 'Mo_L']
+elements = ['Cu', 'Cd_L', 'Te_L', 'Zn', 'Mo_L']
 NBL31.import_maps('ds_ic', elements, 'us_ic', 'fit')
 NBL32.import_maps('ds_ic', elements, 'us_ic', 'fit')
 NBL33.import_maps('ds_ic', elements, 'us_ic', 'fit')

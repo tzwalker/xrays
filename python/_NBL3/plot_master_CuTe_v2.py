@@ -83,10 +83,6 @@ ax.axis('off')
 ob = AnchoredHScaleBar(length=20, label="", loc=2, frameon=False,
                        pad=0.5, borderpad=0.25, sep=4, 
                        linekw=dict(color="white",linewidth=3))
-
-ob = AnchoredHScaleBar(length=20, label="", loc=2, frameon=False,
-                       pad=0.5, borderpad=0.25, sep=4, 
-                       linekw=dict(color="white",linewidth=3))
 #ob.patch.set_facecolor('k')
 ax.add_artist(ob)
 

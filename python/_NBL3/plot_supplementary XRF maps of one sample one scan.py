@@ -14,12 +14,11 @@ Wed May 13 15:31:19 2020
 for FS3_operando: 67px = 10um
 for NBL3:  20px = 3um
 """
+
 import matplotlib.pyplot as plt
 import matplotlib.offsetbox as offbox
-from matplotlib.lines import Line2D
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from matplotlib import ticker
-'''adds scalebar to matplotlib images'''
+
 class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
     """ size: length of bar in pixels
         extent : height of bar ends in axes units """
@@ -31,36 +30,39 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         trans = ax.get_xaxis_transform()
         size_bar = offbox.AuxTransformBox(trans)
         line = Line2D([0,size],[0,0], **linekw)
-        vline1 = Line2D([0,0],[-extent/2.,extent/2.], **linekw)
-        vline2 = Line2D([size,size],[-extent/2.,extent/2.], **linekw)
+        #vline1 = Line2D([0,0],[-extent/2.,extent/2.], **linekw)
+        #vline2 = Line2D([size,size],[-extent/2.,extent/2.], **linekw)
         size_bar.add_artist(line)
-        size_bar.add_artist(vline1)
-        size_bar.add_artist(vline2)
+        #size_bar.add_artist(vline1)
+        #size_bar.add_artist(vline2)
         txt = offbox.TextArea(label, minimumdescent=False, 
-                              textprops=dict(color="black"))
+                              textprops=dict(color=scalebar_color,weight='bold', size=cbar_txt_size))
         self.vpac = offbox.VPacker(children=[size_bar,txt],  
                                  align="center", pad=ppad, sep=sep) 
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 
-import numpy as np
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\NBL3 XRF maps'
 
-data = NBL32.maps[6]
-data1 = data[[0,1,2,3],:,:]
+scalebar_color = "white"
+cbar_txt_size = 9
 
-colors = ['inferno', 'Oranges_r', 'Greys_r', 'Blues_r']
-# to include scale bar control
-    # uncomment 'maxes'
-    # include MX in for loop
-    # include maxes in zip()
-    # include vmax in imshow()
-#maxes = [np.max(data1[0,:,:]), 4, 100, 100]
+i = 7
+data1 = TS58A.maps[i][1:,:,:]
+scan_num = str(TS58A.scans[i])
 
-for Map,color in zip(data1,colors):
+ele = ['Cu','Cd','Te','Zn','Mo']
+colors = ['Oranges_r', 'Greys_r', 'Blues_r','Greens_r','Purples_r']
+#maxes = [200,450,1500] # NBL31
+#maxes = [1500,450,1500] # NBL32
+#maxes = [5000,450,1500] # NBL33
+maxes = [1500,450,1500]
+
+for Map,color,E,MX in zip(data1,colors,ele,maxes):
     plt.figure()
     
-    fig, ax = plt.subplots(figsize=(5,5))
+    fig, ax = plt.subplots(figsize=(2,2))
     # cmaps: 
         #RdYlGn 
         #inferno 
@@ -79,14 +81,14 @@ for Map,color in zip(data1,colors):
         # Se XRF: vmin=0.5,vmax=1.5
         # XBIC: vmin=5.6E-8,vmax=8.6E-8 
         
-    im = ax.imshow(Map, cmap=color)#, vmax = MX)
+    im = ax.imshow(Map[:,:-2], cmap=color, vmax = MX)
     ax.axis('off')
     
     scalebar = 1
     if scalebar == 1:
-        ob = AnchoredHScaleBar(size=20, label="3 um", loc=4, frameon=True,
+        ob = AnchoredHScaleBar(size=20, label="3um", loc=4, frameon=False,
                                pad=0.5, borderpad=1, sep=4, 
-                               linekw=dict(color="black"))
+                               linekw=dict(color=scalebar_color))
         ax.add_artist(ob)
     
     cbar = 1
@@ -98,20 +100,22 @@ for Map,color in zip(data1,colors):
             #get color bar object
         cbar = plt.gcf().axes[-1]
             #format colorbar
-        cbar.set_ylabel('$ug/cm^{2}$', rotation=90, va="bottom", size=12, labelpad=20)
+        cbar.set_ylabel(E+' XRF (cts/s)', rotation=90, va="bottom", size=cbar_txt_size, labelpad=20)
             # change number of tick labels on colorbar
         #cbar.locator_params(nbins=4)
             #change colorbar tick label sizes
-        cbar.tick_params(labelsize=12)
+        cbar.tick_params(labelsize=cbar_txt_size)
             # change scale label, e.g. 1e-8
         #cbar.set_title('1e4', size=11,loc='left')
             #change color bar scale label size, e.g. 1e-8
-        cbar.yaxis.get_offset_text().set(size=12)
+        cbar.yaxis.get_offset_text().set(size=cbar_txt_size)
             #change color bar scale label position   
         cbar.yaxis.set_offset_position('left')
 
-OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_NBL3\20200525 figures_rev3\xsect_exp\maps with colorbars'
-FNAME = r'\NBL31scan8_Cd2.eps'
-#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+    
+    FNAME = r'\TS58Ascan{s}_{e}.eps'.format(s=scan_num,e=E) # CHANGE SAMPLE
+    print(FNAME)
+    plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+
 
 
