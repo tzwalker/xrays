@@ -3,21 +3,22 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-imgs = TS58A.scan386[0:6,:,:-2]
+imgs = NBL32.scan422[1:4,:,:-2]
 
 x,y = np.shape(imgs)[1],np.shape(imgs)[2]
 new_shape = x*y
 
-imgs_flt = imgs.reshape(6, new_shape)
+imgs_flt = imgs.reshape(3, new_shape)
 
 imgs_fltT = imgs_flt.T
 spear = spearmanr(imgs_fltT)
 
-labs = ['XBIC', 'Cu', 'Cd', 'Te','Zn','Mo']
+#labs = ['XBIC', 'Cu', 'Cd', 'Te','Zn','Mo']
+labs = ['Cu', 'Cd', 'Te']
 cbar_lab = 'Monotonicty'
 mask = np.triu(np.ones_like(spear[0], dtype=bool))
 
-fig, ax = plt.subplots(figsize=(5,2))
+fig, ax = plt.subplots(figsize=(2,5))
 sns.heatmap(spear[0], vmin=-1, vmax=1, cmap='coolwarm',
             annot=True, xticklabels=labs, yticklabels=labs,
             mask=mask, fmt='.2f', cbar_kws={'label': cbar_lab})

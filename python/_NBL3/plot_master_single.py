@@ -9,22 +9,7 @@ for NBL3:
         20px = 3um
 for NBL33 xsect: 
         20px = 1.0um
-for stage pattern
-    overview: 30px = 20um
-    tiny features: 10px = 1um
-    Au4: 10px = 1um
-    line: 1px = 50nm
-for TS118_1A decay (2018_11_26IDC):
-    plan-view inner map: 4px = 1um
-    plan-view outer map: 2px = 1um
-    xsect scan0051: 
-            x - 10um/101pts = 1px = 0.100um
-            y - 40px/101pts = 1px = 0.400um
-for PVS33 (2020_10_26IDC)
-    plan-view: 25px = 4um
-for PVSe33 (2021_07_2IDD)
-    cross-section: 25px = 4um
-    
+ 
 # cmaps: 
     #RdYlGn 
     #inferno 
@@ -41,9 +26,7 @@ for PVSe33 (2021_07_2IDD)
     # XBIC: vmin=0,vmax=250, after multiplying 'data1' by 1E9,bins=3
     # Cu XRF: vmin=0,vmax=2000, bins=2
     # Cd XRF: vmin=0,vmax=15000, bins=4
-#for FS3
-    # Se XRF: vmin=0.5,vmax=1.5
-    # XBIC: vmin=5.6E-8,vmax=8.6E-8 
+
 """
 import matplotlib.pyplot as plt
 import matplotlib.offsetbox as offbox
@@ -67,7 +50,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         size_bar.add_artist(line)
         #size_bar.add_artist(vline1)
         #size_bar.add_artist(vline2)
-        txt = offbox.TextArea(label, minimumdescent=False, 
+        txt = offbox.TextArea(label, 
                               textprops=dict(color=scalebar_color,weight='bold', size=cbar_txt_size))
         self.vpac = offbox.VPacker(children=[size_bar,txt],  
                                  align="center", pad=ppad, sep=sep) 
@@ -76,16 +59,16 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  **kwargs)
 import numpy as np
 
-SAVE = 0
-OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\0_stage design\20210527 figures_v1\figure 3 materials'
-FNAME = r'\fig3_scan245_Au4_20C_smallTXT_smallFig.eps'
+SAVE = 1
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\NBL3 XRF maps'
+FNAME = r'\TS58Ascan386_XBIC.eps'
 
-img = NBL31.scan386[0,:,:-2]
+img = TS58A.scan386[0,:,:-2]
 data = img.copy()
 
 scalebar = 1
-scalebar_color = 'black'
-px = 25; dist = u"4\u03bcm"
+scalebar_color = 'white'
+px = 20; dist = u"3um"
 
 draw_cbar = 1
 cbar_txt_size = 8
@@ -93,15 +76,15 @@ top_cbar = 0
 side_cbar=1
 
 cbar_scale_control = 0; MIN = 0; MAX = 30
-normalize = 0
+normalize = 1
 standardized = 0
 sci_notation = 0
 
-unit = u'Te (\u03bcg/cm$^{2}$)'; colormap = 'Greys_r'; 
+unit = u'XBIC (arb. unit)'; colormap = 'magma'; 
 
 if normalize == 1:
     #data = data*1e8
-    data_norm = (data - data.min()) / (data.max() - data.min())
+    data_norm = data / data.max()
 if standardized == 1:
     mean = np.mean(data)
     std = np.std(data)
@@ -116,7 +99,7 @@ if cbar_scale_control == 1:
 if cbar_scale_control == 0: 
     im = ax.imshow(data, cmap=colormap)
 if normalize == 1:
-    im = ax.imshow(data_norm, cmap=colormap)
+    im = ax.imshow(data_norm, cmap=colormap, vmin=0.75, vmax=1)
 if standardized == 1:
     im = ax.imshow(data_stand, cmap=colormap)
 
