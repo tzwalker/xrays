@@ -167,6 +167,7 @@ SAVE = 0
 Cu = NBL33.scan264[1,:,:-2]
 Te = NBL33.scan264[3,:,:-2]
 
+PERCENTILE = 80
 # threshold image copy (need to copy to avoid overwriting original image)
 Cu1 = Cu.copy()
 bound = np.percentile(Cu1, PERCENTILE)
@@ -187,7 +188,7 @@ pltCu = ax.imshow(Cu1, cmap='Oranges_r',
                    alpha=ALPHA)
 ax.axis('off')
 
-ob = AnchoredHScaleBar(length=20, label="", loc=2, frameon=False,
+ob = AnchoredHScaleBar(length=20, label="3um", loc=2, frameon=False,
                        pad=0.5, borderpad=0.25, sep=4, 
                        linekw=dict(color="white",linewidth=3))
 #ob.patch.set_facecolor('k')

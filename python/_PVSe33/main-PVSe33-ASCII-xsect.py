@@ -7,6 +7,8 @@ Mon Aug  2 11:07:19 2021
 this program is meant to analyze PVSe33 cross-section data
 2021_07_2IDD
 
+Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_07_2IDD_SeXRF\output
+
 for scans with different widths, chopping x will be done in Origin
     (the plot x axis range will be adjusted to match between scans)
 
@@ -47,13 +49,13 @@ def remove_column_header_spaces(dataframe):
     return dataframe
 
 # directory information for data file
-PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\output'
+PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_07_2IDD_SeXRF\output'
 
 # change depending on sector
 FILENAME = r'\combined_ASCII_2idd_0144.h5.csv'
 DATA = PATH+FILENAME
 
-channels = ['ds_ic', 'Se', 'Te_L', 'Au_L']
+channels = ['ds_ic', 'Cu', 'Se', 'Te_L', 'Au_L']
 
 df_maps = []
 for chan in channels:
@@ -104,6 +106,9 @@ df_maps[0] = df_xbic # replace imported df
 #     
 # =============================================================================
 
+
+    
+        
 #%%
 """
 coding: utf-8
@@ -154,8 +159,8 @@ def remove_column_header_spaces(dataframe):
 PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_11_2IDD_CuXRF\output'
 
 # change depending on sector
-FILENAME = r'\combined_ASCII_2idd_1086.h5.csv' # 0hr
-#FILENAME = r'\combined_ASCII_2idd_1210.h5.csv' # 500hr
+#FILENAME = r'\combined_ASCII_2idd_1086.h5.csv' # 0hr
+FILENAME = r'\combined_ASCII_2idd_1210.h5.csv' # 500hr
 DATA = PATH+FILENAME
 
 channels = ['ds_ic', 'Cu', 'Cd_L']
