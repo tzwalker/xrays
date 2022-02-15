@@ -4,6 +4,7 @@ coding: utf-8
 tzwalker
 Mon Aug  2 11:07:19 2021
 
+Se XANES
 this program is meant to analyze PVSe33 cross-section data
 2021_07_2IDD
 
@@ -116,32 +117,24 @@ coding: utf-8
 tzwalker
 Tue Jan  4 11:16:23 2022
 
+Cu XANES
 this program is meant to analyze PVSe33 cross-section data
 2021_11_2IDD
-
-the length of scan 119 is 10um (11pts) and the length of scan 151 is 12um (76pts)
-    -both the physical distance and the resolution (no. of observations) 
-    is different between the two scans
-    -when integrating i want to be able to compare the same physical distance 
-    and number of observations
-    -this necessarily means i will need to get rid of most of the pts in
-    before integrating scan 151
-    -from scan 151, keep 10 rows spread over a 10um length
-    -keep row at every 1um step
-    -1um step is about 6 rows at 0.16nm per row
-    -keep pixel idxs: [0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60]
 
 imports ASCII from MAPS
 shapes the data of a channel (e.g. Te_L XRF)
 rotates the map (if desired)
 sums along a given axis (e.g. the y-axis)
 
-lockin settings
-scan72 (window), scan119 (inf) 
+scan1086 (inf)
     stanford 50uA/V, 1000 V/V
+    10um x 40um
+    51pt x 201pt -> 200nm x 200nm
 
-scan144 (window), scan151 (inf)
+scan1210 (inf)
     stanford 50uA/V, 1000 V/V
+    14um x 20um
+    71pt x 101pt -> 200nm x 200nm
 """
 
 import pandas as pd

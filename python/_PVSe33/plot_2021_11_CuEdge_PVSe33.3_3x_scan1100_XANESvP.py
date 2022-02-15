@@ -3,6 +3,8 @@ coding: utf-8
 Trumann
 Tue Feb  8 11:40:18 2022
 
+before running, remember to change the scan that is loaded in main-PVSe33-ASCII-xsect.py
+
 for data from 2021_11_2IDD
 
 this program plots the Cu cross-section map
@@ -32,16 +34,16 @@ the cross-section maps are for PVSe33
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
-
+import matplotlib.ticker as mticker
 
 def forceAspect(ax,aspect=1):
     im = ax.get_images()
     extent =  im[0].get_extent()
     ax.set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/aspect)
 
-SAVE = 1
+SAVE = 0
 idxs = [0,1,2]
-idx = 1
+idx = 2
 # for windows 
 # units = ['XBIC (nA)', 'Se XRF (ug/cm2)', 'Te XRF (ug/cm2)', 'Au XRF (ug/cm2)']
 # for infinite cross sections
@@ -62,30 +64,29 @@ plt.figure()
 fig, ax = plt.subplots(figsize=(3,3))
 
 im = ax.imshow(data, cmap=cmaps[idx])
+
 # scan 1100 indices
 x_coord = list(range(17,37,2))
 y_coord = 10* [82]
-# scan 1212 indices
-#x_coord = [15,19,23,27,31,35,39,42,46,50]
-#y_coord = 10* [48]
 plt.scatter(x_coord, y_coord, color='black', s=3)
 
-# scan 1210 indices
-#plt.scatter([9,10,12,14,15], [35,35,35,35,35], color='red', s=10)
 
-ax.set_xlabel('X (pix)')
-ax.set_ylabel('Y (pix)')
+fmtr_x = lambda x, pos: f'{(x * 0.200):.0f}'
+fmtr_y = lambda x, pos: f'{(x * 0.200):.0f}'
+ax.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
+ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
+ax.set_xlabel('X (μm)')
+ax.set_ylabel('Y (μm)')
     
 divider = make_axes_locatable(ax)
-cax = divider.append_axes('right', size='10%',pad=0.1) # for 072
-#cax = divider.append_axes('right', size='2%',pad=-3.5) # for 119
-#cax = divider.append_axes('right', size='5%',pad=0.1) # for 151
+cax = divider.append_axes('right', size='10%',pad=0.1)
+
 # for infinite cross sections
-#fmt = mticker.ScalarFormatter(useMathText=True)
-#fmt.set_powerlimits((0, 1))
-#cb = fig.colorbar(im, cax=cax, orientation='vertical', format=fmt)
+fmt = mticker.ScalarFormatter(useMathText=True)
+fmt.set_powerlimits((0, 1))
+cb = fig.colorbar(im, cax=cax, orientation='vertical', format=fmt)
 # for windows
-cb = fig.colorbar(im, cax=cax, orientation='vertical')
+#cb = fig.colorbar(im, cax=cax, orientation='vertical')
 cbar = plt.gcf().axes[-1]
 cbar.set_ylabel(units[idx], rotation=90, va="bottom", size=12, labelpad=20)
 cbar.yaxis.set_offset_position('left')
