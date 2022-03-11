@@ -152,8 +152,8 @@ def remove_column_header_spaces(dataframe):
 PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_11_2IDD_CuXRF\output'
 
 # change depending on sector
-#FILENAME = r'\combined_ASCII_2idd_1086.h5.csv' # 0hr
-FILENAME = r'\combined_ASCII_2idd_1210.h5.csv' # 500hr
+FILENAME = r'\combined_ASCII_2idd_1086.h5.csv' # 0hr
+#FILENAME = r'\combined_ASCII_2idd_1210.h5.csv' # 500hr
 DATA = PATH+FILENAME
 
 channels = ['ds_ic', 'Cu', 'Cd_L']
@@ -182,8 +182,23 @@ df_maps[0] = df_xbic # replace imported df
 
 
 ### for infinite cross section integration along length
+
+# scan 1086 
+# the length of this scan was 40um
+# only want to integrate over 20um of length to be comparable to scan 1210
+# there are 200 rows in this scan, therefore remove 100 rows to get 20um
+df_sums = []
+for df in df_maps:
+    df_arr = np.array(df)
+    #df_sum = df_arr.sum(axis=0)
+    df_match = df_arr[100:, :]
+    df_sum = df_match.sum(axis=0)
+    df_sums.append(df_sum)
+df_sums_arr = np.array(df_sums).T
+    
+
 # =============================================================================
-# # scan 119
+# # scan 1210
 # df_sums = []
 # for df in df_maps:
 #     df_arr = np.array(df)
@@ -191,18 +206,4 @@ df_maps[0] = df_xbic # replace imported df
 #     df_sums.append(df_sum)
 #     
 # df_sums_arr = np.array(df_sums).T
-# =============================================================================
-
-# =============================================================================
-# # scan 151 to match scan length (10um) and resolution (11pts) of scan 119
-# keep_pixels = [0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60]
-# 
-# df_sums = []
-# for df in df_maps:
-#     df_arr = np.array(df)
-#     df_match = df_arr[keep_pixels, :]
-#     df_sum = df_match.sum(axis=0)
-#     df_sums.append(df_sum)
-# df_sums_arr = np.array(df_sums).T
-#     
 # =============================================================================

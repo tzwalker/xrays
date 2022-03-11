@@ -10,26 +10,33 @@ see the XYE files in
 
 """
 
+# this cell imports the data
 import numpy as np
 scans = [20,25,30,45,60,75,90,170,245,320,390,460,535]
 scans_str = [str(s) for s in scans]
 
 PATH = r'Z:\BertoniLab\Synchrotron Data\2021_10_BL2-1\raw_data\CSET82p3_80C_2_scan'
 
+# import XRD intensities for scans at 80C
 intensities = []
 for scan_str in scans_str:
     DATAFILE = PATH + "{s}.xye".format(s=scan_str)
     data = np.loadtxt(DATAFILE)
     intensities.append(data[:,1])
 
+# import XRD intensities for final scan at room temperature
 DATAFILE2 = r"Z:\BertoniLab\Synchrotron Data\2021_10_BL2-1\raw_data\CSET82p3_roomtemp_final_xrd_scan1.xye"
 data2 = np.loadtxt(DATAFILE)
+
+# add final room temp scan to 80C scans
 intensities.append(data2[:,1])
-    
+
 z = np.array(intensities).T
 
 
 #%%
+'''this cell plots the heatmap'''
+
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import  matplotlib.ticker as tkr
@@ -44,7 +51,7 @@ theta_step = 0.01
 # define time array
     # should corresond to the scan index
     # zero must be added here to account for pcolormesh
-times = [0, 0.5, 0.75, 1,2,3,4,5,10,15,20,25,30,35,38]
+times = [0.5, 0.75, 1,2,3,4,5,10,15,20,25,30,35,38]
 
 # contruct time and theta axes
     # column 0 in data is 2theta

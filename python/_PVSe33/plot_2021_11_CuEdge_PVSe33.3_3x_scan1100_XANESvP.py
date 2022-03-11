@@ -42,7 +42,6 @@ def forceAspect(ax,aspect=1):
     ax.set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/aspect)
 
 SAVE = 0
-idxs = [0,1,2]
 idx = 2
 # for windows 
 # units = ['XBIC (nA)', 'Se XRF (ug/cm2)', 'Te XRF (ug/cm2)', 'Au XRF (ug/cm2)']
@@ -50,13 +49,13 @@ idx = 2
 units = ['XBIC (nA)', 'Cu XRF (cts/s)', 'Cd XRF (cts/s)']
 cmaps = ['inferno', 'Oranges_r', 'Greys_r']
 
-cbar_txt_size=10
+cbar_txt_size=14
 
 # import list from 'main-PVSe33-ASCII-xsect.py'
 img = df_maps[idx]
 data = img.copy()
 data = np.array(data)
-data = data[:,:-2]
+data = data[100:,:-2]
     
 MAX = data.max().max(); MIN = 0
 plt.figure()
@@ -75,8 +74,10 @@ fmtr_x = lambda x, pos: f'{(x * 0.200):.0f}'
 fmtr_y = lambda x, pos: f'{(x * 0.200):.0f}'
 ax.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
 ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
-ax.set_xlabel('X (μm)')
-ax.set_ylabel('Y (μm)')
+ax.xaxis.set_tick_params(labelsize=cbar_txt_size)
+ax.yaxis.set_tick_params(labelsize=cbar_txt_size)
+ax.set_xlabel('X (μm)', size=cbar_txt_size)
+ax.set_ylabel('Y (μm)', size=cbar_txt_size)
     
 divider = make_axes_locatable(ax)
 cax = divider.append_axes('right', size='10%',pad=0.1)
@@ -84,11 +85,13 @@ cax = divider.append_axes('right', size='10%',pad=0.1)
 # for infinite cross sections
 fmt = mticker.ScalarFormatter(useMathText=True)
 fmt.set_powerlimits((0, 1))
-cb = fig.colorbar(im, cax=cax, orientation='vertical', format=fmt)
+#cb = fig.colorbar(im, cax=cax, orientation='vertical', format=fmt)
 # for windows
-#cb = fig.colorbar(im, cax=cax, orientation='vertical')
+cb = fig.colorbar(im, cax=cax, orientation='vertical')
+cb.ax.tick_params(labelsize=cbar_txt_size)
 cbar = plt.gcf().axes[-1]
-cbar.set_ylabel(units[idx], rotation=90, va="bottom", size=12, labelpad=20)
+cbar.set_ylabel(units[idx], rotation=90, va="bottom", size=cbar_txt_size, labelpad=20)
+cbar.yaxis.set_tick_params(labelsize=cbar_txt_size)
 cbar.yaxis.set_offset_position('left')
 
 OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_XANESvP_Cu'
