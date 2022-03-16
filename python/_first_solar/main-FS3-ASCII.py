@@ -42,7 +42,7 @@ workflow to align XBIC and XBIV maps:
     3. '...-translated analyses'
 
 after (3), the aligned maps were saved as 2D csvs  in
-    r'C:\\Users\triton\Dropbox (ASU)\2_FS_operando\XBIC aligned image csvs'
+    r'Dropbox (ASU)\2_FS_operando\XBIC aligned image csvs'
     and 'XBIC aligned image csvs'
 for plotting reference, pixel step was 150nm --> 20pixels = 3um, 67pix = 10um
 

@@ -4,19 +4,21 @@ tzwalker
 Sat Nov  13 17:12:40 2021
 coding: utf-8
 
-this program imports the data from one fit
+cell 1: imports the data from BertoniLab server
+cell 2: aligns 20C and 80C XBIC maps (2019_06_2IDD)
+cell 3: plots and saves individual figures
+cell 4: plots and saves multiple figures
 
-i just need the XRF normalized to the US_IC
-for the stage paper
-
-the XRF data were fit by Barry Lai
+these cells are for plotting XRF data at two temperatures
+normalized to the US_IC
+    the XRF data were fit by Barry Lai
 
 everything is hard coded, including the alignment of the XRF maps between
 the two scans; i have the translation coordinates from the SIFT alignment
-in 'XBIC-translate'
--just run these cells in order
+in 'XBIC-translate-and-deltas.py' 
 
-use the other directory (ug_per_cm2_XRF) for aligning all the data
+use the other directory (ug_per_cm2_XRF) for aligning data at all temperature
+steps
 
 for plotting reference, pixel step was 
 
@@ -97,8 +99,8 @@ the US_IC and XRF came from the same fitted data file fit by BLai
 
 Cd range - vmin=0.00,vmax=15.0
 Te range - vmin=0.00,vmax=15.0
-Se range - vmin=0.70,vmax=1.40
-Au range - vmin=9.00,vmax=15.0
+Se range - vmin=0.70,vmax=1.40; greys_r
+Au range - vmin=9.00,vmax=15.0; copper
 
 '''
 import matplotlib.pyplot as plt
@@ -110,7 +112,7 @@ plt.rcParams['font.sans-serif'] = ['Arial']
 # 0 is scan323, 1 is scan339
 idx = 1
 
-channel = 4
+channel = 1
 
 T_list = ['20C','80C']
 scans1 = [323,339]
@@ -119,7 +121,7 @@ img = aligned_crop[idx][channel,:,:]
 
 fig, ax = plt.subplots(figsize=(1.8,3.6))
 
-im = ax.imshow(img, cmap = 'copper', origin='lower',vmin=9,vmax=15.0)
+im = ax.imshow(img, cmap = 'Greys_r', origin='lower',vmin=0.7,vmax=1.4)
 
 # format tick labels (convert to um)
 fmtr_x = lambda x, pos: f'{(x * 0.150):.0f}'
@@ -128,8 +130,10 @@ ax.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
 ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
 
 # plot some arbitrary points at same locations
-plt.scatter([50,200,75], [120,60,25], facecolors='none', edgecolors='black', marker='o', s=10)
+#plt.scatter([50,200,75], [120,60,25], facecolors='none', edgecolors='black', marker='o', s=10)
 
+# plot a line for the lineout
+plt.axhline(y=58, color='k', linestyle='--', linewidth=0.5)
 
 ax.set_xlabel("X (um)", size=8)
 ax.xaxis.set_tick_params(labelsize=8)
@@ -149,11 +153,11 @@ cax.xaxis.set_label_position('top')
 cax.xaxis.set_ticks_position('top')
 
 
-
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\0_stage design\20211114 figures_v2\figure4 materials'
 FNAME = r'\FS3_{TEMP}_scan{SCAN}_{CHAN}.eps'.format(TEMP=T_list[idx], SCAN=scans1[idx], CHAN=channels[channel])
-print(FNAME)
-plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+#print(FNAME)
+#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+
 
 #%%
 '''this cell loops through the plots'''
@@ -215,6 +219,6 @@ for idx,T,scan in zip(idxs,T_list,scans1):
         
         OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\0_stage design\20211114 figures_v2\figure4 materials'
         FNAME = r'\FS3_{TEMP}_scan{SCAN}_{CHAN}.eps'.format(TEMP=T, SCAN=str(scan), CHAN=name)
-        print(FNAME)
-        plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+        #print(FNAME)
+        #plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
 

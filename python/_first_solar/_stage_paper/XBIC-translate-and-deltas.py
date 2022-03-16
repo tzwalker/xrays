@@ -4,6 +4,8 @@ coding: utf-8
 tzwalker
 Thu Nov 18 20:36:03 2021
 
+run "main-FS3-ASCII.py" before this file
+
 this file is needed so that the XBIC channel can be normalized to the US_IC
 and plotted as an aligned map
 
@@ -11,7 +13,6 @@ basically, the US_IC channel also needs to be aligned
 
 i will only do this for the 20C and 80C temperature steps
 
-(1) run "main-FS3-ASCII.py"
 
 the translation coordinates were taken from the SIFT algorithm
 
