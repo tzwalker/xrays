@@ -12,3 +12,9 @@ pip install opencv-contrib-python==3.4.15.55
 
 conda install spyder-kernels
 
+conda install spyder
+
+conda install pandas
+
+conda install matplotlib
+

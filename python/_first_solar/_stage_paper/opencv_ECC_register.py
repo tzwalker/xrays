@@ -96,10 +96,54 @@ im2_align_mask = np.ma.masked_where(im2_aligned == 0, im2_aligned)
 #cv2.imshow("Image 2", im2_F32)
 #cv2.imshow("Aligned Image 2", im2_aligned)
 #cv2.waitKey(0)
+
+
+#%%
 import matplotlib.pyplot as plt
+# Apply XBIC warp matrix to Au_L image
+im1Au = np.array(imgs1[5])
+im2Au = np.array(imgs2[5])
+
+# Remove NaN columns
+im1Au = im1Au[:,:-2]
+im2Au = im2Au[:,:-2]
+
+# Convert images to float32
+im1Au_F32 = im1Au.astype("float32")
+im2Au_F32 = im2Au.astype("float32")
+
+im2Au_aligned = cv2.warpPerspective (im2Au_F32, warp_matrix, (sz[1],sz[0]), flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP)
+
+# Show final results
 plt.figure()
-plt.imshow(im1_F32)
+plt.imshow(im1Au_F32)
 plt.figure()
-plt.imshow(im2_F32)
+plt.imshow(im2Au_F32)
 plt.figure()
-plt.imshow(im2_aligned, vmin=130000)
+plt.imshow(im2Au_aligned)#, vmin=130000)
+
+# Show cropped area
+plt.figure()
+plt.imshow(im1Au_F32[30:160,50:])
+plt.figure()
+plt.imshow(im2Au_aligned[30:160,50:])#, vmin=130000)
+#%%
+# Apply XBIC warp matrix to Se image
+im1Se = np.array(imgs1[2])
+im2Se = np.array(imgs2[2])
+
+# Remove NaN columns
+im1Se = im1Se[:,:-2]
+im2Se = im2Se[:,:-2]
+
+# Convert images to float32
+im1Se_F32 = im1Se.astype("float32")
+im2Se_F32 = im2Se.astype("float32")
+
+im2Se_aligned = cv2.warpPerspective (im2Se_F32, warp_matrix, (sz[1],sz[0]), flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP)
+
+# Show cropped area
+plt.figure()
+plt.imshow(im1Se_F32[30:160,50:])
+plt.figure()
+plt.imshow(im2Se_aligned[30:160,50:])#, vmin=130000)
