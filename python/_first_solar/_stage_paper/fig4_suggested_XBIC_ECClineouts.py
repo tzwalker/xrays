@@ -13,12 +13,47 @@ main manuscript
 
 and the lineouts of the XRF channels in the supporting information
 
+note on displaying the data: if the XRF maps use rigin='lower', then the
+XBIC maps should use origin='lower'
+both are pivoted by using the x pixel no and y pixel no
+so their origins should be the same
+    i chose origin='lower' since it displays the y-axis ticklabels properly
+
+
 """
 
 import cv2
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
+import pandas as pd
+
+# Read the data to be aligned
+im1_path = r"C:\Users\Trumann\Dropbox (ASU)\0_stage design\DATA\combined_ASCII_2idd_0323.h5.csv" # 20C
+im2_path = r"C:\Users\Trumann\Dropbox (ASU)\0_stage design\DATA\combined_ASCII_2idd_0339.h5.csv" # 80C
+
+im1_data = pd.read_csv(im1_path)
+im2_data = pd.read_csv(im2_path)
+
+# Read images of interest
+columns = ["US_IC", "us_ic", "Se", "Cd_L", "Te_L", "Au_L"]
+
+i = 'y pixel no'
+j = 'x pixel no'
+imgs1 = [im1_data.pivot(index=i, columns=j, values=c) for c in columns]
+imgs2 = [im2_data.pivot(index=i, columns=j, values=c) for c in columns]
+
+# Read one image, index here selects from 'columns'
+im1 = np.array(imgs1[1])
+im2 = np.array(imgs2[1])
+
+# Remove NaN columns
+im1 = im1[:,:-2]
+im2 = im2[:,:-2]
+
+# Convert images to float32
+im1_F32 = im1.astype("float32")
+im2_F32 = im2.astype("float32")
 
 # Normalize XBIC to upstream_ion chamber
 xbic = np.array(imgs1[1])
@@ -53,7 +88,7 @@ lineout_80y = xbic80_crop[:,200]
 x1 = np.array(list(range(0,len(lineout_80x))))
 y1 = np.array(list(range(0,len(lineout_80y))))
 #%%
-
+from matplotlib.gridspec import GridSpec
 # From C:\Users\Trumann\xrays\python\_NBL3\XBIC-XBIV-scatter-hex-fit.py
 # setup histograms in margins #
 
@@ -65,8 +100,7 @@ main_ax = fig.add_subplot(grid[1:,:2])
 hline = fig.add_subplot(grid[0, :-1], xticklabels=[], xticks=[])
 vline = fig.add_subplot(grid[1:, -1], yticklabels=[], yticks=[])
 
-# plot 
-im = main_ax.imshow(xbic20_crop, cmap='afmhot', aspect='auto', vmin=1.6,vmax=2.2)
+im = main_ax.imshow(xbic20_crop, origin='lower', cmap='afmhot', aspect='auto', vmin=1.6,vmax=2.2)
 main_ax.axhline(y=105, linestyle='--', linewidth=0.5, color='w')
 main_ax.axvline(x=200, linestyle='--', linewidth=0.5, color='w')
 
@@ -74,7 +108,6 @@ fmtr_x = lambda x, pos: f'{(x * 0.150):.0f}'
 fmtr_y = lambda x, pos: f'{(x * 0.150):.0f}'
 main_ax.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
 main_ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
-main_ax.invert_yaxis()
 main_ax.set_xlabel("X (um)")
 main_ax.set_ylabel("Y (um)")
 cbar = fig.colorbar(im)
@@ -89,7 +122,7 @@ vline.plot(lineout_20y,y, linewidth=1, color='black')
 vline.set_xlim([1.6,2.2])
 vline.set_ylim([0,160])
 vline.set_xlabel("XBIC (arb. unit)")
-
+#%%
 # Plot 80C lineouts
 fig = plt.figure(constrained_layout=True)
 
@@ -98,7 +131,7 @@ main_ax = fig.add_subplot(grid[1:,:2])
 hline = fig.add_subplot(grid[0, :-1], xticklabels=[], xticks=[])
 vline = fig.add_subplot(grid[1:, -1], yticklabels=[], yticks=[])
 
-im = main_ax.imshow(xbic80_crop, cmap='afmhot', aspect='auto', vmin=1.6,vmax=2.2)
+im = main_ax.imshow(xbic80_crop, origin='lower', cmap='afmhot', aspect='auto', vmin=1.6,vmax=2.2)
 main_ax.axhline(y=105, linestyle='--', linewidth=0.5, color='r')
 main_ax.axvline(x=200, linestyle='--', linewidth=0.5, color='r')
 
@@ -106,7 +139,6 @@ fmtr_x = lambda x, pos: f'{(x * 0.150):.0f}'
 fmtr_y = lambda x, pos: f'{(x * 0.150):.0f}'
 main_ax.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
 main_ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
-main_ax.invert_yaxis()
 main_ax.set_xlabel("X (um)")
 main_ax.set_ylabel("Y (um)")
 cbar = fig.colorbar(im)

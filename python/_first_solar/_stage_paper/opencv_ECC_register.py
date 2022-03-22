@@ -46,10 +46,6 @@ im2 = np.array(imgs2[1])
 im1 = im1[:,:-2]
 im2 = im2[:,:-2]
 
-# Convert images to grayscale - not necessary for scaler channels
-#im1_gray = cv2.cvtColor(im1,cv2.COLOR_BGR2GRAY)
-#im2_gray = cv2.cvtColor(im2,cv2.COLOR_BGR2GRAY)
-
 # Convert images to float32
 im1_F32 = im1.astype("float32")
 im2_F32 = im2.astype("float32")
@@ -88,14 +84,6 @@ else :
 # Use warpAffine for Translation, Euclidean and Affine
     im2_aligned = cv2.warpAffine(im2_F32, warp_matrix, (sz[1],sz[0]), flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP);
 
-# Mask zero values from registration
-im2_align_mask = np.ma.masked_where(im2_aligned == 0, im2_aligned)
-
-# Show final results
-#cv2.imshow("Image 1", im1_F32)
-#cv2.imshow("Image 2", im2_F32)
-#cv2.imshow("Aligned Image 2", im2_aligned)
-#cv2.waitKey(0)
 
 
 #%%

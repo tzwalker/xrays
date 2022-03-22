@@ -13,31 +13,85 @@ main manuscript
 
 and the lineouts of the XRF channels in the supporting information
 
+these cells are for plotting XRF data at two temperatures
+normalized to the US_IC
+    the XRF data were fit by Barry Lai
+    
 """
 
 import cv2
-import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
 import numpy as np
+import pandas as pd
 
-# Normalize XBIC to upstream_ion chamber
-xbic = np.array(imgs1[1])
-us_ic = np.array(imgs1[0])
-xbic20 = xbic[:,:-2] / us_ic[:,:-2]
+im1_path = r'Z:\Trumann\Fitted_Sychrotron_Data\2019_06_2IDD_FS3_operando\BL_fit_202002\output\combined_ASCII_2idd_0323.h5.csv'
+im2_path = r'Z:\Trumann\Fitted_Sychrotron_Data\2019_06_2IDD_FS3_operando\BL_fit_202002\output\combined_ASCII_2idd_0339.h5.csv'
+im1_data = pd.read_csv(im1_path, skiprows=1)
+im2_data = pd.read_csv(im2_path, skiprows=1)
 
-xbic = np.array(imgs2[1])
-us_ic = np.array(imgs2[0])
-xbic80 = xbic[:,:-2] / us_ic[:,:-2]
+# Read images of interest
+columns = [" US_IC", " Se", " Cd_L", " Te_L", " Au_L"]
+
+i = ' y pixel no'
+j = 'x pixel no'
+imgs1 = [im1_data.pivot(index=i, columns=j, values=c) for c in columns]
+imgs2 = [im2_data.pivot(index=i, columns=j, values=c) for c in columns]
+
+
+# Get 20C XRF images
+xrf20 = [np.array(df) for df in imgs1]
+xrf20 = [arr[:,:-2] for arr in xrf20]
+xrf20 = xrf20[1:6]
+
+# Get 80C XRF images
+xrf80 = [np.array(df) for df in imgs2]
+xrf80 = [arr[:,:-2] for arr in xrf80]
+xrf80 = xrf80[1:6]
 
 # Convert 80C map to float32
-im2_F32 = xbic80.astype("float32")
+xrf80_F32 = [arr.astype("float32") for arr in xrf80]
 
 # Apply warp matrix to 80C map
-im2_aligned = cv2.warpPerspective (im2_F32, warp_matrix, (sz[1],sz[0]), flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP)
+aligned80 = [cv2.warpPerspective (arr, warp_matrix, (sz[1],sz[0]), flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP) for arr in xrf80_F32]
 
 # Crop aligned area
-xbic20_crop = xbic20[30:190,20:]
-xbic80_crop = im2_aligned[30:190,20:]
+xrf20_crop = [arr[30:190,20:] for arr in xrf20]
+xrf80_crop = [arr[30:190,20:] for arr in aligned80]
+
+#%%
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+
+fmtr_x = lambda x, pos: f'{(x * 0.150):.0f}'
+fmtr_y = lambda x, pos: f'{(x * 0.150):.0f}'
+
+fig, ((ax1,ax2,ax3,ax4),(ax5,ax6,ax7,ax8)) = plt.subplots(2,4,squeeze=True,)
+
+ax1.imshow(xrf20_crop[1], vmin=0.00,vmax=15.0, origin='lower', cmap="Blues_r")
+ax1.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
+
+ax2.imshow(xrf20_crop[2], vmin=0.00,vmax=15.0, origin='lower', cmap="Purples_r")
+ax3.imshow(xrf20_crop[0], vmin=0.70,vmax=1.40, origin='lower', cmap="Greys_r")
+ax4.imshow(xrf20_crop[3], vmin=9.00,vmax=15.0, origin='lower', cmap="copper")
+
+ax5.imshow(xrf80_crop[1], vmin=0.00,vmax=15.0, origin='lower', cmap="Blues_r")
+ax5.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
+ax5.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
+ax6.imshow(xrf80_crop[2], vmin=0.00,vmax=15.0, origin='lower', cmap="Purples_r")
+ax6.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
+ax7.imshow(xrf80_crop[0], vmin=0.70,vmax=1.40, origin='lower', cmap="Greys_r")
+ax7.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
+ax8.imshow(xrf80_crop[3], vmin=9.00,vmax=15.0, origin='lower', cmap="copper")
+ax8.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
+
+for ax in fig.get_axes():
+    ax.label_outer()
+    
+fig.tight_layout(h_pad=-10)
+#%%
+plt.figure()
+plt.imshow(xrf20_crop[3])
+plt.figure()
+plt.imshow(xrf80_crop[3])
 
 # Get lines in 20C cropped area
 lineout_20x = xbic20_crop[105,:]
@@ -52,7 +106,7 @@ lineout_80y = xbic80_crop[:,200]
 
 x1 = np.array(list(range(0,len(lineout_80x))))
 y1 = np.array(list(range(0,len(lineout_80y))))
-#%%
+
 
 # From C:\Users\Trumann\xrays\python\_NBL3\XBIC-XBIV-scatter-hex-fit.py
 # setup histograms in margins #
