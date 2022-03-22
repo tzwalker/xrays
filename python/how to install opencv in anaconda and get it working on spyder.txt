@@ -1,0 +1,14 @@
+20220316 - installing opencv on anaconda
+
+conda create -n img_reg
+
+conda activate img_reg
+
+conda install python=3.9
+
+pip install opencv-python==3.4.15.55
+
+pip install opencv-contrib-python==3.4.15.55
+
+conda install spyder-kernels
+
