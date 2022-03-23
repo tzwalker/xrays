@@ -91,9 +91,9 @@ y1 = np.array(list(range(0,len(lineout_80y))))
 from matplotlib.gridspec import GridSpec
 # From C:\Users\Trumann\xrays\python\_NBL3\XBIC-XBIV-scatter-hex-fit.py
 # setup histograms in margins #
-
+all_text_size = 8
 # Plot 20C lineouts
-fig = plt.figure(constrained_layout=True)
+fig = plt.figure(constrained_layout=True,figsize=((3.5,2)))
 
 grid = GridSpec(3, 3, figure=fig)
 main_ax = fig.add_subplot(grid[1:,:2])
@@ -108,23 +108,46 @@ fmtr_x = lambda x, pos: f'{(x * 0.150):.0f}'
 fmtr_y = lambda x, pos: f'{(x * 0.150):.0f}'
 main_ax.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
 main_ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
-main_ax.set_xlabel("X (um)")
-main_ax.set_ylabel("Y (um)")
+main_ax.xaxis.set_tick_params(labelsize=all_text_size)
+main_ax.yaxis.set_tick_params(labelsize=all_text_size)
+main_ax.set_xlabel(u"X (\u00B5m)",fontsize=all_text_size)
+main_ax.set_ylabel(u"Y (\u00B5m)",fontsize=all_text_size)
 cbar = fig.colorbar(im)
-cbar.set_label("XBIC (arb. unit)")
+cbar.set_label("XBIC (arb. unit)",fontsize=all_text_size)
+cbar.ax.tick_params(labelsize=all_text_size)
 
-hline.plot(x,lineout_20x, linewidth=1, color='black')
+hline.plot(x,lineout_20x, linewidth=1, color='black',label="20C")
 hline.set_ylim([1.6,2.2])
 hline.set_xlim([0,279])
-hline.set_ylabel("XBIC (arb. unit)")
+hline.set_ylabel("XBIC (arb. unit)",fontsize=all_text_size)
+hline.yaxis.set_tick_params(labelsize=all_text_size)
 
-vline.plot(lineout_20y,y, linewidth=1, color='black')
+hline.plot(x,lineout_80x, linewidth=1, color='red',label="80C")
+hline.set_ylim([1.6,2.2])
+hline.set_xlim([0,279])
+hline.set_ylabel("XBIC (arb. unit)",fontsize=all_text_size)
+hline.legend(fontsize=all_text_size)
+
+vline.plot(lineout_20y,y, linewidth=1, color='black',label="20C")
 vline.set_xlim([1.6,2.2])
 vline.set_ylim([0,160])
-vline.set_xlabel("XBIC (arb. unit)")
+vline.set_xlabel("XBIC (arb. unit)",fontsize=all_text_size)
+vline.xaxis.set_tick_params(labelsize=all_text_size)
+
+vline.plot(lineout_80y,y1, linewidth=1, color='red',label="80C")
+vline.set_xlim([1.6,2.2])
+vline.set_ylim([0,160])
+vline.set_xlabel("XBIC (arb. unit)",fontsize=all_text_size)
+vline.xaxis.set_tick_params(labelsize=all_text_size)
+
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\0_stage design\20220322 figures_v3\figure4 materials'
+FNAME = r'\XBIC_20C_noLineout_small_v3.eps'
+#print(FNAME)
+plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+
 #%%
 # Plot 80C lineouts
-fig = plt.figure(constrained_layout=True)
+fig = plt.figure(constrained_layout=True, figsize=((3.5,2)))
 
 grid = GridSpec(3, 3, figure=fig)
 main_ax = fig.add_subplot(grid[1:,:2])
@@ -139,29 +162,39 @@ fmtr_x = lambda x, pos: f'{(x * 0.150):.0f}'
 fmtr_y = lambda x, pos: f'{(x * 0.150):.0f}'
 main_ax.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
 main_ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
-main_ax.set_xlabel("X (um)")
-main_ax.set_ylabel("Y (um)")
+main_ax.xaxis.set_tick_params(labelsize=all_text_size)
+main_ax.yaxis.set_tick_params(labelsize=all_text_size)
+main_ax.set_xlabel(u"X (\u00B5m)",fontsize=all_text_size)
+main_ax.set_ylabel(u"Y (\u00B5m)",fontsize=all_text_size)
 cbar = fig.colorbar(im)
-cbar.set_label("XBIC (arb. unit)")
+cbar.set_label("XBIC (arb. unit)",fontsize=all_text_size)
+cbar.ax.tick_params(labelsize=all_text_size)
 
 hline.plot(x,lineout_20x, linewidth=1, color='black',label="20C")
 hline.set_ylim([1.6,2.2])
 hline.set_xlim([0,279])
-hline.set_ylabel("XBIC (arb. unit)")
+hline.set_ylabel("XBIC (arb. unit)",fontsize=all_text_size)
+hline.yaxis.set_tick_params(labelsize=all_text_size)
 
 hline.plot(x,lineout_80x, linewidth=1, color='red',label="80C")
 hline.set_ylim([1.6,2.2])
 hline.set_xlim([0,279])
-hline.set_ylabel("XBIC (arb. unit)")
-hline.legend()
+hline.set_ylabel("XBIC (arb. unit)",fontsize=all_text_size)
+hline.legend(fontsize=all_text_size)
 
 vline.plot(lineout_20y,y, linewidth=1, color='black',label="20C")
 vline.set_xlim([1.6,2.2])
 vline.set_ylim([0,160])
-vline.set_xlabel("XBIC (arb. unit)")
+vline.set_xlabel("XBIC (arb. unit)",fontsize=all_text_size)
+vline.xaxis.set_tick_params(labelsize=all_text_size)
 
 vline.plot(lineout_80y,y1, linewidth=1, color='red',label="80C")
 vline.set_xlim([1.6,2.2])
 vline.set_ylim([0,160])
-vline.set_xlabel("XBIC (arb. unit)")
-vline.legend()
+vline.set_xlabel("XBIC (arb. unit)",fontsize=all_text_size)
+vline.xaxis.set_tick_params(labelsize=all_text_size)
+
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\0_stage design\20220322 figures_v3\figure4 materials'
+FNAME = r'\XBIC_80C_Lineout_small_v3.eps'
+#print(FNAME)
+plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
