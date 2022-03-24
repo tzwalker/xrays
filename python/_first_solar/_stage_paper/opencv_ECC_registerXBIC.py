@@ -4,9 +4,11 @@
 Trumann
 Wed Mar 16 13:15:19 2022
 
-this program is meant as a test to align XRF/XBIC images from 2019_06_2IDD
+this program aligns the 80C XBIC map (scan339) to the 20C XBIC map (scan323)
+2019_06_2IDD
 
 the images are distorted along the y axis
+so a full homography matrix was found
 
 MStuckelberger suggested using ECC algorithm
 to use this algorithm in python, OpenCV is needed
@@ -14,7 +16,7 @@ to use this algorithm in python, OpenCV is needed
 this program uses OpenCV, which is not a normal part of Anaconda
 it is run in a separate Anaconda environnment
 
-this environment was setup with the sole purpose of obtaining the warp matrix
+a separate Anaconda environment was setup to obtain the warp matrix
 for images; the matrix is the output of the ECC algorithm
 
 """
