@@ -4,7 +4,7 @@
 Trumann
 Tue Mar 22 10:38:07 2022
 
-run first cell in "opencv_ECC_register.py" before this program
+run first cell in "opencv_ECC_registerXBIC.py" before this program
 
 this program plots the registration results for the stage paper
 
