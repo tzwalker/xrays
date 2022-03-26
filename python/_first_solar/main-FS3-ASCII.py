@@ -51,8 +51,8 @@ for plotting reference, pixel step was 150nm --> 20pixels = 3um, 67pix = 10um
 from class_ascii_Sample import Sample
 #ASCII_PATH = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL\ug_per_cm2_XRF'
 #PATH_LOCKIN = r'C:\Users\triton\FS3_2019_06_operando\ASCIIS_TW_BL\FS_plan_electrical.csv'
-ASCII_PATH =  r'C:\Users\Trumann\FS3_2019_06_operando\ASCIIS_TW_BL' 
-PATH_LOCKIN = r'C:\Users\Trumann\FS3_2019_06_operando\ASCIIS_TW_BL\FS_plan_electrical.csv'
+ASCII_PATH =  r'Z:\Trumann\Fitted_Sychrotron_Data\2019_06_2IDD_FS3_operando\ASCIIS_TW_BL' 
+PATH_LOCKIN = r'C:\Users\Trumann\Dropbox (ASU)\2_FS_operando\FS_plan_electrical.csv'
 
 # create sample objects
 FS3 = Sample()
@@ -62,18 +62,20 @@ FS3.stack = {'Au':   [19.3, 100E-7],
                  'CdTe': [5.85, 5E-4],
                  'Se': [4.82, 100E-7],
                  'SnO2': [100E-7]}
-FS3.scans = [323,327,332,339,344] #XBIC: [323,327,332,339,344] #XBIV: [321,325,330,337,342]
+FS3.scans = [321,325,330,337,342] #XBIC: [323,327,332,339,344] #XBIV: [321,325,330,337,342]
 
 
 # channels to import from ASCII
-channels = ['US_IC','us_ic', 'Se', 'Cd_L', 'Te_L', 'Au_L']
+
 
 # uncomment this line to import maps with XBIC converted to ampere
 # this requires XBIC channel ('us_ic') to be in first position of 'channels' list
-#FS3.import_maps(ASCII_PATH, PATH_LOCKIN, channels)
+channels = ['US_IC','us_ic', 'Se', 'Cd_L', 'Te_L', 'Au_L']
+FS3.import_maps(ASCII_PATH, PATH_LOCKIN, channels)
 
 # uncomment this line to import maps without XBIC converted to ampere
-FS3.import_maps_no_XBIC_conversion(ASCII_PATH, channels)
+#channels = ['US_IC','us_ic', 'Se', 'Cd_L', 'Te_L', 'Au_L']
+#FS3.import_maps_no_XBIC_conversion(ASCII_PATH, channels)
 
 #%%
 '''
