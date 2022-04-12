@@ -33,7 +33,7 @@ def forceAspect(ax,aspect=1):
     extent =  im[0].get_extent()
     ax.set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/aspect)
 
-SAVE = 1
+SAVE = 0
 idxs = [0]#,1,2,3,4]
 # for windows 
 #units = ['XBIC (nA)', 'Cu XRF (ug/cm2)', 'Se XRF (ug/cm2)', 'Te XRF (ug/cm2)', 'Au XRF (ug/cm2)']

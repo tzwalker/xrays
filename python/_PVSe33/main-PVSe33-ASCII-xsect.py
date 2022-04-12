@@ -138,6 +138,7 @@ scan1210 (inf)
 """
 
 import pandas as pd
+import numpy as np
 
 def remove_column_header_spaces(dataframe):
     old_colnames = dataframe.columns.values
@@ -152,8 +153,8 @@ def remove_column_header_spaces(dataframe):
 PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_11_2IDD_CuXRF\output'
 
 # change depending on sector
-FILENAME = r'\combined_ASCII_2idd_1086.h5.csv' # 0hr
-#FILENAME = r'\combined_ASCII_2idd_1210.h5.csv' # 500hr
+#FILENAME = r'\combined_ASCII_2idd_1086.h5.csv' # 0hr
+FILENAME = r'\combined_ASCII_2idd_1210.h5.csv' # 500hr
 DATA = PATH+FILENAME
 
 channels = ['ds_ic', 'Cu', 'Cd_L']
