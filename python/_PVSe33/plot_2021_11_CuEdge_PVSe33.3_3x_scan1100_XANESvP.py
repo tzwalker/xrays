@@ -42,7 +42,7 @@ def forceAspect(ax,aspect=1):
     ax.set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/aspect)
 
 SAVE = 0
-idx = 2
+idx = 0
 # for windows 
 # units = ['XBIC (nA)', 'Se XRF (ug/cm2)', 'Te XRF (ug/cm2)', 'Au XRF (ug/cm2)']
 # for infinite cross sections
