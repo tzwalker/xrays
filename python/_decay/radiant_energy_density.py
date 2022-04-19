@@ -45,16 +45,49 @@ radiant_energy_density_spacetime_GJ = radiant_energy_density_spacetime/1e9
 
 #%%
 import matplotlib.pyplot as plt
+import matplotlib.offsetbox as offbox
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from matplotlib.lines import Line2D
 from matplotlib import ticker
+from matplotlib.patches import Rectangle
 from matplotlib import colors
+
+'''adds scalebar to matplotlib images'''
+class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
+    """ size: length of bar in pixels
+        extent : height of bar ends in axes units """
+    def __init__(self, size=1, extent = 0.03, label="", loc=2, ax=None,
+                 pad=0.4, borderpad=0.5, ppad = 0, sep=2, prop=None, 
+                 frameon=True, linekw={}, **kwargs):
+        if not ax:
+            ax = plt.gca()
+        trans = ax.get_xaxis_transform()
+        size_bar = offbox.AuxTransformBox(trans)
+        line = Line2D([0,size],[0,0], **linekw)
+
+        size_bar.add_artist(line)
+
+        txt = offbox.TextArea(label, textprops=dict(color=scalebar_color,weight='bold',size=cbar_txt_size))
+        self.vpac = offbox.VPacker(children=[size_bar,txt], align="center", pad=ppad, sep=sep)
+        
+        offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
+                 borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
+                 **kwargs)
 
 unit = 'Radiant Energy Density (GJ/cm$^3$)'
 cbar_txt_size = 11
+px = 12; dist = u'3\u00B5m'
+scalebar_color = 'black'
 
 fig, ax = plt.subplots()
 
-im = ax.imshow(radiant_energy_density_spacetime_GJ,cmap ='viridis', norm=colors.LogNorm(vmin=0.01,vmax=10))
+im = ax.imshow(radiant_energy_density_spacetime_GJ,cmap ='viridis', norm=colors.LogNorm(vmin=0.01,vmax=20))
+
+ax.axis('off')
+ob = AnchoredHScaleBar(size=px, label=dist, loc=4, frameon=False,
+                       pad=0.1, borderpad=0.5, sep=4, 
+                       linekw=dict(color=scalebar_color))
+ax.add_artist(ob)
 
 divider = make_axes_locatable(ax)
 
