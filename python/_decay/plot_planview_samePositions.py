@@ -6,6 +6,8 @@ Sat Sep 11 10:35:30 2021
 
 this program was copied from "plot_XANESvPosition_cross sections.py"
 
+it was a test plotting of XBIC map positions
+
 this program plots plan-view maps of TS118_1A - 2018_11_26IDC - scans195,196,197
 and overlays a scatter plot at specific pixel indices
 https://stackoverflow.com/questions/29155324/how-can-i-color-specific-pixels-in-matplotlib-imshow
@@ -13,8 +15,6 @@ https://stackoverflow.com/questions/29155324/how-can-i-color-specific-pixels-in-
 the indices are the scatter plot data
 
 run this program after 'main-TS118_1A-ASCII'
-the cross-section maps are for PVSe33
-
 
 # cmaps: 
     #RdYlGn 
@@ -44,7 +44,7 @@ cmaps = 'inferno'
 cbar_txt_size=10
 
 
-img = TS1181A.scan195[0,:,:]
+img = TS1181A.scan197[0,:,:]
 data = img.copy()
 data = np.array(data)
 data = data[:,:-2] * 1e9

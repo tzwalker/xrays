@@ -8,6 +8,8 @@ analyses for XBIC decay data
 
 plan view maps: 195-200
     -these scans were not merged and were directly exported using MAPS
+    -have a separate Sample class since their ASCII structures are direct from MAPS
+all other scans
     -the Sample class was written for merged csvs
     -the following was done to the files to accomodate Sample class import:
         -filenames were changed from "h5.csv" to "h5_mda.csv"
@@ -23,8 +25,9 @@ xsect maps: 39,51
 """
 
 from class_ascii_Sample import Sample
-ASCII_PATH =  r'C:\Users\triton\XBIC_decay\TS118A_1A_2018_11_26IDC' 
-PATH_LOCKIN = r'C:\Users\triton\Dropbox (ASU)\2_XBIC_decay\decay_electrical.csv'
+#ASCII_PATH =  r'C:\Users\triton\XBIC_decay\TS118A_1A_2018_11_26IDC' 
+ASCII_PATH = r'Z:\Trumann\Fitted_Sychrotron_Data\2018_11_26IDC XBIC_degradation_all\merged_fitted_decay_data'
+PATH_LOCKIN = r'C:\Users\Trumann\Dropbox (ASU)\1_XBIC_decay\decay_electrical.csv'
 
 # create sample objects
 TS1181A = Sample()
@@ -43,7 +46,8 @@ channels = ['ds_ic', 'Cu', 'Cd_L', 'Te_L', 'Au_M']
 #channels = ['26idc:3820:scaler1_cts2.B', 'Cu', 'Cd_L', 'Te_L', 'Au_M']
 
 
-TS1181A.import_maps(ASCII_PATH, PATH_LOCKIN, channels, sector=26)
+#TS1181A.import_maps(ASCII_PATH, PATH_LOCKIN, channels, sector=26)
+TS1181A.import_planmaps(ASCII_PATH, PATH_LOCKIN, channels, sector=26)
 
 elements = [ele[0:2] for ele in channels[1:]]
 

@@ -1,7 +1,20 @@
+# -*- coding: utf-8 -*-
 """
+
+Trumann
+Tue Apr 19 08:15:22 2022
+
 coding: utf-8
+
+this is backup of the plotting loops that were used for XBIC decay maps fig1
+
 tzwalker
-Wed May 13 15:31:19 2020
+Sat Sep 11 10:35:30 2021
+
+2022 04 19
+this program was used to get the smaller maps in figure 1 of paper
+data from scans 195 and 196 2018_11_26IDC
+
 
 for TS118_1A decay (2018_11_26IDC):
     plan-view inner map: 4px = 1um; figsize=2.5,2.5
@@ -19,8 +32,8 @@ for TS118_1A decay (2018_11_26IDC):
     #viridis
     #Oranges_r
     #YlOrBr_r
-
 """
+
 import matplotlib.pyplot as plt
 import matplotlib.offsetbox as offbox
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -52,9 +65,9 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  **kwargs)
 
 
-SAVE = 1
+SAVE = 0
 OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\2_XBIC_decay\figures v1'
-FNAME = r'\TS118_1A_scan197_XBIC.eps'
+FNAME = r'\TS118_1A_scan195_XBIC.eps'
 
 scalebar = 1
 scalebar_color = 'black'
@@ -73,15 +86,18 @@ sci_notation = 1
 
 unit = 'XBIC (nA)'; colormap='inferno'
 
-img = TS1181A.scan197[0,:,:] # CHANGE
-data = img.copy()
-data = data * 1e9
+# no filter image
+img0 = TS1181A.scan195[0,:,:] 
+data0 = img0.copy()
+data0 = data0 * 1e9
 
+# filter image
+img1 = TS1181A.scan196[0,:,:] 
+data1 = img1.copy()
+data1 = data1 * 1e9
 
 plt.figure()
-#fig, ax = plt.subplots(figsize=(2.5,2.5)) # CHANGE
-fig, ax = plt.subplots(figsize=(3.4,5.65))
-
+fig, ax = plt.subplots(figsize=(2.5,2.5))
 
 if cbar_scale_control == 1:
     if normalize == 1:
@@ -101,16 +117,13 @@ if scalebar == 1:
                            linekw=dict(color=scalebar_color))
     ax.add_artist(ob)
 
-# plot crosshairs at specific positions # CHANGE
+# plot crosshairs at specific positions
 # scan 195 indices
-#plt.scatter([14,16,31], [18,32,20], marker='+', s=50, color='white')
+plt.scatter([14,16,31], [18,32,20], marker='+', s=50, color='white')
 
 # scan 196 indices
-#plt.scatter([27,5,10], [16,4,24], marker='x', s=50, color='white')
+plt.scatter([27,5,10], [16,4,24], marker='x', s=50, color='white')
 
-# scan 197 indices
-plt.scatter([27,28,35], [69,76,70], marker='+', s=50, color='white')
-plt.scatter([33,22,25], [28,22,32], marker='x', s=50, color='white')
 
 if draw_cbar == 1:
     divider = make_axes_locatable(ax)
