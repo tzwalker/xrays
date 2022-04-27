@@ -33,6 +33,10 @@ radiant_energy_density = spectral_flux_density_J*time_per_pixel # J/cm3
 
 # but this is cumulative... make pixel array in raster pattern similar to measurement
 # this is basically the time index for the measurement
+# this can be interpreted like th following:
+    # for the last pixel in the map, you dwelled with the beam for the same 
+    # amount of time it took to complete the map
+    # (this is not an accurate assumption)
 x = np.arange(41*41).reshape(41, -1)
 # add one because the first pixel is the first time step
 x = x+1
