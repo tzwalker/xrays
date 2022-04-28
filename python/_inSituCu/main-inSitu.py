@@ -23,7 +23,8 @@ Cu1b4c.stack = {'Au':   [19.3, 100E-7],
                  'CdTe': [5.85, 5E-4],
                  'Se': [4.82, 100E-7],
                  'SnO2': [100E-7]}
-Cu1b4c.scans = [238,366]
+#Cu1b4c.scans = [238,366]
+Cu1b4c.scans = [238,254,271,285,298,317,341,353,366,524]
 
 # channels to import from ASCII
 channels = [' us_ic', ' ds_ic', ' Cu', ' Se_L', ' Cd_L', ' Te_L', ' Au_M']

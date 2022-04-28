@@ -27,7 +27,8 @@ SAVE = 0
 OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\NBL3 XRF maps'
 FNAME = r'\TS58Ascan386_XBIC.eps'
 
-img = Cu1b4c.maps[0][1,:,:-2]
+img = Cu1b4c.maps[0][1,:,:]
+
 data = img.copy()
 
 draw_cbar = 1
@@ -35,7 +36,7 @@ cbar_txt_size = 11
 top_cbar = 0
 side_cbar=1
 
-cbar_scale_control = 0; MIN = 0.75e-9; MAX = 1.05e-9
+cbar_scale_control = 1; MIN = 0; MAX = 1.25e5
 normalize = 0
 standardized = 0
 sci_notation = 1
@@ -64,7 +65,7 @@ if standardized == 1:
     im = ax.imshow(data_stand, cmap=colormap, origin='lower')
 
 fmtr_x = lambda x, pos: f'{(x * 0.200):.0f}'
-fmtr_y = lambda x, pos: f'{(x * 0.500):.0f}'
+fmtr_y = lambda x, pos: f'{(x * 0.333):.0f}'
 ax.xaxis.set_major_formatter(mticker.FuncFormatter(fmtr_x))
 ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
 ax.set_xlabel('X (μm)')

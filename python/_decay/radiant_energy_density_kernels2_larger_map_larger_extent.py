@@ -66,6 +66,7 @@ plt.imshow(does_sum)
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
+from matplotlib.patches import Rectangle
 
 # define spatial extent of kernel (of interaction)
 # maps show there is an effect over at least 10um, therefore the spatial extent
@@ -81,7 +82,7 @@ x0, y0 = int(gx_len/2), int(gy_len/2)
 # change this so that at least half of the spatial extent is filled with color
 # this parameter can be interpreted as the extent the beam doses the cell
 # outside the pixel that is being illuminated 
-sigma = 6
+sigma = 3
 
 # calculate kernel
 gx = np.exp(-(x-x0)**2/(2*sigma**2))
@@ -96,19 +97,25 @@ example_radiant_distribution = g*energy #J/cm3
 
 # define measurement area
 # for computation purposes,
-# the area must be large enough to contain the kernel
-space = 21
-area = np.zeros((space+gx_len, space+gy_len)) # map
+# the area must be large enough to contain the kernel !!!
+# large map was 101 x 61; therefore double resolution since that was
+# step size used to take smaller maps
+# 
+xdim = gx_len*2
+ydim = gy_len*2
+area = np.zeros((xdim, ydim)) # map
 
-dose_area  = area.copy()
-l = np.arange(21)
-m = np.arange(21)
+#dose_area  = area.copy()
+# define size of smaller map
+# small map was in 20 pixels of large map; therefore small map will be 40 pixels at this resolution
+l = np.arange(gx_len)
+m = np.arange(gy_len)
 doses_y = []
 for pixel_idy in m:
     doses_x = []
     dose_area = area.copy()
     for pixel_idx in l:
-        dose_area[pixel_idy:pixel_idy+11, pixel_idx:pixel_idx+11] = example_radiant_distribution
+        dose_area[pixel_idy:pixel_idy+gx_len, pixel_idx:pixel_idx+gy_len] = example_radiant_distribution
         dose_area_after = dose_area.copy()
         #plt.figure()
         #plt.imshow(dose_area)
@@ -119,6 +126,12 @@ for pixel_idy in m:
 doses_arr_y = np.array(doses_y)
 dose_sum_y = doses_arr_y.sum(axis=0)
 
-plt.figure()
-plt.imshow(dose_sum_y,norm=colors.LogNorm())
-plt.colorbar()
+fig, ax = plt.subplots()
+im = ax.imshow(dose_sum_y,norm=colors.LogNorm(vmin=0.01,vmax=1e9))
+ax.add_patch(Rectangle((20, 20), 40, 40, linestyle = 'dashed', facecolor="none", ec='k', lw=1))
+fig.colorbar(im)
+
+#  this is wrong... the box is drawn around the area where the gaussian kernel should start
+    # but the guassian kernel is starting in the to pleft corner of the enitre area...
+    # not the measurement area...
+

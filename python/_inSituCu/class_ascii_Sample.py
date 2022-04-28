@@ -15,7 +15,7 @@ separate directories
 
 import numpy as np
 import pandas as pd
-import xraylib as xl
+#import xraylib as xl
 
 def get_lockin(scan, data_path):
     data = pd.read_csv(data_path)
