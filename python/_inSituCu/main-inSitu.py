@@ -35,3 +35,4 @@ channels = [' us_ic', ' ds_ic', ' Cu', ' Se_L', ' Cd_L', ' Te_L', ' Au_M']
 
 # uncomment this line to import maps without XBIC converted to ampere
 Cu1b4c.import_maps_no_XBIC_conversion(ASCII_PATH, channels)
+

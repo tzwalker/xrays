@@ -42,6 +42,25 @@ ax2.imshow(img2, cmap='magma')
 ax3.imshow(img3, cmap='magma')
 plt.tight_layout()
 
-avg1 = np.mean(img1)
+print(np.mean(img1))
+print(np.mean(img2))
+print(np.mean(img3))
+#%%
+# this cells compares similar areas !!!
 
+img1 = Cu1b4c.maps[0][1,10:,:-2]
+img2 = Cu1b4c.maps[1][1,:,:-2]
+img3 = Cu1b4c.maps[-1][1,:,5:-7]
 
+fig, (ax1,ax2,ax3) = plt.subplots(3,1,figsize=(3.5,2.5))
+#ax1.figure()
+ax1.imshow(img1, cmap='magma')
+#plt.figure()
+ax2.imshow(img2, cmap='magma')
+#plt.figure()
+ax3.imshow(img3, cmap='magma')
+plt.tight_layout()
+
+print(np.mean(img1))
+print(np.mean(img2))
+print(np.mean(img3))
