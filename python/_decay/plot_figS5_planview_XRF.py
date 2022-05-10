@@ -3,6 +3,11 @@ coding: utf-8
 tzwalker
 Wed May 13 15:31:19 2020
 
+this file plots the XRF data for supplemenatry info
+
+the XRF data referenced in main-TS118_1A-ASCII is normalized to the us_ic
+therefore units in these plots are arb. unit
+
 for TS118_1A decay (2018_11_26IDC):
     plan-view inner map: 4px = 1um
     plan-view outer map: 2px = 1um
@@ -23,8 +28,9 @@ for TS118_1A decay (2018_11_26IDC):
 import matplotlib.pyplot as plt
 import matplotlib.offsetbox as offbox
 from matplotlib.lines import Line2D
-from mpl_toolkits.axes_grid1 import make_axes_locatable,axes_size
 from matplotlib import ticker
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
 '''adds scalebar to matplotlib images'''
 class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
     """ size: length of bar in pixels
@@ -42,7 +48,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         size_bar.add_artist(line)
         #size_bar.add_artist(vline1)
         #size_bar.add_artist(vline2)
-        txt = offbox.TextArea(label, minimumdescent=False, 
+        txt = offbox.TextArea(label, 
                               textprops=dict(color=scalebar_color,weight='bold'))
         self.vpac = offbox.VPacker(children=[size_bar,txt],  
                                  align="center", pad=ppad, sep=sep) 
@@ -51,53 +57,48 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  **kwargs)
 
 
-SAVE = 0
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_XBIC_decay\figures v0'
-FNAME = r'\TS118_1Ax_scan0051_Cd.eps'
+SAVE = 1
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_XBIC_decay\supplementary\figures\S5 materials'
+FNAME = r'\TS118_1A_scan196_Cu.eps'
 
-scalebar = 0
+scalebar = 1
 scalebar_color = 'white'
-px = 12; dist = '3um'
+px = 12; dist = '3\u00B5m'
 
 draw_cbar = 1
-cbar_txt_size = 10
-top_cbar = 0
-side_cbar=1
+cbar_txt_size = 11
+top_cbar = 1
+side_cbar=0
 
-cbar_scale_control = 1; MAX = 250; MIN = 0
+cbar_scale_control = 1; MAX = 0.3; MIN = 0
+ # ranges used 0-0.3 (Cu), 100-300 (Cd), 0-500 (Au)
 normalize = 0
 sci_notation = 0
 
-#unit = 'XBIC (A)'; colormap='inferno'
-#unit = 'Cu ($\mu$g/cm$^2$)'; colormap = 'Oranges_r'
-unit = 'Cd ($\mu$g/cm$^2$)'; colormap = 'Blues_r'
-
-img = TS1181A.maps[3][2,:,:]
-map_extent = [-5, 5, -20, 20]
+img = TS1181A.scan196[1,:,:]
 data = img.copy()
 
+unit = r'Cu$_{\mathrm{K\alpha1}}$ (arb. unit)'; colormap = 'Oranges_r'
 
 plt.figure()
-fig, ax = plt.subplots(figsize=(2.5,2.5))
+fig, ax = plt.subplots(figsize=(2.00,2.00))
+
 
 if cbar_scale_control == 1:
     if normalize == 1:
         #data = data*1e8
         data = (data - data.min()) / (data.max() - data.min())
-    im = ax.imshow(data, cmap=colormap, vmax=MAX, vmin=MIN,extent=map_extent)
+    im = ax.imshow(data, cmap=colormap, vmax=MAX, vmin=MIN)
 else: 
     if normalize == 1:
         #data = data*1e8
         data = (data - data.min()) / (data.max() - data.min())
-    im = ax.imshow(data, cmap=colormap, extent=map_extent)
-
-ax.set_xlabel('X (um)')
-ax.set_ylabel('Y (um)')
-ax.set_aspect('auto')
+    im = ax.imshow(data, cmap=colormap)
 
 if scalebar == 1:
+    ax.axis('off')
     ob = AnchoredHScaleBar(size=px, label=dist, loc=4, frameon=False,
-                           pad=0.1, borderpad=0.1, sep=4, 
+                           pad=0.1, borderpad=0.5, sep=4, 
                            linekw=dict(color=scalebar_color))
     ax.add_artist(ob)
 
@@ -106,7 +107,7 @@ if draw_cbar == 1:
     
     if side_cbar == 1:
         # create color bar
-        cax = divider.append_axes('right', size='10%', pad=0.1)
+        cax = divider.append_axes('right', size='5%', pad=0.1)
         if sci_notation == 1:
             fmt = ticker.ScalarFormatter(useMathText=True)
             fmt.set_powerlimits((0, 0))
@@ -127,7 +128,7 @@ if draw_cbar == 1:
         cbar.yaxis.set_offset_position('left')
     
     if top_cbar == 1:
-        cax = divider.new_vertical(size='5%', pad=-0.75)
+        cax = divider.new_vertical(size='5%', pad=0.25)
         fig.add_axes(cax)
         if sci_notation == 1:
             fmt = ticker.ScalarFormatter(useMathText=True)
@@ -143,8 +144,58 @@ if draw_cbar == 1:
         cax.xaxis.set_ticks_position('top')
         #change number of tick labels on cbar
         cbar = plt.gcf().axes[-1]
-        #cbar.locator_params(nbins=4)
+        cbar.yaxis.set_offset_position('left')
         
+
+if SAVE == 1:
+    plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+    
+#%%
+'''this cell saves the XBIC map in similar format as the XRF maps'''
+
+SAVE = 1
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_XBIC_decay\supplementary\figures\S5 materials'
+FNAME = r'\TS118_1A_scan195_XBIC_supp.eps'
+
+# filter image
+img1 = TS1181A.scan195[0,:,:] 
+data1 = img1.copy()
+data1 = data1 * 1e9
+
+
+plt.figure()
+fig, ax = plt.subplots(figsize=(2,2))
+
+im = ax.imshow(data1,cmap='inferno')
+
+ax.axis('off')
+ob = AnchoredHScaleBar(size=px, label=dist, loc=4, frameon=False,
+                       pad=0.1, borderpad=0.5, sep=4, 
+                       linekw=dict(color=scalebar_color))
+ax.add_artist(ob)
+
+# plot crosshairs at specific positions
+# scan 196 indices
+#plt.scatter([27,5,10], [16,4,24], marker='x', s=50, color='white')
+
+# create color bar
+divider = make_axes_locatable(ax)    
+
+cax = divider.new_vertical(size='5%', pad=0.25)
+fig.add_axes(cax)
+fmt = ticker.ScalarFormatter(useMathText=True)
+fmt.set_powerlimits((0, 0))
+cb = fig.colorbar(im, cax=cax, orientation='horizontal')#, format=fmt)
+# change cbar label font sizes
+cb.set_label('XBIC (nA)', fontsize=cbar_txt_size)
+cb.ax.tick_params(labelsize=cbar_txt_size)
+#move cbar ticks to top of cbar
+cax.xaxis.set_label_position('top')
+cax.xaxis.set_ticks_position('top')
+#change number of tick labels on cbar
+cbar = plt.gcf().axes[-1]
+cbar.yaxis.set_offset_position('left')
+    
 
 if SAVE == 1:
     plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
