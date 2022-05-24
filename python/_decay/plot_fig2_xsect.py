@@ -33,7 +33,7 @@ fig, ax = plt.subplots()
 
 im = ax.imshow(img, cmap='inferno', origin='lower',vmin=0,vmax=50)
 
-# this aspect is the physical y hieght (~40um) over the physical x width (~10um)
+#  this aspect is the x width points (~) over the y hieght points(~)
 ax.set_aspect(10) 
 
 # plot the linescan positions (original image)

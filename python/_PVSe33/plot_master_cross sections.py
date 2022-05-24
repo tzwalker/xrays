@@ -26,15 +26,10 @@ the cross-section maps are for PVSe33
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker as mticker
-
-
-def forceAspect(ax,aspect=1):
-    im = ax.get_images()
-    extent =  im[0].get_extent()
-    ax.set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/aspect)
+import numpy as np
 
 SAVE = 0
-idxs = [0]#,1,2,3,4]
+idxs = [4]#,1,2,3,4]
 # for windows 
 #units = ['XBIC (nA)', 'Cu XRF (ug/cm2)', 'Se XRF (ug/cm2)', 'Te XRF (ug/cm2)', 'Au XRF (ug/cm2)']
 # for infinite cross sections
@@ -42,7 +37,7 @@ units = ['XBIC (nA)', 'Cu XRF (ug/cm2)', 'Se XRF (cts/s)', 'Te XRF (cts/s)', 'Au
 
 cmaps = ['inferno', 'Oranges_r', 'Blues_r', 'Greys_r', 'YlOrBr_r']
 
-cbar_txt_size=10
+cbar_txt_size=11
 
 for idx in idxs:
     img = df_maps[idx]
@@ -51,11 +46,12 @@ for idx in idxs:
     data = data[:,:-2]
         
     MAX = data.max().max(); MIN = 0
-    plt.figure()
     
     fig, ax = plt.subplots()
     
     im = ax.imshow(data, cmap=cmaps[idx])
+    # this aspect is the x width points (~101) over the y hieght points(~11), for scan 119
+    ax.set_aspect(10)
     
     fmtr_x = lambda x, pos: f'{(x * 0.100):.0f}'
     fmtr_y = lambda x, pos: f'{(x * 1):.0f}'
@@ -80,8 +76,7 @@ for idx in idxs:
     cbar.set_ylabel(units[idx], rotation=90, va="bottom", size=12, labelpad=20)
     cbar.yaxis.set_offset_position('left')
     
-    aspect_ratio = 1
-    forceAspect(ax,aspect=aspect_ratio)
+    
     OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33 XRF maps'
     FNAME = r'\PVSe33.3_3x_scan0119_{s}.eps'.format(s=channels[idx])
     

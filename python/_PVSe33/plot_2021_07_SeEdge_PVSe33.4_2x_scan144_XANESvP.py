@@ -35,13 +35,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 
-
-def forceAspect(ax,aspect=1):
-    im = ax.get_images()
-    extent =  im[0].get_extent()
-    ax.set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/aspect)
-
-SAVE = 1
+SAVE = 0
 
 idx = 2 # Se map
 idxs = [0,1,2,3]

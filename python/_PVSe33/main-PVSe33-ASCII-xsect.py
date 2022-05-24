@@ -52,8 +52,18 @@ def remove_column_header_spaces(dataframe):
 # directory information for data file
 PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_07_2IDD_SeXRF\output'
 
-# change depending on sector
-FILENAME = r'\combined_ASCII_2idd_0144.h5.csv'
+sample = '500hr'
+SAVE = 0
+
+if sample == '0hr':
+    FILENAME = r'\combined_ASCII_2idd_0072.h5.csv' # 0hr connected window
+elif sample == '0hr_inf':
+    FILENAME = r'\combined_ASCII_2idd_0119.h5.csv' # 0hr infinite cross section
+elif sample == "500hr":
+    FILENAME = r'\combined_ASCII_2idd_0144.h5.csv' # 500hr
+elif sample == '500hr_inf':
+    FILENAME = r'\combined_ASCII_2idd_0151.h5.csv' # 0hr infinite cross section
+
 DATA = PATH+FILENAME
 
 channels = ['ds_ic', 'Cu', 'Se', 'Te_L', 'Au_L']
@@ -81,35 +91,6 @@ df_xbic = df_maps[0] * scaler_factor * 1E9 # from A to nA
 df_maps[0] = df_xbic # replace imported df
 
 
-### for infinite cross section integration along length
-# =============================================================================
-# # scan 119
-# df_sums = []
-# for df in df_maps:
-#     df_arr = np.array(df)
-#     df_sum = df_arr.sum(axis=0)
-#     df_sums.append(df_sum)
-#     
-# df_sums_arr = np.array(df_sums).T
-# =============================================================================
-
-# =============================================================================
-# # scan 151 to match scan length (10um) and resolution (11pts) of scan 119
-# keep_pixels = [0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60]
-# 
-# df_sums = []
-# for df in df_maps:
-#     df_arr = np.array(df)
-#     df_match = df_arr[keep_pixels, :]
-#     df_sum = df_match.sum(axis=0)
-#     df_sums.append(df_sum)
-# df_sums_arr = np.array(df_sums).T
-#     
-# =============================================================================
-
-
-    
-        
 #%%
 """
 coding: utf-8
@@ -153,7 +134,7 @@ def remove_column_header_spaces(dataframe):
 PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_11_2IDD_CuXRF\output'
 
 sample = '500hr'
-SAVE = 1
+SAVE = 0
 
 if sample == '0hr':
     FILENAME = r'\combined_ASCII_2idd_1086.h5.csv' # 0hr
