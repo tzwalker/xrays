@@ -21,6 +21,63 @@ infinite cross sections
 import numpy as np
 from skimage.transform import rotate
 
+'''
+0hr infinite integrate
+
+this cell is for the integrated profiles of the maps used in
+'plot_master_cross sections.py'
+    these are the infinite cross section maps
+
+different profiles are needed for these maps since they were cropped
+from the original areas
+
+be sure to load the correct file in 
+'main-PVSe33-ASCII-xsect.py'
+
+run 'plot_master_cross sections.py' with the correct map loaded
+
+'''
+# scan 119
+df_sums = []
+for df in df_maps:
+    df_arr = np.array(df)
+    df_sum = df_arr.sum(axis=0)
+    df_sums.append(df_sum)
+    
+df_sums_arr = np.array(df_sums).T
+#%%
+'''
+500hr infinite integrate
+
+this cell is for the integrated profiles of the maps used in
+'plot_master_cross sections.py'
+    these are the infinite cross section maps
+
+different profiles are needed for these maps since they were cropped
+from the original areas
+
+be sure to load the correct file in 
+'main-PVSe33-ASCII-xsect.py'
+
+run 'plot_master_cross sections.py' with the correct map loaded
+
+'''
+# scan 151
+# select 11 rows from across the map
+# since the original area was cropped, the last index must be less than 60
+    # this guarantees the integration is within the cropped
+    # map displayed in the paper
+keep_pixels = [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40]
+
+df_sums = []
+for df in df_maps:
+    df_arr = np.array(df)
+    df_match = df_arr[keep_pixels, :]
+    df_sum = df_match.sum(axis=0)
+    df_sums.append(df_sum)
+df_sums_arr = np.array(df_sums).T
+
+#%%
 ### for infinite cross section integration along length
 # =============================================================================
 # # scan 119
@@ -73,43 +130,3 @@ df_sums_arr = np.array(df_sums).T
 #     df_sums.append(df_sum)
 # df_sums_arr = np.array(df_sums).T
 # =============================================================================
-
-#%%
-'''
-this cell is for the integrated profiles of the maps used in
-'plot_master_cross sections.py'
-    these are the infinite cross section maps
-
-different profiles are needed for these maps since they were cropped
-from the original areas
-
-be sure to load the correct file in 
-'main-PVSe33-ASCII-xsect.py'
-
-run 'plot_master_cross sections.py' with the correct map loaded
-
-'''
-# scan 119
-df_sums = []
-for df in df_maps:
-    df_arr = np.array(df)
-    df_sum = df_arr.sum(axis=0)
-    df_sums.append(df_sum)
-    
-df_sums_arr = np.array(df_sums).T
-
-# scan 151
-# select 11 rows from across the map
-# since the original area was cropped, the last index must be less than 60
-    # this guarantees the integration is within the cropped
-    # map displayed in the paper
-keep_pixels = [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40]
-
-df_sums = []
-for df in df_maps:
-    df_arr = np.array(df)
-    df_match = df_arr[keep_pixels, :]
-    df_sum = df_match.sum(axis=0)
-    df_sums.append(df_sum)
-df_sums_arr = np.array(df_sums).T
-    

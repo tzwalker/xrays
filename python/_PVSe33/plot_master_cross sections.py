@@ -33,12 +33,12 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker as mticker
 import numpy as np
 
-SAVE = 1
+SAVE = 0
 OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\20210625 figures_v1\figure4 materials'
-FNAME = r'\0hr_scan119_XBIC.eps'
+FNAME = r'\0hr_scan119_Sn.eps'
 
 # channel
-idx = 0
+idx = 5
 
 img = df_maps[idx]
 img = img.to_numpy()
@@ -55,7 +55,7 @@ if idx == 3:
 if idx == 4:
     unit = 'Au (cts/s)'; colormap = 'YlOrBr_r'; low = 0; high = 5e3
 if idx == 5:
-    unit = 'Sn (cts/s)'; colormap = 'Greys_r'; low = 0; high = 1e4
+    unit = 'Sn (cts/s)'; colormap = 'Greens_r'; low = 0; high = 5e3
     
 cbar_txt_size = 11
 
@@ -74,8 +74,8 @@ ax.set_ylabel('$Y$ (μm)')
 
 im = ax.imshow(img, cmap=colormap, origin='lower', vmin=low, vmax=high)
 # outline possible position of interfaces
-plt.axvline(20,color='w',linestyle='dashed', linewidth=1)
-plt.axvline(65,color='w',linestyle='dashed', linewidth=1)
+plt.axvline(20,color='r',linestyle='-', linewidth=0.5)
+plt.axvline(65,color='r',linestyle='-', linewidth=0.5)
 
 # define colorbar format
 fmt = mticker.ScalarFormatter(useMathText=True)
@@ -98,12 +98,12 @@ if SAVE == 1:
     plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
     
 #%%
-SAVE = 1
+SAVE = 0
 OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\20210625 figures_v1\figure4 materials'
 FNAME = r'\500hr_scan151_XBIC.eps'
 
 # channel
-idx = 0
+idx = 2
 
 img = df_maps[idx]
 img = img.to_numpy()
@@ -141,8 +141,8 @@ ax.set_ylabel('$Y$ (μm)')
 
 im = ax.imshow(img, cmap=colormap, origin='lower',vmin=low,vmax=high)
 # outline possible position of interfaces
-plt.axvline(10,color='w',linestyle='dashed', linewidth=1)
-plt.axvline(55,color='w',linestyle='dashed', linewidth=1)
+plt.axvline(10,color='r',linestyle='-', linewidth=0.5)
+plt.axvline(55,color='r',linestyle='-', linewidth=0.5)
 
 # define colorbar format
 fmt = mticker.ScalarFormatter(useMathText=True)

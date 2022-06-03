@@ -8,6 +8,11 @@ this program gets one of the maps during the in-situ measurement
 
 for now it is intended only to plot things for DoE
 
+standford: 50uA/V
+lockin output: 500 V/V
+
+scaler_factor = (stanford*1E-9) / (2e5*lockin)
+
 """
 
 from class_ascii_Sample import Sample

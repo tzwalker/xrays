@@ -82,6 +82,49 @@ xbic_arr2 = np.array(xbic_lines).T
 
 array_to_origin = np.concatenate((xbic_sum0,xbic_arr1,xbic_arr2),axis=1)
 
+#%%
+'''this cell is for Cu XRF integrations'''
+
+num_of_scans = len(Cu1b4c.maps)
+x_points = 39
+
+
+# get rotated, integrated profile for scans with x points = 41, y points = 31
+# trim 10 y points and NaN values in x
+xbic = Cu1b4c.scan238[2,10:,:-2]
+plt.figure()
+plt.imshow(xbic)
+#print(np.shape(xbic))
+xbic_rot = rotate(xbic, -8)
+plt.figure()
+plt.imshow(xbic_rot)
+xbic_sum0 = xbic_rot.sum(axis=0).reshape(-1,1)
+plt.figure()
+plt.plot(xbic_sum0)
+
+# get rotated, integrated profiles for scans with x points = 41
+xbic_lines = []
+for im in Cu1b4c.maps[1:-3]:
+    xbic = im[2,:,:-2]
+    #print(np.shape(xbic))
+    xbic_rot = rotate(xbic, -8)
+    xbic_sum = xbic_rot.sum(axis=0)
+    xbic_lines.append(xbic_sum)
+xbic_arr1 = np.array(xbic_lines).T
+
+# get rotated, integrated profiles for scans with x points = 51
+xbic_lines = []
+for im in Cu1b4c.maps[-3:]:
+    # trim 10 x points, 5 in +x and 5 in -x
+    xbic = im[2,:,5:-7]
+    #print(np.shape(xbic))
+    xbic_rot = rotate(xbic, -8)
+    xbic_sum = xbic_rot.sum(axis=0)
+    xbic_lines.append(xbic_sum)
+xbic_arr2 = np.array(xbic_lines).T
+
+array_to_origin = np.concatenate((xbic_sum0,xbic_arr1,xbic_arr2),axis=1)
+#%%
 # get average for each integrated profile over time
 for integrated_profile in array_to_origin.T:
     print(np.mean(integrated_profile))
@@ -89,6 +132,7 @@ for integrated_profile in array_to_origin.T:
 # get XBIC max for each integrated profile over time
 for integrated_profile in array_to_origin.T:
     print(np.max(integrated_profile))
+    
 #%%
 '''quick plotting'''
 num_plots = 10

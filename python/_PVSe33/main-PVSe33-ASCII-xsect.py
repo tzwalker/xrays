@@ -52,7 +52,7 @@ def remove_column_header_spaces(dataframe):
 # directory information for data file
 PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_07_2IDD_SeXRF\output'
 
-sample = '500hr_inf'
+sample = '0hr_inf'
 SAVE = 0
 
 if sample == '0hr':
