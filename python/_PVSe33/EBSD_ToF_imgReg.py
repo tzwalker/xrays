@@ -13,8 +13,12 @@ to get the image orientations to match, i think i need to do these operations:
 the ToF-SIMS image will need a 90deg rotation counter-clockwise, then a mirror along the vertical axis operation
 the EBSD image will need a  mirror along the horizontal axis
     this was based on playing around with the images in powerpoint
-    "C:\Users\Trumann\Dropbox (ASU)\Internal Reports\Q18_202204\figures_TW\SUM_0hr_Cl_maps_slice2-5.png" saved from ImageJ
-    "C:\Users\Trumann\Dropbox (ASU)\4_collab updates\ASU_NREL\PVSe33 - Se alloyed exsitu stress\20220304 ToF-SIMS PVSe33 - SHarvey Summary.pptx" see flipped EBSD
+    "Dropbox (ASU)\Internal Reports\Q18_202204\figures_TW\SUM_0hr_Cl_maps_slice2-5.png" saved from ImageJ
+    "Dropbox (ASU)\4_collab updates\ASU_NREL\PVSe33 - Se alloyed exsitu stress\20220304 ToF-SIMS PVSe33 - SHarvey Summary.pptx" see flipped EBSD
+
+20220607 swent to stackoverflow
+tof == 'left_img'
+ebsd == 'right_img'
 """
 
 import cv2
@@ -22,29 +26,38 @@ from skimage import io
 import matplotlib.pyplot as plt
 import numpy as np
 
-PATH_TOF = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Cl_maps.tif"
-PATH_EBSD = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\EBSD\0hr_right_map.tif"
+im_left = img.copy()
+im_right = EBSD_gray.copy()
 
-TOF = io.imread(PATH_TOF)
-EBSD = io.imread(PATH_EBSD)
+sz = im_left.shape
 
-# take average from top 3 depth slices, excluding first slice
-TOF_slice = TOF[1:4,:,:].mean(axis=0)
+# Define the motion model
+#warp_mode = cv2.MOTION_TRANSLATION
+warp_mode = cv2.MOTION_HOMOGRAPHY
 
+# Define 2x3 or 3x3 matrices and initialize the matrix to identity
+if warp_mode == cv2.MOTION_HOMOGRAPHY :
+    warp_matrix = np.eye(3, 3, dtype=np.float32)
+else :
+    warp_matrix = np.eye(2, 3, dtype=np.float32)
 
-# convert EBSD image to grayscale
-EBSD_gray = EBSD.copy()
-rgb_to_gray = lambda rgb : np.dot(rgb[... , :3] , [0.299 , 0.587, 0.114])
-EBSD_gray = rgb_to_gray(EBSD_gray)
-#%%
-#check
-plt.imshow(TOF_slice)
-#plt.figure()
-#check
-plt.imshow(EBSD_gray,cmap='Greys_r', alpha = 0.5)
-plt.axis('off')
+# Specify the number of iterations.
+number_of_iterations = 5000;
 
-plt.figure()
-#check
-plt.imshow(EBSD, alpha = 0.9)
-plt.axis('off')
+# Specify the threshold of the increment
+# in the correlation coefficient between two iterations
+termination_eps = 1e-10;
+
+# Define termination criteria
+criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, number_of_iterations,  termination_eps)
+
+# Run the ECC algorithm. The results are stored in warp_matrix.
+#(cc, warp_matrix) = cv2.findTransformECC (im1_gray,im2_gray,warp_matrix, warp_mode, criteria)
+(cc, warp_matrix) = cv2.findTransformECC (im_right,im_left,warp_matrix, warp_mode, criteria, None, 1)
+
+if warp_mode == cv2.MOTION_HOMOGRAPHY :
+# Use warpPerspective for Homography
+    im2_aligned = cv2.warpPerspective (im_left, warp_matrix, (sz[1],sz[0]), flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP)
+else :
+# Use warpAffine for Translation, Euclidean and Affine
+    im2_aligned = cv2.warpAffine(im_left, warp_matrix, (sz[1],sz[0]), flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP);

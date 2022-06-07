@@ -85,6 +85,10 @@ array_to_origin = np.concatenate((xbic_sum0,xbic_arr1,xbic_arr2),axis=1)
 #%%
 '''this cell is for Cu XRF integrations'''
 
+import numpy as np
+from skimage.transform import rotate
+import matplotlib.pyplot as plt
+
 num_of_scans = len(Cu1b4c.maps)
 x_points = 39
 

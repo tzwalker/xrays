@@ -15,11 +15,13 @@ and copied to Dropbox (ASU)\1_PVSe33 ex-situ\DATA\EBSD
 
 """
 
+'''this cell is for plane orientation'''
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import tifffile
 
+SAVE = 0
 PATH_0hr = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\EBSD\PVSe33.3_2_rightFIB.csv"
 PATH_500hr = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\EBSD\PVSe33.4_3_rightFIB.csv"
 
@@ -53,10 +55,12 @@ mirror2 = np.flipud(mirror1) # flip along horizontal axis
 # plot data
 fig, ax = plt.subplots()
 ax.imshow(mirror2)
+plt.axis("off")
 
-# save reconstructed, transformed data cube (rgb image)
-PATH_OUT = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\EBSD\0hr_right_map.tif"
-tifffile.imsave(PATH_OUT, mirror2, bigtiff=True)
+if SAVE == 1:
+    # save reconstructed, transformed data cube (rgb image)
+    PATH_OUT = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\EBSD\0hr_right_map.tif"
+    tifffile.imsave(PATH_OUT, mirror2, bigtiff=True)
 
 
 #%%
@@ -68,4 +72,6 @@ FIB_indices = np.where(color_frame[:75,:65,1] == 255)
 color_frame[FIB_indices] = 0
 
 #plt.imshow(color_frame)
+
+
 
