@@ -74,8 +74,8 @@ print("number of bins in histogram: {s}".format(s=str(hbins)))
 #%%
 # plot histograms
 plt.figure()
-plt.hist(a1, color = "grey", alpha = 0.7, bins = hbins, label='0hr', log=True) # 0hr
-plt.hist(b1, color = "red", alpha = 0.3, bins = hbins, label = '500hr', log=True) # 500hr
+plt.hist(a1, color = "grey", alpha = 0.5, bins = hbins, label='0hr', log=True) # 0hr
+plt.hist(b1, color = "red", alpha = 0.5, bins = hbins, label = '500hr', log=True) # 500hr
 plt.ylim(1,1e5)
 
 plt.legend()
