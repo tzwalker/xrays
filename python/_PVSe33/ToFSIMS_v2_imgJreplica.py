@@ -102,3 +102,12 @@ from skimage import morphology
 out = morphology.medial_axis(img5)
 plt.imshow(out)
 
+#%%
+# overlay 
+over = out.copy()
+over = over.astype('int')
+over = np.ma.masked_where(over == 1, img2)
+
+plt.imshow(img2)
+plt.imshow(over,alpha=0.5,cmap='inferno')
+
