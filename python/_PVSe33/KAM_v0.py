@@ -21,6 +21,7 @@ kam = no_stress.pivot(index="Y",columns="X", values="Kernel Average Misorientati
 # orient image same way as EBSD tif and ToF-SIMS map
 mirror1 = np.fliplr(kam) # flips along vertical axis
 mirror2 = np.flipud(mirror1) # flip along horizontal axis
+mirror2 = np.nan_to_num(mirror2)
 
 #check
 plt.figure()
@@ -71,13 +72,16 @@ elif bbins < abins:
     hbins = bbins
 
 print("number of bins in histogram: {s}".format(s=str(hbins)))
-
+#%%
 # plot histograms
-plt.figure()
-plt.hist(a1, color = "grey", alpha = 0.5, bins = hbins, label='0hr', log=True) # 0hr
-plt.hist(b1, color = "red", alpha = 0.5, bins = hbins, label = '500hr', log=True) # 500hr
-plt.ylim(1,1e5)
+fig, (ax1,ax2) = plt.subplots(nrows=2,ncols=1,sharex=True)
+ax1.hist(a1, color = "grey", alpha = 0.5, bins = hbins, label='0hr', log=True) # 0hr
+ax1.set_ylim(1,1e5)
+ax1.legend()
+ax1.set_ylabel("Pixel Count")
 
-plt.legend()
-plt.xlabel("Kernel Average Misorientation (degree)")
-plt.ylabel("Pixel Count")
+ax2.hist(b1, color = "red", alpha = 0.5, bins = hbins, label = '500hr', log=True) # 500hr
+ax2.set_ylim(1,1e5)
+ax2.legend()
+ax2.set_xlabel("Kernel Average Misorientation (degree)")
+ax2.set_ylabel("Pixel Count")

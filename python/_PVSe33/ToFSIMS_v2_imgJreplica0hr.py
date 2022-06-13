@@ -48,7 +48,8 @@ img = np.flipud(img)                # flip along horizontal axis
 
 # crop image to about same dimension as EBSD
 #img = img[75:425,100:450]
-plt.imshow(img)
+plt.imshow(img,vmax=2)
+plt.axis("off")
 #%%
 # manually mask FIB marks
 img2 = img.copy().astype('float64')\
@@ -71,6 +72,7 @@ plt.imshow(img2)
 # threshold everything below 1 count
 img3 = img2.copy()
 img3[np.where(img3<2)] = 0
+#img3[np.where(img3>2)] = 0
 
 plt.imshow(img3)
 
@@ -100,14 +102,18 @@ img5 = img_msk.copy().astype('uint8')
 from skimage import morphology
 
 out = morphology.medial_axis(img5)
-plt.imshow(out)
+plt.imshow(out,vmax=0.5)
+plt.axis("off")
+print(np.count_nonzero(out))
 
 #%%
 # overlay 
-over = out.copy()
-over = over.astype('int')
-over = np.ma.masked_where(over == 1, img2)
-
-plt.imshow(img2)
-plt.imshow(over,alpha=0.5,cmap='inferno')
+# =============================================================================
+# over = out.copy()
+# over = over.astype('int')
+# over = np.ma.masked_where(over == 1, img2)
+# 
+# plt.imshow(img2)
+# plt.imshow(over,alpha=0.5,cmap='inferno')
+# =============================================================================
 

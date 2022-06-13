@@ -12,21 +12,25 @@ this cell is for GROD histograms from images given on 20220601
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 PATH_0hr = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\EBSD\Image 1_PVSe33.3_2_No stress Specimen 1 FIB marks on the right Map Data 4-GROD-Ang.csv"
 PATH_500hr = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\EBSD\Image 4_PVSe33.4_3_Stressed Specimen 1 Site 2_FIB marks on right Map Data 2-GROD-Ang.csv"
 
 # import data - 0hr
 no_stress = pd.read_csv(PATH_0hr, skiprows=[1])
 kam = no_stress.pivot(index="Y",columns="X", values="GROD Angle")
+kam = kam.to_numpy()
 # orient image same way as EBSD tif and ToF-SIMS map
 mirror1 = np.fliplr(kam) # flips along vertical axis
 mirror2 = np.flipud(mirror1) # flip along horizontal axis
 
 #check
-plt.figure()
-plt.imshow(mirror2, vmax = 3)
-plt.axis("off")
+fig, ax = plt.subplots()
+ax.imshow(mirror2,vmax=3)
+#ax.axis("off")
+#ax.add_patch(Rectangle((15, 140), 40, 40, linestyle = 'solid', facecolor="none", ec='w', lw=1))
 
+#%%
 # import data - 500hr
 stress = pd.read_csv(PATH_500hr, skiprows=[1])
 kam = stress.pivot(index="Y",columns="X", values="GROD Angle")
@@ -73,11 +77,14 @@ elif bbins < abins:
 print("number of bins in histogram: {s}".format(s=str(hbins)))
 #%%
 # plot histograms
-plt.figure()
-plt.hist(a1, color = "grey", alpha = 0.5, bins = hbins, label='0hr', log=True) # 0hr
-plt.hist(b1, color = "red", alpha = 0.5, bins = hbins, label = '500hr', log=True) # 500hr
-plt.ylim(1,1e5)
+fig, (ax1,ax2) = plt.subplots(nrows=2,ncols=1,sharex=True)
+ax1.hist(a1, color = "grey", alpha = 0.5, bins = hbins, label='0hr', log=True) # 0hr
+ax1.set_ylim(1,1e5)
+ax1.legend()
+ax1.set_ylabel("Pixel Count")
 
-plt.legend()
-plt.xlabel("GROD Angle (degree)")
-plt.ylabel("Pixel Count")
+ax2.hist(b1, color = "red", alpha = 0.5, bins = hbins, label = '500hr', log=True) # 500hr
+ax2.set_ylim(1,1e5)
+ax2.legend()
+ax2.set_xlabel("GROD Angle (degree)")
+ax2.set_ylabel("Pixel Count")

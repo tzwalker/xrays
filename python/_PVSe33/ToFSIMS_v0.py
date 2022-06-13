@@ -5,15 +5,16 @@ Trumann
 Thu Mar 31 20:17:36 2022
 
 
-this program opens ToF SIMS ASCIIs from Steve Harvey (NREL)
+this program processes ToF SIMS ASCIIs from Steve Harvey (NREL)
+into TIF images
+    data size reduction from 300MB to 50MB
 
-data were taken from shared Box folder; downloaded to
-
+data were downloaded from shared Box folder t0
 Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS
 
 """
 
-'''this cell is for the 0hr Cl maps'''
+'''this cell is for the 0hr CHLORINE maps'''
 import numpy as np
 import tifffile
 
@@ -28,22 +29,13 @@ res = np.zeros((49,512,512),float)
 res[indices[:,2],indices[:,0],indices[:,1]] = values
 
 res = res.astype('int')
-# =============================================================================
-# import matplotlib.pyplot as plt
-# 
-# slices = [0,10,20,30,40]
-# for s in slices:
-#     image = res[s,:,:]
-#     plt.figure()
-#     plt.imshow(image)
-# =============================================================================
 
 # save reconstructed data cube
 PATH_OUT = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Cl_map.tif"
 tifffile.imsave(PATH_OUT, res, bigtiff=True)
 
-#%%
-'''this cell is for the 500hr Cl maps'''
+###############################################################################
+'''this cell is for the 500hr CHLORINE maps''' 
 import numpy as np
 import tifffile
 
@@ -58,15 +50,6 @@ res = np.zeros((56,512,512),float)
 res[indices[:,2],indices[:,0],indices[:,1]] = values
 
 res = res.astype('int')
-# =============================================================================
-# import matplotlib.pyplot as plt
-# 
-# slices = [0,10,20,30,40]
-# for s in slices:
-#     image = res[s,:,:]
-#     plt.figure()
-#     plt.imshow(image)
-# =============================================================================
 
 # save reconstructed data cube
 PATH_OUT = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\500hr_Cl_map.tif"
@@ -96,16 +79,54 @@ res = np.zeros((49,512,512),float)
 res[indices[:,2],indices[:,0],indices[:,1]] = values
 
 res = res.astype('int')
-# =============================================================================
-# import matplotlib.pyplot as plt
-# 
-# slices = [0,10,20,30,40]
-# for s in slices:
-#     image = res[s,:,:]
-#     plt.figure()
-#     plt.imshow(image)
-# =============================================================================
 
 # save reconstructed data cube
 PATH_OUT = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Te_map.tif"
+tifffile.imsave(PATH_OUT, res, bigtiff=True)
+
+#%%
+'''
+this cell is for the Se maps
+
+want to corroborate cross-section Se XRF and dynamic Se SIMS
+    there could be a Se redistribution
+
+'''
+import numpy as np
+import tifffile
+
+'''this cell is for the 0hr SELENIUM maps''' 
+f = r"C:\Users\Trumann\Desktop\PVSe33_ToFSIMS\Se_ion_ascii\33.3.2_tomog_ (14) - Se-.txt"
+
+data = np.loadtxt(f)
+indices = data[:,0:3].copy().astype('int')
+values = data[:,3].copy()
+
+res = np.zeros((49,512,512),float)
+
+res[indices[:,2],indices[:,0],indices[:,1]] = values
+
+res = res.astype('int')
+
+# save reconstructed data cube
+PATH_OUT = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Se_mapS.tif"
+tifffile.imsave(PATH_OUT, res, bigtiff=True)
+
+###############################################################################
+'''this cell is for the 500hr SELENIUM maps''' 
+
+f = r"C:\Users\Trumann\Desktop\PVSe33_ToFSIMS\Se_ion_ascii\33.4.3_tomog_ (14) - Se-.txt"
+
+data = np.loadtxt(f)
+indices = data[:,0:3].copy().astype('int')
+values = data[:,3].copy()
+
+res = np.zeros((56,512,512),float)
+
+res[indices[:,2],indices[:,0],indices[:,1]] = values
+
+res = res.astype('int')
+
+# save reconstructed data cube
+PATH_OUT = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\500hr_Se_maps.tif"
 tifffile.imsave(PATH_OUT, res, bigtiff=True)
