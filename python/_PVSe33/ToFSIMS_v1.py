@@ -56,107 +56,39 @@ ax.set_aspect(0.9)
 
 #%%
 '''
-this cell will integrate the Se channel across its depth
+this cell plots 1D profile of Se
 
 want to check Se againt cross-section Se XRF and dynmiac Se SIMS
 
+integrate the Se channel through CdSeTe depth
+
 '''
 from skimage import io
 import numpy as np
 import matplotlib.pyplot as plt
 
-tof0 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Se_maps.tif"
-# import ToF-SIMS image
-TOF = io.imread(tof0)
+file1 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Se_maps.tif"
+file2 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\500hr_Se_maps.tif"
+
+# import ToF-SIMS images
+img1 = io.imread(file1)
+img2 = io.imread(file2)
+
 # average of each slice
-p = TOF.mean(axis=(1,2))
+#p = TOF.mean(axis=(1,2))
+#p1 = TOF1.mean(axis=(1,2))
+
 # total in each slice
-pp = TOF.sum(axis=(1,2))
-# depth calibration
-d = np.arange(0,5.39,0.11) # um
+t1 = img1.sum(axis=(1,2))
+t2 = img2[7:,:,:].sum(axis=(1,2)) # integrate over same # of slices as 0hr
 
-tof500 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\500hr_Se_maps.tif"
-# import ToF-SIMS image
-TOF1 = io.imread(tof500)
-# average of each slice
-p1 = TOF1.mean(axis=(1,2))
-# total in each slice
-p11 = TOF1.sum(axis=(1,2))
-# depth calibration
-d1 = np.arange(0,7.56,0.135) # um
-
-fig, ax = plt.subplots()
-ax.plot(d, p, label='0hr')
-ax.plot(d1, p1, label='500hr')
-plt.legend()
-
-
-#%%
-'''
-this cell attemptes to plot the data cube in 3D
-'''
-
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
-import matplotlib.pyplot as plt
-from skimage import io
-import numpy as np
-
-tof0 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Se_maps.tif"
-# import ToF-SIMS image
-TOF = io.imread(tof0)
-
-x = y = np.arange(0, 512, 1)
-z = 20
-i = TOF[z,:,:]
-
-# here are the x,y and respective z values
-X, Y = np.meshgrid(x, y)
-Z = z*np.ones(X.shape)
-
-# create the figure, add a 3d axis, set the viewing angle
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.view_init(90,60)
-
-# here we create the surface plot, but pass V through a colormap
-# to create a different color for each patch
-im = ax.plot_surface(X, Y, Z, facecolors=cm.viridis(i))
-fig.colorbar(im)
-
-#%%
-# create some fake data
-x = y = np.arange(-4.0, 4.0, 0.02)
-# here are the x,y and respective z values
-X, Y = np.meshgrid(x, y)
-Z = np.sinc(np.sqrt(X*X+Y*Y))
-# this is the value to use for the color
-V = np.sin(Y)
-
-# create the figure, add a 3d axis, set the viewing angle
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.view_init(45,60)
-
-# here we create the surface plot, but pass V through a colormap
-# to create a different color for each patch
-ax.plot_surface(X, Y, Z, facecolors=cm.Oranges(V))
-
-#%%
-import matplotlib.pylab as plt
-from mpl_toolkits.mplot3d import Axes3D
-import numpy as np
-
-x   = np.linspace(1,5,100)
-y1  = np.ones(x.size)
-y2  = np.ones(x.size)*2
-y3  = np.ones(x.size)*3
-z   = np.sin(x/2)
-
-plt.figure()
-ax = plt.subplot(projection='3d')
-ax.imshow(x, y1, z, color='r')
-ax.plot(x, y2, z, color='g')
-ax.plot(x, y3, z, color='b')
-
-
+# =============================================================================
+# # depth calibration
+# d = np.arange(0,5.39,0.11) # um
+# d1 = np.arange(0,7.56,0.135) # um
+# 
+# fig, ax = plt.subplots()
+# ax.plot(d, p, label='0hr')
+# ax.plot(d1, p1, label='500hr')
+# plt.legend()
+# =============================================================================

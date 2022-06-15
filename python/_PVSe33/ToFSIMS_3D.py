@@ -64,6 +64,12 @@ fig.colorbar(sm)
 this cell tried to plot a yz slice or yz integration
 '''
 from matplotlib.colors import LogNorm
+import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+from skimage import io
 
 tof0 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Se_maps.tif"
 # import ToF-SIMS image
@@ -97,3 +103,36 @@ ax1.imshow(yz[:,200:300],vmin=0, vmax=1000)
 fig , ax2 = plt.subplots()
 ax2.imshow(yz1[:55,200:300], vmin=0, vmax=1000)
 plt.tight_layout()
+
+#%%
+'''
+this cell attemptes to plot the data cube in 3D; it is an old attempt
+'''
+
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+import matplotlib.pyplot as plt
+from skimage import io
+import numpy as np
+
+tof0 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Se_maps.tif"
+# import ToF-SIMS image
+TOF = io.imread(tof0)
+
+x = y = np.arange(0, 512, 1)
+z = 20
+i = TOF[z,:,:]
+
+# here are the x,y and respective z values
+X, Y = np.meshgrid(x, y)
+Z = z*np.ones(X.shape)
+
+# create the figure, add a 3d axis, set the viewing angle
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.view_init(90,60)
+
+# here we create the surface plot, but pass V through a colormap
+# to create a different color for each patch
+im = ax.plot_surface(X, Y, Z, facecolors=cm.viridis(i))
+fig.colorbar(im)
