@@ -97,7 +97,7 @@ ax4 = fig.add_subplot(gs[1, 1])
 
 ##### plot 0hr cross-section #####
 im3 = ax3.imshow(img3, origin='lower', cmap = 'viridis', norm=LogNorm(vmin=10, vmax=1000))
-ax3.set_aspect(3)
+ax3.set_aspect(0.756*3)
 ax3.xaxis.set_ticks(np.arange(0,513,102))
 #ax3.yaxis.set_ticks(np.arange(0,50,20))
 
@@ -110,7 +110,7 @@ ax3.set_ylabel('$Z$ (μm)')
 
 ##### plot 500hr cross-section #####
 im4 = ax4.imshow(img4, origin='lower', cmap = 'viridis', norm=LogNorm(vmin=10, vmax=1000))
-ax4.set_aspect(3)
+ax4.set_aspect(0.931*3)
 ax4.xaxis.set_ticks(np.arange(0,513,102))
 #ax4.yaxis.set_ticks(np.arange(0,50,20))
 

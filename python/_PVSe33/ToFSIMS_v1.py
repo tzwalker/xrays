@@ -82,6 +82,18 @@ img2 = io.imread(file2)
 t1 = img1.sum(axis=(1,2))
 t2 = img2[7:,:,:].sum(axis=(1,2)) # integrate over same # of slices as 0hr
 
+# error in each slice
+s1 = img1.std(axis=(1,2))
+s2 = img2[7:,:,:].std(axis=(1,2)) # integrate over same # of slices as 0hr
+#%%
+d1 = np.arange(0,5.39,0.11) # um
+d2 = np.arange(0,6.615,0.135) # um
+
+fig, ax = plt.subplots()
+ax.plot(d1,t1, label='0hr')
+ax.plot(d2-0.81,t2, label='500hr')
+plt.legend()
+
 # =============================================================================
 # # depth calibration
 # d = np.arange(0,5.39,0.11) # um
