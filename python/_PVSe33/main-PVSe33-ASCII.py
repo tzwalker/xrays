@@ -10,18 +10,33 @@ once the array is isolated in "Map",
 it is converted from a pandas object to a numpy object
     this makes computation more convenient
 
-to plot a pretty map
-insert the variable name "Map_arr" in "plot_master.py" 
+recall no lock-in amplification for these (remote measurements during pandemic)
 
 2020_10_26IDC
-scan0011 --> PVSe33.3_4 (not stressed)
-scan0148 --> PVSe33.4_3 (stressed)
+scan0011 --> PVSe33.3_4 (not stressed) -> slide 24 for stanford setting
+scan0148 --> PVSe33.4_3 (stressed) -> slide 174 for stanford setting
+
+note from runnotes scan148
+While the beam was down, we abandoned plan to check focus around vertical edge of sample
+
+less than 8 hours until the beamtime ends, we quickly move to mapping without checking focus along vertical edge
+	Note only 60mA in storage ring; all previous scans had 102mA
+	incident beam unstable for the 500hr scans, about 60% intensity (ZH)
+
+since the incident beam flux was very different between the 0hr and 500hr
+scan, the XBIC in plan-view measurements shuold be normlzied to us_ic;
+    nA conversion is not reasonable... 
+    but the amplification settings were different between the two devices...
+dividing by us_ic does not work... the count rate is too high for 500hr
+
+just do nA conversion... nope, it is better to just normalize to the max
+
 """
 
 import pandas as pd
 
-PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\nanoXRF_XBIC\fit1_ASCII'
-FILE = r'\combined_ASCII_26idbSOFT_0148.h5.csv'
+PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\nanoXRF_XBIC\2020_10_26IDC\fit1_ASCII'
+FILE = r'\combined_ASCII_26idbSOFT_0011.h5.csv'
 
 DATA = PATH+FILE
 
@@ -36,9 +51,36 @@ def remove_column_header_spaces(df):
     df.rename(columns = col_names, inplace=True)
     return df
 
-data = remove_column_header_spaces(data)
+channels = ['ds_ic', 'Cu', 'Cd_L', 'Te_L', 'Au_M', 'Cl', 'us_ic']
 
-Map = data.pivot(index='y pixel no', columns='x pixel no', values = "ds_ic")
+df_maps = []
+for chan in channels:
+    # import the data as a pandas dataframe ('df'); skip first row header
+    df = pd.read_csv(DATA, skiprows=1)
+    
+    # remove column header spaces (for convenient reference to column headers)
+        # this step is necessary because MAPS outputs ASCIIs with extra spaces
+    df_clean = remove_column_header_spaces(df)
+    
+    # shape data of a given column into 2D map
+    x_pix = 'x pixel no'
+    y_pix = 'y pixel no'
+    # specify XRF or XBIC (usually under 'ds_ic' column header)
+    channel = chan
+    df_map = df_clean.pivot(index = y_pix, columns = x_pix, values = channel)
+    df_maps.append(df_map)
+
+# convert XBIC
+df_maps[0] = df_maps[0] / df_maps[0].max()
+
+# =============================================================================
+# scaler_factor = (10E-9) / (1E5*1) # ampere (A)
+# df_xbic = df_maps[0] * scaler_factor * 1E9 # from A to nA
+# df_maps[0] = df_xbic
+# =============================================================================
+
+#normalize XBIC to us_ic
+#df_maps[0] = df_maps[0]/df_maps[-1] # replace imported df
 
 #%%
 Map_arr = Map.to_numpy()

@@ -17,7 +17,7 @@ in registration against the EBSD image (at least not yet)
 """
 
 import cv2
-from skimage import io,transform
+from skimage import io
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -48,6 +48,7 @@ img = np.flipud(img)                # flip along horizontal axis
 
 # crop image to about same dimension as EBSD
 #img = img[75:425,100:450]
+plt.figure()
 plt.imshow(img,vmax=2)
 plt.axis("off")
 #%%
@@ -66,6 +67,8 @@ img2[100:140,100:140] = np.nan      # top-left
 img2[110:150,390:430] = np.nan    # top-right
 img2[380:420,110:150] = np.nan    # bottom-left
 img2[390:430,385:425] = np.nan  # bottom-right
+
+plt.figure()
 plt.imshow(img2,vmax=3)
 
 #%%
@@ -74,6 +77,7 @@ img3 = img2.copy()
 img3[np.where(img3<2)] = 0
 img3[np.where(img3>2)] = 0
 
+plt.figure()
 plt.imshow(img3,vmax=3)
 
 #%%
@@ -84,6 +88,8 @@ img4 = cv2.GaussianBlur(img4,(5,5),cv2.BORDER_DEFAULT)
 img4 = cv2.GaussianBlur(img4,(5,5),cv2.BORDER_DEFAULT)
 img4 = cv2.GaussianBlur(img4,(5,5),cv2.BORDER_DEFAULT)
 img4 = cv2.GaussianBlur(img4,(5,5),cv2.BORDER_DEFAULT)
+
+plt.figure()
 plt.imshow(img4,vmax=1)
 
 #%%
@@ -94,6 +100,7 @@ high = np.nanmax(img_msk)
 low = np.nanmax(img_msk)/8
 (thresh, img_msk) = cv2.threshold(img_msk, low, 255, cv2.THRESH_BINARY)
 
+plt.figure()
 plt.imshow(img_msk)
 #%%
 # skeletonize
@@ -112,9 +119,10 @@ if check ==1:
         #plt.axis("off")
         counts.append(np.count_nonzero(out))
         #print(np.count_nonzero(out))
+    counts = np.array(counts)
+    rng = counts.max() - counts.min()
+
 out = morphology.medial_axis(img5)
-counts = np.array(counts)
-rng = counts.max() - counts.min()
 
 #%%
 Cl1 = img.copy()
@@ -190,30 +198,36 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
-SAVE = 0
-show_mask = 0
+SAVE = 1
+show_mask = 1
 unit = 'Cl (cts/s)'
 cbar_txt_size = 11
-scalebar_color = 'black'
+scalebar_color = 'white'
 
 out1 = out.astype('uint8')
 
 masked_data = np.ma.masked_where(out1==0, out1)
 
 # Overlay the two images
-fig, ax = plt.subplots(figsize=(3.5,3.5))
-im = ax.imshow(img, cmap='Reds_r',vmin = 0, vmax=1.5,interpolation='none')
+fig, ax = plt.subplots(figsize=(2.5,2.5))
 
+# SET MASK CONDITION SO IT CAN DISPLAY EASILY
+if show_mask == 0:
+    im = ax.imshow(img, cmap='viridis',vmin = 0, vmax=1.5,interpolation='none')
+
+    ob = AnchoredHScaleBar(length=172, label=u"25\u03BCm", loc=3, frameon=False,
+                           pad=0.5, borderpad=0.25, sep=4, 
+                           linekw=dict(color=scalebar_color,linewidth=1.5))
+    # change facecolor of frameon
+    #ob.patch.set_facecolor('k')
+    ax.add_artist(ob)
+    
 if show_mask == 1:
-    ax.imshow(masked_data, cmap='Reds',vmin=0.5,interpolation='none')
+    im = ax.imshow(img, cmap='viridis',vmin = 0, vmax=1.5,interpolation='none')
+    ax.imshow(masked_data, cmap='Greys_r',vmin=0.5,interpolation='none')
 ax.axis('off')
 
-ob = AnchoredHScaleBar(length=172, label=u"25\u03BCm", loc=3, frameon=False,
-                       pad=0.5, borderpad=0.25, sep=4, 
-                       linekw=dict(color=scalebar_color,linewidth=1.5))
-# change facecolor of frameon
-#ob.patch.set_facecolor('k')
-ax.add_artist(ob)
+
 
 # define colorbar format
 fmt = mticker.ScalarFormatter(useMathText=True)
@@ -229,7 +243,12 @@ cbar.set_ylabel(unit, rotation=90, va="bottom", size=cbar_txt_size, labelpad=20)
 cbar.yaxis.set_offset_position('left')
 
 if SAVE == 1:
-    OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_tof_sims'
-    FNAME = r'\500hr_Cl_map_reds.pdf'
-    plt.savefig(OUT_PATH+FNAME, format='pdf', dpi=300, bbox_inches='tight', pad_inches = 0)
+    if show_mask == 0:
+        OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_tof_sims'
+        FNAME = r'\for_GB_fig_500hr_Cl_map.pdf'
+        plt.savefig(OUT_PATH+FNAME, format='pdf', dpi=300, bbox_inches='tight', pad_inches = 0)
+    if show_mask == 1:
+        OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_tof_sims'
+        FNAME = r'\for_GB_fig_500hr_Cl_map_masked.png'
+        plt.savefig(OUT_PATH+FNAME, format='png', dpi=300, bbox_inches='tight', pad_inches = 0)
 

@@ -34,11 +34,12 @@ import matplotlib.ticker as mticker
 import numpy as np
 
 SAVE = 0
-OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\20210625 figures_v1\figure4 materials'
-FNAME = r'\0hr_scan119_Sn.eps'
+#OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\20210625 figures_v1\figure4 materials'
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_XANESvP_Se'
+FNAME = r'\0hr_scan119_Cu.eps'
 
 # channel
-idx = 5
+idx = 1
 
 img = df_maps[idx]
 img = img.to_numpy()
@@ -56,6 +57,8 @@ if idx == 4:
     unit = 'Au (cts/s)'; colormap = 'YlOrBr_r'; low = 0; high = 5e3
 if idx == 5:
     unit = 'Sn (cts/s)'; colormap = 'Greens_r'; low = 0; high = 5e3
+if idx == 6:
+    unit = 'Cl (cts/s)'; colormap = 'viridis'; low = 0; high = 4e2
     
 cbar_txt_size = 11
 
@@ -98,12 +101,13 @@ if SAVE == 1:
     plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
     
 #%%
-SAVE = 0
-OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\20210625 figures_v1\figure4 materials'
-FNAME = r'\500hr_scan151_XBIC.eps'
+SAVE = 1
+#OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\20210625 figures_v1\figure4 materials'
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_XANESvP_Se'
+FNAME = r'\500hr_scan151_Cl.eps'
 
 # channel
-idx = 2
+idx = 6
 
 img = df_maps[idx]
 img = img.to_numpy()
@@ -123,6 +127,8 @@ if idx == 4:
     unit = 'Au (cts/s)'; colormap = 'YlOrBr_r'; low = 0; high = 5e3
 if idx == 5:
     unit = 'Sn (cts/s)'; colormap = 'Greys_r'; low = 0; high = 1e4
+if idx == 6:
+    unit = 'Cl (cts/s)'; colormap = 'viridis'; low = 0; high = 4e2
 
 cbar_txt_size = 11
 
