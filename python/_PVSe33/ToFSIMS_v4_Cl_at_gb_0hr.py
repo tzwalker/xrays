@@ -2,17 +2,15 @@
 """
 
 Trumann
-Wed Jun  8 15:27:48 2022
+Wed Jun 22 10:55:20 2022
 
-this program is meant to replicate the ImageJ procedure seen in
-"Z\Trumann\Tutorial Videos\20220607_PVSe33_0hr_Cl_GBmask.mp4"
+this program processes the original Cl count map and generates a GB mask from it
 
-i don't need to rotate it since i will not use the images produced
-in registration against the EBSD image (at least not yet)
+later, the qunatified Cl map is imported and the GB mask is overlaid on 
+the quantified Cl map
 
-20220608 this prgram is only meant for the 0hr images
-    the FIB marks are manually masked and this mask position
-    will be different for the 500hr images
+the intent was to see if i can use the GB mask from the count map on the
+quantified Cl map
 
 """
 
@@ -138,30 +136,8 @@ valarr = valarr.ravel()
 # -*- coding: utf-8 -*-
 """
 
-Trumann
-Thu Jun 16 09:59:32 2022
-
-run a "ToFSIMS_v2" files before this program
-
-this program tries to overlay the mask constructed from Cl ToF-SIMS
-on top of the original Cl ToF-SIMS map
-
-note the rendered image can suffer from aliasing effects
-since there is high frequency pixels beign displayed in a figure that is small
-    see https://matplotlib.org/stable/gallery/images_contours_and_fields/image_antialiasing.html
-
-can't save eps with no interpolation
-    the non-mask image will be black
-can save pdf with no interpolation
-    color map needs to have white pixels for value of 1
-    mask pixel widths are super tiny
-can save png from the Spyder plot panel
-    lower resolution...
-
-okay for these overlaid images
-    always import into Inkscape using Internal Import option
-    after adding annotations, select all in Inkscape and Export as PNG
-    this is the only way i found to preserve the mask-like features
+this section plots the mask from the image processing above on top of 
+the quantified Cl image 
 
 """
 
@@ -198,12 +174,28 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  **kwargs)
 SAVE = 0
 show_mask = 1
-unit = 'Cl (cts/s)'
+unit = 'Cl (atom/cm3)'
 cbar_txt_size = 11
 scalebar_color = 'white'
 
-out1 = out.astype('uint8')
+from skimage import io
 
+# set path to tiff files
+file_Cl_0hr = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Cl_maps_quantified.tif"
+
+# import ToF-SIMS image
+Cl = io.imread(file_Cl_0hr)
+
+# integrate along depth
+section1 = Cl[1:10,:,:].sum(axis=0)
+
+# alter image to match orientation of other plots
+img = np.rot90(section1, k=1)   # rotate image
+img = np.flipud(img)                # flip along horizontal axis
+
+# convert mask
+out1 = out.astype('uint8')
+# generate masked array for plotting purposes
 masked_data = np.ma.masked_where(out1==0, out1)
 
 # Overlay the two images
@@ -214,7 +206,7 @@ else:
 
 # SET MASK CONDITION SO IT CAN DISPLAY EASILY
 if show_mask == 0:
-    im = ax.imshow(img, cmap='viridis',vmin = 0, vmax=1.5,interpolation='none')
+    im = ax.imshow(img, cmap='viridis',vmin=1e18,vmax=8.5e19,interpolation='none')
 
     ob = AnchoredHScaleBar(length=172, label=u"25\u03BCm", loc=3, frameon=False,
                            pad=0.5, borderpad=0.25, sep=4, 
@@ -224,7 +216,7 @@ if show_mask == 0:
     ax.add_artist(ob)
     
 if show_mask == 1:
-    im = ax.imshow(img, cmap='viridis',vmin = 0, vmax=3,interpolation='none')
+    im = ax.imshow(img, cmap='viridis',vmin=1e18,vmax=8.5e19,interpolation='none')
     ax.imshow(masked_data, cmap='Greys_r',vmin=0.5,interpolation='none')
 
 ax.axis('off')
@@ -235,7 +227,7 @@ fmt.set_powerlimits((0, 0))
 cax1 = fig.add_axes([ax.get_position().x1+0.025,ax.get_position().y0,0.025,ax.get_position().height])
 
 cbar = fig.colorbar(im,cax=cax1,format=fmt)
-cbar.ax.set_ylabel('Cl (cts/s)', rotation=90, va="bottom", size=18, labelpad=50)
+cbar.ax.set_ylabel('Cl (atom/cm$^3$)', rotation=90, va="bottom", size=18, labelpad=50)
 cbar.ax.tick_params(labelsize=18)
 #cbar.yaxis.(labelsize=18)
 cbar.ax.yaxis.set_offset_position('left')
