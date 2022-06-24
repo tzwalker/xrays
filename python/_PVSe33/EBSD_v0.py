@@ -21,12 +21,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tifffile
 
-SAVE = 0
+SAVE = 1
 PATH_0hr = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\EBSD\PVSe33.3_2_rightFIB.csv"
 PATH_500hr = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\EBSD\PVSe33.4_3_rightFIB.csv"
 
 # import data
-no_stress = pd.read_csv(PATH_0hr, skiprows=[1])
+no_stress = pd.read_csv(PATH_500hr, skiprows=[1])
 
 # unpack RGB values for inverted pole figure (IPF) coloring column
 IPF = no_stress['IPF Coloring'].str.split(' ',expand=True)
@@ -59,19 +59,21 @@ plt.axis("off")
 
 if SAVE == 1:
     # save reconstructed, transformed data cube (rgb image)
-    PATH_OUT = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\EBSD\0hr_right_map.tif"
+    PATH_OUT = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\EBSD\500hr_right_map.tif"
     tifffile.imsave(PATH_OUT, mirror2, bigtiff=True)
 
 
 #%%
 # try to mask absolute green (0 255 0), (101) to avoid displaying FIB marks
-color_frame = rgb.copy()
+color_frame = rgb[:,:,1].copy()
 
-# get approximate indices of FIB marks [rows,columns,green_channel]
-FIB_indices = np.where(color_frame[:75,:65,1] == 255)
-color_frame[FIB_indices] = 0
+# mask FIB marks [rows,columns,green_channel]
+color_frame[10:60,10:60] = 0 # top-left 
+color_frame[10:60,435:485] = 0 # top-right 
+color_frame[395:445,25:75] = 0 # bottom-left 
+color_frame[380:430,460:510] = 0 # bottom-left 
 
-#plt.imshow(color_frame)
+plt.imshow(color_frame)
 
 
 
