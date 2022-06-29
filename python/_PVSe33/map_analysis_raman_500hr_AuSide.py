@@ -74,15 +74,19 @@ x = np.shape(spectra)[1]
 spectra_ravel = spectra.reshape((x*y),z)
 
 # specify the x-axis value you wish to plot
-    # here the CdTe peaks of interest are 127,141,167,275,365cm-1
-user_shift = 141
+    # here the CdTe peaks of interest are 128.0,142.0,165.6cm-1
+    # these peaks were found by quick fit of avg spectrum in origin 20220629
+user_shift = 165.6
 
 # find the value in the x-axis that is closest to the specified x-axis value
 E_idx = (np.abs(shift - user_shift)).argmin()
 
 user_intensities = spectra_ravel[:,E_idx]
 
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\Raman'
-OUT_FILE = r'141 peak intensities - 20210304 PVSe33.4_3 Au side raman map0.csv'
+
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\Raman'
+OUT_FILE = r'\165.6 peak intensities - 20210304 PVSe33.4_3 Au side raman map0.csv'
 OUT = OUT_PATH + OUT_FILE
-#np.savetxt(OUT, user_intensities, delimiter=',')
+np.savetxt(OUT, user_intensities, delimiter=',')
+
+

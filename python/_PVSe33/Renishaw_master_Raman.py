@@ -34,7 +34,7 @@ spectra = reader.spectra
 
 # specify the x-axis value you wish to plot
     # here the CdTe peaks of interest are 127,141,167,275,365cm-1
-user_shift = 141
+user_shift = 165.6
 
 # find the value in the x-axis that is closest to the specified x-axis value
 E_idx = (np.abs(shift - user_shift)).argmin()
@@ -43,7 +43,7 @@ E_idx = (np.abs(shift - user_shift)).argmin()
 user_map = spectra[:,:,E_idx]
 
 #%%
-SAVE = 1
+SAVE = 0
 unit = 'Intensity (cts/s)'
 
 img = user_map[:-1,:].copy()

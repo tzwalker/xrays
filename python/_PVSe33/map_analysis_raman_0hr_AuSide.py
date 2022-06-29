@@ -63,6 +63,9 @@ x = np.vstack((norm_avg,norm_std,norm_q)).T
 this cell takes the raman map
 finds bin closest to the wavenumber shift specified by the user
 records and stores intensity
+
+it is meant to make histograms of peak intensity without fitting each peak
+in the spectrum
 '''
 # reshape spectra out of map form for convenience
 z = np.shape(spectra)[2]
@@ -71,8 +74,9 @@ x = np.shape(spectra)[1]
 spectra_ravel = spectra.reshape((x*y),z)
 
 # specify the x-axis value you wish to plot
-    # here the CdTe peaks of interest are 127,141,167,275,365cm-1
-user_shift = 141
+    # here the CdTe peaks of interest are 128.0,142.0,165.6cm-1
+    # these peaks were found by quick fit of avg spectrum in origin 20220629
+user_shift = 165.6
 
 # find the value in the x-axis that is closest to the specified x-axis value
 E_idx = (np.abs(shift - user_shift)).argmin()
@@ -80,7 +84,7 @@ E_idx = (np.abs(shift - user_shift)).argmin()
 user_intensities = spectra_ravel[:,E_idx]
 
 
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\Raman'
-OUT_FILE = r'141 peak intensities - 20210213 PVSe33.3_2 Au side_raman_map0.csv'
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\Raman'
+OUT_FILE = r'\165.6 peak intensities - 20210213 PVSe33.3_2 Au side_raman_map0.csv'
 OUT = OUT_PATH + OUT_FILE
-#np.savetxt(OUT, user_intensities, delimiter=',')
+np.savetxt(OUT, user_intensities, delimiter=',')
