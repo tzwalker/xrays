@@ -5,6 +5,8 @@ tzwalker
 Wed Feb  3 09:49:31 2021
 
 glass side measurements taken with 5x objective, 5% laser power, 0.25s dwell
+    EDIT 20220627: i don't think these are accurate settings anymore
+    check these details in the OriginLab file for 20210312 measurements
 
 glass side measurements showed the presence of two peaks
 

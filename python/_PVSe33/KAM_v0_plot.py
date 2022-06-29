@@ -8,6 +8,7 @@ this program is meant to plot the KAM data
 
 """
 
+'''this cell is to import'''
 import matplotlib.ticker as mticker
 import pandas as pd
 import numpy as np
@@ -42,7 +43,8 @@ plt.figure()
 plt.imshow(kam500, vmax = 1)
 plt.axis("off")
 #%%
-SAVE = 1
+'''this cell is to plot'''
+SAVE = 0
 
 img = np.flipud(kam500) # flip data for display purposes
 
@@ -50,7 +52,12 @@ cbar_txt_size = 11
 
 fig, ax = plt.subplots(figsize=(2.5,2.5))
 
-im = ax.imshow(img, vmax = 1.25, origin='lower',cmap='bone')
+#im = ax.imshow(img, vmax = 1.25, origin='lower',cmap='bone')
+
+# histogram chack
+img[img>1.25] = 0
+#img[img>3.5] = 0
+im = ax.imshow(img, vmax=2, origin='lower',cmap='bone') # for histogram check
 
 fmtr_x = lambda x, pos: f'{(x * 0.100):.0f}'
 fmtr_y = lambda x, pos: f'{(x * 0.100):.0f}'

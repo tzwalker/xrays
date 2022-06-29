@@ -24,7 +24,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # specify import file
-FILE = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\PL\gaussian fit params - 20210304 PVSe33.3_2 Au Side_PL_map0.csv"
+FILE = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\PL\gaussian fit params - 20210304 PVSe33.4_3 Au Side_PL_map0.csv"
  
 # import file array
     # 2D array, rows --> number of pixels, cols --> gaussian fit parameter
@@ -36,7 +36,7 @@ fit_params = fit_params.to_numpy()
 fit_param = 1
 
 # extract parameter for each pixel
-relevant_data = fit_params[:,fit_param]
+relevant_data = fit_params[:-30,fit_param]
 
 # reshape into map shape
     # note this shape must be known a priori
@@ -46,14 +46,14 @@ relevant_data = fit_params[:,fit_param]
 
 # specify the number of rows and columns
 x = 31
-y = 31
+y = 30
 param_map = relevant_data.reshape(y,x)
 
 #%%
 '''this cell is for plotting purposes'''
 import matplotlib.ticker as mticker
 
-SAVE = 0
+SAVE = 1
 if fit_param == 1:
     unit = 'Intensity (cts/s)'
     
@@ -83,5 +83,5 @@ cbar.ax.yaxis.set_offset_position('left')
 
 if SAVE == 1:
         OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_renishaw'
-        FNAME = r'\0hr_Au_PL_fitAmplitude.pdf'
+        FNAME = r'\500hr_Au_PL_fitAmplitude.pdf'
         plt.savefig(OUT_PATH+FNAME, format='pdf', dpi=300, bbox_inches='tight', pad_inches = 0)

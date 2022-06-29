@@ -11,12 +11,6 @@ each pixel in a PL map, and these parameters have been saved to a csv file
 
 it allows the user to specify a gaussian fit parameter and plot it as
 a function of x and y coordinate
-
-EDIT 20220628: 
-    the 500hr Au map glitched and does not have the final pixel
-    it only has 960 pixels (not 961)
-    therefore the last row (30 pixels) need to be removed
-    so the data can be shaped into a 31*30 array
     
 """
 
@@ -24,7 +18,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # specify import file
-FILE = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\PL\gaussian fit params - 20210304 PVSe33.3_2 Au Side_PL_map0.csv"
+FILE = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\PL\gaussian fit params - 20210312 PVSe33.3_2 glass side PL map1.wdf.csv"
  
 # import file array
     # 2D array, rows --> number of pixels, cols --> gaussian fit parameter
@@ -52,17 +46,22 @@ param_map = relevant_data.reshape(y,x)
 #%%
 '''this cell is for plotting purposes'''
 import matplotlib.ticker as mticker
+import numpy as np
 
-SAVE = 0
+SAVE = 1
 if fit_param == 1:
     unit = 'Intensity (cts/s)'
     
-img = param_map.copy()
+img = param_map[:-1,:].copy()
+# adjust image in to account for odd reshape
+img = np.roll(img, -1)
+#img = np.roll(img, 0, axis=0)
+
 cbar_txt_size = 11
 
 fig, ax = plt.subplots(figsize=(2.5,2.5))
 
-im = ax.imshow(img, cmap='viridis', vmin = 0, vmax = 1000, origin='lower')
+im = ax.imshow(img, cmap='viridis', vmin = 6000, vmax = 15000, origin='lower')
 
 fmtr_x = lambda x, pos: f'{(x * 1.0):.0f}'
 fmtr_y = lambda x, pos: f'{(x * 1.0):.0f}'
@@ -76,12 +75,12 @@ fmt = mticker.ScalarFormatter(useMathText=True)
 fmt.set_powerlimits((0, 0))
 
 cax1 = fig.add_axes([ax.get_position().x1+0.025,ax.get_position().y0,0.025,ax.get_position().height])
-cbar = fig.colorbar(im, cax=cax1)#, format=fmt)
+cbar = fig.colorbar(im, cax=cax1, format=fmt)
 cbar.ax.set_ylabel(unit, rotation=90, 
                    va="bottom", size=cbar_txt_size, labelpad=15)
 cbar.ax.yaxis.set_offset_position('left')
 
 if SAVE == 1:
         OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_renishaw'
-        FNAME = r'\0hr_Au_PL_fitAmplitude.pdf'
+        FNAME = r'\0hr_Glass_PL_fitAmplitude.pdf'
         plt.savefig(OUT_PATH+FNAME, format='pdf', dpi=300, bbox_inches='tight', pad_inches = 0)

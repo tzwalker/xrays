@@ -11,12 +11,6 @@ each pixel in a PL map, and these parameters have been saved to a csv file
 
 it allows the user to specify a gaussian fit parameter and plot it as
 a function of x and y coordinate
-
-EDIT 20220628: 
-    the 500hr Au map glitched and does not have the final pixel
-    it only has 960 pixels (not 961)
-    therefore the last row (30 pixels) need to be removed
-    so the data can be shaped into a 31*30 array
     
 """
 
@@ -25,7 +19,7 @@ import matplotlib.pyplot as plt
 
 # specify import file
 FILE = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\PL\gaussian fit params - 20210304 PVSe33.3_2 Au Side_PL_map0.csv"
- 
+
 # import file array
     # 2D array, rows --> number of pixels, cols --> gaussian fit parameter
 fit_params = pd.read_csv(FILE, delimiter=',', header=None)
@@ -57,7 +51,7 @@ SAVE = 0
 if fit_param == 1:
     unit = 'Intensity (cts/s)'
     
-img = param_map.copy()
+img = param_map[:-1,:].copy()
 cbar_txt_size = 11
 
 fig, ax = plt.subplots(figsize=(2.5,2.5))

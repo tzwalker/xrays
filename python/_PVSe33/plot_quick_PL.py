@@ -166,12 +166,10 @@ from renishawWiRE import WDFReader
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
  
-IN_PATH = r'C:\Users\triton\Dropbox (ASU)\1_PVSe33 ex-situ\PL'
-FNAME = r'\20210119 PVSe33.4_3SLAC PL MAP - Au side test2.wdf'
+FILE = r"Z:\Trumann\Renishaw\20210312 PVSe33 PL glass side hiRes\PVSe33.3_2 PL glass side map1.wdf"
 
 # import wdf file
-filename = IN_PATH+FNAME
-reader = WDFReader(filename)
+reader = WDFReader(FILE)
 reader.print_info()
 
 ### access spectral and optical image data

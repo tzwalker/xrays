@@ -44,13 +44,18 @@ plt.axis("off")
 #%%
 SAVE = 1
 
-img = np.flipud(kam500) # flip data for display purposes
+img = np.flipud(kam500).copy() # flip data for display purposess
 
 cbar_txt_size = 11
 
 fig, ax = plt.subplots(figsize=(2.5,2.5))
 
-im = ax.imshow(img, vmax = 2, origin='lower',cmap='bone')
+#im = ax.imshow(img, vmax = 2, origin='lower',cmap='bone') # for paper figure
+
+# histogram chack
+img[img>1] = 0
+#img[img>3.5] = 0
+im = ax.imshow(img, vmax=1, origin='lower',cmap='bone') # for histogram check
 
 fmtr_x = lambda x, pos: f'{(x * 0.100):.0f}'
 fmtr_y = lambda x, pos: f'{(x * 0.100):.0f}'
@@ -71,5 +76,5 @@ cbar.ax.yaxis.set_offset_position('left')
 
 if SAVE == 1:
         OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_EBSD'
-        FNAME = r'\500hr_GROD.pdf'
+        FNAME = r'\500hr_GROD_thresholded_img.pdf'
         plt.savefig(OUT_PATH+FNAME, format='pdf', dpi=300, bbox_inches='tight', pad_inches = 0)

@@ -77,14 +77,57 @@ elif bbins < abins:
 print("number of bins in histogram: {s}".format(s=str(hbins)))
 #%%
 # plot histograms
-fig, (ax1,ax2) = plt.subplots(nrows=2,ncols=1,sharex=True)
+import matplotlib as mpl
+
+from typing import Optional
+
+
+def restore_minor_ticks_log_plot(
+    ax: Optional[plt.Axes] = None, n_subticks=9
+) -> None:
+    """For axes with a logrithmic scale where the span (max-min) exceeds
+    10 orders of magnitude, matplotlib will not set logarithmic minor ticks.
+    If you don't like this, call this function to restore minor ticks.
+
+    Args:
+        ax:
+        n_subticks: Number of Should be either 4 or 9.
+
+    Returns:
+        None
+    """
+    if ax is None:
+        ax = plt.gca()
+    # Method from SO user importanceofbeingernest at
+    # https://stackoverflow.com/a/44079725/5972175
+    locmaj = mpl.ticker.LogLocator(base=10, numticks=1000)
+    ax.yaxis.set_major_locator(locmaj)
+    locmin = mpl.ticker.LogLocator(
+        base=10.0, subs=np.linspace(0, 1.0, n_subticks + 2)[1:-1], numticks=1000
+    )
+    ax.yaxis.set_minor_locator(locmin)
+    ax.yaxis.set_minor_formatter(mpl.ticker.NullFormatter())
+    
+SAVE = 1
+fig, (ax1,ax2) = plt.subplots(figsize=(2.5,3),nrows=2,ncols=1,sharex=True)
+
 ax1.hist(a1, color = "grey", alpha = 0.5, bins = hbins, label='0hr', log=True) # 0hr
 ax1.set_ylim(1,1e5)
-ax1.legend()
 ax1.set_ylabel("Pixel Count")
+restore_minor_ticks_log_plot(ax1,n_subticks=4)
 
 ax2.hist(b1, color = "red", alpha = 0.5, bins = hbins, label = '500hr', log=True) # 500hr
 ax2.set_ylim(1,1e5)
-ax2.legend()
-ax2.set_xlabel("GROD Angle (degree)")
+ax2.set_xlabel(u"GROD Angle (\u00b0)")
 ax2.set_ylabel("Pixel Count")
+#ax2.set_xticks(np.arange(0,20,4))
+ax2.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator()) 
+ax2.tick_params(which='minor', length=2)
+ax2.set_xlim(-0.1,1) # comment out for no thresholding
+
+restore_minor_ticks_log_plot(ax2,n_subticks=4)
+
+if SAVE == 1:
+        OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_EBSD'
+        FNAME = r'\GROD_hist_thresholded.pdf'
+        plt.savefig(OUT_PATH+FNAME, format='pdf', dpi=300, bbox_inches='tight', pad_inches = 0)
