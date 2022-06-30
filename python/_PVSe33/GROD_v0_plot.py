@@ -41,6 +41,13 @@ plt.axis("off")
 plt.figure()
 plt.imshow(kam500, vmax = 3)
 plt.axis("off")
+
+# save 500hr array for Helio
+    # this will be imported into imagej so i can click and find indices
+#outfile = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\EBSD\PVSe33.4_3 GROD for Helio.csv'
+#np.savetxt(outfile, kam500, delimiter=',')
+
+
 #%%
 SAVE = 1
 

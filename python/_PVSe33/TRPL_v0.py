@@ -50,14 +50,5 @@ ax.add_patch(Rectangle((28, 28), 8, 8, linestyle = 'dashed', facecolor="none", e
     # saved the TRPL spectra within these pixels
 ax.add_patch(Rectangle((26, 37), 8, 8, linestyle = 'dashed', facecolor="none", ec='w', lw=1))
 
-#%%
-'''this cell loads the tiff images / from the datacubes'''
 
-import tifffile
-
-f = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\TRPL\20220317_datacube_txts\20220317_TRPL_0hr_example_0423bPL2Axis.txt.tif"
-
-import_data = tifffile.imread(f)
-
-total_cts1 = np.sum(data,axis=0)
 

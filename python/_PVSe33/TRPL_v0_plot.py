@@ -8,14 +8,18 @@ run TRPL_v0.py before this program
 
 this program plots the TRPL data from PVSe33.3_2 and PVSe33.4_3
 
+for the DoE report 20220530
+
 """
 
 import matplotlib.pyplot as plt
 import matplotlib.offsetbox as offbox
 from matplotlib.lines import Line2D
+from matplotlib.patches import Rectangle
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib import ticker
 import numpy as np
+import tifffile
 
 '''adds scalebar to matplotlib images'''
 class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
@@ -34,7 +38,11 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         self.vpac = offbox.VPacker(children=[size_bar,txt], align="center", pad=ppad, sep=sep) 
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,**kwargs)
 
+f = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\TRPL\20220317_datacube_txts\20220317_TRPL_0hr_example_0423bPL2Axis.txt.tif"
 
+import_data = tifffile.imread(f)
+
+total_cts1 = np.sum(import_data,axis=0)
 SAVE = 0
 OUT_PATH = r''
 FNAME = r''

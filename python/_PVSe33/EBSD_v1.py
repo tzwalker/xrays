@@ -32,7 +32,7 @@ img *= mask[...,None]
 
 import matplotlib.ticker as mticker
 
-SAVE = 1
+SAVE = 0
 
 cbar_txt_size = 11
 
