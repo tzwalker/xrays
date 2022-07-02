@@ -4,7 +4,7 @@
 Trumann
 Thu Mar 31 14:06:04 2022
 
-this program is meant to test plot TPRL maps Darius as already analyzed
+this program is meant to test plot TPRL 2D arrays Darius gave
 
 data were sent from Eric 20220317
 
@@ -36,6 +36,15 @@ tau2 = np.loadtxt(f2)
 A1_over_A2 = np.loadtxt(f3)
 total_cts = np.loadtxt(f4)
 
+#%%
+import numpy as np
+f = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\TRPL\microscopy\lifetime_fits\0423ePL2Axis_taverage.txt"
+t_avg = np.loadtxt(f)
+# export for plotting in Origin
+t_avg_out = t_avg.ravel() * 1e9 # convert to ns
+fname = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\TRPL\microscopy\lifetime_fits\0423ePL2Axis_taverage_histogram.txt"
+np.savetxt(fname, t_avg_out)
+#%%
 fig, ax = plt.subplots()
 im = ax.imshow(total_cts)
 fig.colorbar(im)

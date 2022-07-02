@@ -4,10 +4,7 @@
 Trumann
 Fri Apr 29 13:27:05 2022
 
-run TRPL_v0.py before this program
-
 this program plots the TRPL data from PVSe33.3_2 and PVSe33.4_3
-
 for the DoE report 20220530
 
 """
