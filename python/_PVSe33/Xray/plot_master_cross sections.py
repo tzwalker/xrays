@@ -29,7 +29,6 @@ the cross-section maps are for PVSe33
 """
 
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker as mticker
 import numpy as np
 
@@ -39,7 +38,7 @@ OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_
 FNAME = r'\0hr_scan119_Cu.eps'
 
 # channel
-idx = 1
+idx = 2
 
 img = df_maps[idx]
 img = img.to_numpy()
@@ -101,13 +100,17 @@ if SAVE == 1:
     plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
     
 #%%
-SAVE = 1
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+import numpy as np
+
+SAVE = 0
 #OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\20210625 figures_v1\figure4 materials'
 OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_XANESvP_Se'
 FNAME = r'\500hr_scan151_Cl.eps'
 
 # channel
-idx = 6
+idx = 2
 
 img = df_maps[idx]
 img = img.to_numpy()
