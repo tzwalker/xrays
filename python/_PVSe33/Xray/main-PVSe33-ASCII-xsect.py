@@ -116,6 +116,7 @@ scan1210 (inf)
     stanford 50uA/V, 1000 V/V
     14um x 20um
     71pt x 101pt -> 200nm x 200nm
+    
 """
 
 import pandas as pd
@@ -143,7 +144,7 @@ elif sample == "500hr":
 
 DATA = PATH+FILENAME
 
-channels = ['ds_ic', 'Cu', 'Cd_L']
+channels = ['ds_ic', 'Cu', 'Cd_L', 'Au_M', 'Sn_L']
 
 df_maps = []
 for chan in channels:
