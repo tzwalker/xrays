@@ -63,7 +63,7 @@ x = list(points['x pixel no'])
 y1 = list(points['y pixel no 1211'])
 y2 = list(points['y pixel no 1212'])
 
-SAVE = 0
+SAVE = 1
 #OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\20210625 figures_v1\figure4 materials'
 OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_XANESvP_Cu'
 FNAME = r'\500hr_scan1210_Cu_map_with_points.pdf'

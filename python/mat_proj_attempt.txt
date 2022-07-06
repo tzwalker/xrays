@@ -1,0 +1,25 @@
+# XANES spectra need to use legacy API
+
+#https://matsci.org/t/retrieve-computed-x-ray-absorption-spectra-xas-through-mprester/822
+from pymatgen.ext.matproj import MPRester
+#from pymatgen.analysis.xas.spectrum import XANES
+
+#m = MPRester("XY3FnnD8IcdWv6YrH37mmW51QBC3Ep0w")
+m = MPRester("9yWTVDvWIlTSwbqNR8GN")
+
+data = m.get_data("mp-559094", data_type="feff", prop="xas")
+
+spectra = []
+for material in data:
+    for xas_doc in material['xas']:
+        x, y = xas_doc['spectrum']
+        structure = xas_doc["structure"]
+        absorption_specie = xas_doc['structure'].species[xas_doc['absorbing_atom']]
+        edge = xas_doc["edge"]
+        #spectra.append(XANES(x, y, structure, absorption_specie, edge=edge))
+
+import numpy as np        
+E = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\mp-559094_energy.txt'
+I = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\mp-559094_int.txt'
+np.savetxt(E,x)
+np.savetxt(I,y)

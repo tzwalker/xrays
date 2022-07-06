@@ -1,0 +1,23 @@
+20220705- installing pymatgen on anaconda for materials project data
+
+conda create --n mat_proj
+
+conda activate mat_proj
+
+conda install -c conda-forge pymatgen
+
+conda install spyder-kernels
+
+conda install spyder
+error, there were conflicts
+
+ipython kernel install --user --name=mat_proj
+
+conda activate base
+
+jupyter notebook
+
+new kernel -mat_proj
+
+
+
