@@ -28,7 +28,7 @@ just be careful when you apply ticklabels to these images
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker as mticker
-
+import numpy as np
 img1 = Cu1b4c.maps[0][1,:,:]
 img2 = Cu1b4c.maps[1][1,:,:]
 img3 = Cu1b4c.maps[-1][1,:,:]

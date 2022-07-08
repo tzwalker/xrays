@@ -17,14 +17,37 @@ from skimage.transform import rotate
 
 import numpy as np
 
-SAVE = 0
-OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\NBL3 XRF maps'
-FNAME = r'\TS58Ascan386_XBIC.eps'
+from class_ascii_Sample import Sample
 
-img = Cu1b4c.maps[0][1,:,:-2] # 0hr, 80C, 0V
-#img = Cu1b4c.maps[-2][1,:,:-2] # 12hr, 80C, 0V
-#img = Cu1b4c.maps[-1][1,:,:-2] # 24hr, 80C,+300mV
+ASCII_PATH =  r'C:\Users\Trumann\Dropbox (ASU)\2_insitu_Cu_cross_section\output' 
+#PATH_LOCKIN = r'C:\Users\Trumann\FS3_2019_06_operando\ASCIIS_TW_BL\FS_plan_electrical.csv'
 
+# create sample objects
+Cu1b4c = Sample()
+
+# define stack and scans of each sample, upstream layer first
+Cu1b4c.stack = {'Au':   [19.3, 100E-7], 
+                 'CdTe': [5.85, 5E-4],
+                 'Se': [4.82, 100E-7],
+                 'SnO2': [100E-7]}
+#Cu1b4c.scans = [238,366]
+Cu1b4c.scans = [238,366,524]
+
+# channels to import from ASCII
+channels = [' us_ic', ' ds_ic', ' Cu', ' Se_L', ' Cd_L', ' Te_L', ' Au_M']
+
+# uncomment this line to import maps with XBIC converted to ampere
+# this requires XBIC channel ('us_ic') to be in first position of 'channels' list
+#Cu1b4c.import_maps(ASCII_PATH, PATH_LOCKIN, channels)
+
+# uncomment this line to import maps without XBIC converted to ampere
+Cu1b4c.import_maps_no_XBIC_conversion(ASCII_PATH, channels)
+
+img1 = Cu1b4c.maps[0][1,:,:-2] # 0hr, 80C, 0V
+img2 = Cu1b4c.maps[1][1,:,:-2] # 12hr, 80C, 0V
+img3 = Cu1b4c.maps[2][1,:,:-2] # 24hr, 80C,+300mV
+
+#%%
 # for Mariana's 2022 PVSC presentation
 img = rotate(img, -8)
 scaler_factor = (50000*1E-9) / (2e5*500)

@@ -3,6 +3,9 @@ coding: utf-8
 Trumann
 Mon Feb  7 16:53:50 2022
 
+
+this is a preliminary prgram for pltting XBIC
+
 map step size: 200nm x 400nm
 map area: 10um x 10um
 
