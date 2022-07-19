@@ -4,25 +4,74 @@
 Trumann
 Tue May 31 14:51:17 2022
 
+this program plots the masked XRF maps on top of their integrated profiles
+it is meant to show the layers are aligned and in focu sin cross section
+
 supplementary info fig 5 file
 
 plots the maps and interfaces
+
 """
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker as mticker
 import numpy as np
+import pandas as pd
 
+def remove_column_header_spaces(dataframe):
+    old_colnames = dataframe.columns.values
+    new_colnames = []
+    for name in old_colnames:
+        new_colnames.append(name.strip())
+    header_dict = {i:j for i,j in zip(old_colnames,new_colnames)}
+    dataframe.rename(columns = header_dict, inplace=True)
+    return dataframe
 
-'''
-0hr plotting
-
-this cell is the clean way to plot maps on top of one another
-and with a line plot below it - be sure to run 'integrate_XRFmaps.py'
-
-'''
 def norm(data):
     return (data)/(max(data)-min(data))
+
+''' 0hr plotting '''
+SAVE = 1
+OUT = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_xsect\0hr_alignment.pdf'
+
+# directory information for data file
+PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_07_2IDD_SeXRF\output'
+FILENAME = r'\combined_ASCII_2idd_0119.h5.csv' # 0hr infinite cross section
+DATA = PATH+FILENAME
+channels = ['ds_ic', 'Cu', 'Se', 'Te_L', 'Au_L', 'Sn_L', 'Cl']
+
+df_maps = []
+for chan in channels:
+    # import the data as a pandas dataframe ('df'); skip first row header
+    df = pd.read_csv(DATA, skiprows=1)
+    
+    # remove column header spaces (for convenient reference to column headers)
+        # this step is necessary because MAPS outputs ASCIIs with extra spaces
+    df_clean = remove_column_header_spaces(df)
+    
+    # shape data of a given column into 2D map
+    x_pix = 'x pixel no'
+    y_pix = 'y pixel no'
+    # specify XRF or XBIC (usually under 'ds_ic' column header)
+    channel = chan
+    df_map = df_clean.pivot(index = y_pix, columns = x_pix, values = channel)
+    df_maps.append(df_map)
+
+# convert XBIC
+scaler_factor = (50E-6) / (2E5*1000) # ampere (A)
+df_xbic = df_maps[0] * scaler_factor * 1E9 # from A to nA
+df_maps[0] = df_xbic # replace imported df
+
+# scan 119 - integrate line profiles
+df_sums = []
+for df in df_maps:
+    df_arr = np.array(df)
+    df_sum = df_arr.sum(axis=0)
+    df_sums.append(df_sum)
+    
+df_sums_arr = np.array(df_sums).T
+
+colors = ["Greens_r", "Blues_r", "Greys_r", "Oranges_r"]
 
 sn = df_maps[5]
 sn = sn.to_numpy()
@@ -59,8 +108,6 @@ for i,m in enumerate(masks):
     #change color bar scale label position 
     #cbar.yaxis.set_offset_position('left')
 
-
-
 fmtr_y = lambda x, pos: f'{(x * 1.000):.0f}'
 ax1.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
 ax1.set_ylabel('$Y$ (μm)')
@@ -82,16 +129,51 @@ ax2.set_ylabel('XRF (arb. unit)')
 asp = np.diff(ax2.get_xlim())[0] / np.diff(ax2.get_ylim())[0]
 ax2.set_aspect(asp)
 
+if SAVE == 1:
+    plt.savefig(OUT, format='pdf', dpi=300, bbox_inches='tight', pad_inches = 0)
+
 #%%
-'''
-500hr plotting
+''' 500hr plotting '''
 
-this cell is the clean way to plot maps on top of one another
-and with a line plot below it - be sure to run 'integrate_XRFmaps.py'
+SAVE = 1
+OUT = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_xsect\500hr_alignment.pdf'
 
-'''
-def norm(data):
-    return (data)/(max(data)-min(data))
+# directory information for data file
+PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_07_2IDD_SeXRF\output'
+FILENAME = r'\combined_ASCII_2idd_0151.h5.csv' # 0hr infinite cross section
+DATA = PATH+FILENAME
+channels = ['ds_ic', 'Cu', 'Se', 'Te_L', 'Au_L', 'Sn_L', 'Cl']
+
+df_maps = []
+for chan in channels:
+    # import the data as a pandas dataframe ('df'); skip first row header
+    df = pd.read_csv(DATA, skiprows=1)
+    
+    # remove column header spaces (for convenient reference to column headers)
+        # this step is necessary because MAPS outputs ASCIIs with extra spaces
+    df_clean = remove_column_header_spaces(df)
+    
+    # shape data of a given column into 2D map
+    x_pix = 'x pixel no'
+    y_pix = 'y pixel no'
+    # specify XRF or XBIC (usually under 'ds_ic' column header)
+    channel = chan
+    df_map = df_clean.pivot(index = y_pix, columns = x_pix, values = channel)
+    df_maps.append(df_map)
+
+# convert XBIC
+scaler_factor = (50E-6) / (2E5*1000) # ampere (A)
+df_xbic = df_maps[0] * scaler_factor * 1E9 # from A to nA
+df_maps[0] = df_xbic # replace imported df
+
+# scan 119 - integrate line profiles
+df_sums = []
+for df in df_maps:
+    df_arr = np.array(df)
+    df_sum = df_arr.sum(axis=0)
+    df_sums.append(df_sum)
+    
+df_sums_arr = np.array(df_sums).T
 
 sn = df_maps[5]
 sn = sn.to_numpy()
@@ -151,6 +233,8 @@ ax2.set_ylabel('XRF (arb. unit)')
 asp = np.diff(ax2.get_xlim())[0] / np.diff(ax2.get_ylim())[0]
 ax2.set_aspect(asp)
 
+if SAVE == 1:
+    plt.savefig(OUT, format='pdf', dpi=300, bbox_inches='tight', pad_inches = 0)
 
 #%%
 '''

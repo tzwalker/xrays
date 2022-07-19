@@ -198,7 +198,7 @@ else:
 
 # SET MASK CONDITION SO IT CAN DISPLAY EASILY
 if show_mask == 0:
-    im = ax.imshow(img, cmap='viridis',vmin=1e18,vmax=8.5e19,interpolation='none')
+    im = ax.imshow(img, cmap='viridis',vmin=1e18,vmax=4.5e19,interpolation='none')
 
     ob = AnchoredHScaleBar(length=172, label=u"25\u03BCm", loc=3, frameon=False,
                            pad=0.5, borderpad=0.25, sep=4, 
@@ -208,7 +208,7 @@ if show_mask == 0:
     ax.add_artist(ob)
     
 if show_mask == 1:
-    im = ax.imshow(img, cmap='viridis',vmin=1e18,vmax=8.5e19,interpolation='none')
+    im = ax.imshow(img, cmap='viridis',vmin=1e18,vmax=4.5e19,interpolation='none')
     ax.imshow(masked_data, cmap='Greys_r',vmin=0.5,interpolation='none')
 
 ax.axis('off')
@@ -238,10 +238,10 @@ cbar.ax.yaxis.offsetText.set(size=18)
 if SAVE == 1:
     if show_mask == 0:
         OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_tof_sims'
-        FNAME = r'\for_GB_fig_0hr_Cl_map.pdf'
+        FNAME = r'\for_GB_fig_0hr_Cl_quantmap.pdf'
         plt.savefig(OUT_PATH+FNAME, format='pdf', dpi=300, bbox_inches='tight', pad_inches = 0)
     if show_mask == 1:
         OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_tof_sims'
-        FNAME = r'\for_GB_fig_0hr_Cl_map_masked.png'
+        FNAME = r'\for_GB_fig_0hr_Cl_quantmap_masked.png'
         plt.savefig(OUT_PATH+FNAME, format='png', dpi=300, bbox_inches='tight', pad_inches = 0)
 

@@ -84,6 +84,6 @@ ax.yaxis.set_tick_params(labelsize=11)
 cbar = fig.colorbar(cs)
 cbar.set_label('Intensity (cts/s)', rotation=90)
 
-OUT_PATH = r'C:\Users\triton\Dropbox (ASU)\0_stage design\20210527 figures_v1\figure6 materials'
-FNAME = r'\111peak_vs_time.eps' 
-#plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)
+OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\insitu_subfigures'
+FNAME = r'\111peak_vs_time.pdf' 
+plt.savefig(OUT_PATH+FNAME, format='pdf', dpi=300, bbox_inches='tight', pad_inches = 0)

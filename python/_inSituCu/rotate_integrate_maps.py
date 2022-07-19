@@ -21,6 +21,29 @@ import numpy as np
 from skimage.transform import rotate
 import matplotlib.pyplot as plt
 
+ASCII_PATH =  r'C:\Users\Trumann\Dropbox (ASU)\2_insitu_Cu_cross_section\output' 
+
+# create sample objects
+Cu1b4c = Sample()
+
+# define stack and scans of each sample, upstream layer first
+Cu1b4c.stack = {'Au':   [19.3, 100E-7], 
+                 'CdTe': [5.85, 5E-4],
+                 'Se': [4.82, 100E-7],
+                 'SnO2': [100E-7]}
+
+Cu1b4c.scans = [238,254,271,285,298,317,341,353,366,524]
+
+# channels to import from ASCII
+channels = [' us_ic', ' ds_ic', ' Cu', ' Se_L', ' Cd_L', ' Te_L', ' Au_M']
+
+# uncomment this line to import maps with XBIC converted to ampere
+# this requires XBIC channel ('us_ic') to be in first position of 'channels' list
+#Cu1b4c.import_maps(ASCII_PATH, PATH_LOCKIN, channels)
+
+# uncomment this line to import maps without XBIC converted to ampere
+Cu1b4c.import_maps_no_XBIC_conversion(ASCII_PATH, channels)
+
 color = 'magma'
 df_map = Cu1b4c.scan524[1,:,:-2]
 
