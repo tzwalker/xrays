@@ -49,9 +49,9 @@ plt.axis("off")
 
 
 #%%
-SAVE = 1
+SAVE = 0
 
-img = np.flipud(kam500).copy() # flip data for display purposess
+img = np.flipud(kam0).copy() # flip data for display purposess
 
 cbar_txt_size = 11
 

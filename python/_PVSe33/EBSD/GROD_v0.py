@@ -108,7 +108,7 @@ def restore_minor_ticks_log_plot(
     ax.yaxis.set_minor_locator(locmin)
     ax.yaxis.set_minor_formatter(mpl.ticker.NullFormatter())
     
-SAVE = 1
+SAVE = 0
 fig, (ax1,ax2) = plt.subplots(figsize=(2.5,3),nrows=2,ncols=1,sharex=True)
 
 ax1.hist(a1, color = "grey", alpha = 0.5, bins = hbins, label='0hr', log=True) # 0hr

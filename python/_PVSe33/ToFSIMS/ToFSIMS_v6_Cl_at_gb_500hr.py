@@ -132,7 +132,7 @@ num = np.count_nonzero(out1)
 print("number of pixels in the mask: {s}".format(s=str(num)))
 
 plt.figure(figsize=(10,10))
-plt.imshow(out)
+plt.imshow(out1)
 
 #%%
 # get Cl count at grain boundaries and build histogram
@@ -186,8 +186,8 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
-SAVE = 1
-show_mask = 0
+SAVE = 0
+show_mask = 1
 unit = 'Cl (atom/cm3)'
 cbar_txt_size = 11
 scalebar_color = 'white'
@@ -195,7 +195,7 @@ scalebar_color = 'white'
 from skimage import io
 
 # convert mask
-out1 = out.astype('uint8')
+out1 = out1.astype('uint8')
 # generate masked array for plotting purposes
 masked_data = np.ma.masked_where(out1==0, out1)
 

@@ -46,7 +46,7 @@ plt.axis("off")
 '''this cell is to plot'''
 SAVE = 0
 
-img = np.flipud(kam500) # flip data for display purposes
+img = np.flipud(kam0) # flip data for display purposes
 
 cbar_txt_size = 11
 

@@ -32,7 +32,7 @@ def norm(data):
 
 ''' 0hr plotting '''
 SAVE = 1
-OUT = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_xsect\0hr_alignment.pdf'
+OUT = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_xsect\0hr_alignment2.pdf'
 
 # directory information for data file
 PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_07_2IDD_SeXRF\output'
@@ -71,7 +71,7 @@ for df in df_maps:
     
 df_sums_arr = np.array(df_sums).T
 
-colors = ["Greens_r", "Blues_r", "Greys_r", "Oranges_r"]
+colors = ["Greens_r", "Blues", "Greys_r", "Oranges"]
 
 sn = df_maps[5]
 sn = sn.to_numpy()
@@ -100,7 +100,7 @@ fig, (ax1,ax2) = plt.subplots(2,1, sharex='all')
 ax1.xaxis.set_ticks(np.arange(0,101,11)) # calibrate
 
 for i,m in enumerate(masks):
-    im = ax1.imshow(m,cmap=colors[i],origin='lower',alpha=0.65,aspect=9)
+    im = ax1.imshow(m,cmap=colors[i],origin='lower',alpha=0.95,aspect=9)
     #fig.colorbar(im, format=fmt)
     #color bar labels
     #cbar = plt.gcf().axes[-1]
@@ -136,7 +136,7 @@ if SAVE == 1:
 ''' 500hr plotting '''
 
 SAVE = 1
-OUT = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_xsect\500hr_alignment.pdf'
+OUT = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_xsect\500hr_alignment2.pdf'
 
 # directory information for data file
 PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_07_2IDD_SeXRF\output'
@@ -202,7 +202,7 @@ fig, (ax1,ax2) = plt.subplots(2,1, sharex='all')
 ax1.xaxis.set_ticks(np.arange(0,76,12)) # calibrate
 
 for i,m in enumerate(masks):
-    im = ax1.imshow(m,cmap=colors[i],origin='lower',alpha=0.65)
+    im = ax1.imshow(m,cmap=colors[i],origin='lower',alpha=0.95)
     #fig.colorbar(im, format=fmt)
     #color bar labels
     #cbar = plt.gcf().axes[-1]
