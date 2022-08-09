@@ -2,9 +2,16 @@
 """
 
 Trumann
-Wed Jun 15 10:11:04 2022
+Mon Aug  8 15:47:41 2022
 
+this program plots the quantified integrated maps
+along Z and Y
 
+it is meant to replace figure 2.16 in my dissertation
+    that figure has count rates, and i want atom/cm3
+    to see if the Cl density is really higher 
+    in the 0hr cell than the 500hr cell
+    
 """
 
 '''
@@ -19,8 +26,8 @@ import matplotlib.ticker as mticker
 from matplotlib.colors import LogNorm
 from matplotlib.gridspec import GridSpec
 
-SAVE = 0
-unit = 'Cl (cts/s)'
+SAVE = 1
+unit = 'Cl (atom/cm$^3$)'
 
 file1 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Cl_maps_quantified.tif"
 file2 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\500hr_Cl_maps_quantified.tif"
@@ -52,7 +59,7 @@ ax1 = fig.add_subplot(gs[0, 0])
 ax2 = fig.add_subplot(gs[0, 1])
 
 ##### plot 0hr plan-view #####
-im1 = ax1.imshow(img1, origin='lower', cmap = 'viridis',vmin=1e19,vmax=1e20)
+im1 = ax1.imshow(img1, origin='lower', cmap = 'viridis',vmin=1e19,vmax=1.5e20)
 
 ax1.xaxis.set_ticks(np.arange(0,513,102))
 ax1.yaxis.set_ticks(np.arange(0,513,102))
@@ -64,7 +71,7 @@ ax1.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
 ax1.set_ylabel('$Y$ (μm)')
 
 #### plot 500hr plan-view #####
-im2 = ax2.imshow(img2, origin='lower', cmap = 'viridis',vmin=1e19,vmax=1e20)
+im2 = ax2.imshow(img2, origin='lower', cmap = 'viridis',vmin=1e19,vmax=1.5e20)
 
 ax2.xaxis.set_ticks(np.arange(0,513,102))
 ax2.yaxis.set_ticks(np.arange(0,513,102))
@@ -81,7 +88,7 @@ fmt.set_powerlimits((0, 0))
 cax2 = fig.add_axes([ax2.get_position().x1+0.025,ax2.get_position().y0,0.025,ax2.get_position().height])
 
 #format and add colorbar
-fig.colorbar(im2,cax=cax2)#, format=fmt)
+fig.colorbar(im2,cax=cax2, format=fmt)
 #color bar labels
 cbar2 = plt.gcf().axes[-1]
 cbar2.set_ylabel(unit, rotation=90, va="bottom", size=cbar_txt_size, labelpad=20)
@@ -96,7 +103,7 @@ ax3 = fig.add_subplot(gs[1, 0])
 ax4 = fig.add_subplot(gs[1, 1])
 
 ##### plot 0hr cross-section #####
-im3 = ax3.imshow(img3, origin='lower', cmap = 'viridis', norm=LogNorm(vmin=10, vmax=1000))
+im3 = ax3.imshow(img3, origin='lower', cmap = 'viridis', norm=LogNorm(vmin=1e19, vmax=5e21))
 ax3.set_aspect(0.756*3)
 ax3.xaxis.set_ticks(np.arange(0,513,102))
 #ax3.yaxis.set_ticks(np.arange(0,50,20))
@@ -109,7 +116,7 @@ ax3.set_xlabel('$X$ (μm)')
 ax3.set_ylabel('$Z$ (μm)')
 
 ##### plot 500hr cross-section #####
-im4 = ax4.imshow(img4, origin='lower', cmap = 'viridis', norm=LogNorm(vmin=10, vmax=1000))
+im4 = ax4.imshow(img4, origin='lower', cmap = 'viridis', norm=LogNorm(vmin=1e19, vmax=5e21))
 ax4.set_aspect(0.931*3)
 ax4.xaxis.set_ticks(np.arange(0,513,102))
 #ax4.yaxis.set_ticks(np.arange(0,50,20))
@@ -134,6 +141,6 @@ cbar4.set_ylabel(unit, rotation=90, va="bottom", size=cbar_txt_size, labelpad=20
 cbar4.yaxis.set_offset_position('left')
 
 OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_tof_sims'
-FNAME = r'\Cl_maps_xy_xz_v2.eps'
+FNAME = r'\Cl_maps_xy_xz_v3.eps'
 if SAVE == 1:
     plt.savefig(OUT_PATH+FNAME, format='eps', dpi=300, bbox_inches='tight', pad_inches = 0)

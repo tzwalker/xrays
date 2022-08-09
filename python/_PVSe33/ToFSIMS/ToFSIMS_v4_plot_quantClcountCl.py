@@ -14,7 +14,7 @@ import matplotlib.ticker as mticker
 import numpy as np
 from skimage import io
 
-PATH_TOF = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Cl_maps.tif"
+PATH_TOF = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\500hr_Cl_maps.tif"
 
 # import ToF-SIMS image
 TOF = io.imread(PATH_TOF)
@@ -53,17 +53,19 @@ import numpy as np
 from skimage import io
 
 # set path to tiff files
-file_Cl_0hr = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Cl_maps_quantified.tif"
+file_Cl_0hr = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\500hr_Cl_maps_quantified.tif"
 
 # import ToF-SIMS image
 Cl = io.imread(file_Cl_0hr)
 
 # integrate along depth
 section1 = Cl[1:10,:,:].sum(axis=0)
+img = np.rot90(section1, k=1)   # rotate image
+img = np.flipud(img)                # flip along horizontal axis
 
 
 fig, ax = plt.subplots(figsize=(10,10))
-im = ax.imshow(section1,interpolation='none',vmin=1e18,vmax=8.5e19)#,norm=LogNorm(vmin=1e18, vmax=1e21))
+im = ax.imshow(img,interpolation='none',vmin=1e18,vmax=8.5e19)#,norm=LogNorm(vmin=1e18, vmax=1e21))
 cax1 = fig.add_axes([ax.get_position().x1+0.025,ax.get_position().y0,0.025,ax.get_position().height])
 
 ax.axis('off')
