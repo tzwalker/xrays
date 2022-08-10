@@ -198,7 +198,7 @@ from skimage import io
 # convert mask
 out1 = out.astype('uint8')
 # generate masked array for plotting purposes
-masked_data = np.ma.masked_where(out1==0, out1)
+masked_data0 = np.ma.masked_where(out1==0, out1)
 
 # Overlay the two images
 if SAVE == 1:
@@ -219,7 +219,7 @@ if show_mask == 0:
     
 if show_mask == 1:
     im = ax.imshow(img, cmap='viridis',vmin=1e18,vmax=4.5e19,interpolation='none')
-    ax.imshow(masked_data, cmap='Greys_r',vmin=0.5,interpolation='none')
+    ax.imshow(masked_data0, cmap='Greys_r',vmin=0.5,interpolation='none')
 
 ax.axis('off')
 
