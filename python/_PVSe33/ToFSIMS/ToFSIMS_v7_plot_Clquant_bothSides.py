@@ -30,10 +30,13 @@ import matplotlib.ticker as mticker
 from matplotlib.colors import LogNorm
 from matplotlib.gridspec import GridSpec
 
+SAVE = 1
 file1 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Cl_maps_quantified.tif"
 file2 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\500hr_Cl_maps_quantified.tif"
 
 cbar_txt_size = 11
+lower = 1e18 ; upper = 4.5e19
+
 
 # import ToF-SIMS images
 imgs1 = io.imread(file1)
@@ -47,19 +50,31 @@ img2 = match_EBSD_orientation(img2)
 
 # integrate near TCO side, taken from v6_Cl_at_gb
 img3 = imgs1[39-18-9:39-18,:,:].sum(axis=0)
+img3 = match_EBSD_orientation(img3)
 img4 = imgs2[44-15-8:44-15,:,:].sum(axis=0)
+img4 = match_EBSD_orientation(img4)
 
-# get masks from TCO-side integration; run "v6_0hr" and "v6_500hr" to process masks
+# get masks from TCO-side integration
+    # run "v6_0hr" and "v6_500hr" to process masks
+    # these should have the orientation of the EBSD already
 mask0 = masked_data0.copy()
 mask500 = masked_data500.copy()
+#%%
+fig, ((ax1,ax2),(ax3,ax4),(ax5,ax6)) = plt.subplots(figsize=((9,9)), nrows=3,ncols=2, sharex=True,sharey=True)
 
-fig, ((ax1,ax2),(ax3,ax4),(ax5,ax6)) = plt.subplots(figsize=((10,10)), nrows=3,ncols=2)
+im1 = ax1.imshow(img1, vmin=lower, vmax=upper,interpolation='none')
+im2 = ax2.imshow(img2, vmin=lower, vmax=upper,interpolation='none')
+im3 = ax3.imshow(img3, vmin=lower, vmax=upper,interpolation='none')
+im4 = ax4.imshow(img4, vmin=lower, vmax=upper,interpolation='none')
+im5 = ax5.imshow(img3, vmin=lower, vmax=upper,interpolation='none')
+ax5.imshow(mask0, cmap='Greys_r', vmin=0.5, interpolation='none')
+im6 = ax6.imshow(img4, vmin=lower, vmax=upper,interpolation='none')
+ax6.imshow(mask500, cmap='Greys_r', vmin=0.5, interpolation='none')
 
-im1 = ax1.imshow(img1)
-im2 = ax2.imshow(img2)
-im3 = ax3.imshow(img3)
-im4 = ax4.imshow(img4)
-im5 = ax5.imshow(img3)
-im6 = ax6.imshow(img4)
+#plt.tight_layout()
+plt.subplots_adjust(wspace=-0.5, hspace=0.1)
 
-plt.tight_layout()
+if SAVE == 1:
+    OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps\PVSe33_tof_sims'
+    FNAME = r'\PVSe33_ToF_Cl_bothSides.png'
+    plt.savefig(OUT_PATH+FNAME, format='png', dpi=300, bbox_inches='tight', pad_inches = 0)
