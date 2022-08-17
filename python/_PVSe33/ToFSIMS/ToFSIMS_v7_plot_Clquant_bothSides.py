@@ -60,7 +60,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
 
 
 
-SAVE = 1
+SAVE = 0
 file1 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\0hr_Cl_maps_quantified.tif"
 file2 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\500hr_Cl_maps_quantified.tif"
 

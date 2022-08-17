@@ -187,6 +187,7 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
 SAVE = 0
+save_mask = 0
 show_mask = 1
 unit = 'Cl (atom/cm3)'
 cbar_txt_size = 11
@@ -199,6 +200,10 @@ out1 = out1.astype('uint8')
 # generate masked array for plotting purposes
 masked_data500 = np.ma.masked_where(out1==0, out1)
 
+if save_mask == 1:
+    FNAME = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\500hr_TCO_mask_10164px.txt'
+    np.savetxt(FNAME, out1)
+    
 # Overlay the two images
 if SAVE == 1:
     fig, ax = plt.subplots(figsize=(2.5,2.5))

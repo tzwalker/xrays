@@ -121,7 +121,7 @@ if check ==1:
     rng = counts.max() - counts.min()
 
 out = morphology.medial_axis(img5)
-print(np.count_nonzero(out1))
+print(np.count_nonzero(out))
 
 plt.figure(figsize=(10,10))
 plt.imshow(out)
@@ -178,8 +178,9 @@ class AnchoredHScaleBar(offbox.AnchoredOffsetbox):
         offbox.AnchoredOffsetbox.__init__(self, loc, pad=pad, 
                  borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
                  **kwargs)
-SAVE = 1
-show_mask = 0
+SAVE = 0
+save_mask = 1
+show_mask = 1
 unit = 'Cl (atom/cm3)'
 cbar_txt_size = 11
 scalebar_color = 'white'
@@ -190,6 +191,10 @@ from skimage import io
 out1 = out.astype('uint8')
 # generate masked array for plotting purposes
 masked_data = np.ma.masked_where(out1==0, out1)
+
+if save_mask == 1:
+    FNAME = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\ToF_SIMS\500hr_Au_mask_8525px.txt'
+    np.savetxt(FNAME, out1)
 
 # Overlay the two images
 if SAVE == 1:
