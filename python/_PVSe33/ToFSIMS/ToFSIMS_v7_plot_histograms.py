@@ -34,7 +34,9 @@ imgs2 = io.imread(file2)
 mskAu_0 = np.loadtxt(maskfile_Au_0hr)
 mskAu_500 = np.loadtxt(maskfile_Au_500hr)
 mskTCO_0 = np.loadtxt(maskfile_TCO_0hr)
-mskTCO_500 = np.loadtxt(maskfile_TCO_500hr) 
+mskTCO_500 = np.loadtxt(maskfile_TCO_500hr)
+
+masks = [mskAu_0,mskAu_500,mskTCO_0,mskTCO_500]
 
 
 # get pertinent integrations from data
@@ -43,13 +45,19 @@ iAu_500 =   imgs2[1:10,:,:].sum(axis=0)
 iTCO_0 =    imgs1[39-18-9:39-18,:,:].sum(axis=0)
 iTCO_500 =  imgs2[44-15-8:44-15,:,:].sum(axis=0)
 
-# get masked data for histograms
-a = mskAu_0     *   iAu_0
-b = mskAu_500   *   iAu_500
-c = mskTCO_0    *   iTCO_0
-d = mskTCO_500  *   iTCO_500
+integrations = [iAu_0,iAu_500,iTCO_0,iTCO_500]
 
-data = [a,b,c,d]
+def orient(array):
+    img = np.rot90(array, k=1)   # rotate image
+    img = np.flipud(img)                # flip along horizontal axis
+    return img
+# rotate integrations to match orientation of masks
+integrations_rot = [orient(m) for m in integrations]
+
+
+# get masked data for histograms
+data = [mask*data for mask,data in zip(masks,integrations_rot)]
+
 plot_data = [img.ravel() for img in data]
 
 #%%

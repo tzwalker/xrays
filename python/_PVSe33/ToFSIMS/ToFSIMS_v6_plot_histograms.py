@@ -25,17 +25,14 @@ bin_bounds = list(np.arange(1e18,5e20,0.1e20))
 #bin_bounds = [1e18,1e19,1e20,1e21]
 fig, (ax1,ax2) = plt.subplots(nrows=2,ncols=1,sharex=True)
 
-ax1.hist(valarr, color = "grey", alpha = 0.5, bins=bin_bounds, label='0hr')#, log=True) # 0hr
-#ax1.set_ylim(0.1,1e5)
-ax1.set_ylim(0,2)
+ax1.hist(valarr, color = "grey", alpha = 0.5, bins=bin_bounds, label='0hr', log=True) # 0hr
+ax1.set_ylim(0.1,1e5)
 ax1.legend(fontsize=txt_size)
 ax1.set_ylabel("Pixel Count",size=txt_size)
 ax1.tick_params(labelsize=txt_size)
 
-ax2.hist(valarr1, color = "red", alpha = 0.5, bins=bin_bounds, label = '500hr')#, log=True) # 500hr
-#ax2.set_ylim(0.1,1e5)
-ax2.set_ylim(0,2)
-ax2.set_xlim(2e20,5e20)
+ax2.hist(valarr1, color = "red", alpha = 0.5, bins=bin_bounds, label = '500hr', log=True) # 500hr
+ax2.set_ylim(0.1,1e5)
 ax2.legend(fontsize=txt_size)
 ax2.set_xlabel("Cl (atom/cm$^3$)",size=txt_size)
 ax2.set_ylabel("Pixel Count",size=txt_size)
