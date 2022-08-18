@@ -74,15 +74,15 @@ bin_bounds = list(np.arange(1e18,5e20,0.1e20))
 fig, ((ax1,ax2),(ax3,ax4)) = plt.subplots(nrows=2,ncols=2,sharex=True, sharey=True)
 
 ax1.hist(plot_data[0], color = "grey", alpha = 0.5, bins=bin_bounds, label='0hr - Au', log=True) # 0hr
-#ax1.set_ylim(0.1,1e5)
+ax1.set_xlim(0,2.75e20)
 ax1.set_ylim(0.5,1e4)
-ax1.legend(fontsize=txt_size)
+#ax1.legend(fontsize=txt_size)
 ax1.set_ylabel("Pixel Count",size=txt_size)
 ax1.tick_params(labelsize=txt_size)
 
 ax3.hist(plot_data[1], color = "red", alpha = 0.5, bins=bin_bounds, label = '500hr - Au', log=True) # 500hr
 #ax2.set_ylim(0.1,1e5)
-ax3.legend(fontsize=txt_size)
+#ax3.legend(fontsize=txt_size)
 ax3.set_xlabel("Cl (atom/cm$^3$)",size=txt_size)
 ax3.set_ylabel("Pixel Count",size=txt_size)
 ax3.tick_params(labelsize=txt_size)
@@ -92,8 +92,8 @@ ax2.hist(plot_data[2], color = "grey", alpha = 0.5, bins=bin_bounds, label = '0h
 #ax2.set_ylim(0.1,1e5)
 #ax3.set_ylim(0,2)
 #ax3.set_xlim(2e20,5e20)
-ax2.legend(fontsize=txt_size)
-ax2.set_ylabel("Pixel Count",size=txt_size)
+#ax2.legend(fontsize=txt_size)
+#ax2.set_ylabel("Pixel Count",size=txt_size)
 ax2.tick_params(labelsize=txt_size)
 #plt.xscale('log')
 
@@ -101,13 +101,13 @@ ax4.hist(plot_data[3], color = "red", alpha = 0.5, bins=bin_bounds, label = '500
 #ax2.set_ylim(0.1,1e5)
 #ax4.set_ylim(0,2)
 #ax4.set_xlim(2e20,5e20)
-ax4.legend(fontsize=txt_size)
+#ax4.legend(fontsize=txt_size)
 ax4.set_xlabel("Cl (atom/cm$^3$)",size=txt_size)
-ax4.set_ylabel("Pixel Count",size=txt_size)
+#ax4.set_ylabel("Pixel Count",size=txt_size)
 ax4.tick_params(labelsize=txt_size)
 #plt.xscale('log')
 
 
 OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\PhD Documents\figures\Ch4eps'
-FNAME = r'\PVSe33_Cl_at_GB_histgrams_quant.pdf'
-#plt.savefig(OUT_PATH+FNAME, format='pdf', dpi=300, bbox_inches='tight', pad_inches = 0)
+FNAME = r'\PVSe33_ToF_Cl_histograms_v7.pdf'
+plt.savefig(OUT_PATH+FNAME, format='pdf', dpi=300, bbox_inches='tight', pad_inches = 0)
