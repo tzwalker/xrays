@@ -144,7 +144,7 @@ FNAME = r'\fig4_xsectXray2.eps'
 
 txt_size = 10
 
-fig, ((ax1,ax2),(ax3,ax4),(ax5,ax6), (ax7,ax8)) = plt.subplots(figsize=((2.75,6.75)),nrows=4,ncols=2)
+fig, ((ax1,ax2),(ax3,ax4),(ax5,ax6), (ax7,ax8)) = plt.subplots(figsize=((6,6)),nrows=4,ncols=2)
 
 ''' maps section '''
 # plot map data for 0hr cross section
@@ -159,7 +159,7 @@ im2 = ax2.imshow(data500[0][:-13,13:-2], cmap='inferno', origin = 'lower', vmin 
 im4 = ax4.imshow(data500[2][:-13,13:-2], cmap='Blues_r', origin = 'lower', vmin = 0, vmax = 5e4) # Se
 im6 = ax6.imshow(data500[3][:-13,13:-2], cmap='Greys_r', origin = 'lower', vmin = 0, vmax = 5e3) # Te
 
-#fig.subplots_adjust(hspace=0.4,wspace=-0.6)
+#fig.subplots_adjust(wspace=0.75, hspace = -.2)
 
 # apply axis calibration to 0hr maps
 for ax in ax1,ax3,ax5:
@@ -179,7 +179,7 @@ for ax in ax1,ax3,ax5:
 
 # apply axis calibration to 500hr maps
 for ax in ax2,ax4,ax6:
-    ax.xaxis.set_ticks(np.arange(0,76,12))
+    ax.xaxis.set_ticks(np.arange(0,76,9))
     ax.yaxis.set_ticks(np.arange(0,76,60))
     fmtr_x = lambda x, pos: f'{(x * 0.160):.0f}'
     fmtr_y = lambda x, pos: f'{(x * 0.160):.0f}'
@@ -199,14 +199,30 @@ xdata0 = np.arange(0,9.9,0.1)
 ax7.plot(xdata0,lines0[0][:-2], color = 'orange', linewidth = 1, linestyle = ':')
 ax7.set_ylim(0,1000)
 ax7.xaxis.set_ticks(np.arange(0,11,2))
+ax7.yaxis.set_ticks(np.arange(0,1250,250))
 ax7.set_xlim(0,10)
 ax7.set_ylabel('XBIC (nA)', size = txt_size)
 ax7.set_xlabel('Device Depth (μm)', size = txt_size)
+ax7.xaxis.set_ticks_position('both')
+ax7.tick_params(axis="x",direction="in")
+ax7.tick_params(axis="y",direction="in")
+
 # plot XRF on second y axis
 ax71 = ax7.twinx()
 ax71.plot(xdata0,lines0norm[0][:-2], color = 'blue', linewidth = 1)
 ax71.plot(xdata0,lines0norm[1][:-2], color = 'grey', linewidth = 1)
-ax71.set_ylim(0,1.75)
+ax71.set_ylim(0,1.5)
+ax71.tick_params(axis="y",direction="in")
+ax71.yaxis.set_ticks(np.arange(0,1.75,0.5))
+# add interface lines, in calibrated x-axis units
+ax71.axvline(2,color='r',linestyle='-', linewidth=1)
+ax71.axvline(6.5,color='r',linestyle='-', linewidth=1)
+
+# change color of XBIC axis
+ax71.spines['left'].set_color('orange')
+ax7.tick_params(axis='y', colors='orange')
+ax7.yaxis.label.set_color('orange')
+
 # place and adjust line plot panel to match maps
 box = ax5.get_position().translated(0,-.2)
 ax7.set_position(box)
@@ -216,13 +232,30 @@ xdata500 = np.arange(0,9.7,0.160)
 ax8.plot(xdata500,lines500[0][13:-2], color='orange', linewidth = 1 , linestyle = ':')
 ax8.set_ylim(0,1000)
 ax8.xaxis.set_ticks(np.arange(0,11,2))
+ax8.yaxis.set_ticks(np.arange(0,1250,250))
+ax8.set_xlim(0,10)
 ax8.set_xlabel('Device Depth (μm)', size = txt_size)
+ax8.xaxis.set_ticks_position('both')
+ax8.tick_params(axis="x",direction="in")
+ax8.tick_params(axis="y",direction="in")
+
 # plot XRF on second y axis
 ax81 = ax8.twinx()
 ax81.plot(xdata500,lines500norm[0][13:-2], color = 'blue', linewidth = 1)
 ax81.plot(xdata500,lines500norm[1][13:-2], color = 'grey', linewidth = 1)
-ax81.set_ylim(0,1.75)
+ax81.set_ylim(0,1.5)
+ax81.yaxis.set_ticks(np.arange(0,1.75,0.5))
 ax81.set_ylabel('Normalized \n XRF (arb. unit)', size = txt_size)
+ax81.tick_params(axis="y",direction="in")
+# add interface lines, in calibrated x-axis units
+ax81.axvline(1.6,color='r',linestyle='-', linewidth=1)
+ax81.axvline(8.96,color='r',linestyle='-', linewidth=1)
+
+# change color of XBIC axis
+ax81.spines['left'].set_color('orange')
+ax8.tick_params(axis='y', colors='orange')
+ax8.yaxis.label.set_color('orange')
+
 # place and adjust line plot panel to match maps
 box = ax6.get_position().translated(0,-.2)
 ax8.set_position(box)
