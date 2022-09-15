@@ -143,9 +143,9 @@ the cross-section maps are for PVSe33
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 
-SAVE = 0
+SAVE = 1
 OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\20210625 figures_v1\figure4 materials'
-FNAME = r'\fig4_xsectXray2.eps'
+FNAME = r'\fig4_xsectXray3.eps'
 
 txt_size = 10
 
