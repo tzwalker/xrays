@@ -12,32 +12,37 @@ Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\2021_07_2IDD_SeXRF
 this program includes a definition that makes it easier to manage
 the maps from the few scans related to these samples
 
-for scans with different widths, chopping x will be done in Origin
-    (the plot x axis range will be adjusted to match between scans)
-
-the length of scan 119 is 10um (11pts) and the length of scan 151 is 12um (76pts)
-    -both the physical distance and the resolution (no. of observations) 
-    is different between the two scans
-    -when integrating i want to be able to compare the same physical distance 
-    and number of observations
-    -this necessarily means i will need to get rid of most of the pts in
-    before integrating scan 151
-    -from scan 151, keep 10 rows spread over a 10um length
-    -keep row at every 1um step
-    -1um step is about 6 rows at 0.16nm per row
-    -keep pixel idxs: [0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60]
-
-imports ASCII from MAPS
-shapes the data of a channel (e.g. Te_L XRF)
-rotates the map (if desired)
-sums along a given axis (e.g. the y-axis)
+the scans had different reolutions and map parameters
+this makes their plotting unorthodox:
+    the length of scan 119 is 10um (11pts)
+    the length of scan 151 is 12um (76pts)
+        -both the physical distance and the resolution (no. of observations) 
+        is different between the two scans
+        -when integrating i want to compare same physical distance 
+        and number of observations
+        -this means i need to get rid of most of the y pts in scan151
+        before integrating scan 151
+        -from scan 151, keep 10 rows spread over a 10um length
+        -keep row at every 1um step
+        -1um step is about 6 rows at 0.16nm per row
+        -keep pixel idxs: [0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60]
 
 lockin settings
-scan72 (window), scan119 (inf) 
-    stanford 50uA/V, 1000 V/V
+scan72 (window): stanford 50uA/V, 1000 V/V
+scan119 (inf): stanford 50uA/V, 1000 V/V 
+scan144 (window): stanford 50uA/V, 1000 V/V
+scan151 (inf): stanford 50uA/V, 1000 V/V
 
-scan144 (window), scan151 (inf)
-    stanford 50uA/V, 1000 V/V
+interface index estimates
+"Dropbox (ASU)\1_PVSe33 ex-situ\DATA\CdTe layer thickness estimate - XRF_2021_07_2IDD.txt"
+0hr
+2.20/0.1 = 22
+6.3/0.1 = 63
+
+500hr (shifted by 13 pixels as done in plotted maps)
+3.84/0.16 - 13 = 11 (1.76um)
+11.04/0.16 - 13 = 56 (8.96um)
+
 """
 
 import pandas as pd
@@ -172,14 +177,14 @@ for ax in ax1,ax3,ax5:
     ax.set_ylabel('$Y$ (μm)', size = txt_size)
     ax.set_xticklabels([])
     # outline possible position of interfaces
-    ax.axvline(20,color='r',linestyle='-', linewidth=1)
-    ax.axvline(65,color='r',linestyle='-', linewidth=1)
+    ax.axvline(22,color='r',linestyle='-', linewidth=1)
+    ax.axvline(63,color='r',linestyle='-', linewidth=1)
     
     ax.set_aspect(9)
 
 # apply axis calibration to 500hr maps
 for ax in ax2,ax4,ax6:
-    ax.xaxis.set_ticks(np.arange(0,76,9))
+    ax.xaxis.set_ticks(np.arange(0,76,12))
     ax.yaxis.set_ticks(np.arange(0,76,60))
     fmtr_x = lambda x, pos: f'{(x * 0.160):.0f}'
     fmtr_y = lambda x, pos: f'{(x * 0.160):.0f}'
@@ -187,8 +192,8 @@ for ax in ax2,ax4,ax6:
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(fmtr_y))
     ax.set_xticklabels([])
     # outline possible position of interfaces
-    ax.axvline(10,color='r',linestyle='-', linewidth=1)
-    ax.axvline(55,color='r',linestyle='-', linewidth=1)
+    ax.axvline(11,color='r',linestyle='-', linewidth=1)
+    ax.axvline(56,color='r',linestyle='-', linewidth=1)
     ax.set_xlim(0,61)
     ax.set_ylim(0,63)
     ax.set_aspect(1)
@@ -215,8 +220,8 @@ ax71.set_ylim(0,1.5)
 ax71.tick_params(axis="y",direction="in")
 ax71.yaxis.set_ticks(np.arange(0,1.75,0.5))
 # add interface lines, in calibrated x-axis units
-ax71.axvline(2,color='r',linestyle='-', linewidth=1)
-ax71.axvline(6.5,color='r',linestyle='-', linewidth=1)
+ax71.axvline(2.2,color='r',linestyle='-', linewidth=1)
+ax71.axvline(6.3,color='r',linestyle='-', linewidth=1)
 
 # change color of XBIC axis
 ax71.spines['left'].set_color('orange')
@@ -248,7 +253,7 @@ ax81.yaxis.set_ticks(np.arange(0,1.75,0.5))
 ax81.set_ylabel('Normalized \n XRF (arb. unit)', size = txt_size)
 ax81.tick_params(axis="y",direction="in")
 # add interface lines, in calibrated x-axis units
-ax81.axvline(1.6,color='r',linestyle='-', linewidth=1)
+ax81.axvline(1.76,color='r',linestyle='-', linewidth=1)
 ax81.axvline(8.96,color='r',linestyle='-', linewidth=1)
 
 # change color of XBIC axis
