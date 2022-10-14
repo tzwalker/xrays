@@ -113,6 +113,8 @@ lines500norm = [normalize(lines500[l]) for l in [1,2]]
 '''
 this cell plots cross-section maps with different xy scales
 
+it was used to make the final paper figure
+
 it is meant to plot all the maps and line plots in the same figure
 thus avoiding the need to import the line plots to Origin
 and arrange in Inkscape
@@ -143,9 +145,21 @@ the cross-section maps are for PVSe33
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 
-SAVE = 1
+SAVE = 0
 OUT_PATH = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\20210625 figures_v1\figure4 materials'
 FNAME = r'\fig4_xsectXray3.eps'
+
+# import xy points of 0hr Se XANES
+FILE0 = r"C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\0hr_inf_SeXANES_indices.csv"
+points0 = pd.read_csv(FILE0,skiprows=1)
+x0 = list(points0['x pixel no'])
+y0 = list(points0['y pixel no'])
+
+# import xy points of 500hr Se XANES 
+FILE500 = r'C:\Users\Trumann\Dropbox (ASU)\1_PVSe33 ex-situ\DATA\XRF_XANES - cross section\500hr_inf_SeXANES_indices.csv'
+points500 = pd.read_csv(FILE500,skiprows=1)
+x500 = list(points500['x pixel no']-13) # subtract 13 to match cropped 500hr map
+y500 = list(points500['y pixel no'])
 
 txt_size = 10
 
@@ -197,6 +211,10 @@ for ax in ax2,ax4,ax6:
     ax.set_xlim(0,61)
     ax.set_ylim(0,63)
     ax.set_aspect(1)
+
+'''scatter plot section'''
+ax3.scatter(x0, y0, color='red', s=3)
+ax4.scatter(x500,y500,color='red',s=3)
 
 ''' line plot section '''
 # plot line data for 0hr cross section
